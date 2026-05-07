@@ -1,0 +1,57 @@
+name: 🚀 Feature Request
+description: 새로운 기능 개발 요청 (FE)
+title: "[FEAT] "
+labels: ["feature", "frontend"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 새로운 기능을 제안합니다
+        FE 팀의 새로운 기능 개발을 위한 템플릿입니다.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 기능 설명
+      description: 어떤 기능인지 간단하게 설명해주세요.
+      placeholder: 예) 사용자 프로필 페이지에서 내 정보를 수정할 수 있는 기능
+    validations:
+      required: true
+
+  - type: textarea
+    id: tasks
+    attributes:
+      label: 작업 항목 (To-do)
+      description: 이 이슈에서 해야 할 일을 체크리스트로 작성해주세요.
+      value: |
+        - [ ] 작업 1
+        - [ ] 작업 2
+        - [ ] 작업 3
+    validations:
+      required: true
+
+  - type: textarea
+    id: design
+    attributes:
+      label: 디자인 / 화면 시안
+      description: Figma 링크 또는 스크린샷을 첨부해주세요.
+      placeholder: Figma URL 또는 이미지
+
+  - type: textarea
+    id: api
+    attributes:
+      label: 연동 API
+      description: 연동되는 BE API가 있다면 명시해주세요.
+      placeholder: "예) GET /api/users/{id}"
+
+  - type: input
+    id: deadline
+    attributes:
+      label: 예상 마감일
+      placeholder: "YYYY-MM-DD"
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: 참고사항
+      description: 그 외 참고할 내용이 있다면 작성해주세요.

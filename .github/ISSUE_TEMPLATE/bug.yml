@@ -1,0 +1,68 @@
+name: 🐞 Bug Report
+description: 버그 리포트 (FE)
+title: "[BUG] "
+labels: ["bug", "frontend"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 발견한 버그를 리포트해주세요
+        재현 가능한 정보를 최대한 자세히 작성해주시면 빠르게 해결할 수 있습니다.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 버그 설명
+      description: 어떤 버그인가요?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 재현 방법
+      description: 단계별로 작성해주세요.
+      value: |
+        1. 
+        2. 
+        3. 
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 예상 동작
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: 실제 동작
+    validations:
+      required: true
+
+  - type: input
+    id: browser
+    attributes:
+      label: 브라우저
+      placeholder: "예) Chrome 120, Safari 17"
+
+  - type: input
+    id: device
+    attributes:
+      label: 디바이스 / OS
+      placeholder: "예) MacBook Pro M1 / macOS Sonoma, iPhone 14 / iOS 17"
+
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: 스크린샷 / 영상
+      description: 가능하면 첨부해주세요.
+
+  - type: textarea
+    id: console
+    attributes:
+      label: 콘솔 에러 로그
+      render: shell
