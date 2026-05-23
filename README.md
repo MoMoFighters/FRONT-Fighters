@@ -1,7 +1,7 @@
 ## FRONT README
 
 ### 파일구조
-
+```bash
 [src]
 ├──📁[assets]
 │			├──📁[img]
@@ -161,3 +161,4 @@
 ├──📁lib
 │			├── api.ts
 └──		└── utils.ts
+```
