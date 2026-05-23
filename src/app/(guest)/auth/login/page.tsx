@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import kakao from '@/app/assets/img/kakao.svg'
 import google from '@/app/assets/img/google.svg'
+import logo from '@/app/assets/img/header_logo.png'
 
 export default function Login() {
 
@@ -11,7 +12,14 @@ export default function Login() {
 
     return (
         <div className="p-4 flex flex-col gap-4 justify-center align-middle max-w-md mx-auto my-auto">
-            <div className="text-center text-3xl font-bold">🍑MOMOCITY</div>
+            <div className="flex justify-center">
+                <Image
+                    src={logo}
+                    width={180}
+                    alt="MOMOCITY 로고"
+                    priority
+                />
+            </div>
             <div className="grid grid-cols-2">
                 <div className="bg-mauve-500 py-2 text-center">
                     <p className="text-white font-bold">수강생</p>
