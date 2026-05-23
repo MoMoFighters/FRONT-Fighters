@@ -1,6 +1,20 @@
-export default function StudentLayout() {
-    return (
-        <div>children으로 레이아웃 적용</div>
+import AUthHeader from "../layout/AuthHeader";
+import StudentSidebar from "../layout/StudentSidebar";
 
+export default function StudentLayout({
+    children,
+}: Readonly<{
+    children: React.ReactNode;
+}>) {
+    return (
+        <div className="flex min-h-screen flex-col">
+            <AUthHeader role="student" />
+            <div className="flex flex-1">
+                <StudentSidebar />
+                <main className="bg-slate-50 p-12 flex-1">
+                    {children}
+                </main>
+            </div>
+        </div>
     );
 }
