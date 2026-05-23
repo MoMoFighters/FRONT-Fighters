@@ -1,5 +1,11 @@
-export default function GuestLayout() {
+export default function GuestLayout({
+    children,
+}: {
+    children: React.ReactNode;
+}) {
     return (
-        <div></div>
+        <div>
+            {children}
+        </div>
     );
 }
