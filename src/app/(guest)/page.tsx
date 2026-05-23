@@ -1,4 +1,4 @@
-import city from "@/assets/city.png";
+// import city from "@/assets/city.png";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -22,7 +22,7 @@ export default function Home() {
       </div>
       <div>
         <Image
-          src={city}
+          src=""
           alt="도시 이미지"
         />
       </div>

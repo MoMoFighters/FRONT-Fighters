@@ -1,5 +1,10 @@
 export default function Login() {
     return (
-        <div>로그인페이지</div>
+        <div className="">
+            <div>
+                <div className="">🍑MOMOCITY</div>
+                <div></div>
+            </div>
+        </div>
     );
 }
