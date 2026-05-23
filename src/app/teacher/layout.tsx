@@ -1,5 +1,11 @@
-export default function TeacherLayout() {
+export default function TeacherLayout({
+    children,
+}: {
+    children: React.ReactNode;
+}) {
     return (
-        <div>강사 메인 레이아웃</div>
+        <div>
+            {children}
+        </div>
     );
 }
