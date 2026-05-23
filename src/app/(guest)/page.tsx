@@ -21,10 +21,6 @@ export default function Home() {
         </div>
       </div>
       <div>
-        <Image
-          src=""
-          alt="도시 이미지"
-        />
       </div>
       <button className="ml-auto">
         <Link href="/login">도시 키우러 가기</Link>
