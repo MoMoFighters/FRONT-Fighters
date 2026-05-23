@@ -1,0 +1,36 @@
+name: ♻️ Refactor
+description: 리팩토링 이슈 (FE)
+title: "[REFACTOR] "
+labels: ["refactor", "frontend"]
+body:
+  - type: textarea
+    id: target
+    attributes:
+      label: 리팩토링 대상
+      description: 어떤 코드 / 컴포넌트 / 디렉토리인가요?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reason
+    attributes:
+      label: 리팩토링 사유
+      description: 왜 리팩토링이 필요한가요?
+    validations:
+      required: true
+
+  - type: textarea
+    id: changes
+    attributes:
+      label: 변경 사항
+      value: |
+        - [ ] 
+        - [ ] 
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: 영향 범위
+      description: 다른 컴포넌트나 페이지에 영향이 있나요?
