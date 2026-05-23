@@ -1,4 +1,5 @@
 import AUthHeader from "../layout/AuthHeader";
+import StudentSidebar from "../layout/StudentSidebar";
 
 export default function StudentLayout({
     children,
@@ -8,9 +9,12 @@ export default function StudentLayout({
     return (
         <div className="flex min-h-screen flex-col">
             <AUthHeader role="student" />
-            <main className="bg-slate-50 p-12 flex-1">
-                {children}
-            </main>
+            <div className="flex flex-1">
+                <StudentSidebar />
+                <main className="bg-slate-50 p-12 flex-1">
+                    {children}
+                </main>
+            </div>
         </div>
     );
 }

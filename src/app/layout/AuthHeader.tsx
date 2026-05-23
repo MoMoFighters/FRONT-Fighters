@@ -12,7 +12,7 @@ export default function AUthHeader({ role }: { role: string }) {
                         src={logo}
                         alt="MOMOCITY 로고"
                         className="mt-3"
-                        width={200}
+                        width={180}
                         height={40}
                         priority
                     />
