@@ -4,6 +4,8 @@
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import LectureFormChapterItem from "./LectureFormChapterItem";
+import Image from "next/image";
+import upload from '@/app/assets/img/fileUpload.svg'
 
 type LectureFormProps = {
     mode: 'create' | 'edit'
@@ -16,7 +18,7 @@ type Chapter = {
 
 export default function LectureForm({ mode }: LectureFormProps) {
 
-    const [chapterLength, setChapterLength] = useState(1);
+    const [chapterLength, setChapterLength] = useState<number>(1);
     const [chapters, setChapters] = useState([{ index: 1, title: 'asd', video: '' } as Chapter])
     const addChapterItem = () => {
         setChapterLength(chapterLength + 1)
@@ -70,7 +72,7 @@ export default function LectureForm({ mode }: LectureFormProps) {
                                 <img src={preview} alt="썸네일 미리보기" className="h-full object-contain" />
                             ) : (
                                 <>
-                                    <span className="text-3xl text-gray-400">↑</span>
+                                    <span className="text-3xl text-gray-400"><Image src={upload} alt='업로드'></Image></span>
                                     <span className="text-gray-400">이미지 업로드</span>
                                 </>
                             )}
@@ -88,14 +90,14 @@ export default function LectureForm({ mode }: LectureFormProps) {
                         <input
                             type="text"
                             placeholder="강의 제목"
-                            className="border-1 border-black px-2"
+                            className="border border-black px-2 py-1"
                         />
                     </div>
                     <div className="grid grid-cols-[80_3fr] gap-4">
                         <p className="text-right font-bold">강의 설명</p>
                         <textarea
                             placeholder="강의 설명"
-                            className="border-1 border-black resize-none px-2"
+                            className="border border-black resize-none px-2 py-2"
                             rows={8}
                         >
                         </textarea>
@@ -112,7 +114,7 @@ export default function LectureForm({ mode }: LectureFormProps) {
                         </div>
                     </div>
                     {chapters.map((chapter) => (
-                        <LectureFormChapterItem chapter={chapter} mode={mode} key={chapterLength} />
+                        <LectureFormChapterItem chapter={chapter} mode={mode} key={chapter.index || 1} />
                     ))}
                     <Button>
                         {mode === 'create' ? "강의 등록" : "강의 수정"}

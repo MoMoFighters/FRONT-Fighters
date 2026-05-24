@@ -29,7 +29,7 @@ export default function LectureFormChapterItem({ chapter, mode }: LectureFormCha
                 <input
                     type="text"
                     placeholder="챕터 제목을 입력하세요"
-                    className="border-1 border-black px-2"
+                    className="border border-black px-2 py-1"
                     defaultValue={title}
                     required
                 />
