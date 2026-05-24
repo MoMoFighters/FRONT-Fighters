@@ -1,3 +1,4 @@
+'use client'
 import { Button } from "@/components/ui/button";
 
 export default function Signup() {
@@ -30,7 +31,13 @@ export default function Signup() {
                     {/* 나중에 폼 따로 분리하기? -> 근데 fetching 하는게 없어서 걍 이 자체 페이지를 use client하면될듯 */}
                     <div className="grid grid-cols-[1fr_3fr]">
                         <p className='text-right font-bold mr-2 my-auto'>이름</p>
-                        <input className='border border-black py-2 pl-2' type="text" placeholder="이름" required />
+                        <input
+                            className='border border-black py-2 pl-2'
+                            type="text"
+                            placeholder="이름"
+                            name='name'
+                            required
+                        />
                     </div>
                     <div className="grid grid-cols-[1fr_3fr]">
                         <p className='text-right font-bold mr-2 my-auto'>이메일</p>
@@ -39,6 +46,7 @@ export default function Signup() {
                                 className='border border-black py-2 pl-2 flex-1'
                                 type="email"
                                 placeholder="이메일"
+                                name='email'
                                 required
                             />
                             <Button type="button" className="ml-1 my-auto">이메일인증</Button>
@@ -54,6 +62,7 @@ export default function Signup() {
                                         type="number"
                                         placeholder="인증번호"
                                         disabled={emailValidated}
+                                        name='validationCode' {/* 나중에 이메일인증코드 컨벤션 맞춰서 name 수정 */}
                                         required
                                     />
                                     <Button
@@ -75,11 +84,23 @@ export default function Signup() {
                     ) : ("")}
                     <div className="grid grid-cols-[1fr_3fr]">
                         <p className='text-right font-bold mr-2 my-auto'>PW</p>
-                        <input className='border border-black py-2 pl-2' type="password" placeholder="비밀번호" required />
+                        <input
+                            className='border border-black py-2 pl-2'
+                            type="password"
+                            placeholder="비밀번호"
+                            name='password'
+                            required
+                        />
                     </div>
                     <div className="grid grid-cols-[1fr_3fr]">
                         <p className='text-right font-bold mr-2 my-auto'>PW 확인</p>
-                        <input className='border border-black py-2 pl-2' type="password" placeholder="비밀번호확인" required />
+                        <input
+                            className='border border-black py-2 pl-2'
+                            type="password"
+                            placeholder="비밀번호확인"
+                            name="passwordCheck"
+                            required
+                        />
                     </div>
                     {isTeacher ? (
                         <div className="grid grid-cols-[1fr_3fr]">
