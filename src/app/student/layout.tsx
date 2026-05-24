@@ -7,7 +7,7 @@ export default function StudentLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <div className="flex min-h-screen flex-col">
+        <div className="flex flex-col flex-1">
             <AUthHeader role="student" />
             <div className="flex flex-1">
                 <StudentSidebar />
