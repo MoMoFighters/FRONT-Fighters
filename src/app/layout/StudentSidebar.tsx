@@ -17,7 +17,7 @@ export default function StudentSidebar() {
                 height={20}
                 priority
             />
-            <h2 className='text-xl pl-2 text-mauve-500 font-bold'>홍길동 님의 도시</h2>
+            <Link href="/student"><h2 className='text-xl pl-2 text-mauve-500 font-bold cursor-pointer'>홍길동 님의 도시</h2></Link>
             <Link href="/student/mypage">
                 <Button variant="ghost" className='flex w-55 gap-2.5 justify-start mt-5 py-5'>
                     <Image

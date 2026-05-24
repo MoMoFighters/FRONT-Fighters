@@ -11,7 +11,7 @@ export default function StudentLayout({
             <AUthHeader role="student" />
             <div className="flex flex-1">
                 <StudentSidebar />
-                <main className="bg-slate-50 p-12 flex-1">
+                <main className="bg-slate-50 flex-1">
                     {children}
                 </main>
             </div>
