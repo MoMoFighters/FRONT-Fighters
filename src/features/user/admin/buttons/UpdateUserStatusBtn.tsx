@@ -59,9 +59,9 @@ export default function UpdateUserStatusBtn({
                     <DropdownMenu>
 
                         <DropdownMenuTrigger asChild>
-
-                            <Button
-                                className={`
+                            <div>
+                                <Button
+                                    className={`
                                 px-3
                                 py-1.5
                                 font-semibold
@@ -70,15 +70,16 @@ export default function UpdateUserStatusBtn({
                                 cursor-pointer
 
                                 ${user.status === 'active'
-                                        ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
-                                        : 'bg-amber-100 text-amber-700 hover:bg-amber-200'
-                                    }
+                                            ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
+                                            : 'bg-amber-100 text-amber-700 hover:bg-amber-200'
+                                        }
                             `}
-                            >
-                                {user.status === 'active'
-                                    ? "활동중"
-                                    : "일시정지"}
-                            </Button>
+                                >
+                                    {user.status === 'active'
+                                        ? "활동중"
+                                        : "일시정지"}
+                                </Button>
+                            </div>
 
                         </DropdownMenuTrigger>
 
