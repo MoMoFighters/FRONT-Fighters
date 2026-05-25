@@ -61,7 +61,7 @@ export default function BuildingItem({ category, level }: BuildingItemProps) {
     return (
         <HoverCard openDelay={50} closeDelay={50}>
             <HoverCardTrigger>
-                <div className="relative w-40 h-30 border-2 border-slate-400/20 rounded-lg cursor-pointer  hover:scale-[1.02] transition-all">
+                <div className="relative w-40 h-30 border-2 border-slate-400/20 rounded-lg cursor-pointer hover:scale-[1.02] transition-all">
                     <Image
                         src={image}
                         alt="건물 이미지"
