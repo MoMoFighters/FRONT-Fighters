@@ -1,5 +1,10 @@
 export default function AdminLectureListPage() {
     return (
-        <div>관리자 강의 목록 조회 페이지</div>
+        <div>
+            <div className="flex items-center gap-3 mb-10">
+                <div className="w-2 h-7 bg-slate-500 rounded-full" />
+                <h2 className="text-2xl font-bold text-slate-900">강의 관리</h2>
+            </div>
+        </div>
     );
 }
