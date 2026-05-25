@@ -4,7 +4,7 @@ import Link from "next/link";
 export default function TeacherLectureRegistPage() {
     return (
         <div>
-            <Link href='/teacher/lectures'>{`←뒤로가기`}</Link>
+            <Link href='/teacher/lectures'>{`←`}</Link>
             <LectureForm mode='create' />
         </div>
     );
