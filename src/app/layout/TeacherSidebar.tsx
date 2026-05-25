@@ -9,7 +9,7 @@ import Link from 'next/link';
 
 export default function TeacherSidebar() {
     return (
-        <aside className="w-60 flex flex-col border-r border-slate-200 bg-slate-50 px-2.5">
+        <aside className="w-60 flex flex-col border-r border-slate-200 bg-slate-50 px-2.5 relative">
             <Image
                 src={logo}
                 alt="MOMOCITY 로고"
@@ -63,6 +63,7 @@ export default function TeacherSidebar() {
                     <p className='text-lg text-slate-900 font-semibold'>1:1 문의</p>
                 </Button>
             </Link>
+            <Button variant="destructive" className='absolute w-15 bottom-5 right-5'>신고</Button>
 
         </aside>
     );

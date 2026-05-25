@@ -8,7 +8,7 @@ import Link from 'next/link';
 
 export default function StudentSidebar() {
     return (
-        <aside className="w-60 flex flex-col border-r border-slate-200 bg-slate-50 px-2.5">
+        <aside className="w-60 flex flex-col border-r border-slate-200 bg-slate-50 px-2.5 relative">
             <Image
                 src={logo}
                 alt="MOMOCITY 로고"
@@ -17,7 +17,7 @@ export default function StudentSidebar() {
                 height={20}
                 priority
             />
-            <h2 className='text-xl pl-2 text-mauve-500 font-bold'>홍길동 님의 도시</h2>
+            <Link href="/student"><h2 className='text-xl pl-2 text-mauve-500 font-bold cursor-pointer'>홍길동 님의 도시</h2></Link>
             <Link href="/student/mypage">
                 <Button variant="ghost" className='flex w-55 gap-2.5 justify-start mt-5 py-5'>
                     <Image
@@ -51,6 +51,7 @@ export default function StudentSidebar() {
                     <p className='text-lg text-slate-900 font-semibold'>Community</p>
                 </Button>
             </Link>
+            <Button variant="destructive" className='absolute w-15 bottom-5 right-5'>신고</Button>
 
         </aside>
     );

@@ -1,5 +1,89 @@
-export default function StudentMain() {
+import Image from "next/image";
+import city from '@/app/assets/img/momocity.png'
+import CreateBuildingBtn from "@/components/city/CreateBuildingBtn";
+import BuildingItem from "@/components/city/BuildingItem";
+import Link from "next/link";
+
+interface Building {
+    position: string;
+    category: string;
+    level: number;
+}
+
+const POSITION_STYLE = {
+    first: "top-30 left-20",
+    second: "top-30 left-70",
+    third: "top-30 left-120",
+    fourth: "top-110 left-50",
+    fifth: "top-110 left-110",
+};
+
+const POSITIONS = [
+    "first",
+    "second",
+    "third",
+    "fourth",
+    "fifth",
+] as const;
+
+export default function StudentMainPage() {
+
+    // 테스트용 데이터, 백엔드 팀원과 소통 필요 null 인지 아예 없는 옵셔널인지..
+    const buildings: Building[] = [
+        {
+            position: "first",
+            category: "study",
+            level: 1
+        },
+        {
+            position: "second",
+            category: "art",
+            level: 2
+        },
+        {
+            position: "fourth",
+            category: "cook",
+            level: 3
+        }
+    ]
+
     return (
-        <div>학생 - 내 도시</div>
+        <div className="relative w-full h-full">
+            <Image
+                src={city}
+                alt="도시배경"
+                className="w-full h-auto"
+                priority
+            />
+            {POSITIONS.map((position) => {
+
+                const building = buildings.find(
+                    (building) => building.position === position
+                );
+
+                return (
+                    <div
+                        key={position}
+                        className={`
+                            absolute
+                            ${POSITION_STYLE[position]}
+                        `}
+                    >
+                        {building ? (
+                            <Link href={`/student/${building.category}`}>
+                                <BuildingItem
+                                    category={building.category}
+                                    level={building.level}
+                                />
+                            </Link>
+                        ) : (
+                            <Link href="/student/lectures">
+                                <CreateBuildingBtn />
+                            </Link>
+                        )}
+                    </div>
+                );
+            })}
+        </div>
     );
 }
