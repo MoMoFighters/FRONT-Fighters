@@ -128,8 +128,8 @@ export default function Page() {
             </div>
 
             <div className="grid grid-cols-3 gap-5">
-                <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden h-[636px] flex flex-col">
-                    <div className="bg-slate-50 border-b border-slate-200 px-5 py-3.5 flex items-center justify-between flex-shrink-0">
+                <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden h-159 flex flex-col">
+                    <div className="bg-slate-50 border-b border-slate-200 px-5 py-3.5 flex items-center justify-between shrink-0">
                         <div className="flex items-center gap-2">
                             <Bell className="w-5 h-5 text-slate-900" />
                             <h3 className="text-[16px] font-bold text-slate-900">공지사항</h3>
@@ -158,15 +158,15 @@ export default function Page() {
                                             <span>{item.time}</span>
                                         </div>
                                     </div>
-                                    <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-slate-500 transition-colors flex-shrink-0 mt-0.5" />
+                                    <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-slate-500 transition-colors shrink-0 mt-0.5" />
                                 </div>
                             </div>
                         ))}
                     </div>
                 </div>
 
-                <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden h-[636px] flex flex-col">
-                    <div className="bg-slate-50 border-b border-slate-200 px-5 py-3.5 flex items-center justify-between flex-shrink-0">
+                <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden h-159 flex flex-col">
+                    <div className="bg-slate-50 border-b border-slate-200 px-5 py-3.5 flex items-center justify-between shrink-0">
                         <div className="flex items-center gap-2">
                             <AlertCircle className="w-5 h-5 text-rose-500" />
                             <h3 className="text-[16px] font-bold text-slate-900">신고 로그</h3>
@@ -187,7 +187,7 @@ export default function Page() {
                                         <p className="text-xs text-slate-500">{item.reason}</p>
                                     </div>
                                     <span
-                                        className={`text-xs px-2 py-1 rounded-full font-medium flex-shrink-0 ${item.status === 'pending'
+                                        className={`text-xs px-2 py-1 rounded-full font-medium shrink-0 ${item.status === 'pending'
                                             ? 'bg-amber-100 text-amber-700'
                                             : item.status === 'resolved'
                                                 ? 'bg-emerald-100 text-emerald-700'
@@ -207,8 +207,8 @@ export default function Page() {
                     </div>
                 </div>
 
-                <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden h-[636px] flex flex-col">
-                    <div className="bg-slate-50 border-b border-slate-200 px-5 py-3.5 flex items-center justify-between flex-shrink-0">
+                <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden h-159 flex flex-col">
+                    <div className="bg-slate-50 border-b border-slate-200 px-5 py-3.5 flex items-center justify-between shrink-0">
                         <div className="flex items-center gap-2">
                             <XCircle className="w-5 h-5 text-red-500" />
                             <h3 className="text-[16px] font-bold text-slate-900">에러? 접근? 로그</h3>
@@ -223,7 +223,7 @@ export default function Page() {
                             >
                                 <div className="flex items-start gap-3 mb-2">
                                     <div
-                                        className={`w-2 h-2 rounded-full flex-shrink-0 mt-1.5 ${item.level === 'critical'
+                                        className={`w-2 h-2 rounded-full shrink-0 mt-1.5 ${item.level === 'critical'
                                             ? 'bg-red-500'
                                             : item.level === 'error'
                                                 ? 'bg-orange-500'
