@@ -8,7 +8,7 @@ export default function PhoneLayout({
     children: React.ReactNode;
 }) {
     return (
-        <div className="flex justify-center flex-col">
+        <div className="flex justify-center flex-col p-3">
             {/* <div className="flex flex-row">
                 <Link href='/student' className="font-bold mb-2">←</Link>
                 <div className="flex-1"></div>

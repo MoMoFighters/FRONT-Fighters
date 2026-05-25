@@ -5,14 +5,17 @@ import { useState } from "react";
 
 export default function SignupForm() {
 
+    //강사 여부
     const [isTeacher, setIsTeacher] = useState(false)
+    //기능
+    const [emailValidationClicked, setEmailValidationClicked] = useState(false); //인증번호 받기 누를때 인증번호칸 뜨게하기
+    const [emailValidated, setEmailValidated] = useState(false); //인증완료 시 아래 글자뜨는거 
+    const [remainTime, setRemainTime] = useState("4:44") //시간 받아오기 -> 렌더링방식 고려 필요(ISR 1초로 해야할듯)
+    //스타일
     const leftNavBarBgColor = isTeacher ? "bg-mauve-200" : "bg-mauve-500"
     const rightNavBarBgColor = isTeacher ? "bg-mauve-500" : "bg-mauve-200"
     const leftNavBarTextColor = isTeacher ? "text-black" : "text-white"
     const rightNavBarTextColor = isTeacher ? "text-white" : "text-black"
-    const emailValidationClicked = true;
-    const emailValidated = true;
-    const remainTime = "4:44"
     const emailValidatedTextStyle = emailValidated ? "text-right mr-45" : "text-right mr-45 text-red-500"
     const emailValidationInputStyle = emailValidated ? 'border border-black py-2 pl-2 flex-1 bg-gray-300' : 'border border-black py-2 pl-2 flex-1'
 

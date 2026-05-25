@@ -26,8 +26,10 @@ export default function FriendItem({ friendInfo }: { friendInfo: friendInfo }) {
             <div className="flex-1 flex align-middle">
                 <p className="my-auto font-medium">{name}</p>
             </div>
-            <div><p>···</p></div>
-            {/* <UpdateFriendStatusBtn status={status} /> */}
+            {/* <div><p>···</p></div> */}
+            {status.mode !== 'friend' ? (
+                <UpdateFriendStatusBtn status={status} />
+            ) : "···"}
 
         </div>
     );

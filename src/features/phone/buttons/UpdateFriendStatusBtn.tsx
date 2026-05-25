@@ -15,7 +15,7 @@ export default function UpdateFriendStatusBtn({ status }: { status: friendStatus
 
     const buttonStyle =
         status.mode === 'friend' ? ["bg-slate-300 text-black", "bg-red-500 text-white"]
-            : status.mode === 'recieved' ? ['bg-blue-500 text-white', 'bg-slate-300 text-black']
+            : status.mode === 'recieved' ? ['bg-blue-400 text-white', 'bg-slate-300 text-black']
                 : status.mode === 'sent' ? ['', 'bg-slate-300 text-black']
                     : status.mode === 'search' ? ['', 'bg-blue-500 text-white']
                         : ['', 'bg-slate-300 text-black'];
