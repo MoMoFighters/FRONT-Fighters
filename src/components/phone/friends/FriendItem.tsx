@@ -1,5 +1,4 @@
 import UpdateFriendStatusBtn from "@/features/phone/buttons/UpdateFriendStatusBtn";
-import { Button } from "../../ui/button";
 import Image from "next/image";
 import user from '@/app/assets/img/user.svg'
 
@@ -27,7 +26,9 @@ export default function FriendItem({ friendInfo }: { friendInfo: friendInfo }) {
             <div className="flex-1 flex align-middle">
                 <p className="my-auto font-medium">{name}</p>
             </div>
-            <UpdateFriendStatusBtn status={status} />
+            <div><p>···</p></div>
+            {/* <UpdateFriendStatusBtn status={status} /> */}
+
         </div>
     );
 }
