@@ -40,7 +40,7 @@ export default async function UserManagePage({ searchParams }: {
         { id: 11, name: '한민호', role: 'student', email: 'hans@test.com', createdAt: '2026-05-16', status: 'delete', reportCount: 0, deletedAt: '2026-05-20' },
     ];
 
-    const filterUsers: User[] = dummyUsers.filter((user) => {
+    const filteredUsers: User[] = dummyUsers.filter((user) => {
 
         if (!status && user.status === "delete") {
             return false;
@@ -76,7 +76,7 @@ export default async function UserManagePage({ searchParams }: {
 
             <UserManageSearchbar role={role} status={status} keyword={keyword} />
 
-            <AdminUsersList users={filterUsers} status={status} />
+            <AdminUsersList users={filteredUsers} status={status} />
         </div>
     );
 }
