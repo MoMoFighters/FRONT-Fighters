@@ -23,7 +23,7 @@ export default function MyFriends() {
 
     return (
         <div className="flex flex-col flex-1 h-full">
-            <FriendNav mode='friend' />
+            <FriendNav mode='request' />
             <div className="flex flex-col gap-1 px-2 py-2 bg-mauve-200 flex-1 overflow-y-auto">
                 <FriendItem friendInfo={friendInfo1} key={friendInfo1.name} />
                 <FriendItem friendInfo={friendInfo2} key={friendInfo2.name} />

@@ -1,5 +1,7 @@
+import FriendNav from "@/features/phone/friend/FriendNav";
+
 export default function SearchUserListPage() {
     return (
-        <div></div>
+        <div><FriendNav mode='search' /></div>
     );
 }
