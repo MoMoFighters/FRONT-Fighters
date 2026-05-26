@@ -5,6 +5,7 @@ import cook from '@/app/assets/img/cook.png'
 import health from '@/app/assets/img/health.png'
 import beauty from '@/app/assets/img/beauty.png'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "../ui/hover-card";
+import Link from "next/link";
 
 interface BuildingItemProps { category: string, level: number }
 
@@ -60,17 +61,18 @@ export default function BuildingItem({ category, level }: BuildingItemProps) {
 
     return (
         <HoverCard openDelay={50} closeDelay={50}>
-            <HoverCardTrigger>
-                <div className="relative w-40 h-30 border-2 border-slate-400/20 rounded-lg cursor-pointer hover:scale-[1.02] transition-all">
-                    <Image
-                        src={image}
-                        alt="건물 이미지"
-                        className="w-40 absolute bottom-5"
-                        priority
-                    />
+            <HoverCardTrigger asChild>
+                <Link href={`/student/${category}`}>
+                    <div className="relative w-40 h-30 border-2 border-slate-400/20 rounded-lg cursor-pointer hover:scale-[1.02] transition-all">
+                        <Image
+                            src={image}
+                            alt="건물 이미지"
+                            className="w-40 absolute bottom-5"
+                            priority
+                        />
 
-                    <div
-                        className="
+                        <div
+                            className="
                     absolute
                     left-1/2
                     -translate-x-1/2
@@ -89,10 +91,11 @@ export default function BuildingItem({ category, level }: BuildingItemProps) {
                     font-bold
                     text-slate-900
                 "
-                    >
-                        {label}
+                        >
+                            {label}
+                        </div>
                     </div>
-                </div>
+                </Link>
             </HoverCardTrigger>
             <HoverCardContent className="flex w-64 flex-col gap-0.5">
                 <div className="font-semibold text-slate-700 text-[14px]">{building} Lv.{level}</div>
