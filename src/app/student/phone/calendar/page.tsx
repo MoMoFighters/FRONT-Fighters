@@ -27,6 +27,7 @@ export default async function CalendarPage() {
     // const response = await fetch(...)
     // const schedules = await response.json()
 
+    // calendar 데이터 패칭 받기
     const schedules: ScheduleItem[] = [
         {
             id: 1,

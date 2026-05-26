@@ -1,39 +1,37 @@
 import { Button } from "@/components/ui/button";
 
 interface friendStatus {
-    mode: 'friend' | 'recieved' | 'sent' | 'search' | 'blacklist';
+    userId: number;
+    status: 'sent' | 'recieved' | 'block' | null;
 }
+// type friendStatus = 'sent' | 'recieved' | 'block';
 
-export default function UpdateFriendStatusBtn({ status }: { status: friendStatus }) {
+
+export default function UpdateFriendStatusBtn({ data }: { data: friendStatus }) {
+
+    const { status, userId } = data;
 
     const buttonText =
-        status.mode === 'friend' ? ["삭제", "차단"]
-            : status.mode === 'recieved' ? ['수락', '거절']
-                : status.mode === 'sent' ? ['', '취소']
-                    : status.mode === 'search' ? ['', '요청']
-                        : ['', '해제'];
+        status === 'recieved' ? ['수락', '거절']
+            : status === 'sent' ? ['', '취소']
+                : status === null ? ["", "요청"] : ["", ""]
 
     const buttonStyle =
-        status.mode === 'friend' ? ["bg-slate-300 text-black", "bg-red-500 text-white"]
-            : status.mode === 'recieved' ? ['bg-blue-400 text-white', 'bg-slate-300 text-black']
-                : status.mode === 'sent' ? ['', 'bg-slate-300 text-black']
-                    : status.mode === 'search' ? ['', 'bg-blue-500 text-white']
-                        : ['', 'bg-slate-300 text-black'];
-
+        status === 'recieved' ? ['bg-sky-500', 'bg-slate-200']
+            : status === 'sent' ? ['', 'bg-slate-200']
+                : status === null ? ["", "bg-slate-200"] : ["", ""]
     const buttonAPI =
-        status.mode === 'friend' ? ["삭제하기", "차단하기"]
-            : status.mode === 'recieved' ? ['수락하기', '거절하기']
-                : status.mode === 'sent' ? ['', '취소하기']
-                    : status.mode === 'search' ? ['', '요청하기']
-                        : ['', '해제하기'];
+        status === 'recieved' ? ['수락', '거절']
+            : status === 'sent' ? ['', '취소']
+                : status === null ? ["", ""] : ["", ""]
     return (
         <div className="flex flex-row gap-3 items-center">
             {buttonText[0] ? (
-                <Button className={`${buttonStyle[0]}`}>
+                <Button className={`${buttonStyle[0]} text-slate-50 cursor-pointer px-3`}>
                     {buttonText[0]}
                 </Button>
             ) : ''}
-            <Button className={`${buttonStyle[1]}`}>
+            <Button className={`${buttonStyle[1]} text-slate-900 cursor-pointer px-3`}>
                 {buttonText[1]}
             </Button>
         </div>
