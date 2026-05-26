@@ -1,6 +1,8 @@
 'use client';
 
+import Image from 'next/image';
 import React, { useState, useEffect } from 'react';
+import search from '@/app/assets/img/user-plus.svg'
 
 export default function FriendManagement() {
     const [activeTab, setActiveTab] = useState<'chat' | 'mgmt'>('chat');
@@ -52,7 +54,9 @@ export default function FriendManagement() {
                 <span
                     className="text-xl cursor-pointer text-gray-700"
                     onClick={() => setIsSearchModalOpen(true)}
-                >🔍</span>
+                >
+                    <Image src={search} alt='친구찾기' className='w-5 h-5'></Image>
+                </span>
             </div>
 
             {/* 메인 */}
@@ -63,7 +67,7 @@ export default function FriendManagement() {
                     {/* 내 프로필 */}
                     <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center font-bold text-sm">홍</div>
+                            <div className="w-10 h-10 rounded-full bg-mauve-500 flex items-center justify-center font-bold text-sm text-slate-50">홍</div>
                             <div>
                                 <div className="text-sm font-semibold text-gray-900">홍길동 (나)</div>
                                 <div className="text-xs text-gray-400">오늘도 화이팅!</div>

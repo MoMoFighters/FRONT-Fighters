@@ -21,7 +21,7 @@ export default function SignupForm() {
 
     return (
         < >
-            <h1 className="text-center text-2xl font-bold">{isTeacher ? "회원가입(강사)" : "회원가입(수강생)"}</h1>
+            <h1 className="text-center text-2xl font-bold">회원가입</h1>
             <div className="grid grid-cols-2 ">
                 <div
                     className={`${leftNavBarBgColor} py-2 text-center cursor-pointer`}
@@ -36,69 +36,143 @@ export default function SignupForm() {
                     <p className={`${rightNavBarTextColor} font-bold`}>강사</p>
                 </div>
             </div>
-            <form action="" className="flex flex-col gap-2">
-                <div className="grid grid-cols-[1fr_3fr]">
-                    <input type="hidden" name='role' defaultValue={isTeacher ? "teacher" : "student"} />
-                    <p className='text-right font-bold mr-2 my-auto'>이름</p>
-                    <input className='border border-black py-2 pl-2' type="text" placeholder="이름" name='name' required />
+            <form
+                action=""
+                className="grid grid-cols-[110px_minmax(0,1fr)] gap-x-4 gap-y-4 items-center w-full"
+            >
+                <input
+                    type="hidden"
+                    name="role"
+                    value={isTeacher ? "teacher" : "student"}
+                />
+                <label className="text-right font-bold" htmlFor="name">
+                    이름
+                </label>
+                <input
+                    className="border border-slate-300 py-2 px-2 min-w-0 h-10 text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-slate-500 transition-colors"
+                    type="text"
+                    placeholder="이름"
+                    name="name"
+                    id='name'
+                    required
+                />
+                <label className="text-right font-bold" htmlFor="email">
+                    이메일
+                </label>
+                <div className="flex gap-2 min-w-0">
+                    <input
+                        className="border border-slate-300 py-2 px-2 flex-1 min-w-0 h-10 text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-slate-500 transition-colors"
+                        type="email"
+                        placeholder="이메일"
+                        name="email"
+                        id="email"
+                        required
+                    />
+                    <Button
+                        type="button"
+                        className="shrink-0 bg-mauve-500 rounded-none h-10"
+                        onClick={() => setEmailValidationClicked(true)}
+                    >
+                        인증 요청
+                    </Button>
                 </div>
-                <div className="grid grid-cols-[1fr_3fr]">
-                    <p className='text-right font-bold mr-2 my-auto'>이메일</p>
-                    <div className="flex flex-row">
-                        <input className='border border-black py-2 pl-2' type="email" placeholder="이메일" name='email' required />
-                    </div>
-                </div>
-                {emailValidationClicked ? (
-                    <div className="flex flex-col">
-                        <div className="grid grid-cols-[1fr_3fr]">
-                            <p className='text-right font-bold mr-2 my-auto'>인증번호</p>
-                            <div className="flex flex-row">
+                {emailValidationClicked && (
+                    <>
+                        <label className="text-right font-bold" htmlFor="validationCode">
+                            인증번호
+                        </label>
+                        <div className="flex flex-col gap-2 min-w-0">
+                            <div className="flex gap-2 min-w-0">
                                 <input
-                                    className={`${emailValidationInputStyle} [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none`}
+                                    className={`border border-slate-300 py-2 px-2 flex-1 min-w-0 h-10
+                                    ${emailValidated ? "bg-gray-200" : ""}
+                                    [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none
+                                    text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-slate-500 transition-colors`}
                                     type="number"
                                     placeholder="인증번호"
                                     disabled={emailValidated}
-                                    name='validationCode'
+                                    name="validationCode"
+                                    id="validationCode"
                                     required
                                 />
-                                <Button type="button" className="mx-1 my-auto" disabled={emailValidated}>인증하기</Button>
-                                <Button type="button" className="my-auto" disabled={emailValidated}>코드 재전송</Button>
+
+                                <Button
+                                    type="button"
+                                    className="shrink-0 bg-mauve-500 rounded-none h-10"
+                                    disabled={emailValidated}
+                                >
+                                    인증하기
+                                </Button>
+
+                                <Button
+                                    className="shrink-0 bg-mauve-300 text-slate-700 rounded-none h-10"
+                                    disabled={emailValidated}
+                                >
+                                    재전송
+                                </Button>
                             </div>
-                        </div>
-                        <p className={emailValidatedTextStyle}>
-                            {emailValidated ? "이메일 인증이 완료되었습니다." : `남은 시간 : ${remainTime}`}
-                        </p>
-                    </div>
-                ) : ("")}
-                <div className="grid grid-cols-[1fr_3fr]">
-                    <p className='text-right font-bold mr-2 my-auto'>PW</p>
-                    <input className='border border-black py-2 pl-2' type="password" placeholder="비밀번호" name='password' required />
-                </div>
-                <div className="grid grid-cols-[1fr_3fr]">
-                    <p className='text-right font-bold mr-2 my-auto'>PW 확인</p>
-                    <input className='border border-black py-2 pl-2' type="password" placeholder="비밀번호확인" name="passwordCheck" required />
-                </div>
-                {isTeacher ? (
-                    <>
-                        <div className="grid grid-cols-[1fr_3fr]">
-                            <p className='text-right font-bold mr-2 my-auto'>희망 강의 분야</p>
-                            <select className='border border-black py-2 pl-2' name="category">
-                                <option value="study">학문</option>
-                                <option value="art">예체능</option>
-                                <option value="health">헬스케어</option>
-                                <option value="beauty">뷰티</option>
-                                <option value="cook">요리</option>
-                            </select>
-                        </div>
-                        <div className="grid grid-cols-[1fr_3fr]">
-                            <p className="text-right font-bold mr-2 my-auto">강사 인증 자료</p>
-                            <div className="border border-black w-auto h-10">
-                                <input type="file" className="cursor-pointer align-middle px-2" />
-                            </div>
+                            <p
+                                className={`text-sm text-right ${emailValidated
+                                    ? "text-green-600"
+                                    : "text-red-500"
+                                    }`}
+                            >
+                                {emailValidated
+                                    ? "이메일 인증이 완료되었습니다."
+                                    : `남은 시간 : ${remainTime}`}
+                            </p>
                         </div>
                     </>
-                ) : ("")}
-                <Button className="py-5 px-2 mx-30">회원가입</Button>
+                )}
+                <label className="text-right font-bold" htmlFor="password">
+                    PW
+                </label>
+                <input
+                    className="border border-slate-300 py-2 px-2 min-w-0  h-10 text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-slate-500 transition-colors"
+                    type="password"
+                    placeholder="비밀번호"
+                    name="password"
+                    id="password"
+                    required
+                />
+                <label className="text-right font-bold" htmlFor="passwordCheck">
+                    PW 확인
+                </label>
+                <input
+                    className="border border-slate-300 py-2 px-2 min-w-0 h-10 text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-slate-500 transition-colors"
+                    type="password"
+                    placeholder="비밀번호 확인"
+                    name="passwordCheck"
+                    id="passwordCheck"
+                    required
+                />
+                {isTeacher && (
+                    <>
+                        <label className="text-right font-bold" htmlFor="category">
+                            희망 강의 분야
+                        </label>
+                        <select
+                            className="border border-slate-300 py-2 px-2 h-10 text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-slate-500 transition-colors"
+                            name="category" id='category'
+                        >
+                            <option value="study">학문</option>
+                            <option value="art">예체능</option>
+                            <option value="health">헬스케어</option>
+                            <option value="beauty">뷰티</option>
+                            <option value="cook">요리</option>
+                        </select>
+                        <label className="text-right font-bold" htmlFor="proof">
+                            강사 인증 자료
+                        </label>
+                        <input
+                            type="file" id='proof' name='proof'
+                            className="border border-slate-300 py-2 px-3 h-10 text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-slate-500 transition-colors"
+                        />
+                    </>
+                )}
+                <Button className="col-span-2 w-full py-6 mt-2 bg-mauve-500 rounded-none">
+                    <p className="font-bold text-[17px]">회원가입</p>
+                </Button>
             </form>
         </>
     )
