@@ -1,8 +1,10 @@
 import Image from 'next/image';
 import logo from '../assets/img/header_logo.png'
-import profile from '../assets/img/user.svg'
+import profile from '../assets/img/user-round-pen.svg'
 import credit from '../assets/img/credit-card.svg'
 import community from '../assets/img/users.svg'
+import chat from '../assets/img/message-square-more.svg'
+import calendar from '../assets/img/calendar-check.svg'
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
@@ -49,6 +51,28 @@ export default function StudentSidebar() {
                         priority
                     />
                     <p className='text-lg text-slate-900 font-semibold'>Community</p>
+                </Button>
+            </Link>
+            <Link href="/student/phone/friends">
+                <Button variant="ghost" className='flex w-55 gap-2.5 justify-start mt-5 py-5'>
+                    <Image
+                        src={chat}
+                        alt="채팅 아이콘"
+                        className="my-2.5"
+                        priority
+                    />
+                    <p className='text-lg text-slate-900 font-semibold'>Chat</p>
+                </Button>
+            </Link>
+            <Link href="/student/phone/calendar">
+                <Button variant="ghost" className='flex w-55 gap-2.5 justify-start mt-5 py-5'>
+                    <Image
+                        src={calendar}
+                        alt="달력 아이콘"
+                        className="my-2.5"
+                        priority
+                    />
+                    <p className='text-lg text-slate-900 font-semibold'>Calendar</p>
                 </Button>
             </Link>
             <Button variant="destructive" className='absolute w-15 bottom-5 right-5'>신고</Button>
