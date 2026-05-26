@@ -64,7 +64,7 @@ export default function UpdateUserStatusBtn({ user }: { user: User }) {
                     open: true,
                     title: '해당 강사를 승인하시겠습니까?',
                     description: '승인 후 해당 강사의 활동이 가능합니다.',
-                    onConfirm: () => updateUserStatus('approve'),
+                    onConfirm: () => updateUserStatus('active'),
                 };
 
             case 'reject':
@@ -72,7 +72,7 @@ export default function UpdateUserStatusBtn({ user }: { user: User }) {
                     open: true,
                     title: '강사 승인을 거절하시겠습니까?',
                     description: '강사 승인 요청이 거절됩니다.',
-                    onConfirm: () => updateUserStatus('approve'),
+                    onConfirm: () => updateUserStatus('rejected'),
                 };
 
             case 'ban':
@@ -80,7 +80,7 @@ export default function UpdateUserStatusBtn({ user }: { user: User }) {
                     open: true,
                     title: '해당 회원을 일시 정지하시겠습니까?',
                     description: '회원이 일정 기간 서비스 이용이 제한됩니다.',
-                    onConfirm: () => updateUserStatus('ban'),
+                    onConfirm: () => updateUserStatus('banned'),
                 };
 
             case 'black':
@@ -96,7 +96,7 @@ export default function UpdateUserStatusBtn({ user }: { user: User }) {
                     open: true,
                     title: '해당 회원을 다시 활성화하시겠습니까?',
                     description: '해당 회원의 상태가 정상 활동 상태로 변경됩니다.',
-                    onConfirm: () => updateUserStatus('activate'),
+                    onConfirm: () => updateUserStatus('active'),
                 };
 
             default:
