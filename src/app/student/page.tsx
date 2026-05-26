@@ -70,16 +70,13 @@ export default function StudentMainPage() {
                         `}
                     >
                         {building ? (
-                            <Link href={`/student/${building.category}`}>
-                                <BuildingItem
-                                    category={building.category}
-                                    level={building.level}
-                                />
-                            </Link>
+
+                            <BuildingItem
+                                category={building.category}
+                                level={building.level}
+                            />
                         ) : (
-                            <Link href="/student/lectures">
-                                <CreateBuildingBtn />
-                            </Link>
+                            <CreateBuildingBtn />
                         )}
                     </div>
                 );
