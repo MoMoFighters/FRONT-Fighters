@@ -33,7 +33,7 @@ export default function Calendar({
 }: Props) {
 
     const [selectedDate, setSelectedDate] =
-        useState('2026-06-10')
+        useState(() => new Date().toISOString().split('T')[0])
 
     const todos = useMemo(() => {
         return schedules.filter(
@@ -45,7 +45,7 @@ export default function Calendar({
         <div className="h-full flex overflow-hidden">
 
             {/* 캘린더 */}
-            <div className="flex-1 min-w-0 p-4 border-r overflow-auto">
+            <div className="flex-1 min-w-0 p-4 border-r overflow-auto scrollbar-none">
 
                 <FullCalendar
                     plugins={[
