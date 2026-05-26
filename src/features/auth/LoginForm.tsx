@@ -36,14 +36,14 @@ export default function LoginForm() {
                 <input
                     type="email"
                     name="email"
-                    className="border border-slate-300 py-2 px-2"
+                    className="border border-slate-300 py-2 px-2 text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-slate-500 transition-colors"
                     placeholder="이메일 입력"
                 />
                 <div className="max-w-md">
                     <input
                         type="password"
                         name="password"
-                        className="border border-slate-300 py-2 px-2 w-full"
+                        className="border border-slate-300 py-2 px-2 w-full text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-slate-500 transition-colors"
                         placeholder="비밀번호 입력"
                     />
                     {nothingInFieldError ? (

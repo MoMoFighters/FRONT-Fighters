@@ -19,7 +19,7 @@ export default function PhoneLayout({
                     <div className="flex-1 overflow-hidden">
                         {children}
                     </div>
-                    <PhoneBottomNav />
+                    {/* <PhoneBottomNav /> */}
                 </div>
             </div>
         </div>
