@@ -10,7 +10,7 @@ export interface User {
     email?: string;
     status: string;
     proof?: boolean;
-    reportCount?: number;
+    reportCount: number;
     createdAt: string;
     deletedAt?: string;
 }
@@ -28,21 +28,26 @@ export default async function UserManagePage({ searchParams }: {
 
     const dummyUsers: User[] = [
         { id: 1, name: '홍길동', role: 'student', email: 'hong@test.com', createdAt: '2026-05-19', status: 'active', reportCount: 0 },
-        { id: 2, name: '김철수', role: 'teacher', email: 'kim@test.com', createdAt: '2026-05-18', status: 'active', proof: true },
+        { id: 2, name: '김철수', role: 'teacher', email: 'kim@test.com', createdAt: '2026-05-18', status: 'active', reportCount: 0, proof: true },
         { id: 3, name: '이영희', role: 'student', email: 'lee@test.com', createdAt: '2026-05-17', status: 'banned', reportCount: 1 },
-        { id: 4, name: '박민수', role: 'teacher', email: 'park@test.com', createdAt: '2026-05-16', status: 'pending', proof: true },
+        { id: 4, name: '박민수', role: 'teacher', email: 'park@test.com', createdAt: '2026-05-16', status: 'pending', reportCount: 0, proof: true },
         { id: 5, name: '최수진', role: 'student', email: 'choi@test.com', createdAt: '2026-05-15', status: 'active', reportCount: 2 },
-        { id: 6, name: '정대호', role: 'teacher', email: 'jung@test.com', createdAt: '2026-05-14', status: 'active', proof: true },
+        { id: 6, name: '정대호', role: 'teacher', email: 'jung@test.com', createdAt: '2026-05-14', status: 'active', reportCount: 0, proof: true },
         { id: 7, name: '강미래', role: 'student', email: 'kang@test.com', createdAt: '2026-05-13', status: 'black', reportCount: 3 },
         { id: 8, name: '윤서연', role: 'student', email: 'yoon@test.com', createdAt: '2026-05-12', status: 'active', reportCount: 0 },
         { id: 9, name: '백예철', role: 'student', email: 'back@test.com', createdAt: '2026-05-15', status: 'delete', reportCount: 0, deletedAt: '2026-05-20' },
         { id: 10, name: '조민형', role: 'student', email: 'jmh@test.com', createdAt: '2026-05-11', status: 'delete', reportCount: 0, deletedAt: '2026-05-20' },
         { id: 11, name: '한민호', role: 'student', email: 'hans@test.com', createdAt: '2026-05-16', status: 'delete', reportCount: 0, deletedAt: '2026-05-20' },
+        { id: 12, name: '김철민', role: 'teacher', email: 'kim@test.com', createdAt: '2026-05-18', status: 'rejected', reportCount: 0, proof: true },
     ];
 
     const filteredUsers: User[] = dummyUsers.filter((user) => {
 
         if (!status && user.status === "delete") {
+            return false;
+        }
+
+        if (!status && user.status === "rejected") {
             return false;
         }
 

@@ -112,9 +112,7 @@ export default async function AdminLectureListPage({ searchParams }: {
             <div className="border-t border-slate-400 mb-4" />
             <div className="space-y-3">
                 {filteredLectures.map((lecture) => (
-                    <Link key={lecture.id} href={`/admin/lectures/${lecture.id}`}>
-                        <LectureItem key={lecture.id} lecture={lecture} role="admin" mode="list" />
-                    </Link>
+                    <LectureItem key={lecture.id} lecture={lecture} role="admin" mode="list" />
                 ))}
             </div>
         </div>

@@ -10,7 +10,6 @@ interface AdminUsersListProps {
 export default function AdminUsersList({ users, status }: AdminUsersListProps) {
     return (
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-            {/* Table Header */}
             {status === "delete" ? (
                 <div className="bg-slate-500 grid grid-cols-6 px-12 py-3 text-slate-50 font-semibold">
                     <div>이름</div>
@@ -26,11 +25,10 @@ export default function AdminUsersList({ users, status }: AdminUsersListProps) {
                     <div className="col-span-2">이메일</div>
                     <div className="text-center">가입일</div>
                     <div className="text-center">상태</div>
-                    <div className="text-center">비고</div>
+                    <div className="text-start">비고</div>
                 </div>
             )}
 
-            {/* Table Body */}
             <div className="divide-y divide-slate-100 text-sm">
                 {status === "delete" ? (
                     users.map((user) => {
@@ -76,24 +74,21 @@ export default function AdminUsersList({ users, status }: AdminUsersListProps) {
 
                                 <UpdateUserStatusBtn user={user} />
 
-                                <div className="flex justify-center">
-                                    {user.role === 'teacher' ? (
-                                        <DownloadProofDocBtn user={user} />
-                                    ) : (
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-sm text-slate-600">신고:</span>
-                                            <span
-                                                className={`text-sm font-semibold ${user.reportCount === 3
-                                                    ? 'text-red-600'
-                                                    : user.reportCount === 2 || user.reportCount === 1
-                                                        ? 'text-amber-600'
-                                                        : 'text-slate-600'
-                                                    }`}
-                                            >
-                                                {user.reportCount}/3
-                                            </span>
-                                        </div>
-                                    )}
+                                <div className="flex justify-start gap-4">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-xs text-slate-600">신고:</span>
+                                        <span
+                                            className={`text-xs font-semibold ${user.reportCount === 3
+                                                ? 'text-red-600'
+                                                : user.reportCount === 2 || user.reportCount === 1
+                                                    ? 'text-amber-600'
+                                                    : 'text-slate-600'
+                                                }`}
+                                        >
+                                            {user.reportCount}/3
+                                        </span>
+                                    </div>
+                                    {user.role === 'teacher' && <DownloadProofDocBtn user={user} />}
                                 </div>
 
                             </div>
