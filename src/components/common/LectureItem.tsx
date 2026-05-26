@@ -132,6 +132,7 @@ export default function LectureItem({
                 <>
                     <div className="absolute top-8 right-14 z-10">
                         <UpdateLectureStatusBtn
+                            id={lecture.id}
                             status={lecture.status}
                         />
                     </div>

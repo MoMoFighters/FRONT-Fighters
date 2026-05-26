@@ -20,9 +20,10 @@ type ModalType =
     | null;
 
 export default function UpdateLectureStatusBtn({
-    status
+    status, id
 }: {
     status: string
+    id: number;
 }) {
 
     const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -32,32 +33,19 @@ export default function UpdateLectureStatusBtn({
 
     let error;
 
-    const handleAcceptLecture = () => {
+    const handleUpdateLectureStatus = (status: string) => {
 
         try {
             setModalType(null);
 
             console.log('강의 승인');
 
-            // api 요청 액션 함수 호출
+            // await updateUserStatusAction({
+            //     lectureId: id,
+            //     status,
+            // });
 
-            toast.success('승인 성공');
-        } catch {
-            // error 메시지 잡아오기
-            toast.error('');
-        }
-    };
-
-    const handleRejectLecture = () => {
-
-        try {
-            setModalType(null);
-
-            console.log('강의 승인');
-
-            // api 요청 액션 함수 호출
-
-            toast.success('거절 성공');
+            toast.success('강의 승인 절차 처리 성공');
         } catch {
             // error 메시지 잡아오기
             toast.error('');
@@ -112,9 +100,7 @@ export default function UpdateLectureStatusBtn({
                             mb-1
                         "
                         onClick={() => {
-
                             setDropdownOpen(false);
-
                             setModalType('accept');
                         }}
                     >
@@ -129,9 +115,7 @@ export default function UpdateLectureStatusBtn({
                             focus:bg-red-50
                         "
                         onClick={() => {
-
                             setDropdownOpen(false);
-
                             setModalType('reject');
                         }}
                     >
@@ -143,16 +127,16 @@ export default function UpdateLectureStatusBtn({
             </DropdownMenu>
 
             <TwoButtonModal
-                open={modalType === 'accept'}
+                open={modalType === 'accept' || modalType === 'reject'}
                 onOpenChange={(open) => {
 
                     if (!open) {
                         setModalType(null);
                     }
                 }}
-                title="해당 강의를 승인하시겠습니까?"
-                description="강의가 승인되면 해당 강의가 공개 처리 됩니다."
-                onConfirm={handleAcceptLecture}
+                title={modalType === 'accept' ? "해당 강의를 승인하시겠습니까?" : "해당 강의의 승인을 거절하시겠습니까?"}
+                description={modalType === 'accept' ? `강의를 승인하면 \n 해당 강의가 공개 처리됩니다.` : `승인을 거절하면 강사에게 안내 이메일이 \n 발송됩니다.`}
+                onConfirm={() => handleUpdateLectureStatus(modalType === 'accept' ? 'active' : 'hold')}
             />
 
             <TwoButtonModal
@@ -165,7 +149,7 @@ export default function UpdateLectureStatusBtn({
                 }}
                 title="강의의 승인을 거절하시겠습니까?"
                 description={`승인을 거절하면 강사에게 안내 이메일이 \n 발송됩니다.`}
-                onConfirm={handleRejectLecture}
+                onConfirm={() => handleUpdateLectureStatus('hold')}
             />
         </>
     );
