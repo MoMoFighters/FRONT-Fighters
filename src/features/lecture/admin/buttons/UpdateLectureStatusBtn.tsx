@@ -45,12 +45,40 @@ export default function UpdateLectureStatusBtn({
             //     status,
             // });
 
-            toast.success('강의 승인 절차 처리 성공');
+            toast.success('강의 승인 절차 처리 성공', {
+                duration: 1000
+            });
         } catch {
             // error 메시지 잡아오기
             toast.error('');
         }
     };
+
+    const modalConfig = (() => {
+
+        switch (modalType) {
+
+            case 'accept':
+                return {
+                    open: true,
+                    title: "해당 강의를 승인하시겠습니까?",
+                    description: `강의를 승인하면 \n 해당 강의가 공개 처리됩니다.`,
+                    onConfirm: () => handleUpdateLectureStatus('active'),
+                };
+
+            case 'reject':
+                return {
+                    open: true,
+                    title: "해당 강의의 승인을 거절하시겠습니까?",
+                    description: `승인을 거절하면 강사에게 안내 이메일이 \n 발송됩니다.`,
+                    onConfirm: () => handleUpdateLectureStatus('rejected'),
+                };
+
+            default:
+                return null;
+        }
+
+    })();
 
     if (status === 'active') {
         return (
@@ -127,29 +155,16 @@ export default function UpdateLectureStatusBtn({
             </DropdownMenu>
 
             <TwoButtonModal
-                open={modalType === 'accept' || modalType === 'reject'}
+                open={modalConfig?.open}
                 onOpenChange={(open) => {
 
                     if (!open) {
                         setModalType(null);
                     }
                 }}
-                title={modalType === 'accept' ? "해당 강의를 승인하시겠습니까?" : "해당 강의의 승인을 거절하시겠습니까?"}
-                description={modalType === 'accept' ? `강의를 승인하면 \n 해당 강의가 공개 처리됩니다.` : `승인을 거절하면 강사에게 안내 이메일이 \n 발송됩니다.`}
-                onConfirm={() => handleUpdateLectureStatus(modalType === 'accept' ? 'active' : 'hold')}
-            />
-
-            <TwoButtonModal
-                open={modalType === 'reject'}
-                onOpenChange={(open) => {
-
-                    if (!open) {
-                        setModalType(null);
-                    }
-                }}
-                title="강의의 승인을 거절하시겠습니까?"
-                description={`승인을 거절하면 강사에게 안내 이메일이 \n 발송됩니다.`}
-                onConfirm={() => handleUpdateLectureStatus('hold')}
+                title={modalConfig?.title}
+                description={modalConfig?.description}
+                onConfirm={modalConfig?.onConfirm}
             />
         </>
     );

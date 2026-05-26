@@ -8,14 +8,16 @@ import DeleteLectureBtn from "@/features/lecture/buttons/DeleteLectureBtn";
 
 interface LectureItemProps {
     lecture: Lecture;
-    role: string;
+    role?: string;
     mode: string;
+    href: string;
 }
 
 export default function LectureItem({
     lecture,
     role,
-    mode
+    mode,
+    href
 }: LectureItemProps) {
 
     const categoryColors: Record<string, string> = {
@@ -34,11 +36,11 @@ export default function LectureItem({
         beauty: '뷰티',
     };
 
-    if (mode !== 'list') return null;
+    if (mode === 'list') {
 
-    return (
-        <div
-            className="
+        return (
+            <div
+                className="
                 relative
                 bg-white rounded-xl mb-2.5
                 border border-slate-200
@@ -46,105 +48,108 @@ export default function LectureItem({
                 hover:shadow-md
                 hover:-translate-y-0.5
             "
-        >
-
-            <Link
-                href={`/${role}/lectures/${lecture.id}`}
-                className="block p-4"
             >
 
-                <div className="flex items-center gap-4 min-w-0">
+                <Link
+                    href={href}
+                    className="block p-4"
+                >
 
-                    <div
-                        className="
+                    <div className="flex items-center gap-4 min-w-0">
+
+                        <div
+                            className="
                             w-24 h-16 rounded-lg
                             bg-slate-300 shrink-0
                         "
-                    />
+                        />
 
-                    <div className="flex-1 min-w-0">
+                        <div className="flex-1 min-w-0">
 
-                        <div className="flex items-center gap-3 mb-2 min-w-0">
+                            <div className="flex items-center gap-3 mb-2 min-w-0">
 
-                            <span
-                                className={`
+                                <span
+                                    className={`
                                     ${categoryColors[lecture.category]}
                                     px-3 py-1 rounded-full
                                     text-xs font-bold text-slate-600
                                     shrink-0
                                 `}
-                            >
-                                {categoryMap[lecture.category]}
-                            </span>
+                                >
+                                    {categoryMap[lecture.category]}
+                                </span>
 
-                            <h3
-                                className="
+                                <h3
+                                    className="
                                     text-lg font-bold
                                     text-slate-900
                                     truncate
                                     max-w-60
                                 "
-                            >
-                                {lecture.title}
-                            </h3>
-                        </div>
+                                >
+                                    {lecture.title}
+                                </h3>
+                            </div>
 
-                        <p
-                            className="
+                            <p
+                                className="
                                 text-sm text-slate-500
                                 truncate
                                 max-w-120
                             "
-                        >
-                            {lecture.description}
-                        </p>
-                    </div>
+                            >
+                                {lecture.description}
+                            </p>
+                        </div>
 
-                    <div
-                        className="
+                        <div
+                            className={`
                             flex items-center gap-2
                             text-slate-600
                             shrink-0
-                            pr-40
-                        "
-                    >
+                            ${role === 'student' ? 'pr-4' : 'pr-40'}
+                        `}
+                        >
 
-                        <Star
-                            className="
+                            <Star
+                                className="
                                 w-5 h-5
                                 fill-amber-400
                                 text-amber-400
                             "
-                        />
+                            />
 
-                        <span className="font-bold">
-                            {lecture.rating.toFixed(1)}
-                        </span>
+                            <span className="font-bold">
+                                {lecture.rating.toFixed(1)}
+                            </span>
 
-                        <span className="text-slate-400">
-                            / 5.0
-                        </span>
+                            <span className="text-slate-400">
+                                / 5.0
+                            </span>
+                        </div>
                     </div>
-                </div>
-            </Link>
+                </Link>
 
-            {role === 'admin' && (
-                <>
-                    <div className="absolute top-8 right-14 z-10">
-                        <UpdateLectureStatusBtn
-                            id={lecture.id}
-                            status={lecture.status}
-                        />
-                    </div>
+                {role === 'admin' && (
+                    <>
+                        <div className="absolute top-8 right-14 z-10">
+                            <UpdateLectureStatusBtn
+                                id={lecture.id}
+                                status={lecture.status}
+                            />
+                        </div>
 
-                    <div className="absolute top-2 right-2 z-10">
-                        <DeleteLectureBtn
-                            mode="icon"
-                            id={lecture.id}
-                        />
-                    </div>
-                </>
-            )}
-        </div>
-    );
+                        <div className="absolute top-2 right-2 z-10">
+                            <DeleteLectureBtn
+                                mode="icon"
+                                id={lecture.id}
+                            />
+                        </div>
+                    </>
+                )}
+            </div>
+        );
+    }
+
+    return null;
 }
