@@ -1,10 +1,10 @@
 import MyPageNav from "@/components/mypage/MyPageNav";
 
-export default function MyLecturesListPage() {
+export default function MypageReports() {
     return (
         <div className="flex flex-col">
             <MyPageNav />
-            내 강의 목록(enrollments)
+            신고내역
         </div>
     );
 }
