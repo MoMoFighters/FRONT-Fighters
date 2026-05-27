@@ -11,9 +11,7 @@ import { GOOGLE_AUTH_LINK } from "@/lib/auth/authAPI";
 export default function LoginForm() {
     const googleAuthLink = GOOGLE_AUTH_LINK;
 
-    const kakaoClientId = process.env.NEXT_PUBLIC_KAKAO_CLIENT_ID;
-    const kakaoRedirectUri = process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI;
-    const kakaoAuthLink = ``
+
     // const handleKakaoLogin = () => {
     //     Kakao.Auth.authorize({
     //         redirectUri: "http://localhost:3000/oauth/callback/kakao"
