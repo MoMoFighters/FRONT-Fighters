@@ -1,6 +1,7 @@
 import { User } from "@/app/admin/users/page";
 import UpdateUserStatusBtn from "./buttons/UpdateUserStatusBtn";
 import DownloadProofDocBtn from "./buttons/DownloadProofDocBtn";
+import { SearchX } from "lucide-react";
 
 interface AdminUsersListProps {
     users: User[];
@@ -30,6 +31,13 @@ export default function AdminUsersList({ users, status }: AdminUsersListProps) {
             )}
 
             <div className="divide-y divide-slate-100 text-sm">
+                {users.length === 0 && (
+                    <div className="flex-1 h-60 flex flex-col gap-5 justify-center items-center text-2xl text-slate-300 font-bold">
+                        <SearchX className="w-12 h-12 text-slate-300" />
+                        찾고있는 회원이 존재하지 않습니다.
+                    </div>
+                )}
+
                 {status === "delete" ? (
                     users.map((user) => {
                         return (

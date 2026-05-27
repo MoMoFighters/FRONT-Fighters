@@ -26,7 +26,7 @@ export default function LectureFilterBtn() {
             <DropdownMenuTrigger asChild>
 
                 <div>
-                    <Button variant="outline" className="h-12 px-4 text-slate-700 border-2 rounded-xl border-slate-300 font-semibold text-[16px]">
+                    <Button variant="outline" className="h-12 px-4 text-slate-700 border-2 rounded-xl border-slate-300 font-semibold text-[16px] cursor-pointer">
                         <Filter className="w-5 h-5" />
                         필터
                     </Button>
@@ -37,6 +37,15 @@ export default function LectureFilterBtn() {
             <DropdownMenuContent
                 align="center"
             >
+                <DropdownMenuItem
+                    className="
+                                justify-center
+                                    text-slate-500
+                                    focus:text-slate-700
+                                    focus:bg-slate-50
+                                "
+                    onClick={() => handleFilter("")}
+                >전체</DropdownMenuItem>
                 <DropdownMenuItem
                     className="
                                 justify-center
