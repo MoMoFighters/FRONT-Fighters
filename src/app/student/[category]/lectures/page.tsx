@@ -22,7 +22,7 @@ import {
 interface LectureListByCategoryProps {
     searchParams: Promise<{
         keyword?: string;
-        tab?: string;
+        filter?: string;
         page?: string;
     }>;
 
@@ -41,14 +41,14 @@ export default async function LectureListByCategory({
 
     const {
         keyword,
-        tab,
+        filter,
         page
     } = await searchParams;
 
     const currentPage =
         Number(page) || 1;
 
-    const ITEMS_PER_PAGE = 5;
+    const ITEMS_PER_PAGE = 10;
 
     const dummyLectures: Lecture[] = [
         {
@@ -184,7 +184,7 @@ export default async function LectureListByCategory({
 
             // 내 강의 탭 테스트용
             if (
-                tab === "my" &&
+                filter === "my" &&
                 lecture.id % 2 === 0
             ) {
                 return false;
@@ -221,10 +221,10 @@ export default async function LectureListByCategory({
             );
         }
 
-        if (tab) {
+        if (filter) {
             params.set(
-                "tab",
-                tab
+                "filter",
+                filter
             );
         }
 
@@ -265,7 +265,9 @@ export default async function LectureListByCategory({
                                 lecture={lecture}
                                 role="student"
                                 mode="list"
-                                href={`/student/${category}/lectures/${lecture.id}`}
+                                href={filter === "my"
+                                    ? `/student/${category}/lectures/${lecture.id}?filter=my`
+                                    : `/student/${category}/lectures/${lecture.id}`}
                             />
                         ))}
 
@@ -351,7 +353,7 @@ export default async function LectureListByCategory({
                     "
                 >
 
-                    {tab === "my" ? (
+                    {filter === "my" ? (
 
                         <>
                             <BookOpen

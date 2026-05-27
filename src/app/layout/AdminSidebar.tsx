@@ -10,16 +10,16 @@ import Link from 'next/link';
 
 export default function AdminSidebar() {
     return (
-        <aside className="w-60 flex flex-col border-r border-slate-200 bg-slate-50 px-2.5 relative">
-            <Image
+        <aside className="w-60 h-full flex flex-col border-r border-slate-200 bg-slate-50 px-2.5 relative">
+            {/* <Image
                 src={logo}
                 alt="MOMOCITY 로고"
                 className="mt-10"
                 width={100}
                 height={20}
                 priority
-            />
-            <div className='flex gap-2.5 justify-start'>
+            /> */}
+            <div className='flex gap-2.5 justify-start mt-6'>
                 <Image
                     src={admin}
                     alt="대시보드 아이콘"

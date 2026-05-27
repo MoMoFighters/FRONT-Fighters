@@ -20,7 +20,7 @@ export default function AUthHeader({ role }: { role: string }) {
                 <div className="flex justify-end gap-2 mr-4 items-center">
                     <Link href={`/${role}`}>
                         <span className="text-slate-500 text-xs mr-4">자동 로그아웃 시간 :</span>
-                        <span className="text-slate-500 text-xs mr-1">59:59</span>
+                        <span className="text-slate-500 text-xs mr-4">59:59</span>
                         <Button variant="outline" className="rounded-none text-slate-500 text-xs h-6 mr-4">연장</Button>
                         <Button variant="ghost">홈</Button>
                     </Link>
