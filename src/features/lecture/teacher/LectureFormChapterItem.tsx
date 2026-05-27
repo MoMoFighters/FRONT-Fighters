@@ -5,6 +5,7 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import upload from "@/app/assets/img/fileUpload.svg";
+import { Trash2 } from "lucide-react";
 
 type Chapter = {
     id: number;
@@ -54,9 +55,9 @@ export default function LectureFormChapterItem({
                         <button
                             type="button"
                             onClick={() => onDelete(index)}
-                            className="text-lg font-bold text-red-500 hover:text-red-700"
+                            className="text-lg font-bold text-red-500 hover:text-red-700 cursor-pointer"
                         >
-                            [-]
+                            <Trash2 />
                         </button>
                     )}
                 </div>

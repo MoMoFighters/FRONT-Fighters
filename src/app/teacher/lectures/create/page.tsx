@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export default function TeacherLectureRegistPage() {
     return (
-        <div>
+        <div className="p-12">
             <div className="flex flex-row">
                 <Link href='/teacher/lectures'>
                     <ArrowLeft />

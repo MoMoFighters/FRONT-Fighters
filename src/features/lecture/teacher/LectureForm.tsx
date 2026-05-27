@@ -6,9 +6,19 @@ import LectureFormChapterItem from "./LectureFormChapterItem";
 import Image from "next/image";
 import upload from '@/app/assets/img/fileUpload.svg'
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 type LectureFormProps = {
-    mode: 'create' | 'edit'
+    mode: 'create' | 'edit';
+    lectureId?: number;
+}
+
+interface LectureInfo {
+    id: number;
+    title: string;
+    description: string;
+    thumbnail_url: string;
+    category?: 'health' | 'study' | 'cook' | 'beauty' | 'art';
 }
 
 type Chapter = {
@@ -18,10 +28,23 @@ type Chapter = {
     video: string;
 }
 
-export default function LectureForm({ mode }: LectureFormProps) {
+export default function LectureForm({ mode, lectureId }: LectureFormProps) {
+
+    const router = useRouter();
+
+    /**
+     * mode==='edit'일때 useEffect로 처리할 것들
+     * 1. lectureId 기반 lectureInfo 담기
+     * 2. lectureId 기반 챕터 정보 받아와서 chapters에 담기
+     * 3. setPreview()로 미리보기 이미지 담아두기
+     */
+
+
+
 
     // 수정일때 data-fetching 받아와서 넣어두기
     const [chapters, setChapters] = useState<Chapter[]>([
+        // lectureId 로 데이터 받기
         {
             id: 1,
             index: 1,
@@ -29,6 +52,14 @@ export default function LectureForm({ mode }: LectureFormProps) {
             video: ''
         }
     ]);
+
+    // 수정일때 data-fetching받아와서 넣어두기
+    const [lectureInfo, setLectureInfo] = useState({
+        id: 0,
+        title: '',
+        description: '',
+        thumbnail_url: ''
+    } as LectureInfo)
 
     // 챕터 추가
     const addChapterItem = () => {
@@ -55,7 +86,8 @@ export default function LectureForm({ mode }: LectureFormProps) {
         setChapters(reordered);
     };
 
-    const [preview, setPreview] = useState<string | null>(null);
+    // 이미지 미리보기
+    const [preview, setPreview] = useState<string | null>(lectureInfo.thumbnail_url || "");
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -147,6 +179,7 @@ export default function LectureForm({ mode }: LectureFormProps) {
                                 <Button
                                     type='button'
                                     onClick={addChapterItem}
+                                    className="h-10 px-4 bg-mauve-500 hover:bg-mauve-600 rounded-sm cursor-pointer"
                                 >
                                     챕터 추가
                                 </Button>
@@ -164,13 +197,14 @@ export default function LectureForm({ mode }: LectureFormProps) {
                     ))}
                     <div className="flex flex-row gap-2">
                         <div className="flex-1"></div>
-                        <Button className="h-10 rounded-sm border border-black bg-slate-50 px-4 text-slate-900 cursor-pointer">
-                            <Link href="/teacher/lectures">
-                                취소
-                            </Link>
+                        <Button
+                            className="h-10 rounded-sm border border-black bg-slate-50 px-4 text-slate-900 cursor-pointer hover:bg-slate-200"
+                            onClick={() => router.back()}
+                        >
+                            취소
                         </Button>
 
-                        <Button className="h-10 rounded-sm border border-mauve-500 bg-mauve-500 px-4 text-slate-50 cursor-pointer">
+                        <Button className="h-10 rounded-sm border border-mauve-500 bg-mauve-500 px-4 text-slate-50 cursor-pointer hover:bg-mauve-600 hover:border-mauve-600">
                             {mode === 'create' ? "강의 등록" : "강의 수정"}
                         </Button>
                     </div>
