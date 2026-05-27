@@ -51,9 +51,7 @@ export default function DeleteLectureBtn({
                 </Button>
 
             ) : (
-                <Button variant="destructive">
-                    삭제
-                </Button>
+                <Button className="bg-red-400 cursor-pointer hover:bg-red-500 text-white font-semibold text-md py-6 px-6 rounded-md! absolute bottom-6 right-6">삭제하기</Button>
             )}
             title="강의를 삭제하시겠습니까?"
             description="삭제한 강의는 되돌릴 수 없습니다."

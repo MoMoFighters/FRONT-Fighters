@@ -37,7 +37,7 @@ export default async function LectureListPage({
     const currentPage =
         Number(page) || 1;
 
-    const ITEMS_PER_PAGE = 5;
+    const ITEMS_PER_PAGE = 10;
 
     const dummyLectures: Lecture[] = [
         {

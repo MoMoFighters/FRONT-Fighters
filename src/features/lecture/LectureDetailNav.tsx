@@ -3,27 +3,44 @@
 import { Button } from "@/components/ui/button";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function StudentLectureNav({ category }: { category: string }) {
+/**
+ * 
+ * @param param0 예 : `/teacher/lectures/${lectureId}`
+ * @returns 
+ */
+export default function LectureDetailNav({ href }: { href: string; }) {
+
     const router = useRouter();
     const searchParams = useSearchParams();
 
-    const searchStatus = searchParams.get("filter");
+    const searchStatus = searchParams.get("tab");
 
-    const handleClickFilter = (filter?: string) => {
+    const handleClickTab = (tab?: string) => {
 
-        if (!filter) {
-            router.push(`/student/${category}/lectures`);
-            return;
+        const params = new URLSearchParams(searchParams.toString());
+
+        params.delete("page");
+
+        if (!tab) {
+            params.delete("tab");
+        } else {
+            params.set("tab", tab);
         }
-        router.push(`/student/${category}/lectures?filter=${filter}`);
-    };
 
+        const queryString = params.toString();
+
+        router.push(
+            queryString
+                ? `${href}?${queryString}`
+                : href
+        );
+    };
     return (
-        <div className="flex items-center gap-2 mb-4">
+        <div className="flex items-center gap-2 my-4">
 
             <Button
                 variant="ghost"
-                onClick={() => handleClickFilter()}
+                onClick={() => handleClickTab()}
                 className={`
                     text-lg
                     font-semibold
@@ -34,23 +51,23 @@ export default function StudentLectureNav({ category }: { category: string }) {
                     }
                 `}
             >
-                전체
+                챕터
             </Button>
 
             <Button
                 variant="ghost"
-                onClick={() => handleClickFilter("my")}
+                onClick={() => handleClickTab("reviews")}
                 className={`
                     text-lg
                     font-semibold
 
-                    ${searchStatus === "my"
+                    ${searchStatus === "reviews"
                         ? "text-slate-900"
                         : "text-slate-500"
                     }
                 `}
             >
-                내 강의
+                수강평
             </Button>
 
         </div>
