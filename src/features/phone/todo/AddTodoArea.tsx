@@ -1,13 +1,16 @@
 'use client'
 
+import { PlusCircle } from 'lucide-react'
 import { useState } from 'react'
 
 interface Props {
-    selectedDate: string
+    selectedDate: string;
+    noTodo: boolean;
 }
 
 export default function AddTodoArea({
     selectedDate,
+    noTodo
 }: Props) {
 
     const [isAdding, setIsAdding] =
@@ -43,12 +46,20 @@ export default function AddTodoArea({
 
     if (!isAdding) {
         return (
-            <button
-                className="text-right text-sm text-gray-400 mt-2"
-                onClick={() => setIsAdding(true)}
-            >
-                + 일정 추가하기
-            </button>
+            <>
+                {noTodo ? (
+                    <div className='text-center'>
+                        <p className='font-bold text-slate-700'>등록된 일정이 없습니다.</p>
+                    </div>
+                ) : ""}
+
+                <button
+                    className="text-right text-sm text-gray-400 mt-2 cursor-pointer"
+                    onClick={() => setIsAdding(true)}
+                >
+                    + 일정 추가하기
+                </button>
+            </>
         )
     }
 
@@ -56,20 +67,21 @@ export default function AddTodoArea({
         <div className="border rounded-xl p-3 flex items-center gap-3">
 
             <input
-                className="flex-1 outline-none"
+                className="flex-1 outline-none font-bold"
                 placeholder="일정을 입력하세요"
                 value={title}
                 onChange={(e) =>
                     setTitle(e.target.value)
                 }
+                onBlur={() => setIsAdding(false)}
                 autoFocus
             />
 
             <button
                 onClick={handleAddTodo}
-                className="text-blue-500"
+                className="text-sky-500 cursor-pointer"
             >
-                추가
+                <PlusCircle />
             </button>
 
         </div>

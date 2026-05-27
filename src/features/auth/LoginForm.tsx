@@ -10,10 +10,10 @@ export default function LoginForm() {
     const [isTeacher, setIsTeacher] = useState(false)
     const nothingInFieldError = '';
 
-    const leftBgColor = isTeacher ? "bg-mauve-200" : "bg-mauve-500"
-    const rightBgColor = isTeacher ? "bg-mauve-500" : "bg-mauve-200"
-    const leftTextColor = isTeacher ? "text-slate-900" : "text-white"
-    const rightTextColor = isTeacher ? "text-white" : "text-slate-900"
+    const leftBgColor = isTeacher ? "bg-slate-200" : "bg-slate-400"
+    const rightBgColor = isTeacher ? "bg-slate-400" : "bg-slate-200"
+    const leftTextColor = isTeacher ? "text-slate-900" : "text-slate-50"
+    const rightTextColor = isTeacher ? "text-slate-50" : "text-slate-900"
 
     return (
         <div className="flex flex-col gap-4">
@@ -57,6 +57,7 @@ export default function LoginForm() {
                     <p className="font-bold text-[17px]">로그인</p>
                 </Button>
             </form>
+
             {!isTeacher && (
                 <>
                     <hr className="border-0.5 border-slate-300" />

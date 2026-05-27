@@ -54,7 +54,17 @@ export default async function CalendarPage() {
         {
             id: 3,
             userId: 1,
-            start: '2026-06-11',
+            start: '2026-06-10',
+            end: null,
+            title: '헬스장 가기',
+            category: 'todo',
+            isCompleted: false,
+            createdAt: '2026-06-09',
+        },
+        {
+            id: 4,
+            userId: 1,
+            start: '2026-06-10',
             end: null,
             title: '헬스장 가기',
             category: 'todo',

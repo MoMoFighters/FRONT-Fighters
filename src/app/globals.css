@@ -121,10 +121,74 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
   html {
     @apply font-sans;
   }
+}
+
+/* 
+  fullcalendar 
+*/
+
+/* 선택된 날짜 */
+.selected-date-cell .fc-daygrid-day-number {
+  position: relative;
+
+  display: inline-block;
+
+  width: 28px;
+  text-align: center;
+
+  z-index: 1;
+
+  color: white !important;
+}
+
+.selected-date-cell .fc-daygrid-day-number::after {
+  content: '';
+
+  position: absolute;
+
+  top: 50%;
+  left: 50%;
+
+  width: 28px;
+  height: 28px;
+
+  transform: translate(-50%, -50%);
+
+  border-radius: 9999px;
+
+  background-color: rgb(59 130 246);
+
+  z-index: -1;
+}
+
+
+/* +n more (일정 많을때) */
+.fc-daygrid-more-link {
+  color: white !important;
+  background-color: #6366f1 !important;
+  border-radius: 4px;
+  padding: 1px 4px;
+  font-size: 11px;
+}
+
+.fc-direction-ltr .fc-daygrid-more-link {
+  float: right;
+}
+
+
+/* 일정 미리보기 */
+.fc-h-event .fc-event-title-container {
+  text-align: center;
+}
+
+.fc-daygrid-day-frame {
+  height: 91px;
 }

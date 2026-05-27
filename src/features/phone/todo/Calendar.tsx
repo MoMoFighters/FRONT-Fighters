@@ -41,6 +41,15 @@ export default function Calendar({
         )
     }, [schedules])
 
+    const events = useMemo(() => {
+        return todos.map((todo) => ({
+            id: String(todo.id),
+            title: todo.title,
+            start: todo.start,
+            end: todo.end ?? todo.start,
+        }))
+    }, [todos])
+
     return (
         <div className="h-full flex overflow-hidden">
 
@@ -54,26 +63,24 @@ export default function Calendar({
                     ]}
                     initialView="dayGridMonth"
                     height="auto"
-
+                    timeZone="local"
                     dateClick={(info) => {
                         setSelectedDate(info.dateStr)
                     }}
-
+                    events={events}
+                    dayMaxEvents={1}
                     dayCellClassNames={(arg) => {
 
                         const cellDate =
-                            arg.date
-                                .toISOString()
-                                .split('T')[0]
+                            arg.date.toLocaleDateString('sv-SE')
 
                         if (cellDate === selectedDate) {
-                            return [
-                                'selected-date-cell',
-                            ]
+                            return ['selected-date-cell']
                         }
 
                         return []
                     }}
+
                 />
 
             </div>

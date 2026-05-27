@@ -51,19 +51,19 @@ export default function TodoSection({
 
             {/* TODO LIST */}
             <div className="flex flex-col gap-2">
-
                 {filteredTodos.map((todo) => (
                     <TodoItem
                         key={todo.id}
                         todo={todo}
                     />
                 ))}
-
             </div>
+
 
             {/* 추가 영역 */}
             <AddTodoArea
                 selectedDate={selectedDate}
+                noTodo={filteredTodos.length === 0 ? true : false}
             />
 
         </div>
