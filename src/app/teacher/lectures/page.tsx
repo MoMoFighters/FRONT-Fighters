@@ -52,13 +52,13 @@ export default function TeacherLectureList() {
 
             <div className="grid grid-cols-3 gap-6 flex-1 min-h-0 relative">
                 <div className="absolute -top-12 right-0">
-                    <Link href={"/teacher/lectures/create"}>
-                        <Button
-                            className="px-5 py-5 bg-blue-400 hover:bg-blue-500 text-white font-semibold rounded-lg transition-colors cursor-pointer"
-                        >
+                    <Button
+                        className="px-5 py-5 bg-blue-400 hover:bg-blue-500 text-white font-semibold rounded-lg transition-colors cursor-pointer"
+                    >
+                        <Link href={"/teacher/lectures/create"}>
                             + 강의 등록
-                        </Button>
-                    </Link>
+                        </Link>
+                    </Button>
                 </div>
 
                 <div className="bg-white min-h-150 rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
