@@ -1,8 +1,19 @@
 import LectureItem from "@/components/common/LectureItem";
+
 import LectureManageNav from "@/features/lecture/admin/LectureManageNav";
 import LectureFilterBtn from "@/features/lecture/LectureFilterBtn";
 import LectureSearchbar from "@/features/lecture/LectureSearchbar";
-import Link from "next/link";
+
+import {
+    Pagination,
+    PaginationContent,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from "@/components/ui/pagination";
+
+import { SearchX } from "lucide-react";
 
 export interface Lecture {
     id: number;
@@ -13,15 +24,30 @@ export interface Lecture {
     rating: number;
 }
 
-export default async function AdminLectureListPage({ searchParams }: {
+interface AdminLectureListPageProps {
     searchParams: Promise<{
         status?: string;
         category?: string;
         keyword?: string;
+        page?: string;
     }>
-}) {
+}
 
-    const { status, keyword, category } = await searchParams;
+export default async function AdminLectureListPage({
+    searchParams
+}: AdminLectureListPageProps) {
+
+    const {
+        status,
+        keyword,
+        category,
+        page
+    } = await searchParams;
+
+    const currentPage =
+        Number(page) || 1;
+
+    const ITEMS_PER_PAGE = 5;
 
     const dummyLectures: Lecture[] = [
         {
@@ -72,52 +98,287 @@ export default async function AdminLectureListPage({ searchParams }: {
             rating: 4.0,
             status: 'waiting'
         },
+        {
+            id: 7,
+            title: '정보처리기사 실기 대비1',
+            description: '정보 처리기사 실기 기출문제집 풀이 및 예상 문제 대방출!',
+            category: 'study',
+            rating: 4.0,
+            status: 'active'
+        },
+        {
+            id: 8,
+            title: '정보처리기사 실기 대비2',
+            description: '정보 처리기사 실기 기출문제집 풀이 및 예상 문제 대방출!',
+            category: 'study',
+            rating: 4.0,
+            status: 'active'
+        },
+        {
+            id: 9,
+            title: '정보처리기사 실기 대비3',
+            description: '정보 처리기사 실기 기출문제집 풀이 및 예상 문제 대방출!',
+            category: 'study',
+            rating: 4.0,
+            status: 'active'
+        },
+        {
+            id: 10,
+            title: '정보처리기사 실기 대비4',
+            description: '정보 처리기사 실기 기출문제집 풀이 및 예상 문제 대방출!',
+            category: 'study',
+            rating: 4.0,
+            status: 'active'
+        },
+        {
+            id: 11,
+            title: '정보처리기사 실기 대비5',
+            description: '정보 처리기사 실기 기출문제집 풀이 및 예상 문제 대방출!',
+            category: 'study',
+            rating: 4.0,
+            status: 'active'
+        },
+        {
+            id: 12,
+            title: '정보처리기사 실기 대비6',
+            description: '정보 처리기사 실기 기출문제집 풀이 및 예상 문제 대방출!',
+            category: 'study',
+            rating: 4.0,
+            status: 'active'
+        },
+        {
+            id: 13,
+            title: '정보처리기사 실기 대비7',
+            description: '정보 처리기사 실기 기출문제집 풀이 및 예상 문제 대방출!',
+            category: 'study',
+            rating: 4.0,
+            status: 'active'
+        },
     ];
 
-    const filteredLectures: Lecture[] = dummyLectures.filter((lecture) => {
+    const filteredLectures =
+        dummyLectures.filter((lecture) => {
 
-        // status 필터
-        if (status && lecture.status !== status) {
-            return false;
+            // status 필터
+            if (
+                status &&
+                lecture.status !== status
+            ) {
+                return false;
+            }
+
+            // category 필터
+            if (
+                category &&
+                lecture.category !== category
+            ) {
+                return false;
+            }
+
+            // keyword 필터
+            if (
+                keyword &&
+                !lecture.title.includes(keyword) &&
+                !lecture.description.includes(keyword)
+            ) {
+                return false;
+            }
+
+            return true;
+        });
+
+    const totalCount =
+        filteredLectures.length;
+
+    const totalPages =
+        Math.ceil(
+            totalCount / ITEMS_PER_PAGE
+        );
+
+    const paginatedLectures =
+        filteredLectures.slice(
+            (currentPage - 1) * ITEMS_PER_PAGE,
+            currentPage * ITEMS_PER_PAGE
+        );
+
+    const createPageHref = (
+        pageNumber: number
+    ) => {
+
+        const params =
+            new URLSearchParams();
+
+        if (status) {
+            params.set(
+                "status",
+                status
+            );
         }
 
-        // category 필터
-        if (category && lecture.category !== category) {
-            return false;
+        if (category) {
+            params.set(
+                "category",
+                category
+            );
         }
 
-        // keyword 필터
-        if (
-            keyword &&
-            !lecture.title.includes(keyword) &&
-            !lecture.description.includes(keyword)
-        ) {
-            return false;
+        if (keyword) {
+            params.set(
+                "keyword",
+                keyword
+            );
         }
 
-        return true;
-    });
+        params.set(
+            "page",
+            String(pageNumber)
+        );
+
+        return `?${params.toString()}`;
+    };
 
     return (
         <div>
-            <div className="flex items-center gap-3 mb-10">
-                <div className="w-2 h-7 bg-slate-500 rounded-full" />
-                <h2 className="text-2xl font-bold text-slate-900">강의 관리</h2>
-            </div>
-            <LectureManageNav />
-            <div className="flex items-center gap-3 mb-4">
-                <LectureSearchbar status={status} category={category} keyword={keyword} />
-                <LectureFilterBtn />
-            </div>
-            <div className="border-t border-slate-400 mb-4" />
-            <div className="space-y-3">
-                {filteredLectures.map((lecture) => (
-                    <Link key={lecture.id} href={`/admin/lectures/${lecture.id}`}>
-                        <LectureItem key={lecture.id} lecture={lecture} role="admin" mode="list" />
-                    </Link>
-                ))}
-            </div>
-        </div>
 
+            <div className="flex items-center gap-3 mb-10">
+
+                <div className="w-2 h-7 bg-slate-500 rounded-full" />
+
+                <h2 className="text-2xl font-bold text-slate-900">
+                    강의 관리
+                </h2>
+
+            </div>
+
+            <LectureManageNav />
+
+            <div className="flex items-center gap-3 mb-4">
+
+                <LectureSearchbar
+                    status={status}
+                    category={category}
+                    keyword={keyword}
+                />
+
+                <LectureFilterBtn />
+
+            </div>
+
+            <div className="border-t border-slate-400 mb-4" />
+
+            {filteredLectures.length > 0 ? (
+
+                <>
+                    <div className="space-y-3">
+
+                        {paginatedLectures.map((lecture) => (
+
+                            <LectureItem
+                                key={lecture.id}
+                                lecture={lecture}
+                                role="admin"
+                                mode="list"
+                                href={`/admin/lectures/${lecture.id}`}
+                            />
+                        ))}
+
+                    </div>
+
+                    {totalPages > 1 && (
+
+                        <Pagination className="mt-10">
+
+                            <PaginationContent>
+
+                                {currentPage > 1 && (
+                                    <PaginationItem>
+
+                                        <PaginationPrevious
+                                            href={createPageHref(
+                                                currentPage - 1
+                                            )}
+                                        />
+
+                                    </PaginationItem>
+                                )}
+
+                                {Array.from(
+                                    { length: totalPages },
+                                    (_, index) => {
+
+                                        const pageNumber =
+                                            index + 1;
+
+                                        return (
+                                            <PaginationItem
+                                                key={pageNumber}
+                                            >
+
+                                                <PaginationLink
+                                                    href={createPageHref(
+                                                        pageNumber
+                                                    )}
+                                                    isActive={
+                                                        currentPage ===
+                                                        pageNumber
+                                                    }
+                                                >
+                                                    {pageNumber}
+                                                </PaginationLink>
+
+                                            </PaginationItem>
+                                        );
+                                    }
+                                )}
+
+                                {currentPage < totalPages && (
+                                    <PaginationItem>
+
+                                        <PaginationNext
+                                            href={createPageHref(
+                                                currentPage + 1
+                                            )}
+                                        />
+
+                                    </PaginationItem>
+                                )}
+
+                            </PaginationContent>
+
+                        </Pagination>
+                    )}
+                </>
+
+            ) : (
+
+                <div
+                    className="
+                        h-60
+                        flex flex-col
+                        gap-5
+                        justify-center
+                        items-center
+
+                        text-2xl
+                        text-slate-300
+                        font-bold
+                    "
+                >
+
+                    <SearchX
+                        className="
+                            w-12 h-12
+                            text-slate-300
+                        "
+                    />
+
+                    <span>
+                        찾으시는 강의가 존재하지 않습니다.
+                    </span>
+
+                </div>
+            )}
+
+        </div>
     );
 }

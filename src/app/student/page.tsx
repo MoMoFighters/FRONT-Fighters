@@ -2,7 +2,6 @@ import Image from "next/image";
 import city from '@/app/assets/img/momocity.png'
 import CreateBuildingBtn from "@/components/city/CreateBuildingBtn";
 import BuildingItem from "@/components/city/BuildingItem";
-import Link from "next/link";
 
 interface Building {
     position: string;
