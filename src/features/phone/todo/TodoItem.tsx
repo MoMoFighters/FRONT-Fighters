@@ -3,6 +3,7 @@
 import { useState } from 'react'
 
 import clsx from 'clsx'
+import { Edit, Trash2 } from 'lucide-react'
 
 interface ScheduleItem {
     id: number
@@ -28,29 +29,21 @@ export default function TodoItem({
     todo,
 }: Props) {
 
-    const [checked, setChecked] =
-        useState(todo.isCompleted)
+    const [checked, setChecked] = useState(todo.isCompleted)
 
-    const [title, setTitle] =
-        useState(todo.title)
+    const [title, setTitle] = useState(todo.title)
 
-    const [isEditing, setIsEditing] =
-        useState(false)
+    const [isEditing, setIsEditing] = useState(false)
 
     const handleDelete = async () => {
-
         /*
           TODO:
           API 삭제 호출 예정
         */
-
-        console.log('삭제')
     }
 
     const handleToggle = async () => {
-
         setChecked((prev) => !prev)
-
         /*
           TODO:
           API 완료상태 수정 예정
@@ -58,9 +51,7 @@ export default function TodoItem({
     }
 
     const handleEdit = async () => {
-
         setIsEditing(false)
-
         /*
           TODO:
           API 제목 수정 예정
@@ -69,14 +60,8 @@ export default function TodoItem({
 
     return (
         <div
-            className={clsx(
-                'border rounded-xl p-3 flex items-center gap-3',
-                checked
-                    ? 'bg-gray-100'
-                    : 'bg-white'
-            )}
+            className={`border-b border-slate-700 p-2 flex items-center gap-3 ${isEditing ? 'bg-slate-100' : ''}`}
         >
-
             <input
                 type="checkbox"
                 checked={checked}
@@ -84,34 +69,46 @@ export default function TodoItem({
             />
 
             {isEditing ? (
-                <input
-                    className="flex-1 outline-none"
-                    value={title}
-                    onChange={(e) =>
-                        setTitle(e.target.value)
-                    }
-                    onBlur={handleEdit}
-                    autoFocus
-                />
+                <>
+                    <input
+                        className="flex-1 outline-none p-1 font-bold min-w-0"
+                        value={title}
+                        onChange={(e) =>
+                            setTitle(e.target.value)
+                        }
+                        onBlur={handleEdit}
+                        autoFocus
+                    />
+                    <button
+                        onClick={handleEdit}
+                        className="text-sm text-sky-500 mr-1"
+                    >
+                        <Edit className='w-5 h-5 cursor-pointer' />
+                    </button>
+                </>
             ) : (
-                <p
-                    className={clsx(
-                        'flex-1',
-                        checked &&
-                        'line-through text-gray-400'
-                    )}
-                    onClick={() => setIsEditing(true)}
-                >
-                    {title}
-                </p>
+                <>
+                    <p
+                        className={`min-w-0 flex-1 ${checked && 'line-through text-gray-400'} font-bold p-1`}
+                        onClick={() => setIsEditing(true)}
+                    >
+                        {title}
+                    </p>
+                    <button
+                        onClick={handleDelete}
+                        className="text-sm text-red-500 mr-1"
+                    >
+                        <Trash2 className='w-5 h-5 cursor-pointer' />
+                    </button>
+                </>
             )}
 
-            <button
+            {/* <button
                 onClick={handleDelete}
-                className="text-sm text-red-500"
+                className="text-sm text-red-500 mr-1"
             >
-                삭제
-            </button>
+                <Trash2 className='w-5 h-5 cursor-pointer' />
+            </button> */}
 
         </div>
     )
