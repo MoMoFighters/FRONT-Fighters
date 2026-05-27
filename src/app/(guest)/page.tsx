@@ -25,6 +25,7 @@ export default function Home() {
       <button className="ml-auto">
         <Link href="/login">도시 키우러 가기</Link>
       </button>
+      <div className="w-50 h-200 border"></div>
     </div>
   );
 }

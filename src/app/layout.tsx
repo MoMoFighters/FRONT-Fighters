@@ -1,6 +1,5 @@
 import { Toaster } from 'sonner';
 import '../app/globals.css'
-import Footer from './layout/Footer';
 
 export default function RootLayout({
   children,
@@ -17,7 +16,6 @@ export default function RootLayout({
           position="top-center"
           richColors
         />
-        <Footer />
       </body>
     </html>
   );

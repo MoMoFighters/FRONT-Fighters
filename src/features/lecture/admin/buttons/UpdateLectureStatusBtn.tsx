@@ -22,7 +22,7 @@ type ModalType =
 export default function UpdateLectureStatusBtn({
     status, id
 }: {
-    status: string
+    status?: string;
     id: number;
 }) {
 
@@ -80,84 +80,99 @@ export default function UpdateLectureStatusBtn({
 
     })();
 
-    if (status === 'active') {
-        return (
-            <span
-                className="
+    return (
+        <>
+
+            {status === 'active' && (
+                <span
+                    className="
                     px-3 py-1.5 rounded-lg
                     font-semibold text-sm
                     bg-emerald-100 text-emerald-700
                 "
-            >
-                진행중
-            </span>
-        );
-    }
+                >
+                    진행중
+                </span>
+            )}
 
-    return (
-        <>
-            <DropdownMenu
-                open={dropdownOpen}
-                onOpenChange={setDropdownOpen}
-            >
+            {status === 'waiting' && (
+                <>
+                    <DropdownMenu
+                        open={dropdownOpen}
+                        onOpenChange={setDropdownOpen}
+                    >
 
-                <DropdownMenuTrigger asChild>
+                        <DropdownMenuTrigger asChild>
 
-                    <Button
-                        className="
+                            <Button
+                                className="
                             px-3 py-1.5 rounded-lg
                             font-semibold text-sm
                             bg-amber-100 text-amber-700
                             hover:bg-amber-200
                             cursor-pointer
                         "
-                    >
-                        승인 대기
-                    </Button>
+                            >
+                                승인 대기
+                            </Button>
 
-                </DropdownMenuTrigger>
+                        </DropdownMenuTrigger>
 
-                <DropdownMenuContent align="center">
+                        <DropdownMenuContent align="center">
 
-                    <DropdownMenuItem
-                        className="
+                            <DropdownMenuItem
+                                className="
                             justify-center
                             text-emerald-700
                             focus:text-emerald-700
                             focus:bg-emerald-50
                             mb-1
                         "
-                        onClick={() => {
-                            setDropdownOpen(false);
-                            setModalType('accept');
-                        }}
-                    >
-                        강의 승인
-                    </DropdownMenuItem>
+                                onClick={() => {
+                                    setDropdownOpen(false);
+                                    setModalType('accept');
+                                }}
+                            >
+                                강의 승인
+                            </DropdownMenuItem>
 
-                    <DropdownMenuItem
-                        className="
+                            <DropdownMenuItem
+                                className="
                             justify-center
                             text-red-700
                             focus:text-red-700
                             focus:bg-red-50
                         "
-                        onClick={() => {
-                            setDropdownOpen(false);
-                            setModalType('reject');
+                                onClick={() => {
+                                    setDropdownOpen(false);
+                                    setModalType('reject');
+                                }}
+                            >
+                                승인 거절
+                            </DropdownMenuItem>
+
+                        </DropdownMenuContent>
+
+                    </DropdownMenu>
+
+                    <TwoButtonModal
+                        open={modalConfig?.open}
+                        onOpenChange={(open) => {
+
+                            if (!open) {
+                                setModalType(null);
+                            }
                         }}
-                    >
-                        승인 거절
-                    </DropdownMenuItem>
-
-                </DropdownMenuContent>
-
-            </DropdownMenu>
+                        title={modalConfig?.title}
+                        description={modalConfig?.description}
+                        onConfirm={modalConfig?.onConfirm}
+                    />
+                </>
+            )}
 
             <TwoButtonModal
                 open={modalConfig?.open}
                 onOpenChange={(open) => {
-
                     if (!open) {
                         setModalType(null);
                     }
