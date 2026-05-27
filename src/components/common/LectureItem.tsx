@@ -1,11 +1,10 @@
 import Link from "next/link";
 
 import { Lecture } from "@/app/admin/lectures/page";
-import { Star } from "lucide-react";
+import { Edit, Star } from "lucide-react";
 
 import UpdateLectureStatusBtn from "@/features/lecture/admin/buttons/UpdateLectureStatusBtn";
 import DeleteLectureBtn from "@/features/lecture/buttons/DeleteLectureBtn";
-import { Button } from "../ui/button";
 import EnrollLectureBtn from "@/features/lecture/buttons/EnrollLectureBtn";
 import AcceptLectureBtn from "@/features/lecture/buttons/AcceptLectureBtn";
 import RejectLectureBtn from "@/features/lecture/buttons/RejectLectureBtn";
@@ -41,6 +40,39 @@ export default function LectureItem({
         health: '운동',
         beauty: '뷰티',
     };
+
+    if (mode === "teacherList" && href) {
+        return (
+            <div
+                className="bg-white rounded-xl p-4 border border-slate-200 hover:bg-slate-50 hover:shadow-md transition-all cursor-pointer"
+            >
+                <Link href={href}>
+                    <div className="flex items-center gap-3">
+                        <div
+                            className="w-16 h-12 bg-slate-300 rounded-lg shrink-0"
+                        />
+                        <div className="flex-1 min-w-0">
+                            <h4 className="font-bold text-slate-900 text-[12px] mb-1 truncate">{lecture.title}</h4>
+                            {lecture.status === "active" && <div className="flex items-center gap-3 text-[10px] text-slate-500">
+                                <span className="flex items-center gap-1">
+                                    <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                                    {lecture.rating.toFixed(1)}
+                                </span>
+                                <span>수강생 {lecture.studentCount}명</span>
+                            </div>}
+                            {lecture.status === "waiting" && <p className="text-xs text-amber-600 font-medium">관리자 승인 대기중입니다</p>}
+                            {lecture.status === "hold" && <div className="flex items-center gap-2">
+                                <p className="text-xs text-red-600 font-medium">승인 거절됨</p>
+                                <button className="ml-auto">
+                                    <Edit className="w-3 h-3 text-red-500 hover:text-red-700" />
+                                </button>
+                            </div>}
+                        </div>
+                    </div>
+                </Link>
+            </div>
+        )
+    }
 
     if (mode === 'detail') {
         return (

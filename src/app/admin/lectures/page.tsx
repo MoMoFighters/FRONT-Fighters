@@ -22,6 +22,7 @@ export interface Lecture {
     category: string;
     status: string;
     rating: number;
+    studentCount?: number;
 }
 
 interface AdminLectureListPageProps {
