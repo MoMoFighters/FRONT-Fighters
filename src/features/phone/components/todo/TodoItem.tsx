@@ -4,22 +4,11 @@ import { useState } from 'react'
 
 import clsx from 'clsx'
 import { Edit, Trash2 } from 'lucide-react'
+import { ScheduleItem } from '../../type'
+import { checkTodoAction, deleteTodoAction, editTodoAction } from '../../action'
+import DeleteModal from '@/features/modal/DeleteModal'
 
-interface ScheduleItem {
-    id: number
-    userId: number
 
-    start: string
-    end: string | null
-
-    title: string
-
-    category: 'todo' | 'memo'
-
-    isCompleted: boolean
-
-    createdAt: string
-}
 
 interface Props {
     todo: ScheduleItem
@@ -36,26 +25,46 @@ export default function TodoItem({
     const [isEditing, setIsEditing] = useState(false)
 
     const handleDelete = async () => {
-        /*
-          TODO:
-          API 삭제 호출 예정
-        */
+        await deleteTodoAction(todo.calendarId)
     }
 
     const handleToggle = async () => {
-        setChecked((prev) => !prev)
-        /*
-          TODO:
-          API 완료상태 수정 예정
-        */
-    }
+
+        const nextChecked =
+            !checked;
+
+        setChecked(nextChecked);
+
+        const result =
+            await checkTodoAction({
+                calendarId:
+                    todo.calendarId,
+
+                isCompleted:
+                    nextChecked,
+            });
+
+
+        // 실패 시 롤백
+        if (!result.success) {
+
+            setChecked(!nextChecked);
+
+            alert(result.message);
+        }
+    };
 
     const handleEdit = async () => {
+        await editTodoAction({
+            calendarId:
+                todo.calendarId,
+
+            title: title,
+
+            start:
+                todo.start,
+        })
         setIsEditing(false)
-        /*
-          TODO:
-          API 제목 수정 예정
-        */
     }
 
     return (
@@ -94,12 +103,16 @@ export default function TodoItem({
                     >
                         {title}
                     </p>
-                    <button
-                        onClick={handleDelete}
-                        className="text-sm text-red-500 mr-1"
-                    >
-                        <Trash2 className='w-5 h-5 cursor-pointer' />
-                    </button>
+                    <DeleteModal
+                        title={`${title} 삭제`}
+                        description="삭제하면 복구할 수 없습니다."
+                        onDelete={handleDelete}
+                        trigger={
+                            <button className="text-sm text-red-500 mr-1">
+                                <Trash2 className="w-5 h-5 cursor-pointer" />
+                            </button>
+                        }
+                    />
                 </>
             )}
 

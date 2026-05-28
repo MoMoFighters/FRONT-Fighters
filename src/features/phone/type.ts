@@ -1,19 +1,11 @@
 export interface ScheduleItem {
-    id: number;
 
-    userId: number;
-
-    start: string;
-
-    end: string | null;
-
+    calendarId: number;
     title: string;
-
-    category: 'todo' | 'memo';
-
-    isCompleted: boolean;
-
-    createdAt: string;
+    category: "TODO" | "MEMO";
+    start: string;
+    end?: string;
+    isCompleted?: boolean;
 }
 
 export interface CalendarTodo {
@@ -49,9 +41,7 @@ export interface GetTodoListResponse {
     code: string;
     message: string;
 
-    data?: {
-        data: GetTodoListData;
-    };
+    data: GetTodoListData;
 }
 
 export interface GetTodoListRequest {
@@ -90,4 +80,52 @@ export interface CreateTodoResponse {
 
         isCompleted: boolean;
     };
+}
+
+export interface CreateTodoActionState {
+    success: boolean;
+
+    message: string;
+}
+
+export interface DeleteTodoRequest {
+    calendarId: number;
+    accessToken: string;
+}
+
+
+export interface DeleteTodoResponse {
+    timestamp: string;
+    status: number;
+    code: string;
+    message: string;
+}
+
+export interface EditTodoRequest {
+    calendarId: number;
+    accessToken: string;
+    title: string;
+    start: string;
+}
+
+export interface EditTodoResponse {
+    timestamp: string;
+    status: number;
+    code: string;
+    message: string;
+    data: ScheduleItem;
+}
+
+export interface CheckTodoRequest {
+    calendarId: number;
+    accessToken: string;
+    isCompleted: boolean;
+}
+
+export interface CheckTodoResponse {
+    timestamp: string;
+    status: number;
+    code: string;
+    message: string;
+    data: ScheduleItem;
 }

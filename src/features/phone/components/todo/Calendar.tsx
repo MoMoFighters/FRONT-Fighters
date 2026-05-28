@@ -12,23 +12,10 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
 
 import TodoSection from './TodoSection'
+import { ScheduleItem } from '../../type'
 
 
-interface ScheduleItem {
-    id: number
-    userId: number
 
-    start: string
-    end: string | null
-
-    title: string
-
-    category: 'todo' | 'memo'
-
-    isCompleted: boolean
-
-    createdAt: string
-}
 
 
 interface Props {
@@ -64,7 +51,7 @@ export default function Calendar({
 
         return schedules.filter(
             (item) =>
-                item.category === 'todo'
+                item.category === 'TODO'
         )
 
     }, [schedules])
@@ -73,7 +60,7 @@ export default function Calendar({
     const events = useMemo(() => {
 
         return todos.map((todo) => ({
-            id: String(todo.id),
+            id: String(todo.calendarId),
 
             title: todo.title,
 

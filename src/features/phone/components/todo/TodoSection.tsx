@@ -2,22 +2,9 @@ import dayjs from 'dayjs'
 
 import TodoItem from './TodoItem'
 import AddTodoArea from './AddTodoArea'
+import { ScheduleItem } from '../../type'
 
-interface ScheduleItem {
-    id: number
-    userId: number
 
-    start: string
-    end: string | null
-
-    title: string
-
-    category: 'todo' | 'memo'
-
-    isCompleted: boolean
-
-    createdAt: string
-}
 
 interface Props {
     selectedDate: string
@@ -53,7 +40,7 @@ export default function TodoSection({
             <div className="flex flex-col gap-2">
                 {filteredTodos.map((todo) => (
                     <TodoItem
-                        key={todo.id}
+                        key={todo.calendarId}
                         todo={todo}
                     />
                 ))}

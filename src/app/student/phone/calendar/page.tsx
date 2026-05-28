@@ -16,22 +16,16 @@ export default async function CalendarPage({
 }: CalendarPageProps) {
 
     const { month } = await searchParams;
-    const date = month;
-    console.log(date, '?');
-
-    if (!date) {
-        throw new Error('dpfj');
-    }
+    const date = month as string;
 
 
-    const schedules =
-        await getCalendarSchedulesAction({
-            date
-        });
+
+
+    const schedules = await getCalendarSchedulesAction({ date });
 
     console.log(schedules);
 
     return (
         <Calendar schedules={schedules} />
     );
-}
+} 

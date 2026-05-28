@@ -25,25 +25,14 @@ export default function AddTodoArea({
     noTodo,
 }: Props) {
 
-    const [
-        isAdding,
-        setIsAdding,
-    ] = useState(false)
+    const [isAdding, setIsAdding,] = useState(false)
 
 
-    const [
-        title,
-        setTitle,
-    ] = useState('')
+    const [title, setTitle,] = useState('')
 
 
-    // action state
-    const [
-        state,
-        formAction,
-        pending,
-    ] = useActionState(
-        createTodoAction,
+
+    const [state, formAction, pending,] = useActionState(createTodoAction,
         {
             success: false,
             message: '',
@@ -51,7 +40,7 @@ export default function AddTodoArea({
     )
 
 
-    // 성공 시 input 초기화
+    //성공 시 input 초기화
     useEffect(() => {
 
         if (state.success) {

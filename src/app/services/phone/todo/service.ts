@@ -1,6 +1,6 @@
 // Todo 관련
 
-import { CreateTodoProps, CreateTodoResponse, GetTodoListRequest, GetTodoListResponse } from "@/features/phone/type";
+import { CheckTodoRequest, CheckTodoResponse, CreateTodoProps, CreateTodoResponse, DeleteTodoRequest, DeleteTodoResponse, EditTodoRequest, EditTodoResponse, GetTodoListRequest, GetTodoListResponse, ScheduleItem } from "@/features/phone/type";
 
 /*
  - Todo 목록 월별 조회(byUserId)
@@ -19,6 +19,9 @@ import { CreateTodoProps, CreateTodoResponse, GetTodoListRequest, GetTodoListRes
 const BASE_SERVER_URL =
     process.env.NEXT_PUBLIC_API_BASE_URL;
 
+
+
+// 투두 및 메모 목록 조회(1달치)
 export const getTodoList = async ({
     date,
     accessToken,
@@ -38,6 +41,11 @@ export const getTodoList = async ({
             }
         );
 
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "오류 발생")
+        }
         // 401
         if (response.status === 401) {
 
@@ -65,9 +73,9 @@ export const getTodoList = async ({
         }
 
         // 성공
-        const result:
-            GetTodoListResponse =
-            await response.json();
+        // const result:
+        //     GetTodoListResponse =
+        //     await response.json();
 
         return result;
 
@@ -83,7 +91,7 @@ export const getTodoList = async ({
     }
 };
 
-
+// Todo 추가하기
 export const createTodoService = async ({
     title,
     start,
@@ -162,6 +170,267 @@ export const createTodoService = async ({
 
         throw new Error(
             '알수없는 오류가 발생했습니다.'
+        );
+    }
+};
+
+
+
+
+
+// Todo 삭제하기
+export const deleteTodoService = async ({
+    calendarId,
+    accessToken
+}: DeleteTodoRequest): Promise<DeleteTodoResponse> => {
+    try {
+        const response = await fetch(
+            `${BASE_SERVER_URL}/api/v1/calendar/todo/${calendarId}`,
+            {
+                method: 'DELETE',
+
+                headers: {
+                    Authorization:
+                        `Bearer ${accessToken}`,
+                }
+            }
+        );
+
+
+        const result =
+            response.status !== 204
+                ? await response.json()
+                : null;
+
+
+        // 성공
+        if (response.ok) {
+            return result;
+        }
+
+
+        if (response.status === 401) {
+
+            throw new Error(
+                result.message ||
+                '로그인이 필요합니다.'
+            );
+        }
+
+
+        if (response.status === 403) {
+
+            throw new Error(
+                result.message ||
+                '본인의 Todo 만 삭제할 수 있습니다.'
+            );
+        }
+        if (response.status === 404) {
+
+            throw new Error(
+                result.message ||
+                '해당 Todo 를 찾을 수 없습니다.'
+            );
+        }
+
+
+        throw new Error(
+            result.message ||
+            'Todo 삭제에 실패하였습니다.'
+        );
+
+    } catch (error) {
+
+        if (error instanceof Error) {
+            throw error;
+        }
+
+        throw new Error(
+            '알수없는 오류가 발생했습니다.'
+        );
+    }
+
+}
+
+
+
+
+// Todo 수정하기
+export const editTodoService = async ({
+    calendarId,
+    accessToken,
+    title,
+    start
+}: EditTodoRequest): Promise<EditTodoResponse> => {
+    try {
+        const response = await fetch(
+            `${BASE_SERVER_URL}/api/v1/calendar/todo/${calendarId}`,
+            {
+                method: 'PATCH',
+
+                headers: {
+                    Authorization:
+                        `Bearer ${accessToken}`,
+
+                    'Content-Type':
+                        'application/json',
+                },
+                body:
+                    JSON.stringify({ title, start })
+
+            }
+        );
+
+
+        const result:
+            EditTodoResponse =
+            await response.json();
+
+
+
+        // 성공
+        if (response.ok) {
+            return result;
+        }
+
+
+        if (response.status === 401) {
+
+            throw new Error(
+                result.message ||
+                '로그인이 필요합니다.'
+            );
+        }
+
+
+        if (response.status === 403) {
+
+            throw new Error(
+                result.message ||
+                '본인의 Todo 만 수정할 수 있습니다.'
+            );
+        }
+        if (response.status === 404) {
+
+            throw new Error(
+                result.message ||
+                '해당 Todo 를 찾을 수 없습니다.'
+            );
+        }
+
+
+        throw new Error(
+            result.message ||
+            'Todo 수정에 실패하였습니다.'
+        );
+
+    } catch (error) {
+
+        if (error instanceof Error) {
+            throw error;
+        }
+
+        throw new Error(
+            '알수없는 오류가 발생했습니다.'
+        );
+    }
+}
+
+export const checkTodoService = async ({
+    calendarId,
+    accessToken,
+    isCompleted,
+}: CheckTodoRequest): Promise<CheckTodoResponse> => {
+
+    try {
+
+        const response = await fetch(
+            `${BASE_SERVER_URL}/api/v1/calendar/todo/${calendarId}/check`,
+            {
+                method: 'PATCH',
+
+                headers: {
+                    Authorization:
+                        `Bearer ${accessToken}`,
+
+                    'Content-Type':
+                        'application/json',
+                },
+
+                body:
+                    JSON.stringify({
+                        isCompleted,
+                    }),
+            }
+        );
+
+
+        const result:
+            CheckTodoResponse =
+            await response.json();
+
+
+        // 성공
+        if (response.ok) {
+
+            return result;
+        }
+
+
+        // 400
+        if (response.status === 400) {
+
+            throw new Error(
+                result.message ||
+                '체크 상태를 변경할 수 없습니다.'
+            );
+        }
+
+
+        // 401
+        if (response.status === 401) {
+
+            throw new Error(
+                result.message ||
+                '로그인이 필요합니다.'
+            );
+        }
+
+
+        // 403
+        if (response.status === 403) {
+
+            throw new Error(
+                result.message ||
+                '본인의 Todo만 변경할 수 있습니다.'
+            );
+        }
+
+
+        // 404
+        if (response.status === 404) {
+
+            throw new Error(
+                result.message ||
+                'Todo를 찾을 수 없습니다.'
+            );
+        }
+
+
+        throw new Error(
+            result.message ||
+            'Todo 체크 상태 변경에 실패했습니다.'
+        );
+
+    } catch (error) {
+
+        if (error instanceof Error) {
+
+            throw error;
+        }
+
+        throw new Error(
+            '알 수 없는 오류가 발생했습니다.'
         );
     }
 };
