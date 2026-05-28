@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/pagination";
 
 import { SearchX } from "lucide-react";
+import MovePageBackBtn from "@/components/common/MovePageBackBtn";
 
 interface LectureListPageProps {
     searchParams: Promise<{
@@ -218,7 +219,8 @@ export default async function LectureListPage({
     };
 
     return (
-        <div className="p-12">
+        <div className="p-12 relative">
+            <MovePageBackBtn href="/student" />
 
             <div className="flex items-center gap-3 mb-4">
 

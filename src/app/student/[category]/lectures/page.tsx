@@ -18,6 +18,7 @@ import {
     SearchX
 } from "lucide-react";
 import StudentLectureNav from "@/features/lecture/components/student/StudentLectureNav";
+import MovePageBackBtn from "@/components/common/MovePageBackBtn";
 
 interface LectureListByCategoryProps {
     searchParams: Promise<{
@@ -237,8 +238,8 @@ export default async function LectureListByCategory({
     };
 
     return (
-        <div className="p-12">
-
+        <div className="p-12 relative">
+            <MovePageBackBtn href="/student" />
             <StudentLectureNav
                 category={category}
             />
