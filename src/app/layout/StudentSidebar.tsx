@@ -6,6 +6,7 @@ import chat from '../assets/img/message-square-more.svg'
 import calendar from '../assets/img/calendar-check.svg'
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import CreateReportBtn from '@/features/report/components/buttons/CreateReportBtn';
 
 export default function StudentSidebar() {
     return (
@@ -74,7 +75,7 @@ export default function StudentSidebar() {
                     <p className='text-lg text-slate-900 font-semibold'>Calendar</p>
                 </Button>
             </Link>
-            <Button variant="destructive" className='absolute w-15 bottom-5 right-5'>신고</Button>
+            <CreateReportBtn />
         </aside>
     );
 }

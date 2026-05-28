@@ -40,10 +40,20 @@ export default function StudentMainPage() {
             level: 2
         },
         {
+            position: "third",
+            category: "health",
+            level: 1
+        },
+        {
             position: "fourth",
             category: "cook",
             level: 3
-        }
+        },
+        {
+            position: "fifth",
+            category: "beauty",
+            level: 3
+        },
     ]
 
     return (
@@ -80,6 +90,15 @@ export default function StudentMainPage() {
                     </div>
                 );
             })}
+            <div className="absolute top-20 right-35">
+                <BuildingItem category="community" />
+            </div>
+            <div className="absolute top-60 right-35">
+                <BuildingItem category="mypage" />
+            </div>
+            <div className="absolute top-100 right-35">
+                <BuildingItem category="market" />
+            </div>
         </div>
     );
 }
