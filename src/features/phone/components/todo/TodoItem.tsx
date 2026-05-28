@@ -86,6 +86,11 @@ export default function TodoItem({
                             setTitle(e.target.value)
                         }
                         onBlur={handleEdit}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                handleEdit();
+                            }
+                        }}
                         autoFocus
                     />
                     <button

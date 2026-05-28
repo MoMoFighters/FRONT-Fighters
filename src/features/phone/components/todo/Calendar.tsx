@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import {
     useRouter,
@@ -55,6 +55,10 @@ export default function Calendar({
         )
 
     }, [schedules])
+
+    useEffect(() => {
+        router.push(`/student/phone/calendar?month=${initialDate}`)
+    }, [initialDate])
 
 
     const events = useMemo(() => {

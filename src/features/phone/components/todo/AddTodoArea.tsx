@@ -133,7 +133,11 @@ export default function AddTodoArea({
                         e.target.value
                     )
                 }
-                // onBlur={() => setIsAdding(false)}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                        handleAddTodo();
+                    }
+                }}
                 autoFocus
             />
 

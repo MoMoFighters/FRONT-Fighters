@@ -21,7 +21,6 @@ const BASE_SERVER_URL =
 
 
 
-// 투두 및 메모 목록 조회(1달치)
 export const getTodoList = async ({
     date,
     accessToken,
@@ -41,47 +40,50 @@ export const getTodoList = async ({
             }
         );
 
-        const result = await response.json();
 
-        if (!response.ok) {
-            throw new Error(result.message || "오류 발생")
+        const result:
+            GetTodoListResponse =
+            await response.json();
+
+
+        // 성공
+        if (response.ok) {
+
+            return result;
         }
+
+
+        // 400
+        if (response.status === 400) {
+
+            throw new Error(
+                result.message ||
+                '날짜는 필수 항목입니다.'
+            );
+        }
+
+
         // 401
         if (response.status === 401) {
 
-            const result:
-                GetTodoListResponse =
-                await response.json();
-
             throw new Error(
                 result.message ||
-                '다시 로그인 해주세요.'
+                'Authentication required.'
             );
         }
 
-        // 기타 에러
-        if (!response.ok) {
 
-            const result:
-                GetTodoListResponse =
-                await response.json();
-
-            throw new Error(
-                result.message ||
-                '월별 캘린더 조회에 실패했습니다.'
-            );
-        }
-
-        // 성공
-        // const result:
-        //     GetTodoListResponse =
-        //     await response.json();
-
-        return result;
+        throw new Error(
+            result.message ||
+            '월별 캘린더 조회에 실패했습니다.'
+        );
 
     } catch (error) {
 
+        console.error(error);
+
         if (error instanceof Error) {
+
             throw error;
         }
 
