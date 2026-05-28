@@ -133,6 +133,7 @@ export default function AddTodoArea({
                         e.target.value
                     )
                 }
+                // onBlur={() => setIsAdding(false)}
                 autoFocus
             />
 
