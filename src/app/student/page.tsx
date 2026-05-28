@@ -57,7 +57,7 @@ export default function StudentMainPage() {
     ]
 
     return (
-        <div className="relative w-full h-full">
+        <div className="relative w-full h-full scrollbar-hidden">
             <Image
                 src={city}
                 alt="도시배경"
