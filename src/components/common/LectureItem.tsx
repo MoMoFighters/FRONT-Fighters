@@ -8,10 +8,11 @@ import DeleteLectureBtn from "@/features/lecture/components/buttons/DeleteLectur
 import EnrollLectureBtn from "@/features/lecture/components/buttons/EnrollLectureBtn";
 import AcceptLectureBtn from "@/features/lecture/components/buttons/AcceptLectureBtn";
 import RejectLectureBtn from "@/features/lecture/components/buttons/RejectLectureBtn";
+import { Button } from "../ui/button";
 
 interface LectureItemProps {
     lecture: Lecture;
-    role?: string;
+    role: string;
     mode: string;
     href?: string;
     isEnrolled?: boolean;
@@ -44,7 +45,7 @@ export default function LectureItem({
     if (mode === "teacherList" && href) {
         return (
             <div
-                className="bg-white rounded-xl p-4 border border-slate-200 hover:bg-slate-50 hover:shadow-md transition-all cursor-pointer"
+                className="bg-white rounded-xl p-4 border border-slate-200 hover:bg-slate-50 hover:shadow-md transition-all cursor-pointer relative"
             >
                 <Link href={href}>
                     <div className="flex items-center gap-3">
@@ -63,13 +64,15 @@ export default function LectureItem({
                             {lecture.status === "waiting" && <p className="text-xs text-amber-600 font-medium">관리자 승인 대기중입니다</p>}
                             {lecture.status === "hold" && <div className="flex items-center gap-2">
                                 <p className="text-xs text-red-600 font-medium">승인 거절됨</p>
-                                <button className="ml-auto">
-                                    <Edit className="w-3 h-3 text-red-500 hover:text-red-700" />
-                                </button>
                             </div>}
                         </div>
                     </div>
                 </Link>
+                {lecture.status === "hold" && (<button className="ml-auto absolute bottom-3 right-3">
+                    <Link href={`/teacher/lectures/${lecture.id}/edit`}>
+                        <Edit className="w-3 h-3 text-red-500 hover:text-red-700" />
+                    </Link>
+                </button>)}
             </div>
         )
     }
@@ -116,6 +119,19 @@ export default function LectureItem({
                 )}
 
                 {role === "student" && !isEnrolled && <EnrollLectureBtn />}
+
+                {role === "teacher" && lecture.status !== "waiting" && (
+                    <div>
+                        <Link href={`/teacher/lectures/${lecture.id}/edit`}>
+                            <Button
+                                className="bg-blue-400 cursor-pointer hover:bg-blue-500 text-white font-semibold text-md py-6 px-6 rounded-md! absolute bottom-6 right-36"
+                            >
+                                수정하기
+                            </Button>
+                        </Link>
+                        <DeleteLectureBtn mode="text" id={lecture.id} />
+                    </div>
+                )}
             </div>
         )
     }
