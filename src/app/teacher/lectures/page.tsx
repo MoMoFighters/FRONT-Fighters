@@ -1,8 +1,9 @@
 import LectureItem from "@/components/common/LectureItem";
 import { Button } from "@/components/ui/button";
+import { SearchX } from "lucide-react";
 import Link from "next/link";
 
-interface TeacherLecture {
+export interface TeacherLecture {
     id: number;
     title: string;
     description: string;
@@ -13,23 +14,6 @@ interface TeacherLecture {
 }
 
 export default function TeacherLectureList() {
-
-
-    const categoryColors: Record<string, string> = {
-        health: 'bg-cyan-200',
-        beauty: 'bg-fuchsia-200',
-        cook: 'bg-orange-200',
-        study: 'bg-emerald-200',
-        art: 'bg-violet-200',
-    };
-
-    const categoryMap: Record<string, string> = {
-        study: '학습',
-        art: '예술',
-        cook: '요리',
-        health: '운동',
-        beauty: '뷰티',
-    };
 
     const dummyLectures: TeacherLecture[] = [
         { id: 1, title: '당구 300 6개월 정복기', description: '당구를 입문하려는 분들께 당구의 기본 원리에 대해 설명합니다.', category: 'study', rating: 4.0, status: 'active', studentCount: 128 },
@@ -70,8 +54,15 @@ export default function TeacherLectureList() {
                         </h3>
                     </div>
                     <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                        {activeLectures.length === 0 && (
+                            <div className="h-full flex flex-col justify-center items-center text-slate-400 text-sm font-mediaum">
+                                <SearchX className="w-8 h-8 text-slate-300"
+                                />
+                                진행 중인 강의가 존재하지 않습니다.
+                            </div>
+                        )}
                         {activeLectures.map((lecture) => (
-                            <LectureItem key={lecture.id} mode="teacherList" lecture={lecture} href={`/teacher/lectures/${lecture.id}`} />
+                            <LectureItem key={lecture.id} role="teacher" mode="teacherList" lecture={lecture} href={`/teacher/lectures/${lecture.id}`} />
                         ))}
                     </div>
                 </div>
@@ -85,8 +76,15 @@ export default function TeacherLectureList() {
                         </h3>
                     </div>
                     <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                        {waitingLectures.length === 0 && (
+                            <div className="h-full flex flex-col justify-center items-center text-slate-400 text-sm font-mediaum">
+                                <SearchX className="w-8 h-8 text-slate-300"
+                                />
+                                승인 대기중인 강의가 존재하지 않습니다.
+                            </div>
+                        )}
                         {waitingLectures.map((lecture) => (
-                            <LectureItem key={lecture.id} mode="teacherList" lecture={lecture} href={`/teacher/lectures/${lecture.id}`} />
+                            <LectureItem key={lecture.id} role="teacher" mode="teacherList" lecture={lecture} href={`/teacher/lectures/${lecture.id}`} />
                         ))}
                     </div>
                 </div>
@@ -100,9 +98,17 @@ export default function TeacherLectureList() {
                         </h3>
                     </div>
                     <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                        {holdLectures.length === 0 && (
+                            <div className="h-full flex flex-col justify-center items-center text-slate-400 text-sm font-mediaum">
+                                <SearchX className="w-8 h-8 text-slate-300"
+                                />
+                                승인 거절된 강의가 존재하지 않습니다.
+                            </div>
+                        )}
                         {holdLectures.map((lecture) => (
-                            <LectureItem key={lecture.id} mode="teacherList" lecture={lecture} href={`/teacher/lectures/${lecture.id}`} />
+                            <LectureItem key={lecture.id} role="teacher" mode="teacherList" lecture={lecture} href={`/teacher/lectures/${lecture.id}`} />
                         ))}
+
                     </div>
                 </div>
             </div>
