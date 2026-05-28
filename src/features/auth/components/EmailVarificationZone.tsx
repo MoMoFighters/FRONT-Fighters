@@ -121,8 +121,8 @@ export default function EmailVerificationZone({
                         <div className="flex gap-2 min-w-0">
                             <input
                                 className={`border border-slate-300 py-2 px-2 flex-1 min-w-0 h-10
-                                ${isEmailVerified ? "bg-gray-200 text-slate-500" : "text-slate-700"}
-                                [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none
+                                    ${isEmailVerified ? "bg-gray-200 text-slate-500" : "text-slate-700"}
+                                    [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none
                                 focus:outline-none focus:border-slate-500 transition-colors`}
                                 type="number"
                                 placeholder="인증번호"
