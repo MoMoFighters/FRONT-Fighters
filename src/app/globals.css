@@ -192,3 +192,7 @@
 .fc-daygrid-day-frame {
   height: 91px;
 }
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}

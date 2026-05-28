@@ -1,5 +1,5 @@
 import AUthHeader from "../layout/AuthHeader";
-import Footer from "../layout/Footer";
+import FooterVisibility from "../layout/FooterVisibility";
 import StudentSidebar from "../layout/StudentSidebar";
 
 export default function StudentLayout({
@@ -29,6 +29,7 @@ export default function StudentLayout({
                         ml-60
                         flex-1
                         h-[calc(100vh-64px)]
+                        scrollbar-none
                         overflow-y-auto
                     "
                 >
@@ -38,7 +39,7 @@ export default function StudentLayout({
                             {children}
                         </div>
 
-                        <Footer />
+                        <FooterVisibility />
 
                     </div>
                 </main>
