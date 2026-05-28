@@ -1,6 +1,6 @@
 import Image from "next/image";
 import logo from '@/app/assets/img/header_logo.png'
-import SignupForm from "@/features/auth/SignupForm";
+import SignupForm from "@/features/auth/components/SignupForm";
 
 export default function Signup() {
     return (

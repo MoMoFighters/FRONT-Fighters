@@ -1,8 +1,8 @@
 import LectureItem from "@/components/common/LectureItem";
 
-import LectureManageNav from "@/features/lecture/admin/LectureManageNav";
-import LectureFilterBtn from "@/features/lecture/LectureFilterBtn";
-import LectureSearchbar from "@/features/lecture/LectureSearchbar";
+import LectureManageNav from "@/features/lecture/components/admin/LectureManageNav";
+import LectureFilterBtn from "@/features/lecture/components/buttons/LectureFilterBtn";
+import LectureSearchbar from "@/features/lecture/components/common/LectureSearchbar";
 
 import {
     Pagination,

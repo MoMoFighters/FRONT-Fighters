@@ -1,8 +1,8 @@
 import LectureItem from "@/components/common/LectureItem";
 import MovePageBackBtn from "@/components/common/MovePageBackBtn";
 import { Lecture } from "../page";
-import LectureDetailNav from "@/features/lecture/LectureDetailNav";
-import LectureDetailList from "@/features/lecture/LectureDetailList";
+import LectureDetailNav from "@/features/lecture/components/common/LectureDetailNav";
+import LectureDetailList from "@/features/lecture/components/common/LectureDetailList";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
 export interface Chapter {

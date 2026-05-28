@@ -2,7 +2,7 @@ import { Lecture } from "@/app/admin/lectures/page";
 
 import LectureItem from "@/components/common/LectureItem";
 
-import LectureSearchbar from "@/features/lecture/LectureSearchbar";
+import LectureSearchbar from "@/features/lecture/components/common/LectureSearchbar";
 import StudentLectureNav from "@/features/lecture/StudentLectureNav";
 
 import {

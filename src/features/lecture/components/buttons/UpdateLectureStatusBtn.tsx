@@ -11,7 +11,7 @@ import {
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 
-import TwoButtonModal from "@/features/common/TwoButtonModal";
+import TwoButtonModal from "@/features/modal/TwoButtonModal";
 import { toast } from "sonner";
 
 type ModalType =

@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import logo from '@/app/assets/img/header_logo.png'
-import EmailInputModal from "@/features/auth/EmailInputModal";
-import LoginForm from "@/features/auth/LoginForm";
+import EmailInputModal from "@/features/auth/components/EmailInputModal";
+import LoginForm from "@/features/auth/components/LoginForm";
 
 export default function Login() {
     return (

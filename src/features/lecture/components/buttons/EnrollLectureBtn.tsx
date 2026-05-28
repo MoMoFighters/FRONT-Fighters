@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from "@/components/ui/button";
-import TwoButtonModal from "@/features/common/TwoButtonModal";
+import TwoButtonModal from "@/features/modal/TwoButtonModal";
 import { toast } from "sonner";
 
 export default function EnrollLectureBtn() {

@@ -3,8 +3,8 @@ import { Lecture } from "@/app/admin/lectures/page";
 import LectureItem from "@/components/common/LectureItem";
 import MovePageBackBtn from "@/components/common/MovePageBackBtn";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
-import LectureDetailList from "@/features/lecture/LectureDetailList";
-import LectureDetailNav from "@/features/lecture/LectureDetailNav";
+import LectureDetailList from "@/features/lecture/components/common/LectureDetailList";
+import LectureDetailNav from "@/features/lecture/components/common/LectureDetailNav";
 
 interface LectureByCategoryDetailProps {
     params: Promise<{

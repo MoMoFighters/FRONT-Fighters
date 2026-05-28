@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import close from '@/app/assets/img/close.svg'
 import ChatItem from "./ChatItem";
-import MessageInputBox from "@/features/phone/chat/MessageInputBox";
+import MessageInputBox from "@/features/phone/components/chat/MessageInputBox";
 
 interface ChatItem {
     id: number;

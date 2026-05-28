@@ -1,6 +1,6 @@
 import { User } from "@/app/admin/users/page";
-import UpdateUserStatusBtn from "./buttons/UpdateUserStatusBtn";
-import DownloadProofDocBtn from "./buttons/DownloadProofDocBtn";
+import UpdateUserStatusBtn from "../buttons/UpdateUserStatusBtn";
+import DownloadProofDocBtn from "../buttons/DownloadProofDocBtn";
 import { SearchX } from "lucide-react";
 
 interface AdminUsersListProps {

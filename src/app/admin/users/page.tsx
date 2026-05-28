@@ -7,9 +7,9 @@ import {
     PaginationPrevious,
 } from "@/components/ui/pagination";
 
-import AdminUsersList from "@/features/user/admin/AdminUsersList";
-import UserManageNav from "@/features/user/admin/UserManageNav";
-import UserManageSearchbar from "@/features/user/admin/UserManageSearchbar";
+import AdminUsersList from "@/features/user/components/admin/AdminUsersList";
+import UserManageNav from "@/features/user/components/admin/UserManageNav";
+import UserManageSearchbar from "@/features/user/components/admin/UserManageSearchbar";
 
 // 나중에 타입 정의를 쭉 할 때 erd 에서 enum 타입인건 우리도 enum 타입으로 정의 해주기
 export interface User {
