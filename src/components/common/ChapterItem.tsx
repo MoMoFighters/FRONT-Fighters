@@ -56,7 +56,7 @@ export default function ChapterItem({ isEnrolled, chapter, role }: {
                 {/* Info */}
                 <div className="flex-1 min-w-0">
                     <h3 className="text-slate-900 mb-2 text-md font-semibold">Chapter {chapter.orderNo}.</h3>
-                    <p className="text-slate-500 text-sm">{chapter.title}</p>
+                    <p className="text-slate-500 text-sm truncate">{chapter.title}</p>
                 </div>
 
                 {/* Duration */}
