@@ -6,6 +6,7 @@ import chat from '../assets/img/message-square-more.svg'
 import calendar from '../assets/img/calendar-check.svg'
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import CreateReportBtn from '@/features/report/components/buttons/CreateReportBtn';
 
 export default function StudentSidebar() {
     return (
@@ -27,54 +28,54 @@ export default function StudentSidebar() {
                         className="my-2.5"
                         priority
                     />
-                    <p className='text-lg text-slate-900 font-semibold'>Profile</p>
+                    <p className='text-[16px] text-slate-900 font-semibold'>Profile</p>
                 </Button>
             </Link>
             <Link href="/student/payments">
-                <Button variant="ghost" className='flex w-55 gap-2.5 justify-start mt-5 py-5'>
+                <Button variant="ghost" className='flex w-55 gap-2.5 justify-start mt-3 py-5'>
                     <Image
                         src={credit}
                         alt="카드 아이콘"
                         className="my-2.5"
                         priority
                     />
-                    <p className='text-lg text-slate-900 font-semibold'>Payments</p>
+                    <p className='text-[16px] text-slate-900 font-semibold'>Payments</p>
                 </Button>
             </Link>
             <Link href="/student/library">
-                <Button variant="ghost" className='flex w-55 gap-2.5 justify-start mt-5 py-5'>
+                <Button variant="ghost" className='flex w-55 gap-2.5 justify-start mt-3 py-5'>
                     <Image
                         src={community}
                         alt="커뮤니티 아이콘"
                         className="my-2.5"
                         priority
                     />
-                    <p className='text-lg text-slate-900 font-semibold'>Community</p>
+                    <p className='text-[16px] text-slate-900 font-semibold'>Community</p>
                 </Button>
             </Link>
             <Link href="/student/phone/friends">
-                <Button variant="ghost" className='flex w-55 gap-2.5 justify-start mt-5 py-5'>
+                <Button variant="ghost" className='flex w-55 gap-2.5 justify-start mt-3 py-5'>
                     <Image
                         src={chat}
                         alt="채팅 아이콘"
                         className="my-2.5"
                         priority
                     />
-                    <p className='text-lg text-slate-900 font-semibold'>Chat</p>
+                    <p className='text-[16px] text-slate-900 font-semibold'>Chat</p>
                 </Button>
             </Link>
             <Link href="/student/phone/calendar">
-                <Button variant="ghost" className='flex w-55 gap-2.5 justify-start mt-5 py-5'>
+                <Button variant="ghost" className='flex w-55 gap-2.5 justify-start mt-3 py-5'>
                     <Image
                         src={calendar}
                         alt="달력 아이콘"
                         className="my-2.5"
                         priority
                     />
-                    <p className='text-lg text-slate-900 font-semibold'>Calendar</p>
+                    <p className='text-[16px] text-slate-900 font-semibold'>Calendar</p>
                 </Button>
             </Link>
-            <Button variant="destructive" className='absolute w-15 bottom-5 right-5'>신고</Button>
+            <CreateReportBtn />
         </aside>
     );
 }

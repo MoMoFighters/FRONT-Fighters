@@ -12,15 +12,12 @@ export default function GuestHeader() {
                         src={logo}
                         alt="MOMOCITY 로고"
                         className="mt-3"
-                        width={180}
-                        height={40}
+                        width={150}
+                        height={20}
                         priority
                     />
                 </Link>
                 <div className="flex gap-2 mr-4">
-                    <Link href="/">
-                        <Button variant="ghost">홈</Button>
-                    </Link>
                     <Link href="/auth/login">
                         <Button variant="ghost">로그인</Button>
                     </Link>
