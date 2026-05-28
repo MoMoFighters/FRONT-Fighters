@@ -308,13 +308,39 @@ export const tempPwService = async (
 };
 
 
+export type LogoutServiceResponse = {
+    success: boolean;
+    message: string;
+};
+
+export const logoutService = async (
+    accessToken: string,
+    refreshToken: string
+): Promise<LogoutServiceResponse> => {
+
+    const res = await fetch(`${BASE_SERVER_URL}/api/v1/auth/logout`, {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Refresh-Token": refreshToken,
+        },
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        throw new Error(data?.message || "로그아웃 실패");
+    }
+
+    return data;
+};
+
 
 
 
 // 카카오 API 관련 서비스 함수
 
 import { EmailVerifyForm, KakaoLoginResponse, LoginRequest, LoginResponse, LoginSuccessResponse, SendEmailCodeForm, SendEmailCodeResponse, StudentSignupForm, TeacherSignupForm, TempPwResponse } from "@/features/auth/type";
-import { redirect } from "next/navigation";
 
 const BASE_SERVER_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 

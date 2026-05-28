@@ -8,6 +8,7 @@ import { useActionState, useEffect, useState } from "react";
 import Link from "next/link";
 import { GOOGLE_AUTH_LINK, javascriptkey } from "@/lib/config/oauth/oauthAPI";
 import { loginAction, loginSuccessAction } from "../action";
+import LoginSuccessModal from "./LoginSuccessModal";
 
 export default function LoginForm() {
     const googleAuthLink = GOOGLE_AUTH_LINK;
@@ -122,23 +123,7 @@ export default function LoginForm() {
 
             </div>
             {isModal ? (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                    <div className="bg-white px-5 pb-8 pt-3 w-[40vw]  rounded flex flex-col justify-center align-middle">
-                        <p className="text-xl font-bold">
-                            {state.success
-                                ? "로그인 성공"
-                                : "로그인 실패"}
-                        </p>
-                        <p>
-                            {state.message}
-                        </p>
-                        <Button
-                            onClick={handleLoginSuccess}
-                        >
-                            확인
-                        </Button>
-                    </div>
-                </div>
+                <LoginSuccessModal setIsModal={setIsModal} state={state} />
             ) : ""}
         </>
     );
