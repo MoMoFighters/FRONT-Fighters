@@ -1,79 +1,31 @@
-import Calendar from "@/features/phone/components/todo/Calendar"
+
+import { getCalendarSchedulesAction } from '@/features/phone/action';
+import Calendar from '@/features/phone/components/todo/Calendar';
+import { ScheduleItem } from '@/features/phone/type';
 
 
-interface ScheduleItem {
-    id: number
-    userId: number
 
-    start: string
-    end: string | null
-
-    title: string
-
-    category: 'todo' | 'memo'
-
-    isCompleted: boolean
-
-    createdAt: string
+interface CalendarPageProps {
+    searchParams: Promise<{
+        month?: string;
+    }>;
 }
 
-export default async function CalendarPage() {
+export default async function CalendarPage({
+    searchParams,
+}: CalendarPageProps) {
 
-    /*
-      TODO:
-      API 연동 예정
-    */
+    const { month } = await searchParams;
+    const date = month as string;
 
-    // const response = await fetch(...)
-    // const schedules = await response.json()
 
-    // calendar 데이터 패칭 받기
-    const schedules: ScheduleItem[] = [
-        {
-            id: 1,
-            userId: 1,
-            start: '2026-06-10',
-            end: null,
-            title: '수학 과제 하기',
-            category: 'todo',
-            isCompleted: false,
-            createdAt: '2026-06-09',
-        },
 
-        {
-            id: 2,
-            userId: 1,
-            start: '2026-06-10',
-            end: null,
-            title: '영단어 암기',
-            category: 'todo',
-            isCompleted: true,
-            createdAt: '2026-06-09',
-        },
 
-        {
-            id: 3,
-            userId: 1,
-            start: '2026-06-10',
-            end: null,
-            title: '헬스장 가기',
-            category: 'todo',
-            isCompleted: false,
-            createdAt: '2026-06-09',
-        },
-        {
-            id: 4,
-            userId: 1,
-            start: '2026-06-10',
-            end: null,
-            title: '헬스장 가기',
-            category: 'todo',
-            isCompleted: false,
-            createdAt: '2026-06-09',
-        },
-    ]
+    const schedules = await getCalendarSchedulesAction({ date });
+
+    console.log(schedules);
 
     return (
         <Calendar schedules={schedules} />
-    )
-}
+    );
+} 
