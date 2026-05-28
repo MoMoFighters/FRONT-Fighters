@@ -20,6 +20,7 @@ export default function ChapterItem({ isEnrolled, chapter, role }: {
     const filter = searchParams.get("filter");
 
     const handleMoveChapterClick = () => {
+        if (role === "teacher") return;
         if (role === "student" && !isEnrolled) return;
 
         const queryString = filter
@@ -36,9 +37,10 @@ export default function ChapterItem({ isEnrolled, chapter, role }: {
     return (
         <div>
             <div onClick={handleMoveChapterClick}
-                className={`flex items-center gap-6 p-4 rounded-lg ${role === "student" && !isEnrolled ?
-                    'bg-slate-50' :
-                    'bg-white cursor-pointer transition-all hover:shadow-md hover:-translate-y-0.5 hover:border-slate-300'} 
+                className={`flex items-center gap-6 p-4 rounded-lg ${(role === "student" && isEnrolled) || role === "admin" ?
+                    'bg-white cursor-pointer transition-all hover:shadow-md hover:-translate-y-0.5 hover:border-slate-300'
+                    : 'bg-slate-50'
+                    } 
                     border border-slate-200 mb-4
                     }`}
             >

@@ -2,7 +2,7 @@ import LectureItem from "@/components/common/LectureItem";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
-interface TeacherLecture {
+export interface TeacherLecture {
     id: number;
     title: string;
     description: string;
@@ -13,23 +13,6 @@ interface TeacherLecture {
 }
 
 export default function TeacherLectureList() {
-
-
-    const categoryColors: Record<string, string> = {
-        health: 'bg-cyan-200',
-        beauty: 'bg-fuchsia-200',
-        cook: 'bg-orange-200',
-        study: 'bg-emerald-200',
-        art: 'bg-violet-200',
-    };
-
-    const categoryMap: Record<string, string> = {
-        study: '학습',
-        art: '예술',
-        cook: '요리',
-        health: '운동',
-        beauty: '뷰티',
-    };
 
     const dummyLectures: TeacherLecture[] = [
         { id: 1, title: '당구 300 6개월 정복기', description: '당구를 입문하려는 분들께 당구의 기본 원리에 대해 설명합니다.', category: 'study', rating: 4.0, status: 'active', studentCount: 128 },
