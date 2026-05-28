@@ -78,7 +78,7 @@ export default function StudentMainPage() {
                             ${POSITION_STYLE[position]}
                         `}
                     >
-                        {building ? (
+                        {building?.position ? (
 
                             <BuildingItem
                                 category={building.category}
