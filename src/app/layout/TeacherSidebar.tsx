@@ -6,6 +6,7 @@ import community from '../assets/img/users.svg'
 import chat from '../assets/img/message-circle.svg'
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import CreateReportBtn from '@/features/report/components/buttons/CreateReportBtn';
 
 export default function TeacherSidebar() {
     return (
@@ -27,43 +28,43 @@ export default function TeacherSidebar() {
                         className="my-2.5"
                         priority
                     />
-                    <p className='text-lg text-slate-900 font-semibold'>홈</p>
+                    <p className='text-[16px] text-slate-900 font-semibold'>홈</p>
                 </Button>
             </Link>
             <Link href="/teacher/lectures">
-                <Button variant="ghost" className='flex w-55 gap-2.5 justify-start mt-5 py-5'>
+                <Button variant="ghost" className='flex w-55 gap-2.5 justify-start mt-3 py-5'>
                     <Image
                         src={folder}
                         alt="폴더 아이콘"
                         className="my-2.5"
                         priority
                     />
-                    <p className='text-lg text-slate-900 font-semibold'>내 강의</p>
+                    <p className='text-[16px] text-slate-900 font-semibold'>내 강의</p>
                 </Button>
             </Link>
             <Link href="/teacher/community">
-                <Button variant="ghost" className='flex w-55 gap-2.5 justify-start mt-5 py-5'>
+                <Button variant="ghost" className='flex w-55 gap-2.5 justify-start mt-3 py-5'>
                     <Image
                         src={community}
                         alt="커뮤니티 아이콘"
                         className="my-2.5"
                         priority
                     />
-                    <p className='text-lg text-slate-900 font-semibold'>커뮤니티</p>
+                    <p className='text-[16px] text-slate-900 font-semibold'>커뮤니티</p>
                 </Button>
             </Link>
             <Link href="/teacher/ask">
-                <Button variant="ghost" className='flex w-55 gap-2.5 justify-start mt-5 py-5'>
+                <Button variant="ghost" className='flex w-55 gap-2.5 justify-start mt-3 py-5'>
                     <Image
                         src={chat}
                         alt="채팅 아이콘"
                         className="my-2.5"
                         priority
                     />
-                    <p className='text-lg text-slate-900 font-semibold'>1:1 문의</p>
+                    <p className='text-[16px] text-slate-900 font-semibold'>1:1 문의</p>
                 </Button>
             </Link>
-            <Button variant="destructive" className='absolute w-15 bottom-5 right-5'>신고</Button>
+            <CreateReportBtn />
 
         </aside>
     );
