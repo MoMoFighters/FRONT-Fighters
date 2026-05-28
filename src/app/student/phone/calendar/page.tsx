@@ -1,4 +1,4 @@
-import Calendar from "@/features/phone/todo/Calendar"
+import Calendar from "@/features/phone/components/todo/Calendar"
 
 
 interface ScheduleItem {

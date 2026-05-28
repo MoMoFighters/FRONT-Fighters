@@ -1,4 +1,4 @@
-import UpdateFriendStatusBtn from "@/features/phone/buttons/UpdateFriendStatusBtn";
+import UpdateFriendStatusBtn from "@/features/phone/components/buttons/UpdateFriendStatusBtn";
 import Image from "next/image";
 import user from '@/app/assets/img/user.svg'
 

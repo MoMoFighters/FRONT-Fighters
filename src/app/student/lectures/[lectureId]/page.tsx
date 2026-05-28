@@ -2,8 +2,8 @@ import { Chapter, Review } from "@/app/admin/lectures/[lectureId]/page";
 import { Lecture } from "@/app/admin/lectures/page";
 import LectureItem from "@/components/common/LectureItem";
 import MovePageBackBtn from "@/components/common/MovePageBackBtn";
-import LectureDetailList from "@/features/lecture/LectureDetailList";
-import LectureDetailNav from "@/features/lecture/LectureDetailNav";
+import LectureDetailList from "@/features/lecture/components/common/LectureDetailList";
+import LectureDetailNav from "@/features/lecture/components/common/LectureDetailNav";
 import {
     Pagination,
     PaginationContent,

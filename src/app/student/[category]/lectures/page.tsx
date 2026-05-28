@@ -2,8 +2,7 @@ import { Lecture } from "@/app/admin/lectures/page";
 
 import LectureItem from "@/components/common/LectureItem";
 
-import LectureSearchbar from "@/features/lecture/LectureSearchbar";
-import StudentLectureNav from "@/features/lecture/StudentLectureNav";
+import LectureSearchbar from "@/features/lecture/components/common/LectureSearchbar";
 
 import {
     Pagination,
@@ -18,6 +17,7 @@ import {
     BookOpen,
     SearchX
 } from "lucide-react";
+import StudentLectureNav from "@/features/lecture/components/student/StudentLectureNav";
 
 interface LectureListByCategoryProps {
     searchParams: Promise<{

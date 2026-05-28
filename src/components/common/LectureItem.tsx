@@ -3,11 +3,11 @@ import Link from "next/link";
 import { Lecture } from "@/app/admin/lectures/page";
 import { Edit, Star } from "lucide-react";
 
-import UpdateLectureStatusBtn from "@/features/lecture/admin/buttons/UpdateLectureStatusBtn";
-import DeleteLectureBtn from "@/features/lecture/buttons/DeleteLectureBtn";
-import EnrollLectureBtn from "@/features/lecture/buttons/EnrollLectureBtn";
-import AcceptLectureBtn from "@/features/lecture/buttons/AcceptLectureBtn";
-import RejectLectureBtn from "@/features/lecture/buttons/RejectLectureBtn";
+import UpdateLectureStatusBtn from "@/features/lecture/components/buttons/UpdateLectureStatusBtn";
+import DeleteLectureBtn from "@/features/lecture/components/buttons/DeleteLectureBtn";
+import EnrollLectureBtn from "@/features/lecture/components/buttons/EnrollLectureBtn";
+import AcceptLectureBtn from "@/features/lecture/components/buttons/AcceptLectureBtn";
+import RejectLectureBtn from "@/features/lecture/components/buttons/RejectLectureBtn";
 
 interface LectureItemProps {
     lecture: Lecture;
