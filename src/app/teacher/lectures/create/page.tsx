@@ -1,4 +1,4 @@
-import LectureForm from "@/features/lecture/teacher/LectureForm";
+import LectureForm from "@/features/lecture/components/teacher/LectureForm";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
