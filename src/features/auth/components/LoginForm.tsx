@@ -1,4 +1,5 @@
 'use client'
+import { Eye, EyeOff } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
@@ -11,6 +12,8 @@ import { loginAction, loginSuccessAction } from "../action";
 
 export default function LoginForm() {
     const googleAuthLink = GOOGLE_AUTH_LINK;
+
+    const [showPassword, setShowPassword] = useState(false);
 
 
     const handleKakaoLogin = () => {
@@ -82,15 +85,58 @@ export default function LoginForm() {
                         placeholder="이메일 입력"
                     />
                     <div className="max-w-md">
-                        <input
-                            type="password"
-                            name="password"
-                            className="border border-slate-300 py-2 px-2 w-full text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-slate-500 transition-colors"
-                            placeholder="비밀번호 입력"
-                        />
+
+                        <div className="relative">
+
+                            <input
+                                type={
+                                    showPassword
+                                        ? "text"
+                                        : "password"
+                                }
+                                name="password"
+                                className="
+                border border-slate-300
+                py-2 px-2
+                w-full
+                pr-10
+                text-slate-700
+                placeholder:text-slate-400
+                focus:outline-none
+                focus:border-slate-500
+                transition-colors
+            "
+                                placeholder="비밀번호 입력"
+                            />
+
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    setShowPassword((prev) => !prev)
+                                }
+                                className="
+                absolute
+                right-3
+                top-1/2
+                -translate-y-1/2
+                text-slate-500
+            "
+                            >
+                                {
+                                    showPassword
+                                        ? <EyeOff size={18} />
+                                        : <Eye size={18} />
+                                }
+                            </button>
+
+                        </div>
+
                         {nothingInFieldError ? (
-                            <p className="text-right mr-2 text-red-600 font-medium">{nothingInFieldError}</p>
+                            <p className="text-right mr-2 text-red-600 font-medium">
+                                {nothingInFieldError}
+                            </p>
                         ) : ("")}
+
                     </div>
                     <Button
                         variant="default"

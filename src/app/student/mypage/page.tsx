@@ -1,4 +1,5 @@
 import MomoResidentCard from "@/components/mypage/MomoResidentCard";
+import MyBuildingInfo from "@/components/mypage/MyBuildingInfo";
 import MyInfoTable from "@/components/mypage/MyInfoTable";
 import MyPageNav from "@/components/mypage/MyPageNav";
 
@@ -11,7 +12,6 @@ export default function MyPage() {
         nickname: '모모시민',
         // date값 받아와서 yymmdd로
         createdAt: 111111,
-        address: '대한민국 모모시 모모구 모모로 69길',
         issueDate: '2025. 11. 28',
         email: 'momocity@momo.kr',
         points: 3200,
@@ -30,7 +30,7 @@ export default function MyPage() {
                     </div>
                     <div className="flex flex-col py-2">
                         <p className="text-lg font-bold">보유 건물 현황</p>
-                        <MyInfoTable data={USER_DATA} />
+                        <MyBuildingInfo data={USER_DATA} />
                     </div>
                 </div>
             </div>

@@ -9,7 +9,6 @@ export default function MomoResidentCard({ data }: {
         name: string;
         nickname: string;
         createdAt: number;
-        address: string;
         issueDate: string;
         email: string;
         points: number
