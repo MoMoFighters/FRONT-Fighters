@@ -18,9 +18,6 @@ export default function GuestHeader() {
                     />
                 </Link>
                 <div className="flex gap-2 mr-4">
-                    <Link href="/">
-                        <Button variant="ghost">홈</Button>
-                    </Link>
                     <Link href="/auth/login">
                         <Button variant="ghost">로그인</Button>
                     </Link>
