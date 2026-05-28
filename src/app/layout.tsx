@@ -13,8 +13,9 @@ export default function RootLayout({
 
         {/* Kakao SDK */}
         <Script
-          src="https://developers.kakao.com/sdk/js/kakao.js"
-          strategy="beforeInteractive"
+          id="kakao-sdk"
+          src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js"
+          strategy="afterInteractive"
         />
 
         {children}
