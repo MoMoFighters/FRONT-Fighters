@@ -12,9 +12,9 @@ interface Building {
 const POSITION_STYLE = {
     first: "top-30 left-20",
     second: "top-30 left-70",
-    third: "top-30 left-120",
+    third: "top-30 left-115",
     fourth: "top-110 left-50",
-    fifth: "top-110 left-110",
+    fifth: "top-110 left-105",
 };
 
 const POSITIONS = [
@@ -90,12 +90,15 @@ export default function StudentMainPage() {
                     </div>
                 );
             })}
+            {/* 도서관 위치 고정 */}
             <div className="absolute top-20 right-35">
                 <BuildingItem category="community" />
             </div>
+            {/* 집 위치 고정 */}
             <div className="absolute top-60 right-35">
                 <BuildingItem category="mypage" />
             </div>
+            {/* 포인트 상점 위치 고정 */}
             <div className="absolute top-100 right-35">
                 <BuildingItem category="market" />
             </div>
