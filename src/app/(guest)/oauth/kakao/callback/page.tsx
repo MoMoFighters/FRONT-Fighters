@@ -2,7 +2,8 @@
 
 import { useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { kakaoLogin } from '@/lib/services/auth/service';
+import { kakaoLogin } from '@/app/services/auth/service';
+
 
 export default function KakaoCallbackPage() {
 

@@ -19,7 +19,7 @@
 
 // 카카오 API 관련 서비스 함수
 
-import { KakaoLoginResponse } from "@/types/auth/auth";
+import { KakaoLoginResponse } from "@/features/auth/type";
 
 const BASE_SERVER_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
