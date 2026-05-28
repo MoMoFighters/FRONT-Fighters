@@ -12,7 +12,7 @@ export default function GuestLayout({
                 <GuestHeader />
             </div>
             <div className="pt-16 h-full">
-                <main className="bg-slate-50 p-12 flex-1">
+                <main className="bg-slate-50 pb-12 flex-1">
                     {children}
                 </main>
             </div>
