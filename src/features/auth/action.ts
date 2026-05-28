@@ -4,6 +4,7 @@ import {
     emailVerifyService,
     loginService,
     loginSuccessService,
+    logoutService,
     sendEmailCodeService,
     studentSignupService,
     teacherSignupService,
@@ -293,6 +294,55 @@ export const tempPwAction = async (
                 error instanceof Error
                     ? error.message
                     : '임시 비밀번호 발급에 실패하였습니다.',
+        };
+    }
+};
+
+
+export type LogoutActionState = {
+    success: boolean;
+    message: string;
+};
+
+export const logoutAction = async (): Promise<LogoutActionState> => {
+
+    try {
+        const cookieStore = await cookies();
+
+        const accessToken = cookieStore.get("accessToken")?.value;
+        const refreshToken = cookieStore.get("refreshToken")?.value;
+
+        console.log("1. ACTION START");
+        console.log("2. tokens:", accessToken, refreshToken);
+
+        // 토큰 없으면 바로 처리
+        if (!accessToken || !refreshToken) {
+            return {
+                success: false,
+                message: "다시 로그인 해주세요.",
+            };
+        }
+        console.log("3. BEFORE SERVICE");
+        // 서버 로그아웃 요청
+        await logoutService(accessToken, refreshToken);
+        console.log("4. AFTER SERVICE");
+        // 쿠키 삭제
+        cookieStore.delete("accessToken");
+        cookieStore.delete("refreshToken");
+
+        return {
+            success: true,
+            message: "로그아웃 되었습니다.",
+        };
+
+    } catch (error) {
+
+        return {
+            success: false,
+            message:
+                error instanceof Error
+                    ? error.message
+                    : "로그아웃에 실패하였습니다.",
         };
     }
 };

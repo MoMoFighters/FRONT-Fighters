@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import logo from '../assets/img/header_logo.png'
 import { Button } from "@/components/ui/button";
+import LogoutBtn from "@/components/common/LogoutBtn";
 
 export default function AUthHeader({ role }: { role: string }) {
     return (
@@ -24,7 +25,7 @@ export default function AUthHeader({ role }: { role: string }) {
                         <Button variant="outline" className="rounded-none text-slate-500 text-xs h-6 mr-4">연장</Button>
                         <Button variant="ghost">홈</Button>
                     </Link>
-                    <Button variant="ghost">로그아웃</Button>
+                    <LogoutBtn />
                 </div>
             </div>
         </header>
