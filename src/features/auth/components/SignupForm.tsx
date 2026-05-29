@@ -1009,16 +1009,16 @@ export default function SignupForm() {
                     setEmailValidationClicked(true);
 
                     // ✅ 200 OK 구조 데이터 접근: result.data.expiresIn (안전하게 내차 대안값 180 적용)
-                    const serverExpiresIn = result?.data?.expiresIn || 180;
+                    const serverExpiresIn = result?.expiresIn || 180;
                     setTimeLeft(serverExpiresIn);
 
                     // 성공 안내 문구를 이메일 하단에 표기 (인증 코드가 이메일로 전송되었습니다.)
-                    setEmailError(result?.data?.message || "인증 코드가 이메일로 전송되었습니다.");
+                    setEmailError(result?.message || "인증 코드가 이메일로 전송되었습니다.");
                 } else {
                     // ❌ 실패 분기 처리 (400 중복, 400 형식오류, 500 서버에러)
-                    if (result?.errors?.email) {
+                    if (result?.message) {
                         // 실패 2 케이스 처리: 중첩 객체 내부 메시지 파싱
-                        setEmailError(result.errors.email);
+                        setEmailError(result.message);
                     } else {
                         // 실패 1, 3 케이스 처리: 일반 message 속성 파싱
                         setEmailError(result?.message || "인증번호 발송 실패. 다시 시도해 주세요.");
