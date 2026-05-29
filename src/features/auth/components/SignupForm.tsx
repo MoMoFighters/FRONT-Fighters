@@ -1145,7 +1145,7 @@ export default function SignupForm() {
                                 setEmail(e.target.value);
                                 if (emailError) setEmailError(null);
                             }}
-                            disabled={emailValidated}
+                            readOnly={emailValidated}
                             className="border border-slate-300 py-2 px-2 flex-1 min-w-0 h-10 text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-slate-500 transition-colors disabled:bg-slate-100"
                             placeholder="이메일"
                         />

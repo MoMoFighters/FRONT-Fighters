@@ -2,6 +2,7 @@
 
 import {
     authRefresh,
+    AuthRefreshResponse,
     emailVerifyService,
     loginService,
     loginSuccessService,
@@ -351,11 +352,10 @@ export const logoutAction = async (): Promise<LogoutActionState> => {
 
 // 로그인 연장 액션 함수
 
-const authRefreshAction = async () => {
+export const authRefreshAction = async (): Promise<AuthRefreshResponse> => {
 
     const cookieStore = await cookies();
 
-    const accessToken = cookieStore.get("accessToken")?.value;
     const refreshToken = cookieStore.get("refreshToken")?.value;
 
     if (!refreshToken) {
@@ -364,6 +364,13 @@ const authRefreshAction = async () => {
 
     const refreshData = await authRefresh(refreshToken);
 
-    console.log(refreshData);
-
+    if (refreshData) {
+        cookieStore.delete('accessToken');
+        cookieStore.set('accessToken', refreshData.accessToken, {
+            httpOnly: true,     // 자바스크립트 접근 불가 (XSS 방지)
+            maxAge: 60 * 60,    // 1시간
+            path: '/'
+        })
+    }
+    return refreshData;
 }

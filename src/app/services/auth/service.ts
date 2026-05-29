@@ -341,16 +341,12 @@ export const logoutService = async (
 // 토큰 재발급 ( 헤더 - 연장 버튼 )
 
 export interface AuthRefreshResponse {
-    success: boolean;
-    message: string;
-    data?: {
-        accessToken: string;
-        expiresIn: number;
-    }
+    accessToken: string;
+    expiresIn: number;
 }
 
 export const authRefresh = async (refreshToken: string): Promise<AuthRefreshResponse> => {
-    const response = await fetch(`${BASE_SERVER_URL}/api/v1/newToken`,
+    const response = await fetch(`${BASE_SERVER_URL}/api/v1/auth/newtoken`,
         {
             method: 'POST',
             headers: {
