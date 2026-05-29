@@ -3,8 +3,21 @@ import Link from "next/link";
 import logo from '../assets/img/header_logo.png'
 import { Button } from "@/components/ui/button";
 import LogoutBtn from "@/components/common/LogoutBtn";
+import AuthRefreshArea from "@/features/auth/components/AuthRefreshArea";
+import { cookies } from "next/headers";
+import { jwtDecode } from 'jwt-decode';
 
-export default function AUthHeader({ role }: { role: string }) {
+
+export default async function AUthHeader({ role }: { role: string }) {
+
+    const cookieStore = await cookies();
+
+    const token = cookieStore.get('accessToken')?.value;
+
+    if (!token) return null;
+
+    const payload = jwtDecode<{ exp: number }>(token);
+
     return (
         <header className="h-16 border-b border-slate-200 bg-slate-50">
             <div className="flex h-full w-full justify-between items-center px-2">
@@ -19,10 +32,8 @@ export default function AUthHeader({ role }: { role: string }) {
                     />
                 </Link>
                 <div className="flex justify-end gap-2 mr-4 items-center">
+                    <AuthRefreshArea expiresAt={payload.exp} />
                     <Link href={`/${role}`}>
-                        <span className="text-slate-500 text-xs mr-4">자동 로그아웃 시간 :</span>
-                        <span className="text-slate-500 text-xs mr-4">59:59</span>
-                        <Button variant="outline" className="rounded-none text-slate-500 text-xs h-6 mr-4">연장</Button>
                         <Button variant="ghost">홈</Button>
                     </Link>
                     <LogoutBtn />

@@ -1,6 +1,8 @@
 'use server'
 
 import {
+    authRefresh,
+    AuthRefreshResponse,
     emailVerifyService,
     loginService,
     loginSuccessService,
@@ -346,3 +348,29 @@ export const logoutAction = async (): Promise<LogoutActionState> => {
         };
     }
 };
+
+
+// 로그인 연장 액션 함수
+
+export const authRefreshAction = async (): Promise<AuthRefreshResponse> => {
+
+    const cookieStore = await cookies();
+
+    const refreshToken = cookieStore.get("refreshToken")?.value;
+
+    if (!refreshToken) {
+        throw new Error('로그인 연장 실패!');
+    }
+
+    const refreshData = await authRefresh(refreshToken);
+
+    if (refreshData) {
+        cookieStore.delete('accessToken');
+        cookieStore.set('accessToken', refreshData.accessToken, {
+            httpOnly: true,     // 자바스크립트 접근 불가 (XSS 방지)
+            maxAge: 60 * 60,    // 1시간
+            path: '/'
+        })
+    }
+    return refreshData;
+}
