@@ -1,3 +1,5 @@
+const BASE_SERVER_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 // 자체 로그인,회원가입 관련
 
 /*
@@ -336,13 +338,42 @@ export const logoutService = async (
 };
 
 
+// 토큰 재발급 ( 헤더 - 연장 버튼 )
+
+export interface AuthRefreshResponse {
+    success: boolean;
+    message: string;
+    data?: {
+        accessToken: string;
+        expiresIn: number;
+    }
+}
+
+export const authRefresh = async (refreshToken: string): Promise<AuthRefreshResponse> => {
+    const response = await fetch(`${BASE_SERVER_URL}/api/v1/newToken`,
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Refresh-Token': `${refreshToken}`
+            }
+        }
+    )
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || '알 수 없는 이유로 로그인 연장에 실패했습니다.');
+    }
+    const data = await response.json();
+    return data?.data;
+}
+
 
 
 // 카카오 API 관련 서비스 함수
 
 import { EmailVerifyForm, KakaoLoginResponse, LoginRequest, LoginResponse, LoginSuccessResponse, SendEmailCodeForm, SendEmailCodeResponse, StudentSignupForm, TeacherSignupForm, TempPwResponse } from "@/features/auth/type";
 
-const BASE_SERVER_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 
 export const kakaoLogin = async (
     code: string

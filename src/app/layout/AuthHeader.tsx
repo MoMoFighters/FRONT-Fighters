@@ -3,6 +3,7 @@ import Link from "next/link";
 import logo from '../assets/img/header_logo.png'
 import { Button } from "@/components/ui/button";
 import LogoutBtn from "@/components/common/LogoutBtn";
+import AuthRefreshArea from "@/features/auth/components/AuthRefreshArea";
 
 export default function AUthHeader({ role }: { role: string }) {
     return (
@@ -19,10 +20,8 @@ export default function AUthHeader({ role }: { role: string }) {
                     />
                 </Link>
                 <div className="flex justify-end gap-2 mr-4 items-center">
+                    <AuthRefreshArea />
                     <Link href={`/${role}`}>
-                        <span className="text-slate-500 text-xs mr-4">자동 로그아웃 시간 :</span>
-                        <span className="text-slate-500 text-xs mr-4">59:59</span>
-                        <Button variant="outline" className="rounded-none text-slate-500 text-xs h-6 mr-4">연장</Button>
                         <Button variant="ghost">홈</Button>
                     </Link>
                     <LogoutBtn />

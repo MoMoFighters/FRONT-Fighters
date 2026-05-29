@@ -1,6 +1,7 @@
 'use server'
 
 import {
+    authRefresh,
     emailVerifyService,
     loginService,
     loginSuccessService,
@@ -346,3 +347,23 @@ export const logoutAction = async (): Promise<LogoutActionState> => {
         };
     }
 };
+
+
+// 로그인 연장 액션 함수
+
+const authRefreshAction = async () => {
+
+    const cookieStore = await cookies();
+
+    const accessToken = cookieStore.get("accessToken")?.value;
+    const refreshToken = cookieStore.get("refreshToken")?.value;
+
+    if (!refreshToken) {
+        throw new Error('로그인 연장 실패!');
+    }
+
+    const refreshData = await authRefresh(refreshToken);
+
+    console.log(refreshData);
+
+}
