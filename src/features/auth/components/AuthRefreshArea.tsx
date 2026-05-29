@@ -4,9 +4,18 @@ import { Button } from "@/components/ui/button";
 import { authRefreshAction } from "../action";
 import { useEffect, useState } from "react";
 
-export default function AuthRefreshArea() {
 
-    const [timer, setTimer] = useState<number>(0);
+
+export default function AuthRefreshArea({
+    expiresAt,
+}: { expiresAt: number }) {
+
+    const [timer, setTimer] = useState(
+        Math.max(
+            0,
+            expiresAt - Math.floor(Date.now() / 1000)
+        )
+    );
 
     const handleRefreshClick = async () => {
         const refreshData = await authRefreshAction();
