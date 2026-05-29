@@ -14,16 +14,8 @@ import {
 } from "@/components/ui/pagination";
 
 import { SearchX } from "lucide-react";
-
-export interface Lecture {
-    id: number;
-    title: string;
-    description: string;
-    category: string;
-    status: string;
-    rating: number;
-    studentCount?: number;
-}
+import { GetLecturesRequest } from "@/features/lecture/type";
+import { getLectures } from "@/app/services/lecture/service";
 
 interface AdminLectureListPageProps {
     searchParams: Promise<{
@@ -45,162 +37,18 @@ export default async function AdminLectureListPage({
         page
     } = await searchParams;
 
-    const currentPage =
-        Number(page) || 1;
+    const payload: GetLecturesRequest = {
+        category: category?.toUpperCase(),
+        keyword,
+        status,
+        page: Number(page) || 1,
+    };
 
-    const ITEMS_PER_PAGE = 10;
+    const responseData = await getLectures(payload);
 
-    const dummyLectures: Lecture[] = [
-        {
-            id: 1,
-            title: '당구 300 6개월 정복기',
-            description: '당구를 입문하려는 분들께 당구의 기본 원리에 대해 설명합니다.',
-            category: 'health',
-            rating: 4.0,
-            status: 'active'
-        },
-        {
-            id: 2,
-            title: '계절별 코디 속성 과외',
-            description: '코디를 할 줄 모르는 사람, 옷을 뭘 사야할 지 모르는 사람들을 위한 속성 과외입니다.',
-            category: 'beauty',
-            rating: 4.0,
-            status: 'waiting'
-        },
-        {
-            id: 3,
-            title: '방구석에서 미슐랭 투스타 따라잡기',
-            description: '집에서 누구나 간단하게 따라할 수 있는 요리 레시피.',
-            category: 'cook',
-            rating: 4.0,
-            status: 'active'
-        },
-        {
-            id: 4,
-            title: '정보처리기사 실기 대비',
-            description: '정보 처리기사 실기 기출문제집 풀이 및 예상 문제 대방출!',
-            category: 'study',
-            rating: 4.0,
-            status: 'active'
-        },
-        {
-            id: 5,
-            title: '3대 500 잠자기보다 쉽다',
-            description: '포기하지 않고 따라온다면 누구나 3대 500 할 수 있습니다.',
-            category: 'health',
-            rating: 4.0,
-            status: 'waiting'
-        },
-        {
-            id: 6,
-            title: '통기타 마스터 도전기',
-            description: '통기타의 기초부터 마스터까지 모든 과정을 상세히 알려드립니다.',
-            category: 'art',
-            rating: 4.0,
-            status: 'waiting'
-        },
-        {
-            id: 7,
-            title: '정보처리기사 실기 대비1',
-            description: '정보 처리기사 실기 기출문제집 풀이 및 예상 문제 대방출!',
-            category: 'study',
-            rating: 4.0,
-            status: 'active'
-        },
-        {
-            id: 8,
-            title: '정보처리기사 실기 대비2',
-            description: '정보 처리기사 실기 기출문제집 풀이 및 예상 문제 대방출!',
-            category: 'study',
-            rating: 4.0,
-            status: 'active'
-        },
-        {
-            id: 9,
-            title: '정보처리기사 실기 대비3',
-            description: '정보 처리기사 실기 기출문제집 풀이 및 예상 문제 대방출!',
-            category: 'study',
-            rating: 4.0,
-            status: 'active'
-        },
-        {
-            id: 10,
-            title: '정보처리기사 실기 대비4',
-            description: '정보 처리기사 실기 기출문제집 풀이 및 예상 문제 대방출!',
-            category: 'study',
-            rating: 4.0,
-            status: 'active'
-        },
-        {
-            id: 11,
-            title: '정보처리기사 실기 대비5',
-            description: '정보 처리기사 실기 기출문제집 풀이 및 예상 문제 대방출!',
-            category: 'study',
-            rating: 4.0,
-            status: 'active'
-        },
-        {
-            id: 12,
-            title: '정보처리기사 실기 대비6',
-            description: '정보 처리기사 실기 기출문제집 풀이 및 예상 문제 대방출!',
-            category: 'study',
-            rating: 4.0,
-            status: 'active'
-        },
-        {
-            id: 13,
-            title: '정보처리기사 실기 대비7',
-            description: '정보 처리기사 실기 기출문제집 풀이 및 예상 문제 대방출!',
-            category: 'study',
-            rating: 4.0,
-            status: 'active'
-        },
-    ];
+    const totalPages = responseData.totalPages;
 
-    const filteredLectures =
-        dummyLectures.filter((lecture) => {
-
-            // status 필터
-            if (
-                status &&
-                lecture.status !== status
-            ) {
-                return false;
-            }
-
-            // category 필터
-            if (
-                category &&
-                lecture.category !== category
-            ) {
-                return false;
-            }
-
-            // keyword 필터
-            if (
-                keyword &&
-                !lecture.title.includes(keyword) &&
-                !lecture.description.includes(keyword)
-            ) {
-                return false;
-            }
-
-            return true;
-        });
-
-    const totalCount =
-        filteredLectures.length;
-
-    const totalPages =
-        Math.ceil(
-            totalCount / ITEMS_PER_PAGE
-        );
-
-    const paginatedLectures =
-        filteredLectures.slice(
-            (currentPage - 1) * ITEMS_PER_PAGE,
-            currentPage * ITEMS_PER_PAGE
-        );
+    const currentPage = Number(page) || 1;
 
     const createPageHref = (
         pageNumber: number
@@ -257,8 +105,8 @@ export default async function AdminLectureListPage({
 
                 <LectureSearchbar
                     status={status}
-                    category={category}
                     keyword={keyword}
+                    category={category}
                 />
 
                 <LectureFilterBtn />
@@ -267,12 +115,12 @@ export default async function AdminLectureListPage({
 
             <div className="border-t border-slate-400 mb-4" />
 
-            {filteredLectures.length > 0 ? (
+            {responseData.content.length > 0 ? (
 
                 <>
                     <div className="space-y-3">
 
-                        {paginatedLectures.map((lecture) => (
+                        {responseData.content.map((lecture) => (
 
                             <LectureItem
                                 key={lecture.id}

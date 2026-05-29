@@ -8,15 +8,10 @@ import { toast } from "sonner";
 
 
 export default function AuthRefreshArea({
-    expiresAt,
-}: { expiresAt: number }) {
+    initialTime,
+}: { initialTime: number }) {
 
-    const [timer, setTimer] = useState(
-        Math.max(
-            0,
-            expiresAt - Math.floor(Date.now() / 1000)
-        )
-    );
+    const [timer, setTimer] = useState(initialTime);
 
     const handleRefreshClick = async () => {
         const refreshData = await authRefreshAction();
@@ -45,7 +40,7 @@ export default function AuthRefreshArea({
         }, 1000);
 
         return () => clearInterval(interval);
-    }, [timer]);
+    }, []);
 
     const minutes = Math.floor(timer / 60);
     const seconds = timer % 60;

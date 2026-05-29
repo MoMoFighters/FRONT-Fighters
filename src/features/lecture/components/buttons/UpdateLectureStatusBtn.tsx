@@ -83,7 +83,7 @@ export default function UpdateLectureStatusBtn({
     return (
         <>
 
-            {status === 'active' && (
+            {status === 'ACTIVE' && (
                 <span
                     className="
                     px-3 py-1.5 rounded-lg
@@ -95,7 +95,7 @@ export default function UpdateLectureStatusBtn({
                 </span>
             )}
 
-            {status === 'waiting' && (
+            {status === 'WAITING' && (
                 <>
                     <DropdownMenu
                         open={dropdownOpen}
