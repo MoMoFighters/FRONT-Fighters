@@ -294,7 +294,7 @@ export default function UserInfoEditForm({ initialData }: UserInfoEditFormProps)
             <div className="flex justify-center pl-32 mt-[-5px]">
                 <Button
                     type="button"
-                    disabled={isSubmitting || nickname === profile?.nickname || !passwordSame}
+                    disabled={isUnchanged}
                     className="border border-slate-400 px-8 py-6 bg-white text-slate-800 font-semibold hover:bg-slate-100 rounded-none transition-colors text-base shadow-none disabled:bg-slate-100"
                     onClick={handleSubmit}
                 >
