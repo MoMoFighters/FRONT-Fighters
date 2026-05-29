@@ -6,6 +6,7 @@ import LogoutBtn from "@/components/common/LogoutBtn";
 import AuthRefreshArea from "@/features/auth/components/AuthRefreshArea";
 import { cookies } from "next/headers";
 import { jwtDecode } from 'jwt-decode';
+import { redirect } from "next/navigation";
 
 
 export default async function AUthHeader({ role }: { role: string }) {
@@ -14,9 +15,16 @@ export default async function AUthHeader({ role }: { role: string }) {
 
     const token = cookieStore.get('accessToken')?.value;
 
-    if (!token) return null;
+    if (!token) {
+        redirect('/auth/login')
+    };
 
     const payload = jwtDecode<{ exp: number }>(token);
+
+    const initialTime = Math.max(
+        0,
+        payload.exp - Math.floor(Date.now() / 1000)
+    );
 
     return (
         <header className="h-16 border-b border-slate-200 bg-slate-50">
@@ -32,7 +40,7 @@ export default async function AUthHeader({ role }: { role: string }) {
                     />
                 </Link>
                 <div className="flex justify-end gap-2 mr-4 items-center">
-                    <AuthRefreshArea expiresAt={payload.exp} />
+                    <AuthRefreshArea initialTime={initialTime} />
                     <Link href={`/${role}`}>
                         <Button variant="ghost">홈</Button>
                     </Link>

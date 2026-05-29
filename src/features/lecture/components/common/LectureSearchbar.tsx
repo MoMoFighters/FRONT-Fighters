@@ -1,25 +1,39 @@
+'use client'
+
 import { Button } from "@/components/ui/button";
 import { Search, X } from "lucide-react";
+import { useParams } from "next/navigation";
 
 interface LectureSearchbarProps {
     status?: string;
     keyword?: string;
     category?: string;
+    filter?: string;
 }
 
-export default async function LectureSearchbar({ status, keyword, category }: LectureSearchbarProps) {
+export default function LectureSearchbar({ status, keyword, category, filter }: LectureSearchbarProps) {
 
-    const params = new URLSearchParams();
+    const urlParams = new URLSearchParams();
+
+    const routeParams = useParams();
+
+    const actualCategory =
+        category ??
+        (routeParams.category as string);
 
     if (status) {
-        params.set("status", status);
+        urlParams.set("status", status);
     }
 
     if (category) {
-        params.set("category", category);
+        urlParams.set("category", category);
     }
 
-    const clearHref = `?${params.toString()}`;
+    if (filter) {
+        urlParams.set("filter", filter);
+    }
+
+    const clearHref = `?${urlParams.toString()}`;
 
     return (
         <form method="GET" className=" flex items-center gap-3 flex-1">
@@ -34,6 +48,11 @@ export default async function LectureSearchbar({ status, keyword, category }: Le
                     type="hidden"
                     name="category"
                     defaultValue={category}
+                /> : ""}
+                {filter ? <input
+                    type="hidden"
+                    name="filter"
+                    defaultValue={filter}
                 /> : ""}
                 <input
                     type="text"
