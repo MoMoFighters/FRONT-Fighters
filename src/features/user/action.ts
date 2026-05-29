@@ -108,39 +108,24 @@ export const checkAndRegisterNickname = async (
     nickname: string
 ) => {
 
-    try {
-        const cookieStore = await cookies();
-        const accessToken = cookieStore.get('accessToken')?.value;
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get('accessToken')?.value;
 
-        if (!accessToken) {
-            return {
-                success: false,
-                message: '로그인 세션이 만료되었습니다.',
-            };
-        }
-
-        const result =
-            await nicknameCheckService(
-                accessToken,
-                nickname
-            );
-
-        return {
-            success:
-                result.status === 200,
-
-            message:
-                result.message,
-        };
-
-    } catch (error) {
-
+    if (!accessToken) {
         return {
             success: false,
-            message:
-                error instanceof Error
-                    ? error.message
-                    : '닉네임 확인 중 오류가 발생했습니다.',
+            message: '로그인 세션이 만료되었습니다.',
         };
     }
+
+    const result =
+        await nicknameCheckService(
+            accessToken,
+            nickname
+        );
+
+    console.log(result, '???');
+
+    return result;
+
 };

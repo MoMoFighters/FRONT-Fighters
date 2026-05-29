@@ -1,6 +1,6 @@
-import AuthHeader from "../layout/AuthHeader";
-import FooterVisibility from "../layout/FooterVisibility";
-import StudentSidebar from "../layout/StudentSidebar";
+import AuthHeader from "../../components/layout/AuthHeader";
+import FooterVisibility from "../../components/layout/FooterVisibility";
+import StudentSidebar from "../../components/layout/StudentSidebar";
 
 export default function StudentLayout({
     children,

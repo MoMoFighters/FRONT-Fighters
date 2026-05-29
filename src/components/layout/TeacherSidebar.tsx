@@ -1,9 +1,9 @@
 import Image from 'next/image';
-import logo from '../assets/img/header_logo.png'
-import home from '../assets/img/house.svg'
-import folder from '../assets/img/folder-open.svg'
-import community from '../assets/img/users.svg'
-import chat from '../assets/img/message-circle.svg'
+import logo from '@/app/assets/img/header_logo.png'
+import home from '@/app/assets/img/house.svg'
+import folder from '@/app/assets/img/folder-open.svg'
+import community from '@/app/assets/img/users.svg'
+import chat from '@/app/assets/img/message-circle.svg'
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import CreateReportBtn from '@/features/report/components/buttons/CreateReportBtn';

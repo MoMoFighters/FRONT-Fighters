@@ -133,7 +133,7 @@ export interface NicknameCheckResponse {
 export const nicknameCheckService = async (
    accessToken: string,
    nickname: string
-): Promise<NicknameCheckResponse> => {
+) => {
    const response = await fetch(`${BASE_SERVER_URL}/api/v1/user/nickname/check`, {
       method: 'POST',
       headers: {
@@ -143,6 +143,10 @@ export const nicknameCheckService = async (
       body: JSON.stringify({ nickname }),
    });
 
-   const result: NicknameCheckResponse = await response.json();
+   if (!response.ok) {
+      return response.json();
+   }
+
+   const result = await response.json();
    return result;
 };

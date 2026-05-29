@@ -15,12 +15,13 @@ interface UserInfoEditFormProps {
 
 export default function UserInfoEditForm({ initialData }: UserInfoEditFormProps) {
     const router = useRouter();
+    const profile = initialData?.data;
 
     // 부모에게 받은 기본값으로 초기 상태 세팅
-    const [name, setName] = useState(initialData?.data?.name || "");
-    const [nickname, setNickname] = useState(initialData?.data?.nickname || "");
-    const [email] = useState(initialData?.data?.email || "");
-    const [profileUrl, setProfileUrl] = useState(initialData?.data?.profileImageUrl || "");
+    const [name, setName] = useState(profile?.name || "");
+    const [nickname, setNickname] = useState(profile?.nickname || "");
+    const [email] = useState(profile?.email || "");
+    const [profileUrl, setProfileUrl] = useState(profile?.profileImageUrl || "");
 
     const [showCurrentPassword, setShowCurrentPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
@@ -34,6 +35,13 @@ export default function UserInfoEditForm({ initialData }: UserInfoEditFormProps)
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const passwordSame = passwordConfirm === "" ? true : password === passwordConfirm;
+    const passwordInvalid = (currentPassword === "" && password !== "") || (currentPassword !== "" && password === "");
+
+    const isUnchanged =
+        nickname === (profile?.nickname || "") &&
+        currentPassword === "" &&
+        password === "" &&
+        passwordConfirm === "";
 
     const inputStyle =
         "border border-slate-300 py-2 px-3 text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-slate-500 transition-colors w-80 h-10";
@@ -43,16 +51,19 @@ export default function UserInfoEditForm({ initialData }: UserInfoEditFormProps)
             toast("닉네임을 입력해주세요.");
             return;
         }
+        if (nickname === profile?.nickname) {
+            return;
+        }
 
         try {
             const res = await checkAndRegisterNickname(nickname);
             console.log(res, '1')
-            if (res.success) {
-                toast(res.message || "사용 가능한 닉네임입니다.");
+            if (res.status === 200) {
+                toast.success(res.message || "사용 가능한 닉네임입니다.");
                 setIsNicknameChecked(true);
                 console.log(res, '2')
             } else {
-                toast(res.message || "이미 사용 중인 닉네임입니다.");
+                toast.error(res.message || "이미 사용 중인 닉네임입니다!!!.");
                 setIsNicknameChecked(false);
                 console.log(res, '3')
             }
@@ -63,40 +74,35 @@ export default function UserInfoEditForm({ initialData }: UserInfoEditFormProps)
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // 💡 닉네임이 바뀌지 않았다면 패스, 바꿨는데 중복확인 안했으면 가드!
-        const isNicknameChanged = nickname !== initialData?.data?.nickname;
-        if (isNicknameChanged && !isNicknameChecked) {
-            toast("닉네임 중복확인을 진행해주세요.");
+        if (nickname !== profile?.nickname && !isNicknameChecked) {
+            toast.error("닉네임 중복확인을 진행해주세요.", {
+                duration: 1000
+            });
             return;
         }
 
         if (!passwordSame) {
-            toast("새 비밀번호가 일치하지 않습니다.");
+            toast.error("새 비밀번호가 일치하지 않습니다.");
+            return;
+        }
+
+        if (passwordInvalid) {
+            toast.error("비밀번호 변경시 현재 비밀번호를 입력해주세요.");
             return;
         }
 
         try {
             setIsSubmitting(true);
-            console.log({
-                nickname,
-                original:
-                    initialData?.data?.nickname,
-
-                isNicknameChanged,
-
-                isNicknameChecked,
-            });
-
 
             // 서버 액션 호출
             const res = await editMyInfo({
-                nickname,
-                currentPassword: currentPassword || undefined, // 입력 안 했으면 보낼 필요 없음
+                nickname: nickname === profile?.nickname ? undefined : nickname,
+                currentPassword: currentPassword || undefined,
                 password: password || undefined,
             });
 
+
             if (res.success) {
-                toast("회원 정보가 성공적으로 수정되었습니다.");
 
                 // 비밀번호 입력 폼 초기화
                 setCurrentPassword("");
@@ -105,7 +111,13 @@ export default function UserInfoEditForm({ initialData }: UserInfoEditFormProps)
 
                 // 🔄 브라우저 캐시 갱신 및 마이페이지로 복귀 혹은 새로고침 처리
                 router.refresh();
-                router.push("/student/mypage");
+                if (!currentPassword) {
+                    router.push("/student/mypage");
+                    toast("회원 정보가 성공적으로 수정되었습니다.");
+                } else {
+                    router.push("/auth/login");
+                    toast("비밀번호가 변경되었으니 다시 로그인해주세요.");
+                }
             } else {
                 toast(res.message || "정보 수정에 실패했습니다.");
             }
@@ -117,7 +129,7 @@ export default function UserInfoEditForm({ initialData }: UserInfoEditFormProps)
     };
 
     return (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-6 max-w-2xl">
+        <div className="flex flex-col gap-6 max-w-2xl">
             {/* 프로필 이미지 */}
             <div className="flex items-start gap-8 mb-4">
                 <p className="w-24 font-semibold text-slate-800 pt-1.5 text-right">
@@ -146,7 +158,8 @@ export default function UserInfoEditForm({ initialData }: UserInfoEditFormProps)
                     type="text"
                     id="name"
                     placeholder="이름 입력"
-                    className={inputStyle}
+                    disabled
+                    className="border border-slate-300 py-2 px-3 bg-slate-200 text-slate-500 w-80 h-10 disabled:opacity-100"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                 />
@@ -178,6 +191,7 @@ export default function UserInfoEditForm({ initialData }: UserInfoEditFormProps)
                         type="button"
                         onClick={handleNicknameCheck}
                         className="border border-slate-300 px-4 h-10 text-sm bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-none transition-colors shadow-none"
+                        disabled={nickname === profile?.nickname}
                     >
                         중복확인
                     </Button>
@@ -279,13 +293,14 @@ export default function UserInfoEditForm({ initialData }: UserInfoEditFormProps)
             {/* submit */}
             <div className="flex justify-center pl-32 mt-[-5px]">
                 <Button
-                    type="submit"
-                    disabled={isSubmitting}
+                    type="button"
+                    disabled={isSubmitting || nickname === profile?.nickname || !passwordSame}
                     className="border border-slate-400 px-8 py-6 bg-white text-slate-800 font-semibold hover:bg-slate-100 rounded-none transition-colors text-base shadow-none disabled:bg-slate-100"
+                    onClick={handleSubmit}
                 >
                     {isSubmitting ? "수정 중..." : "정보 수정"}
                 </Button>
             </div>
-        </form>
+        </div >
     );
 }
