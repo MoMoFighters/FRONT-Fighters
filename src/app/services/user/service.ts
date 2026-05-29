@@ -23,3 +23,126 @@
 
  - 회원 영구 삭제 - m4 ????????????
  */
+const BASE_SERVER_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+
+
+
+// ==========================================
+// [SY-12] 내 상세 정보 조회 관련 타입 및 서비스
+// ==========================================
+export interface GetMyInfoResponse {
+   success: boolean;
+   timestamp: string;
+   status: number;
+   code: string;
+   message: string;
+   data: {
+      profileImageUrl: string;
+      email: string | null;
+      name: string;
+      nickname: string | null;
+      birth: string | null;
+      isTempPwd: boolean;
+   };
+}
+
+export const getMyInfoService = async (accessToken: string): Promise<GetMyInfoResponse> => {
+   const response = await fetch(`${BASE_SERVER_URL}/api/v1/user/detail`, {
+      method: 'GET',
+      headers: {
+         'Content-Type': 'application/json',
+         'Authorization': `Bearer ${accessToken}`,
+      },
+   });
+
+   const result: GetMyInfoResponse = await response.json();
+
+   if (response.status !== 200) {
+      throw new Error(result.message || '알 수 없는 에러');
+   }
+   return result;
+};
+
+// ==========================================
+// [SY-13] 내 정보 수정 관련 타입 및 서비스
+// ==========================================
+export interface EditMyInfoResponse {
+   success: boolean;
+   message: string;
+   data?: {
+      isPwdChanged: boolean;
+   };
+}
+
+export interface EditMyInfoRequest {
+   accessToken: string;
+   nickname?: string;
+   currentPassword?: string;
+   password?: string;
+}
+
+export const editMyInfoService = async ({
+   accessToken,
+   nickname,
+   currentPassword,
+   password,
+}: EditMyInfoRequest): Promise<EditMyInfoResponse> => {
+   const response = await fetch(`${BASE_SERVER_URL}/api/v1/user/update`, {
+      method: 'PATCH',
+      headers: {
+         'Content-Type': 'application/json',
+         Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({
+         nickname,
+         currentPassword,
+         password,
+      }),
+   });
+
+   const result: EditMyInfoResponse = await response.json();
+
+   if (!response.ok) {
+      return {
+         success: false,
+         message: result.message || '내 정보 수정 실패',
+      };
+   }
+
+   return {
+      success: true,
+      message: result.message || '내 정보 수정 성공',
+      data: {
+         isPwdChanged: result.data?.isPwdChanged ?? false,
+      },
+   };
+};
+
+// ==========================================
+// [SY-14] 닉네임 중복 확인 / 등록 관련 타입 및 서비스
+// ==========================================
+export interface NicknameCheckResponse {
+   timestamp: string;
+   status: number;
+   code: string;
+   message: string;
+   data: null;
+}
+
+export const nicknameCheckService = async (
+   accessToken: string,
+   nickname: string
+): Promise<NicknameCheckResponse> => {
+   const response = await fetch(`${BASE_SERVER_URL}/api/v1/user/nickname/check`, {
+      method: 'POST',
+      headers: {
+         'Content-Type': 'application/json',
+         'Authorization': `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({ nickname }),
+   });
+
+   const result: NicknameCheckResponse = await response.json();
+   return result;
+};

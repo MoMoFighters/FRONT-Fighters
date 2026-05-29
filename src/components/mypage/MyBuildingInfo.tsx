@@ -1,15 +1,10 @@
-export default function MyBuildingInfo({ data }: {
+interface MyBuildingInfoProps {
     data: {
-        name: string;
-        nickname: string;
-        createdAt: number;
-        issueDate: string;
-        email: string;
-        points: number
         buildings: number;
     }
-}) {
+}
 
+export default function MyBuildingInfo({ data }: MyBuildingInfoProps) {
     const categoryBgColors: Record<string, string> = {
         health: 'bg-cyan-100 border-cyan-600',
         beauty: 'bg-fuchsia-100 border-fuchsia-600',
@@ -24,7 +19,7 @@ export default function MyBuildingInfo({ data }: {
         cook: 'text-orange-600',
         study: 'text-emerald-600',
         art: 'text-violet-600',
-    }
+    };
 
     return (
         <div className="flex flex-row justify-between mt-4">
