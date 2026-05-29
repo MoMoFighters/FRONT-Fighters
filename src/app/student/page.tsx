@@ -10,11 +10,11 @@ interface Building {
 }
 
 const POSITION_STYLE = {
-    first: "top-30 left-20",
-    second: "top-30 left-70",
-    third: "top-30 left-115",
-    fourth: "top-110 left-50",
-    fifth: "top-110 left-105",
+    first: "top-[19%] left-[5%]",
+    second: "top-[19%] left-[22%]",
+    third: "top-[19%] left-[38%]",
+    fourth: "top-[68%] left-[15%]",
+    fifth: "top-[68%] left-[35%]",
 };
 
 const POSITIONS = [
@@ -91,15 +91,15 @@ export default function StudentMainPage() {
                 );
             })}
             {/* 도서관 위치 고정 */}
-            <div className="absolute top-20 right-35">
+            <div className="absolute top-[10%] right-[12%]">
                 <BuildingItem category="community" />
             </div>
             {/* 집 위치 고정 */}
-            <div className="absolute top-60 right-35">
+            <div className="absolute top-[35%] right-[12%]">
                 <BuildingItem category="mypage" />
             </div>
             {/* 포인트 상점 위치 고정 */}
-            <div className="absolute top-100 right-35">
+            <div className="absolute top-[60%] right-[12%]">
                 <BuildingItem category="market" />
             </div>
         </div>

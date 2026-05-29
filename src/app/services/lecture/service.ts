@@ -1,5 +1,8 @@
 // 강의 관련 (공동)
 
+import { GetLecturesRequest, Lecture, LectureListInfo, LectureResponse, LecturesApiResponse } from "@/features/lecture/type";
+import { fetchWithAuth } from "@/lib/api"
+
 /*
  - 강의 상세 조회(parameter로 아이디 넘기기)
 
@@ -26,6 +29,52 @@
  - 수강 신청
  - 챕터 상세 조회 시 진척도 불러오기(learningHistory)
 */
+
+export const getLectures = async (payload: GetLecturesRequest): Promise<LectureListInfo> => {
+
+  const queryString =
+    new URLSearchParams(
+      Object.entries(payload)
+        .filter(([_, value]) =>
+          value !== undefined
+        )
+        .map(([key, value]) => [
+          key,
+          String(value)
+        ])
+    ).toString();
+
+  console.log('????', `/api/v1/lectures?${queryString}`);
+
+  const response = await fetchWithAuth(`/api/v1/lectures?${queryString}`);
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || '강의 정보를 불러오는데 실패하였습니다.');
+  }
+
+  const result: LecturesApiResponse = await response.json();
+  console.log(result);
+
+  return {
+    content: result.data.content.map((lecture) => ({
+      id: lecture.lectureId,
+      title: lecture.title,
+      description: lecture.description,
+      thumbnailUrl: lecture.thumbnailUrl,
+      category: lecture.category,
+      lectureStatus: lecture.lectureStatus,
+      averageRating: lecture.averageRating,
+    })),
+
+    page: result.data.page,
+    size: result.data.size,
+    totalElements: result.data.totalElements,
+    totalPages: result.data.totalPages,
+  };
+
+}
+
 
 
 // 강의 관련(강사)

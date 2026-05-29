@@ -1,6 +1,5 @@
 import Link from "next/link";
 
-import { Lecture } from "@/app/admin/lectures/page";
 import { Edit, Star } from "lucide-react";
 
 import UpdateLectureStatusBtn from "@/features/lecture/components/buttons/UpdateLectureStatusBtn";
@@ -9,6 +8,7 @@ import EnrollLectureBtn from "@/features/lecture/components/buttons/EnrollLectur
 import AcceptLectureBtn from "@/features/lecture/components/buttons/AcceptLectureBtn";
 import RejectLectureBtn from "@/features/lecture/components/buttons/RejectLectureBtn";
 import { Button } from "../ui/button";
+import { Lecture } from "@/features/lecture/type";
 
 interface LectureItemProps {
     lecture: Lecture;
@@ -50,25 +50,27 @@ export default function LectureItem({
                 <Link href={href}>
                     <div className="flex items-center gap-3">
                         <div
-                            className="w-16 h-12 bg-slate-300 rounded-lg shrink-0"
+                            className="w-16 h-12 rounded-lg shrink-0 bg-center bg-cover"
+                            style={{
+                                backgroundImage: `url(${lecture.thumbnailUrl})`,
+                            }}
                         />
                         <div className="flex-1 min-w-0">
                             <h4 className="font-bold text-slate-900 text-[12px] mb-1 truncate">{lecture.title}</h4>
-                            {lecture.status === "active" && <div className="flex items-center gap-3 text-[10px] text-slate-500">
+                            {lecture.lectureStatus === "active" && <div className="flex items-center gap-3 text-[10px] text-slate-500">
                                 <span className="flex items-center gap-1">
                                     <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                                    {lecture.rating.toFixed(1)}
+                                    {lecture.averageRating}
                                 </span>
-                                <span>수강생 {lecture.studentCount}명</span>
                             </div>}
-                            {lecture.status === "waiting" && <p className="text-xs text-amber-600 font-medium">관리자 승인 대기중입니다</p>}
-                            {lecture.status === "hold" && <div className="flex items-center gap-2">
+                            {lecture.lectureStatus === "waiting" && <p className="text-xs text-amber-600 font-medium">관리자 승인 대기중입니다</p>}
+                            {lecture.lectureStatus === "hold" && <div className="flex items-center gap-2">
                                 <p className="text-xs text-red-600 font-medium">승인 거절됨</p>
                             </div>}
                         </div>
                     </div>
                 </Link>
-                {lecture.status === "hold" && (<button className="ml-auto absolute bottom-3 right-3">
+                {lecture.lectureStatus === "hold" && (<button className="ml-auto absolute bottom-3 right-3">
                     <Link href={`/teacher/lectures/${lecture.id}/edit`}>
                         <Edit className="w-3 h-3 text-red-500 hover:text-red-700" />
                     </Link>
@@ -82,7 +84,10 @@ export default function LectureItem({
             <div className="bg-white border rounded-lg border-slate-200 p-6 relative">
                 <div className="grid grid-cols-[400px_1fr] gap-8">
                     <div
-                        className="rounded-2xl max-w-100 h-56.25 bg-slate-200"
+                        className="rounded-2xl max-w-100 h-56.25 bg-center bg-cover"
+                        style={{
+                            backgroundImage: `url(${lecture.thumbnailUrl})`,
+                        }}
                     />
 
                     {/* Info */}
@@ -104,14 +109,14 @@ export default function LectureItem({
                         <div className="flex items-center gap-2 text-sm text-slate-600">
                             <span className="font-bold">평점 :</span>
                             <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                            <span className="font-bold">{lecture.rating.toFixed(1)}</span>
+                            <span className="font-bold">{lecture.averageRating}</span>
                             <span className="text-slate-400">/ 5.0 점</span>
                         </div>
                     </div>
                 </div>
-                {role === 'admin' && lecture.status === 'active' && <DeleteLectureBtn mode="text" id={lecture.id} />}
+                {role === 'admin' && lecture.lectureStatus === 'active' && <DeleteLectureBtn mode="text" id={lecture.id} />}
 
-                {role === 'admin' && lecture.status === 'waiting' && (
+                {role === 'admin' && lecture.lectureStatus === 'waiting' && (
                     <div className="flex gap-4 absolute bottom-6 right-6">
                         <AcceptLectureBtn />
                         <RejectLectureBtn />
@@ -120,7 +125,7 @@ export default function LectureItem({
 
                 {role === "student" && !isEnrolled && <EnrollLectureBtn />}
 
-                {role === "teacher" && lecture.status !== "waiting" && (
+                {role === "teacher" && lecture.lectureStatus !== "waiting" && (
                     <div>
                         <Link href={`/teacher/lectures/${lecture.id}/edit`}>
                             <Button
@@ -160,8 +165,10 @@ export default function LectureItem({
                         <div
                             className="
                             w-24 h-16 rounded-lg
-                            bg-slate-300 shrink-0
-                        "
+                            bg-center bg-cover shrink-0"
+                            style={{
+                                backgroundImage: `url(${lecture.thumbnailUrl})`,
+                            }}
                         />
 
                         <div className="flex-1 min-w-0">
@@ -220,7 +227,7 @@ export default function LectureItem({
                             />
 
                             <span className="font-bold">
-                                {lecture.rating.toFixed(1)}
+                                {lecture.averageRating}
                             </span>
 
                             <span className="text-slate-400">
@@ -235,7 +242,7 @@ export default function LectureItem({
                         <div className="absolute top-8 right-14 z-10">
                             <UpdateLectureStatusBtn
                                 id={lecture.id}
-                                status={lecture.status}
+                                status={lecture.lectureStatus}
                             />
                         </div>
 

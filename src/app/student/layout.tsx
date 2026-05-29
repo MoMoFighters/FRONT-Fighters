@@ -1,4 +1,4 @@
-import AUthHeader from "../layout/AuthHeader";
+import AuthHeader from "../layout/AuthHeader";
 import FooterVisibility from "../layout/FooterVisibility";
 import StudentSidebar from "../layout/StudentSidebar";
 
@@ -13,7 +13,7 @@ export default function StudentLayout({
 
             {/* 헤더 고정 */}
             <div className="fixed top-0 left-0 right-0 z-50 h-16">
-                <AUthHeader role="student" />
+                <AuthHeader role="student" />
             </div>
 
             <div className="flex pt-16 h-full">
