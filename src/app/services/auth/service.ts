@@ -341,12 +341,18 @@ export const logoutService = async (
 
 // 토큰 재발급 ( 헤더 - 연장 버튼 )
 
+export interface AuthRefreshApiResponse {
+    success: boolean;
+    message: string;
+    data?: AuthRefreshResponse;
+}
+
 export interface AuthRefreshResponse {
     accessToken: string;
     expiresIn: number;
 }
 
-export const authRefresh = async (refreshToken: string): Promise<AuthRefreshResponse> => {
+export const authRefresh = async (refreshToken: string): Promise<AuthRefreshApiResponse> => {
     const response = await fetch(`${BASE_SERVER_URL}/api/v1/auth/newtoken`,
         {
             method: 'POST',
@@ -357,11 +363,9 @@ export const authRefresh = async (refreshToken: string): Promise<AuthRefreshResp
         }
     )
     if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || '알 수 없는 이유로 로그인 연장에 실패했습니다.');
+        return response.json();
     }
-    const data = await response.json();
-    return data?.data;
+    return response.json();
 }
 
 

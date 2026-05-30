@@ -1,9 +1,9 @@
 import Image from 'next/image';
-import profile from '../assets/img/user-round-pen.svg'
-import credit from '../assets/img/credit-card.svg'
-import community from '../assets/img/users.svg'
-import chat from '../assets/img/message-square-more.svg'
-import calendar from '../assets/img/calendar-check.svg'
+import profile from '@/app/assets/img/user-round-pen.svg'
+import credit from '@/app/assets/img/credit-card.svg'
+import community from '@/app/assets/img/users.svg'
+import chat from '@/app/assets/img/message-square-more.svg'
+import calendar from '@/app/assets/img/calendar-check.svg'
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import CreateReportBtn from '@/features/report/components/buttons/CreateReportBtn';

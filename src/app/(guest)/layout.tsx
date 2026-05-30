@@ -1,5 +1,5 @@
-import Footer from "../layout/Footer";
-import GuestHeader from "../layout/GuestHeader";
+import Footer from "../../components/layout/Footer";
+import GuestHeader from "../../components/layout/GuestHeader";
 
 export default function GuestLayout({
     children,
@@ -11,8 +11,8 @@ export default function GuestLayout({
             <div className="fixed top-0 left-0 right-0 z-50 h-16">
                 <GuestHeader />
             </div>
-            <div className="pt-16 h-full">
-                <main className="bg-slate-50 pb-12 flex-1">
+            <div className="pt-16 h-full flex flex-1">
+                <main className="bg-slate-50 flex-1">
                     {children}
                 </main>
             </div>

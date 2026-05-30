@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import logo from '../assets/img/header_logo.png'
+import logo from '@/app/assets/img/header_logo.png'
 import { Button } from "@/components/ui/button";
 
 export default function GuestHeader() {

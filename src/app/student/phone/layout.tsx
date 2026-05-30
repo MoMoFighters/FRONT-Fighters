@@ -1,5 +1,5 @@
-import PhoneBottomNav from "@/app/layout/PhoneBottomNav";
-import PhoneTopBar from "@/app/layout/PhoneTopBar";
+import PhoneBottomNav from "@/components/layout/PhoneBottomNav";
+import PhoneTopBar from "@/components/layout/PhoneTopBar";
 import Link from "next/link";
 
 export default function PhoneLayout({

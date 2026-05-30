@@ -2,6 +2,7 @@
 
 import {
     authRefresh,
+    AuthRefreshApiResponse,
     AuthRefreshResponse,
     emailVerifyService,
     googleLoginService,
@@ -353,7 +354,7 @@ export const logoutAction = async (): Promise<LogoutActionState> => {
 
 // 로그인 연장 액션 함수
 
-export const authRefreshAction = async (): Promise<AuthRefreshResponse> => {
+export const authRefreshAction = async (): Promise<AuthRefreshApiResponse> => {
 
     const cookieStore = await cookies();
 
@@ -365,9 +366,9 @@ export const authRefreshAction = async (): Promise<AuthRefreshResponse> => {
 
     const refreshData = await authRefresh(refreshToken);
 
-    if (refreshData) {
+    if (refreshData?.data) {
         cookieStore.delete('accessToken');
-        cookieStore.set('accessToken', refreshData.accessToken, {
+        cookieStore.set('accessToken', refreshData.data.accessToken, {
             httpOnly: true,     // 자바스크립트 접근 불가 (XSS 방지)
             maxAge: 60 * 60,    // 1시간
             path: '/'

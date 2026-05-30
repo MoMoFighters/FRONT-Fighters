@@ -1,5 +1,5 @@
-import AdminSidebar from "../layout/AdminSidebar";
-import AUthHeader from "../layout/AuthHeader";
+import AdminSidebar from "../../components/layout/AdminSidebar";
+import AUthHeader from "../../components/layout/AuthHeader";
 
 export default function AdminLayout({
     children,
