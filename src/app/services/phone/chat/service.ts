@@ -13,7 +13,7 @@ import {
     CreateChatRoomData, GetChatRoomsProps, ChatRoomListData, GetChatHistoryProps
 } from "@/features/phone/chatType";
 
-const BASE_SERVER_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+const BASE_SERVER_URL = process.env.NEXT_PUBLIC_API_URL;
 
 // 1. 메시지 전송 서비스
 export const sendMessageService = async ({ roomId, content, accessToken }: SendMessageProps): Promise<BaseResponse<SendMessageData>> => {
