@@ -32,7 +32,7 @@ export default async function LectureCategoryListPage({ params }: { params: Prom
             building = '식당';
             break;
 
-        case 'health':
+        case 'fitness':
             image = HEALTH;
             building = '헬스장';
             break;

@@ -3,26 +3,30 @@
 import { Button } from "@/components/ui/button";
 import TwoButtonModal from "@/features/modal/TwoButtonModal";
 import { toast } from "sonner";
+import { updateLectureStatusAction } from "../../action";
 
-export default function RejectLectureBtn() {
+export default function RejectLectureBtn({ id }: { id: number }) {
 
-    const handleRejectLecture = () => {
+    const handleRejectLecture = async () => {
 
         try {
 
-            console.log('승인 거절');
-
-            // await updateUserStatusAction({
-            //     lectureId: id,
-            //     status: "HOLD",
-            // });
+            await updateLectureStatusAction(
+                String(id),
+                "HOLD"
+            );
 
             toast.success('강의 승인 절차 처리 성공', {
                 duration: 1000
             });
-        } catch {
-            // error 메시지 잡아오기
-            toast.error('');
+
+        } catch (error) {
+
+            toast.error(
+                error instanceof Error
+                    ? error.message
+                    : '상태 변경에 실패했습니다.'
+            );
         }
     };
 

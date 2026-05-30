@@ -14,13 +14,24 @@ import {
 } from "@/components/ui/pagination";
 
 import { SearchX } from "lucide-react";
-import { GetLecturesRequest } from "@/features/lecture/type";
+import { CategoryApiUrl, CategoryUrl, GetLecturesRequest } from "@/features/lecture/type";
 import { getLectures } from "@/app/services/lecture/service";
+
+const CATEGORY_MAP: Record<
+    CategoryUrl,
+    CategoryApiUrl
+> = {
+    study: "STUDY",
+    fitness: "FITNESS",
+    cook: "COOK",
+    beauty: "BEAUTY",
+    art: "ART",
+};
 
 interface AdminLectureListPageProps {
     searchParams: Promise<{
         status?: string;
-        category?: string;
+        category?: CategoryUrl;
         keyword?: string;
         page?: string;
     }>
@@ -38,7 +49,9 @@ export default async function AdminLectureListPage({
     } = await searchParams;
 
     const payload: GetLecturesRequest = {
-        category: category?.toUpperCase(),
+        category: category
+            ? CATEGORY_MAP[category]
+            : undefined,
         keyword,
         status,
         page: Number(page) || 1,
@@ -85,6 +98,8 @@ export default async function AdminLectureListPage({
 
         return `?${params.toString()}`;
     };
+
+    console.log(responseData.content[0].id, '?????');
 
     return (
         <div>

@@ -14,12 +14,23 @@ import {
 
 import { SearchX } from "lucide-react";
 import MovePageBackBtn from "@/components/common/MovePageBackBtn";
-import { GetLecturesRequest } from "@/features/lecture/type";
+import { CategoryApiUrl, CategoryUrl, GetLecturesRequest } from "@/features/lecture/type";
 import { getLectures } from "@/app/services/lecture/service";
+
+const CATEGORY_MAP: Record<
+    CategoryUrl,
+    CategoryApiUrl
+> = {
+    study: "STUDY",
+    fitness: "FITNESS",
+    cook: "COOK",
+    beauty: "BEAUTY",
+    art: "ART",
+};
 
 interface LectureListPageProps {
     searchParams: Promise<{
-        category?: string;
+        category?: CategoryUrl;
         keyword?: string;
         page?: string;
     }>
@@ -36,7 +47,9 @@ export default async function LectureListPage({
     } = await searchParams;
 
     const payload: GetLecturesRequest = {
-        category: category?.toUpperCase(),
+        category: category
+            ? CATEGORY_MAP[category]
+            : undefined,
         keyword,
         enrolled: false,
         page: Number(page) || 1,

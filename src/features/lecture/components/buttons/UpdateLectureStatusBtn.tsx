@@ -13,6 +13,8 @@ import {
 
 import TwoButtonModal from "@/features/modal/TwoButtonModal";
 import { toast } from "sonner";
+import { updateLectureStatusAction } from "../../action";
+import { StatusApiUrl } from "../../type";
 
 type ModalType =
     | 'accept'
@@ -33,24 +35,25 @@ export default function UpdateLectureStatusBtn({
 
     let error;
 
-    const handleUpdateLectureStatus = (status: string) => {
-
+    const handleUpdateLectureStatus = async (lectureStatus: StatusApiUrl) => {
+        console.log('handleUpdateLectureStatus');
         try {
             setModalType(null);
-
-            console.log('강의 승인');
-
-            // await updateUserStatusAction({
-            //     lectureId: id,
-            //     status,
-            // });
+            await updateLectureStatusAction(
+                String((id)),
+                lectureStatus,
+            );
 
             toast.success('강의 승인 절차 처리 성공', {
                 duration: 1000
             });
-        } catch {
+        } catch (error) {
             // error 메시지 잡아오기
-            toast.error('');
+            toast.error(
+                error instanceof Error
+                    ? error.message
+                    : '상태 변경에 실패했습니다.'
+            );
         }
     };
 
@@ -63,7 +66,7 @@ export default function UpdateLectureStatusBtn({
                     open: true,
                     title: "해당 강의를 승인하시겠습니까?",
                     description: `강의를 승인하면 \n 해당 강의가 공개 처리됩니다.`,
-                    onConfirm: () => handleUpdateLectureStatus('active'),
+                    onConfirm: () => handleUpdateLectureStatus('ACTIVE'),
                 };
 
             case 'reject':
@@ -71,7 +74,7 @@ export default function UpdateLectureStatusBtn({
                     open: true,
                     title: "해당 강의의 승인을 거절하시겠습니까?",
                     description: `승인을 거절하면 강사에게 안내 이메일이 \n 발송됩니다.`,
-                    onConfirm: () => handleUpdateLectureStatus('rejected'),
+                    onConfirm: () => handleUpdateLectureStatus('HOLD'),
                 };
 
             default:
@@ -169,18 +172,6 @@ export default function UpdateLectureStatusBtn({
                     />
                 </>
             )}
-
-            <TwoButtonModal
-                open={modalConfig?.open}
-                onOpenChange={(open) => {
-                    if (!open) {
-                        setModalType(null);
-                    }
-                }}
-                title={modalConfig?.title}
-                description={modalConfig?.description}
-                onConfirm={modalConfig?.onConfirm}
-            />
         </>
     );
 }
