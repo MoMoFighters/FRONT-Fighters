@@ -1,20 +1,60 @@
-// 실제로 화면에서 필요한 강의의 타입 정의
+export type CategoryApiUrl =
+    "STUDY" | "FITNESS" | "COOK" | "BEAUTY" | "ART";
 
+export type CategoryUrl =
+    "study" | "fitness" | "cook" | "beauty" | "art";
+
+export type StatusApiUrl =
+    "WAITING" | "ACTIVE" | "HOLD" | "DELETE";
+
+// 실제로 화면에서 필요한 강의의 타입 정의
 
 export interface Lecture {
     id: number;
     title: string;
     description: string;
     thumbnailUrl: string;
-    category: string;
+    category: CategoryApiUrl;
     lectureStatus: string;
     averageRating: number;
+}
+
+export interface LectureDetail {
+    id: number;
+    title: string;
+    description: string;
+    thumbnailUrl: string;
+    category: CategoryApiUrl;
+    lectureStatus: string;
+    averageRating: number;
+    chapters: Chapter[];
+    isEnrolled?: boolean;
+}
+
+export interface Chapter {
+    chapterId: number;
+    lectureId: number;
+    title: string;
+    orderNo: number;
+    videoUrl: string;
+    videoSizeBytes: number;
+    videoStatus: string;
+    durationSec: number;
+    originalFilename: string;
+}
+
+export interface LectureListInfo {
+    content: Lecture[];
+    page: number;
+    size: number;
+    totalElements: number;
+    totalPages: number;
 }
 
 // 강의 목록 조회에서 필요한 props 타입 정의
 
 export interface GetLecturesRequest {
-    category?: string;
+    category?: CategoryApiUrl;
     keyword?: string;
     status?: string;
     enrolled?: boolean;
@@ -30,7 +70,7 @@ export interface LectureResponse {
     title: string;
     description: string;
     thumbnailUrl: string;
-    category: string;
+    category: CategoryApiUrl;
     lectureStatus: string;
     averageRating: number;
     reviewCount: number;
@@ -38,13 +78,6 @@ export interface LectureResponse {
     createdAt: string;
 }
 
-export interface LectureListInfo {
-    content: Lecture[];
-    page: number;
-    size: number;
-    totalElements: number;
-    totalPages: number;
-}
 
 export interface LecturesResponse {
     content: LectureResponse[];
@@ -63,5 +96,8 @@ export interface LecturesApiResponse {
     errors: Record<string, string>;
 }
 
+// 강의 상태 변경 request 타입 정의
 
-
+export interface StatusRequest {
+    lectureStatus: StatusApiUrl;
+}

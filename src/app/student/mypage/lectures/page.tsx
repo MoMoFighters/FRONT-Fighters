@@ -4,12 +4,23 @@ import MyPageNav from "@/components/mypage/MyPageNav";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import LectureFilterBtn from "@/features/lecture/components/buttons/LectureFilterBtn";
 import LectureSearchbar from "@/features/lecture/components/common/LectureSearchbar";
-import { GetLecturesRequest } from "@/features/lecture/type";
+import { CategoryApiUrl, CategoryUrl, GetLecturesRequest } from "@/features/lecture/type";
 import { SearchX } from "lucide-react";
+
+const CATEGORY_MAP: Record<
+    CategoryUrl,
+    CategoryApiUrl
+> = {
+    study: "STUDY",
+    fitness: "FITNESS",
+    cook: "COOK",
+    beauty: "BEAUTY",
+    art: "ART",
+};
 
 interface MyLecturesListPageProps {
     searchParams: Promise<{
-        category?: string;
+        category?: CategoryUrl;
         keyword?: string;
         page?: string;
     }>
@@ -24,7 +35,9 @@ export default async function MyLecturesListPage({ searchParams }: MyLecturesLis
     } = await searchParams;
 
     const payload: GetLecturesRequest = {
-        category: category?.toUpperCase(),
+        category: category
+            ? CATEGORY_MAP[category]
+            : undefined,
         keyword,
         enrolled: true,
         page: Number(page) || 1,

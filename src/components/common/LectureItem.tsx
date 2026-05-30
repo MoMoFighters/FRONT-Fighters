@@ -27,19 +27,19 @@ export default function LectureItem({
 }: LectureItemProps) {
 
     const categoryColors: Record<string, string> = {
-        health: 'bg-cyan-200',
-        beauty: 'bg-fuchsia-200',
-        cook: 'bg-orange-200',
-        study: 'bg-emerald-200',
-        art: 'bg-violet-200',
+        FITNESS: 'bg-cyan-200',
+        BEAUTY: 'bg-fuchsia-200',
+        COOK: 'bg-orange-200',
+        STUDY: 'bg-emerald-200',
+        ART: 'bg-violet-200',
     };
 
     const categoryMap: Record<string, string> = {
-        study: '학습',
-        art: '예술',
-        cook: '요리',
-        health: '운동',
-        beauty: '뷰티',
+        STUDY: '학습',
+        ART: '예술',
+        COOK: '요리',
+        FITNESS: '운동',
+        BEAUTY: '뷰티',
     };
 
     if (mode === "teacherList" && href) {
@@ -50,27 +50,27 @@ export default function LectureItem({
                 <Link href={href}>
                     <div className="flex items-center gap-3">
                         <div
-                            className="w-16 h-12 rounded-lg shrink-0 bg-center bg-cover"
+                            className="w-16 h-12 border border-slate-50 rounded-lg shrink-0 bg-center bg-cover"
                             style={{
                                 backgroundImage: `url(${lecture.thumbnailUrl})`,
                             }}
                         />
                         <div className="flex-1 min-w-0">
                             <h4 className="font-bold text-slate-900 text-[12px] mb-1 truncate">{lecture.title}</h4>
-                            {lecture.lectureStatus === "active" && <div className="flex items-center gap-3 text-[10px] text-slate-500">
+                            {lecture.lectureStatus === "ACTIVE" && <div className="flex items-center gap-3 text-[10px] text-slate-500">
                                 <span className="flex items-center gap-1">
                                     <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
                                     {lecture.averageRating}
                                 </span>
                             </div>}
-                            {lecture.lectureStatus === "waiting" && <p className="text-xs text-amber-600 font-medium">관리자 승인 대기중입니다</p>}
-                            {lecture.lectureStatus === "hold" && <div className="flex items-center gap-2">
+                            {lecture.lectureStatus === "WAITING" && <p className="text-xs text-amber-600 font-medium">관리자 승인 대기중입니다</p>}
+                            {lecture.lectureStatus === "HOLD" && <div className="flex items-center gap-2">
                                 <p className="text-xs text-red-600 font-medium">승인 거절됨</p>
                             </div>}
                         </div>
                     </div>
                 </Link>
-                {lecture.lectureStatus === "hold" && (<button className="ml-auto absolute bottom-3 right-3">
+                {lecture.lectureStatus === "HOLD" && (<button className="ml-auto absolute bottom-3 right-3">
                     <Link href={`/teacher/lectures/${lecture.id}/edit`}>
                         <Edit className="w-3 h-3 text-red-500 hover:text-red-700" />
                     </Link>
@@ -84,7 +84,7 @@ export default function LectureItem({
             <div className="bg-white border rounded-lg border-slate-200 p-6 relative">
                 <div className="grid grid-cols-[400px_1fr] gap-8">
                     <div
-                        className="rounded-2xl max-w-100 h-56.25 bg-center bg-cover"
+                        className="rounded-2xl border border-slate-50 max-w-100 h-56.25 bg-center bg-cover"
                         style={{
                             backgroundImage: `url(${lecture.thumbnailUrl})`,
                         }}
@@ -114,18 +114,18 @@ export default function LectureItem({
                         </div>
                     </div>
                 </div>
-                {role === 'admin' && lecture.lectureStatus === 'active' && <DeleteLectureBtn mode="text" id={lecture.id} />}
+                {role === 'admin' && lecture.lectureStatus === 'ACTIVE' && <DeleteLectureBtn mode="text" id={lecture.id} />}
 
-                {role === 'admin' && lecture.lectureStatus === 'waiting' && (
+                {role === 'admin' && lecture.lectureStatus === 'WAITING' && (
                     <div className="flex gap-4 absolute bottom-6 right-6">
-                        <AcceptLectureBtn />
-                        <RejectLectureBtn />
+                        <AcceptLectureBtn id={lecture.id} />
+                        <RejectLectureBtn id={lecture.id} />
                     </div>
                 )}
 
                 {role === "student" && !isEnrolled && <EnrollLectureBtn />}
 
-                {role === "teacher" && lecture.lectureStatus !== "waiting" && (
+                {role === "teacher" && lecture.lectureStatus !== "WAITING" && (
                     <div>
                         <Link href={`/teacher/lectures/${lecture.id}/edit`}>
                             <Button
@@ -164,7 +164,7 @@ export default function LectureItem({
 
                         <div
                             className="
-                            w-24 h-16 rounded-lg
+                            w-24 h-16 rounded-lg border border-slate-50
                             bg-center bg-cover shrink-0"
                             style={{
                                 backgroundImage: `url(${lecture.thumbnailUrl})`,

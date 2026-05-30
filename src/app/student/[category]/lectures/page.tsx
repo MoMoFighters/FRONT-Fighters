@@ -18,7 +18,18 @@ import {
 import StudentLectureNav from "@/features/lecture/components/student/StudentLectureNav";
 import MovePageBackBtn from "@/components/common/MovePageBackBtn";
 import { getLectures } from "@/app/services/lecture/service";
-import { GetLecturesRequest } from "@/features/lecture/type";
+import { CategoryApiUrl, CategoryUrl, GetLecturesRequest } from "@/features/lecture/type";
+
+const CATEGORY_MAP: Record<
+    CategoryUrl,
+    CategoryApiUrl
+> = {
+    study: "STUDY",
+    fitness: "FITNESS",
+    cook: "COOK",
+    beauty: "BEAUTY",
+    art: "ART",
+};
 
 interface LectureListByCategoryProps {
     searchParams: Promise<{
@@ -28,7 +39,7 @@ interface LectureListByCategoryProps {
     }>;
 
     params: Promise<{
-        category: string;
+        category: CategoryUrl;
     }>;
 }
 
@@ -47,7 +58,9 @@ export default async function LectureListByCategory({
     } = await searchParams;
 
     const payload: GetLecturesRequest = {
-        category: category.toUpperCase(),
+        category: category
+            ? CATEGORY_MAP[category]
+            : undefined,
         keyword,
         enrolled: filter === 'my',
         page: Number(page) || 1,

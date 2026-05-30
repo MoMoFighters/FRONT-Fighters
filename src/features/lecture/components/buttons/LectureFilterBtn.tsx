@@ -63,7 +63,7 @@ export default function LectureFilterBtn() {
                                     focus:text-slate-700
                                     focus:bg-slate-50
                                 "
-                    onClick={() => handleFilter("health")}
+                    onClick={() => handleFilter("fitness")}
                 >운동</DropdownMenuItem>
 
                 <DropdownMenuItem

@@ -17,10 +17,6 @@ export default function LectureSearchbar({ status, keyword, category, filter }: 
 
     const routeParams = useParams();
 
-    const actualCategory =
-        category ??
-        (routeParams.category as string);
-
     if (status) {
         urlParams.set("status", status);
     }
