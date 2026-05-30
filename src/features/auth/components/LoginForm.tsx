@@ -19,7 +19,7 @@ export default function LoginForm() {
 
     const handleKakaoLogin = () => {
         window.Kakao.Auth.authorize({
-            redirectUri: "http://localhost:3000/oauth/kakao/callback"
+            redirectUri: process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI
         });
     };
 
@@ -44,7 +44,6 @@ export default function LoginForm() {
             !window.Kakao.isInitialized()
         ) {
             window.Kakao.init(javascriptkey)
-            console.log(window.Kakao.isInitialized());
         }
     }, [])
 

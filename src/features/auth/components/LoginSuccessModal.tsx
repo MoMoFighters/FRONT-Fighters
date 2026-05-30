@@ -67,7 +67,10 @@ export default function LoginSuccessModal({
                     {state.message}
                 </p>
 
-                <Button onClick={handleConfirm}>
+                <Button
+                    onClick={handleConfirm}
+                    className="px-2 py-1 bg-slate-900"
+                >
                     확인
                 </Button>
 

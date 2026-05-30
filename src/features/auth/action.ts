@@ -4,6 +4,7 @@ import {
     authRefresh,
     AuthRefreshResponse,
     emailVerifyService,
+    googleLoginService,
     loginService,
     loginSuccessService,
     logoutService,
@@ -52,7 +53,7 @@ export const verifyEmailAction = async (
 };
 
 
-// 1. 학생 회원가입 액션 (JSON 데이터를 직접 매개변수로 수신)
+// 1. 학생 회원가입 액션
 export const studentSignupAction = async (signupData: StudentSignupForm) => {
     try {
         // 이미 껍데기가 순수 JSON 객체이므로 서비스에 바로 주입 가능!
@@ -66,7 +67,7 @@ export const studentSignupAction = async (signupData: StudentSignupForm) => {
     redirect('/auth/login');
 };
 
-// 2. 강사 회원가입 액션 (기존 FormData를 그대로 수신)
+// 2. 강사 회원가입 액션
 export const teacherSignupAction = async (formData: FormData) => {
     try {
         const signupData = {
@@ -127,7 +128,7 @@ export const sendEmailCodeAction = async (
 
 
 
-
+// 로그인 액션 함수
 export const loginAction = async (
     prevState: LoginActionState,
     formData: FormData
@@ -374,3 +375,55 @@ export const authRefreshAction = async (): Promise<AuthRefreshResponse> => {
     }
     return refreshData;
 }
+
+
+// 카카오용 액션 함수
+import { kakaoLogin } from "@/app/services/auth/service";
+
+export const handleKakaoLoginCallback = async (code: string) => {
+    if (!code) {
+        throw new Error("인가 코드가 없습니다.");
+    }
+
+    const result = await kakaoLogin(code);
+
+    return result;
+};
+
+
+// 구글용 액션 함수
+
+
+
+
+export const googleLoginAction = async (code: string) => {
+    // 위에서 수정한 서비스 함수 호출 (성공 시 { accessToken, refreshToken }가 옴)
+    const resData = await googleLoginService(code);
+
+    const cookieStore = await cookies();
+
+    const accessToken = resData?.accessToken;
+    const refreshToken = resData?.refreshToken;
+
+    if (accessToken) {
+        cookieStore.set('accessToken', accessToken, {
+            httpOnly: true,
+            path: '/',
+            maxAge: 60 * 60,
+        });
+    }
+
+    if (refreshToken) {
+        cookieStore.set('refreshToken', refreshToken, {
+            httpOnly: true,
+            path: '/',
+            maxAge: 60 * 60 * 24 * 30,
+        });
+    }
+
+    // page.tsx에서 부드럽게 감지할 수 있도록 성공 깃발과 함께 리턴
+    return {
+        success: true,
+        data: resData
+    };
+};

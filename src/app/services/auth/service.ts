@@ -1,4 +1,5 @@
 const BASE_SERVER_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+import { EmailVerifyForm, KakaoLoginResponse, LoginRequest, LoginResponse, LoginSuccessResponse, SendEmailCodeForm, SendEmailCodeResponse, StudentSignupForm, TeacherSignupForm, TempPwResponse } from "@/features/auth/type";
 
 // 자체 로그인,회원가입 관련
 
@@ -367,8 +368,6 @@ export const authRefresh = async (refreshToken: string): Promise<AuthRefreshResp
 
 // 카카오 API 관련 서비스 함수
 
-import { EmailVerifyForm, KakaoLoginResponse, LoginRequest, LoginResponse, LoginSuccessResponse, SendEmailCodeForm, SendEmailCodeResponse, StudentSignupForm, TeacherSignupForm, TempPwResponse } from "@/features/auth/type";
-
 
 
 export const kakaoLogin = async (
@@ -376,7 +375,7 @@ export const kakaoLogin = async (
 ): Promise<KakaoLoginResponse> => {
 
     const response = await fetch(
-        `${BASE_SERVER_URL}/api/auth/kakao/login`,
+        `${BASE_SERVER_URL}/api/v1/auth/kakaologin`,
         {
             method: 'POST',
             headers: {
@@ -384,7 +383,7 @@ export const kakaoLogin = async (
             },
             credentials: 'include',
             body: JSON.stringify({
-                code, // searchParameter
+                code
             }),
         }
     );
@@ -392,6 +391,8 @@ export const kakaoLogin = async (
     const result = await response.json();
 
     if (!response.ok) {
+        console.log(response.status); // 400, 401, 404, 500 등 그대로 나옴
+        console.log(response.statusText);
         throw new Error(
             result.message ||
             '카카오 로그인에 실패하였습니다.'
@@ -405,3 +406,34 @@ export const kakaoLogin = async (
 
 // 구글 API 관련 서비스 함수
 // 추후 김태완이 알아서 정의할 예정
+export const googleLoginService = async (code: string) => {
+    const res = await fetch(
+        `${BASE_SERVER_URL}/api/auth/google`, // 명세서의 그 주소
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ code }),
+        }
+    );
+
+    // 1. 네트워크 통신 자체나 백엔드 서버(500 등)가 터졌을 때 방어
+    if (!res.ok) {
+        const errorText = await res.text().catch(() => "");
+        console.error(`❌ 백엔드 통신 실패 (${res.status}):`, errorText);
+        throw new Error(`서버 통신 에러 (${res.status})`);
+    }
+
+    const data = await res.json();
+
+    // 2. ⚠️ 핵심 버그 수정: data.success가 false(실패)일 때만 에러를 던져야 합니다!
+    // 기존에 조건문이 잘못 꼬여서 success가 true인데도 이 안으로 들어와 에러를 던졌던 것입니다.
+    if (data.success === false) {
+        console.error("❌ 백엔드 비즈니스 로직 실패:", data.message);
+        throw new Error(data.message || "로그인에 실패하였습니다.");
+    }
+
+    // 3. 성공 시 백엔드가 준 { accessToken, refreshToken }을 안전하게 리턴
+    return data.data;
+};
