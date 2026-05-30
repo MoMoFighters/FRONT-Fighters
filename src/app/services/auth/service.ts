@@ -1,4 +1,5 @@
 const BASE_SERVER_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+import { EmailVerifyForm, KakaoLoginResponse, LoginRequest, LoginResponse, LoginSuccessResponse, SendEmailCodeForm, SendEmailCodeResponse, StudentSignupForm, TeacherSignupForm, TempPwResponse } from "@/features/auth/type";
 
 // 자체 로그인,회원가입 관련
 
@@ -340,12 +341,18 @@ export const logoutService = async (
 
 // 토큰 재발급 ( 헤더 - 연장 버튼 )
 
+export interface AuthRefreshApiResponse {
+    success: boolean;
+    message: string;
+    data?: AuthRefreshResponse;
+}
+
 export interface AuthRefreshResponse {
     accessToken: string;
     expiresIn: number;
 }
 
-export const authRefresh = async (refreshToken: string): Promise<AuthRefreshResponse> => {
+export const authRefresh = async (refreshToken: string): Promise<AuthRefreshApiResponse> => {
     const response = await fetch(`${BASE_SERVER_URL}/api/v1/auth/newtoken`,
         {
             method: 'POST',
@@ -356,18 +363,14 @@ export const authRefresh = async (refreshToken: string): Promise<AuthRefreshResp
         }
     )
     if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || '알 수 없는 이유로 로그인 연장에 실패했습니다.');
+        return response.json();
     }
-    const data = await response.json();
-    return data?.data;
+    return response.json();
 }
 
 
 
 // 카카오 API 관련 서비스 함수
-
-import { EmailVerifyForm, KakaoLoginResponse, LoginRequest, LoginResponse, LoginSuccessResponse, SendEmailCodeForm, SendEmailCodeResponse, StudentSignupForm, TeacherSignupForm, TempPwResponse } from "@/features/auth/type";
 
 
 
@@ -376,7 +379,7 @@ export const kakaoLogin = async (
 ): Promise<KakaoLoginResponse> => {
 
     const response = await fetch(
-        `${BASE_SERVER_URL}/api/auth/kakao/login`,
+        `${BASE_SERVER_URL}/api/v1/auth/kakaologin`,
         {
             method: 'POST',
             headers: {
@@ -384,7 +387,7 @@ export const kakaoLogin = async (
             },
             credentials: 'include',
             body: JSON.stringify({
-                code, // searchParameter
+                code
             }),
         }
     );
@@ -392,6 +395,8 @@ export const kakaoLogin = async (
     const result = await response.json();
 
     if (!response.ok) {
+        console.log(response.status); // 400, 401, 404, 500 등 그대로 나옴
+        console.log(response.statusText);
         throw new Error(
             result.message ||
             '카카오 로그인에 실패하였습니다.'
@@ -405,3 +410,30 @@ export const kakaoLogin = async (
 
 // 구글 API 관련 서비스 함수
 // 추후 김태완이 알아서 정의할 예정
+export const googleLoginService = async (code: string) => {
+    const res = await fetch(
+        `${BASE_SERVER_URL}/api/v1/auth/googlelogin`,
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ code }),
+        }
+    );
+
+    if (!res.ok) {
+        const errorText = await res.text().catch(() => "");
+        console.error(`백엔드 통신 실패 (${res.status}):`, errorText);
+        throw new Error(`서버 통신 에러 (${res.status})`);
+    }
+
+    const data = await res.json();
+
+    if (data.success === false) {
+        throw new Error(data.message || "로그인에 실패하였습니다.");
+    }
+
+    // 3. 성공 시 백엔드가 준 { accessToken, refreshToken }을 안전하게 리턴
+    return data.data;
+};

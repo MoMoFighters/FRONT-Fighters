@@ -5,7 +5,9 @@ import { revalidatePath } from "next/cache";
 import { sendMessageService, readMessageService, createChatRoomService } from "@/app/services/phone/chat/service";
 import { ActionState } from "./chatType";
 
-// 1. 메시지 전송 액션 (Form 전송용)
+/*
+    CHAT 전송용
+*/
 export const sendMessageAction = async (
     prevState: ActionState,
     formData: FormData
@@ -63,7 +65,7 @@ export const readMessageAction = async (roomId: number): Promise<ActionState> =>
     }
 };
 
-// 3. 채팅방 개설 액션 (+버튼 클릭 시 처리 전제)
+
 export const createChatRoomAction = async (
     prevState: ActionState,
     formData: FormData
@@ -90,7 +92,7 @@ export const createChatRoomAction = async (
         return {
             success: true,
             message: result.message,
-            data: result.data // 생성되거나 매칭된 roomId 데이터가 FE로 전달됨
+            data: result.data
         };
     } catch (error) {
         return {

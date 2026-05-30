@@ -19,7 +19,7 @@ export default function LoginForm() {
 
     const handleKakaoLogin = () => {
         window.Kakao.Auth.authorize({
-            redirectUri: "http://localhost:3000/oauth/kakao/callback"
+            redirectUri: process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI
         });
     };
 
@@ -44,7 +44,6 @@ export default function LoginForm() {
             !window.Kakao.isInitialized()
         ) {
             window.Kakao.init(javascriptkey)
-            console.log(window.Kakao.isInitialized());
         }
     }, [])
 
@@ -151,19 +150,18 @@ export default function LoginForm() {
                     <>
                         <hr className="border-0.5 border-slate-300" />
                         <div
-                            className="bg-yellow-300 border border-yellow-300 text-slate-900 font-bold text-center py-2 cursor-pointer flex items-center justify-center gap-1.5 rounded-none h-10"
+                            className="bg-yellow-300 border border-yellow-300 text-slate-900 font-bold text-center py-2 cursor-pointer flex items-center justify-center gap-1.5 rounded-none h-12.5"
                             onClick={handleKakaoLogin}
                         >
                             <Image src={kakao} width={20} height={20} alt="카카오 아이콘" priority />
                             <p>카카오톡으로 계속하기</p>
                         </div>
-                        <div
-                            className="border border-slate-700 bg-slate-50 text-slate-700 font-bold text-center py-2 cursor-pointer flex items-center justify-center h-10 rounded-none">
-                            <Link href={googleAuthLink} className="flex flex-row gap-1.5">
-                                <Image src={google} width={20} height={20} alt="구글 아이콘" priority />
-                                <p>구글로 계속하기</p>
-                            </Link>
-                        </div>
+                        <Link href={googleAuthLink}
+                            className="flex-row gap-1.5 border border-slate-700 bg-slate-50 text-slate-700 font-bold text-center py-2 cursor-pointer flex items-center justify-center h-12.5 rounded-none"
+                        >
+                            <Image src={google} width={20} height={20} alt="구글 아이콘" priority />
+                            <p>구글로 계속하기</p>
+                        </Link>
                     </>
                 )}
 
