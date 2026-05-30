@@ -104,7 +104,7 @@ export const createChatRoomService = async ({ userId, accessToken }: CreateChatR
 // 4. 채팅 친구 목록 불러오기 서비스
 export const getChatRoomsService = async ({ accessToken }: GetChatRoomsProps): Promise<BaseResponse<ChatRoomListData[]>> => {
     try {
-        const response = await fetch(`${BASE_SERVER_URL}/api/v1/messages/rooms`, {
+        const response = await fetch(`${BASE_SERVER_URL}/api/v1/messages/chatrooms`, {
             method: 'GET',
             headers: {
                 Authorization: `Bearer ${accessToken}`,

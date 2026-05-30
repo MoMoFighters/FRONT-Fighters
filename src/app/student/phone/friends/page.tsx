@@ -11,7 +11,7 @@ interface ChatRoomInfo {
     roomId: number;
     userId: number;
     nickname: string;
-    role: 'student' | 'teacher';
+    role: 'STUDENT' | 'TEACHER';
     lectureTitle?: string;
     content?: string | null;
     unreadCount: number;
@@ -36,16 +36,16 @@ export default async function StudentChatPage({
 
     //데이터 패칭 - chatroom(roomId,userId,content,unreadCount)
     const chatRoomData: ChatRoomInfo[] = [
-        { userId: 1, nickname: '김철수', role: 'student', roomId: 101, content: '안녕하세요!', unreadCount: 3 },
-        { userId: 2, nickname: '이영희', role: 'student', roomId: 102, content: '과제 언제까지예요?', unreadCount: 1 },
-        { userId: 3, nickname: '박민준', role: 'teacher', lectureTitle: 'React 심화반', roomId: 103, content: '강의 자료 올려드렸습니다.', unreadCount: 5 },
-        { userId: 4, nickname: '최수진', role: 'student', roomId: 104, content: null, unreadCount: 0 },
-        { userId: 5, nickname: '정호준', role: 'teacher', lectureTitle: 'Spring Boot 입문', roomId: 105, content: '질문 남겨주세요!', unreadCount: 0 },
-        { userId: 6, nickname: '한지민', role: 'student', roomId: 106, content: '감사합니다 :)', unreadCount: 2 },
-        { userId: 7, nickname: '윤서연', role: 'teacher', lectureTitle: 'Next.js 실전', roomId: 107, content: null, unreadCount: 0 },
-        { userId: 8, nickname: '강동현', role: 'student', roomId: 108, content: '확인했습니다!', unreadCount: 0 },
-        { userId: 9, nickname: '임나영', role: 'teacher', lectureTitle: 'TypeScript 기초', roomId: 109, content: '다음 강의는 목요일입니다.', unreadCount: 7 },
-        { userId: 10, nickname: '송재원', role: 'student', roomId: 110, content: null, unreadCount: 0 },
+        { userId: 1, nickname: '김철수', role: 'STUDENT', roomId: 101, content: '안녕하세요!', unreadCount: 3 },
+        { userId: 2, nickname: '이영희', role: 'STUDENT', roomId: 102, content: '과제 언제까지예요?', unreadCount: 1 },
+        { userId: 3, nickname: '박민준', role: 'TEACHER', lectureTitle: 'React 심화반', roomId: 103, content: '강의 자료 올려드렸습니다.', unreadCount: 5 },
+        { userId: 4, nickname: '최수진', role: 'STUDENT', roomId: 104, content: null, unreadCount: 0 },
+        { userId: 5, nickname: '정호준', role: 'TEACHER', lectureTitle: 'Spring Boot 입문', roomId: 105, content: '질문 남겨주세요!', unreadCount: 0 },
+        { userId: 6, nickname: '한지민', role: 'STUDENT', roomId: 106, content: '감사합니다 :)', unreadCount: 2 },
+        { userId: 7, nickname: '윤서연', role: 'TEACHER', lectureTitle: 'Next.js 실전', roomId: 107, content: null, unreadCount: 0 },
+        { userId: 8, nickname: '강동현', role: 'STUDENT', roomId: 108, content: '확인했습니다!', unreadCount: 0 },
+        { userId: 9, nickname: '임나영', role: 'TEACHER', lectureTitle: 'TypeScript 기초', roomId: 109, content: '다음 강의는 목요일입니다.', unreadCount: 7 },
+        { userId: 10, nickname: '송재원', role: 'STUDENT', roomId: 110, content: null, unreadCount: 0 },
     ]
 
     //데이터패칭 - 친구 목록 데이터(상태관련)

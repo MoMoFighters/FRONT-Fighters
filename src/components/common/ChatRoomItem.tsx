@@ -9,7 +9,7 @@ interface ChatRoomInfo {
     userId: number;
     nickname: string;
     lectureTitle?: string;
-    role: 'student' | 'teacher';
+    role: 'STUDENT' | 'TEACHER';
     roomId: number;
     content?: string | null;
     unreadCount: number;
@@ -41,7 +41,7 @@ export default function ChatRoomItem({ data }: { data: ChatRoomInfo }) {
                     <div className="flex flex-row gap-1 items-end">
                         <p className="font-bold text-md text-slate-800">{nickname}</p>
                         <p className="text-sm text-slate-900 mb-0.5">
-                            {`${role === 'teacher' ? "(강사)" : ""}`}
+                            {`${role === 'TEACHER' ? "(강사)" : ""}`}
                         </p>
                     </div>
 
