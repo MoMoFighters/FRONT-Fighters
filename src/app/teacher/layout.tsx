@@ -1,6 +1,6 @@
-import AUthHeader from "../layout/AuthHeader";
-import Footer from "../layout/Footer";
-import TeacherSidebar from "../layout/TeacherSidebar";
+import AUthHeader from "../../components/layout/AuthHeader";
+import Footer from "../../components/layout/Footer";
+import TeacherSidebar from "../../components/layout/TeacherSidebar";
 
 export default function TeacherLayout({
     children,

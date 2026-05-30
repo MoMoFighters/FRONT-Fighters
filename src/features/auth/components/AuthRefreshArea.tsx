@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { authRefreshAction } from "../action";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 
 
@@ -14,12 +15,18 @@ export default function AuthRefreshArea({
 
     const handleRefreshClick = async () => {
         const refreshData = await authRefreshAction();
-        console.log('발급받은 토큰 : ', refreshData.accessToken);
-        setTimer(refreshData.expiresIn);
+
+        if (!refreshData.success) {
+            toast.error(refreshData.message, {
+                duration: 1000
+            });
+        }
+        if (refreshData.data) {
+            setTimer(refreshData.data.expiresIn);
+        }
     }
 
     useEffect(() => {
-        if (timer <= 0) return;
 
         const interval = setInterval(() => {
             setTimer(prev => {
