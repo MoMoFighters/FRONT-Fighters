@@ -41,7 +41,7 @@ export default function StudentMainPage() {
         },
         {
             position: "third",
-            category: "health",
+            category: "fitness",
             level: 1
         },
         {

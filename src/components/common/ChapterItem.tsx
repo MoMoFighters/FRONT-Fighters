@@ -1,6 +1,6 @@
 'use client'
 
-import { Chapter } from "@/app/admin/lectures/[lectureId]/page";
+import { CategoryUrl, Chapter } from "@/features/lecture/type";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 
 export default function ChapterItem({ isEnrolled, chapter, role }: {
@@ -11,7 +11,7 @@ export default function ChapterItem({ isEnrolled, chapter, role }: {
     const router = useRouter();
 
     const { category, lectureId } = useParams<{
-        category: string;
+        category: CategoryUrl;
         lectureId: string;
     }>();
 
@@ -28,9 +28,9 @@ export default function ChapterItem({ isEnrolled, chapter, role }: {
             : "";
 
         if (category) {
-            router.push(`/${role}/${category}/lectures/${lectureId}/chapters/${chapter.id}${queryString}`)
+            router.push(`/${role}/${category}/lectures/${lectureId}/chapters/${chapter.chapterId}${queryString}`)
         } else {
-            router.push(`/${role}/lectures/${lectureId}/chapters/${chapter.id}${queryString}`)
+            router.push(`/${role}/lectures/${lectureId}/chapters/${chapter.chapterId}${queryString}`)
         }
     }
 
@@ -61,7 +61,7 @@ export default function ChapterItem({ isEnrolled, chapter, role }: {
 
                 {/* Duration */}
                 <div className="text-slate-500 text-sm shrink-0 mr-4">
-                    {chapter.duration}
+                    {`${String(Math.floor(chapter.durationSec / 60)).padStart(2, '0')}:${String(chapter.durationSec % 60).padStart(2, '0')}`}
                 </div>
             </div>
         </div>

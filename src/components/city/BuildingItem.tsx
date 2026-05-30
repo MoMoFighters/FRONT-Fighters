@@ -42,7 +42,7 @@ export default function BuildingItem({ category, level }: BuildingItemProps) {
             explain = '요리 카테고리 관련 강의를 수강할 수 있는 페이지로 이동합니다.'
             break;
 
-        case 'health':
+        case 'fitness':
             image = health;
             label = '운동';
             building = '헬스장';

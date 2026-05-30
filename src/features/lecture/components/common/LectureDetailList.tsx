@@ -1,10 +1,11 @@
 'use client'
 
-import { Chapter, Review } from "@/app/admin/lectures/[lectureId]/page";
+import { Review } from "@/app/admin/lectures/[lectureId]/page";
 import ChapterItem from "@/components/common/ChapterItem";
 import ReviewItem from "@/components/common/ReviewItem";
 import { SearchX } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import { Chapter } from "../../type";
 
 interface LectureDetailListProps {
     chapters: Chapter[];
@@ -21,7 +22,7 @@ export default function LectureDetailList({ chapters, reviews, isEnrolled, role 
 
     return (
         <>
-            {!searchStatus && chapters.map((chapter) => <ChapterItem role={role} key={chapter.id} isEnrolled={isEnrolled} chapter={chapter} />)}
+            {!searchStatus && chapters.map((chapter) => <ChapterItem role={role} key={chapter.chapterId} isEnrolled={isEnrolled} chapter={chapter} />)}
 
             {searchStatus === "reviews" && reviews.map((review) => <ReviewItem key={review.id} review={review} />)}
 
