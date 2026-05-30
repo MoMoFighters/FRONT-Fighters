@@ -71,12 +71,8 @@ export default function EmailVerificationZone({
 
     return (
         <>
-            {/* 이메일 입력 영역 */}
             <label className="text-right font-bold" htmlFor="email">이메일</label>
             <div className="flex gap-2 min-w-0">
-                {/* ★ 중요: 화면 표시용 input. disabled 상태이므로 폼 제출 시 전송되지 않음.
-                  따라서 name="email" 속성을 지우거나 전송 대상에서 제외시킵니다.
-                */}
                 <input
                     className="border border-slate-300 py-2 px-2 flex-1 min-w-0 h-10 text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-slate-500 transition-colors disabled:bg-gray-100 disabled:text-slate-500"
                     type="email"
@@ -88,7 +84,6 @@ export default function EmailVerificationZone({
                     required
                 />
 
-                {/* ★ 핵심 해결책: 이메일 인증이 완료되었을 때, 이 값을 폼 데이터에 실어 보낼 hidden 필드 */}
                 {isEmailVerified && (
                     <input type="hidden" name="email" value={email} />
                 )}

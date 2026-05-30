@@ -113,7 +113,7 @@ export default function UserInfoEditForm({ initialData }: UserInfoEditFormProps)
                 router.refresh();
                 if (!currentPassword) {
                     router.push("/student/mypage");
-                    toast("회원 정보가 성공적으로 수정되었습니다.");
+                    toast.success("회원 정보가 성공적으로 수정되었습니다.");
                 } else {
                     router.push("/auth/login");
                     toast("비밀번호가 변경되었으니 다시 로그인해주세요.");
