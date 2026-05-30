@@ -1,5 +1,5 @@
 import { Review } from "@/app/admin/lectures/[lectureId]/page";
-import { getLectureById } from "@/app/services/lecture/service";
+import { getChaptersById, getLectureById, getLectureProgress } from "@/app/services/lecture/service";
 import LectureItem from "@/components/common/LectureItem";
 import MovePageBackBtn from "@/components/common/MovePageBackBtn";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
@@ -21,9 +21,7 @@ interface LectureByCategoryDetailProps {
 export default async function LectureByCategoryDetail({ searchParams, params }: LectureByCategoryDetailProps) {
 
     const { category, lectureId } = await params;
-    const { filter, tab, page } = await searchParams;
-
-    const isEnrolled: boolean = filter === 'my';
+    const { tab, page } = await searchParams;
 
     const dummyReviews: Review[] = [
         { id: 1, name: '홍길동', rating: 5, content: '정말 유익한 강의였습니다! 매일 아침 따라하고 있어요.', createdAt: '2024.05.15' },
@@ -36,14 +34,35 @@ export default async function LectureByCategoryDetail({ searchParams, params }: 
 
     const lecture = await getLectureById(lectureId);
 
+    const progressData = await getLectureProgress(lectureId);
+
+    const chaptersData = await getChaptersById(lectureId);
+
+    console.log(chaptersData, '?!');
+
+    const chapters = lecture.isEnrolled
+        ? lecture.chapters.map((chapter) => {
+            const progress = chaptersData.find(
+                (item) => item.chapterId === chapter.chapterId
+            );
+
+            return {
+                ...chapter,
+                progressRate: progress?.progressRate ?? 0,
+                watchedSeconds: progress?.watchedSeconds ?? 0,
+                isCompleted: progress?.isCompleted ?? false,
+            };
+        })
+        : lecture.chapters;
+
+    console.log(chapters, '챕터 정보 병합 확인');
+
+    // module 4 이후 - 수강평 기능 중 페이지네이션
     const currentPage = Number(page ?? 1);
-
     const REVIEWS_PER_PAGE = 5;
-
     const totalPages = Math.ceil(
         dummyReviews.length / REVIEWS_PER_PAGE
     );
-
     const paginatedReviews = dummyReviews.slice(
         (currentPage - 1) * REVIEWS_PER_PAGE,
         currentPage * REVIEWS_PER_PAGE
@@ -59,12 +78,12 @@ export default async function LectureByCategoryDetail({ searchParams, params }: 
 
     return (
         <div className="p-12 relative">
-            <MovePageBackBtn href={isEnrolled ? `/student/${category}/lectures?filter=my` : `/student/${category}/lectures`} />
-            <LectureItem lecture={lecture} role="student" isEnrolled={isEnrolled} mode="detail" />
+            <MovePageBackBtn href={`/student/${category}/lectures`} />
+            <LectureItem progressData={progressData} lecture={lecture} role="student" mode="detail" />
             <div className="mt-10 bg-white flex flex-col border rounded-lg border-slate-200 p-6 relative">
                 <LectureDetailNav href={`/student/${category}/lectures/${lectureId}`} />
                 <div className="border-t border-slate-400 mb-4" />
-                <LectureDetailList role="student" isEnrolled={isEnrolled} chapters={lecture.chapters} reviews={paginatedReviews} />
+                <LectureDetailList role="student" isEnrolled={lecture.isEnrolled} chapters={chapters} reviews={paginatedReviews} />
             </div>
             {tab === "reviews" && (
                 <Pagination className="mt-8">
@@ -73,7 +92,7 @@ export default async function LectureByCategoryDetail({ searchParams, params }: 
                         {currentPage > 1 && (
                             <PaginationItem>
                                 <PaginationPrevious
-                                    href={isEnrolled ? `?filter=my&tab=reviews&page=${currentPage - 1}` : `?tab=reviews&page=${currentPage - 1}`}
+                                    href={`?tab=reviews&page=${currentPage - 1}`}
                                 />
                             </PaginationItem>
                         )}
@@ -85,7 +104,7 @@ export default async function LectureByCategoryDetail({ searchParams, params }: 
 
                             <PaginationItem key={pageNumber}>
                                 <PaginationLink
-                                    href={isEnrolled ? `?filter=my&tab=reviews&page=${pageNumber}` : `?tab=reviews&page=${pageNumber}`}
+                                    href={`?tab=reviews&page=${pageNumber}`}
                                     isActive={currentPage === pageNumber}
                                 >
                                     {pageNumber}
@@ -97,7 +116,7 @@ export default async function LectureByCategoryDetail({ searchParams, params }: 
                         {currentPage < totalPages && (
                             <PaginationItem>
                                 <PaginationNext
-                                    href={isEnrolled ? `?filter=my&tab=reviews&page=${currentPage + 1}` : `?tab=reviews&page=${currentPage + 1}`}
+                                    href={`?tab=reviews&page=${currentPage + 1}`}
                                 />
                             </PaginationItem>
                         )}

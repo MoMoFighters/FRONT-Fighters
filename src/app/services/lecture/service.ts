@@ -1,7 +1,8 @@
 // 강의 관련 (공동)
 
-import { GetLecturesRequest, LectureDetail, LectureListInfo, LectureResponse, LecturesApiResponse, StatusApiUrl, StatusRequest } from "@/features/lecture/type";
+import { ChapterProgress, GetLecturesRequest, LectureDetail, LectureListInfo, LectureProgress, LecturesApiResponse, StatusRequest } from "@/features/lecture/type";
 import { fetchWithAuth } from "@/lib/api"
+import { notFound } from "next/navigation";
 
 
 // 강의 목록 전체 조회 (토큰을 넘겨서 role 비교, 그 외 각 도메인 별 필요한 값은 쿼리 파라미터로)
@@ -26,13 +27,20 @@ export const getLectures = async (payload: GetLecturesRequest): Promise<LectureL
     cache: 'no-store'
   });
 
+  if (response.status === 404) {
+    notFound();
+  }
+
   if (!response.ok) {
     const errorData = await response.json();
-    throw new Error(errorData.message || '강의 정보를 불러오는데 실패하였습니다.');
+
+    throw new Error(
+      `${errorData.status}|${errorData.message}`
+    );
   }
 
   const result: LecturesApiResponse = await response.json();
-  console.log(result);
+  console.log('강의 전체 조회 확인용', result);
 
   return {
     content: result.data.content.map((lecture) => ({
@@ -43,6 +51,7 @@ export const getLectures = async (payload: GetLecturesRequest): Promise<LectureL
       category: lecture.category,
       lectureStatus: lecture.lectureStatus,
       averageRating: lecture.averageRating,
+      isEnrolled: lecture.isEnrolled,
     })),
 
     page: result.data.page,
@@ -58,12 +67,22 @@ export const getLectureById = async (id: string): Promise<LectureDetail> => {
   const response = await fetchWithAuth(`/api/v1/lectures/${id}`, {
     cache: 'no-store'
   });
+
+  if (response.status === 404) {
+    notFound();
+  }
+
   if (!response.ok) {
     const errorData = await response.json();
-    throw new Error(errorData.message || '강의 정보를 불러오는데 실패하였습니다.');
+
+    throw new Error(
+      `${errorData.status}|${errorData.message}`
+    );
   }
+
   const result = await response.json();
-  console.log(result);
+  console.log('강의 상세 조회 확인용', result);
+
   return {
     id: result.data.lectureId,
     title: result.data.title,
@@ -72,7 +91,8 @@ export const getLectureById = async (id: string): Promise<LectureDetail> => {
     category: result.data.category,
     lectureStatus: result.data.lectureStatus,
     averageRating: result.data.averageRating,
-    chapters: result.data.chapters
+    chapters: result.data.chapters,
+    isEnrolled: result.data.isEnrolled,
   }
 }
 
@@ -84,13 +104,68 @@ export const updateLectureStatus = async (id: string, payload: StatusRequest) =>
     body: JSON.stringify(payload),
     cache: 'no-store'
   });
-  console.log(response);
+  console.log('강의 상태 변경 확인용', response);
+
   if (!response.ok) {
     const errorData = await response.json();
-    throw new Error(errorData?.message || '게시글 삭제에 실패하였습니다.');
+
+
+    throw new Error(
+      `${errorData.status}|${errorData.message}`
+    );
   }
 
   return response.json();
+}
+
+// 강의별 진척도 조회
+
+export const getLectureProgress = async (id: string): Promise<LectureProgress> => {
+  const response = await fetchWithAuth(`/api/v1/lectures/${id}/progress`, {
+    cache: 'no-store'
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+
+
+    throw new Error(
+      `${errorData.status}|${errorData.message}`
+    );
+  }
+
+  const result = await response.json();
+  console.log('강의별 진척도 확인용', result);
+
+  return {
+    totalProgress: result.data.totalProgress,
+    completedCount: result.data.completedCount,
+    totalChapterCount: result.data.totalChapterCount
+  }
+
+}
+
+// 챕터별 진척도 조회
+
+export const getChaptersById = async (lectureId: string): Promise<ChapterProgress[]> => {
+  const response = await fetchWithAuth(`/api/v1/lectures/${lectureId}/chapters/progress`, {
+    cache: 'no-store'
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+
+
+    throw new Error(
+      `${errorData.status}|${errorData.message}`
+    );
+  }
+
+  const result = await response.json();
+  console.log('챕터별 진척도 확인용', result);
+
+  return result.data.chapters;
+
 }
 
 /*

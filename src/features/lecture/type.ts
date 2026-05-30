@@ -17,6 +17,13 @@ export interface Lecture {
     category: CategoryApiUrl;
     lectureStatus: string;
     averageRating: number;
+    isEnrolled?: boolean;
+}
+
+export interface LectureProgress {
+    totalProgress: number;
+    completedCount: number;
+    totalChapterCount: number;
 }
 
 export interface LectureDetail {
@@ -41,6 +48,20 @@ export interface Chapter {
     videoStatus: string;
     durationSec: number;
     originalFilename: string;
+
+    progressRate?: number;
+    watchedSeconds?: number;
+    isCompleted?: boolean;
+}
+
+export interface ChapterProgress {
+    chapterId: number,
+    title: string,
+    orderNo: number,
+    watchedSeconds: number,
+    durationSec: number,
+    progressRate: number,
+    isCompleted: boolean
 }
 
 export interface LectureListInfo {

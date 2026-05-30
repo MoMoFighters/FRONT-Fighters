@@ -1,7 +1,8 @@
 'use client'
 
 import { CategoryUrl, Chapter } from "@/features/lecture/type";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { Progress } from "../ui/progress";
 
 export default function ChapterItem({ isEnrolled, chapter, role }: {
     isEnrolled?: boolean;
@@ -15,22 +16,14 @@ export default function ChapterItem({ isEnrolled, chapter, role }: {
         lectureId: string;
     }>();
 
-    const searchParams = useSearchParams();
-
-    const filter = searchParams.get("filter");
-
     const handleMoveChapterClick = () => {
         if (role === "teacher") return;
         if (role === "student" && !isEnrolled) return;
 
-        const queryString = filter
-            ? `?filter=${filter}`
-            : "";
-
         if (category) {
-            router.push(`/${role}/${category}/lectures/${lectureId}/chapters/${chapter.chapterId}${queryString}`)
+            router.push(`/${role}/${category}/lectures/${lectureId}/chapters/${chapter.chapterId}`)
         } else {
-            router.push(`/${role}/lectures/${lectureId}/chapters/${chapter.chapterId}${queryString}`)
+            router.push(`/${role}/lectures/${lectureId}/chapters/${chapter.chapterId}`)
         }
     }
 
@@ -58,6 +51,19 @@ export default function ChapterItem({ isEnrolled, chapter, role }: {
                     <h3 className="text-slate-900 mb-2 text-md font-semibold">Chapter {chapter.orderNo}.</h3>
                     <p className="text-slate-500 text-sm truncate">{chapter.title}</p>
                 </div>
+
+                {chapter.progressRate !== undefined && (
+                    <div className="w-60 flex gap-1">
+                        <Progress
+                            value={chapter.progressRate}
+                            className="mt-2"
+                        />
+
+                        <p className="text-xs text-slate-400 mt-1">
+                            {chapter.progressRate}%
+                        </p>
+                    </div>
+                )}
 
                 {/* Duration */}
                 <div className="text-slate-500 text-sm shrink-0 mr-4">
