@@ -44,7 +44,9 @@ export default function KakaoCallbackPage() {
 
     return (
         <>
-            <div>카카오 로그인 처리중...</div>
+            <div className="flex items-center justify-center min-h-screen text-slate-900 bg-white font-medium">
+                카카오 로그인 처리 중입니다...
+            </div>
 
             {loginSuccess && (
                 <LoginSuccessModal

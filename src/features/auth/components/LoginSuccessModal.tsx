@@ -10,7 +10,6 @@ interface LoginSuccessModalProps {
     state: {
         success: boolean;
         message: string;
-        isTemp: boolean;
     };
 }
 
