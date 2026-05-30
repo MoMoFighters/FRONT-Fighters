@@ -412,7 +412,7 @@ export const kakaoLogin = async (
 // 추후 김태완이 알아서 정의할 예정
 export const googleLoginService = async (code: string) => {
     const res = await fetch(
-        `${BASE_SERVER_URL}/api/auth/google`, // 명세서의 그 주소
+        `${BASE_SERVER_URL}/api/v1/auth/googlelogin`,
         {
             method: 'POST',
             headers: {
@@ -422,19 +422,15 @@ export const googleLoginService = async (code: string) => {
         }
     );
 
-    // 1. 네트워크 통신 자체나 백엔드 서버(500 등)가 터졌을 때 방어
     if (!res.ok) {
         const errorText = await res.text().catch(() => "");
-        console.error(`❌ 백엔드 통신 실패 (${res.status}):`, errorText);
+        console.error(`백엔드 통신 실패 (${res.status}):`, errorText);
         throw new Error(`서버 통신 에러 (${res.status})`);
     }
 
     const data = await res.json();
 
-    // 2. ⚠️ 핵심 버그 수정: data.success가 false(실패)일 때만 에러를 던져야 합니다!
-    // 기존에 조건문이 잘못 꼬여서 success가 true인데도 이 안으로 들어와 에러를 던졌던 것입니다.
     if (data.success === false) {
-        console.error("❌ 백엔드 비즈니스 로직 실패:", data.message);
         throw new Error(data.message || "로그인에 실패하였습니다.");
     }
 

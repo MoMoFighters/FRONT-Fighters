@@ -386,20 +386,45 @@ export const handleKakaoLoginCallback = async (code: string) => {
         throw new Error("인가 코드가 없습니다.");
     }
 
-    const result = await kakaoLogin(code);
+    // 1️⃣ 카카오 로그인 API 호출
+    const resData = await kakaoLogin(code);
 
-    return result;
+    console.log(resData);
+
+    const cookieStore = await cookies();
+
+    const accessToken = resData?.data?.accessToken;
+    const refreshToken = resData?.data?.refreshToken;
+
+    if (accessToken) {
+        cookieStore.set("accessToken", accessToken, {
+            httpOnly: true,
+            path: "/",
+            maxAge: 60 * 60, // 1시간
+        });
+    }
+
+    if (refreshToken) {
+        cookieStore.set("refreshToken", refreshToken, {
+            httpOnly: true,
+            path: "/",
+            maxAge: 60 * 60 * 24 * 30, // 30일
+        });
+    }
+
+    // 2️⃣ Google이랑 동일한 응답 구조 유지
+    return {
+        success: true,
+        data: resData.data,
+    };
 };
 
 
 // 구글용 액션 함수
-
-
-
-
 export const googleLoginAction = async (code: string) => {
     // 위에서 수정한 서비스 함수 호출 (성공 시 { accessToken, refreshToken }가 옴)
     const resData = await googleLoginService(code);
+    console.log(resData)
 
     const cookieStore = await cookies();
 

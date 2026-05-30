@@ -1,25 +1,30 @@
-'use client'
+'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { handleKakaoLoginCallback } from '@/features/auth/action';
 import { toast } from 'sonner';
-
+import LoginSuccessModal from '@/features/auth/components/LoginSuccessModal';
 
 export default function KakaoCallbackPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const code = searchParams.get('code');
+
+    const hasCalled = useRef(false);
+
+    const [loginSuccess, setLoginSuccess] = useState(false);
 
     useEffect(() => {
-        const code = searchParams.get('code');
+        if (!code || hasCalled.current) return;
+        hasCalled.current = true;
 
         const login = async () => {
             try {
-                const result = await handleKakaoLoginCallback(code as string);
+                await handleKakaoLoginCallback(code);
 
-                console.log(result);
-
-                router.push('/student');
+                // ✅ 모달만 띄움
+                setLoginSuccess(true);
             } catch (error) {
                 console.error(error);
 
@@ -27,16 +32,29 @@ export default function KakaoCallbackPage() {
                     error instanceof Error
                         ? error.message
                         : '카카오 로그인에 실패하였습니다. 다시 시도해주세요.',
-                    {
-                        duration: 1500,
-                    }
+                    { duration: 1500 }
                 );
-                router.push('/auth/login')
+
+                router.push('/auth/login');
             }
         };
 
         login();
-    }, [router, searchParams]);
+    }, [code]);
 
-    return <div>카카오 로그인 처리중...</div>;
+    return (
+        <>
+            <div>카카오 로그인 처리중...</div>
+
+            {loginSuccess && (
+                <LoginSuccessModal
+                    setIsModal={setLoginSuccess}
+                    state={{
+                        success: true,
+                        message: '로그인 성공',
+                    }}
+                />
+            )}
+        </>
+    );
 }
