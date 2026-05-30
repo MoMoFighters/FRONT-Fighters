@@ -11,7 +11,7 @@ import {
 
 import {
     createTodoAction,
-} from '../../action'
+} from '../../todoAction'
 
 
 interface Props {

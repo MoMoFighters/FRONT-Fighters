@@ -169,6 +169,7 @@ export default function ChatRoomArea({ currentRoomId }: { currentRoomId: number 
     // 임시 토큰 설정 (실제 프로젝트 구조에 맞게 쿠키나 세션에서 관리하는 토큰 값으로 대체하세요)
     const accessToken = "eyJhbGciOi...";
 
+    // 채팅방 닫을때 어디로 연결시킬지 결정
     const href = pathname.startsWith('/teacher') ? "/teacher/ask" : "/student/phone/friends";
 
     useEffect(() => {

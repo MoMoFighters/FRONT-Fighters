@@ -6,7 +6,7 @@ import { checkTodoService, deleteTodoService, editTodoService, getTodoList }
     from '@/app/services/phone/todo/service';
 
 import { CreateTodoActionState, GetCalendarSchedulesActionProps, ScheduleItem }
-    from './type';
+    from './todoType';
 
 
 
