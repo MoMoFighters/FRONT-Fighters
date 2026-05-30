@@ -57,9 +57,7 @@ export interface CreateChatRoomData {
 }
 
 // 4. 채팅방 목록 및 내역 조회 타입
-export interface GetChatRoomsProps {
-    accessToken: string;
-}
+
 export interface ChatRoomListData {
     userId: number;
     nickname: string;

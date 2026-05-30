@@ -4,21 +4,14 @@ import Image from "next/image";
 import user from '@/app/assets/img/user.svg'
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ChatRoomListData } from "@/features/phone/chatType";
 
-interface ChatRoomInfo {
-    userId: number;
-    nickname: string;
-    lectureTitle?: string;
-    role: 'STUDENT' | 'TEACHER';
-    roomId: number;
-    content?: string | null;
-    unreadCount: number;
-}
 
-export default function ChatRoomItem({ data }: { data: ChatRoomInfo }) {
+
+export default function ChatRoomItem({ data }: { data: ChatRoomListData }) {
 
     const pathname = usePathname();
-    const { roomId, nickname, content, role, lectureTitle, userId, } = data as ChatRoomInfo
+    const { roomId, nickname, content, role, lectureTitle, userId, } = data as ChatRoomListData
 
     const href =
         pathname.startsWith('/teacher')

@@ -7,14 +7,24 @@ import Link from "next/link";
 import FriendItem from "@/components/phone/friends/FriendItem";
 // import ChatRoomArea from "@/components/common/ChatRoomArea";
 
-interface ChatRoomInfo {
-    roomId: number;
-    userId: number;
-    nickname: string;
-    role: 'STUDENT' | 'TEACHER';
-    lectureTitle?: string;
-    content?: string | null;
-    unreadCount: number;
+// interface ChatRoomInfo {
+//     roomId: number;
+//     userId: number;
+//     nickname: string;
+//     role: 'STUDENT' | 'TEACHER';
+//     lectureTitle?: string;
+//     content?: string | null;
+//     unreadCount: number;
+
+
+// }
+
+type currentRoomId = number | null;
+type accessToken = string | null
+
+interface ChatRoomAreaProps {
+    currentRoomId: currentRoomId;
+    accessToken: accessToken;
 }
 
 interface friendInfo {
@@ -34,19 +44,19 @@ export default async function StudentChatPage({
     const currentStatus = (status as 'friend' | 'request') ?? 'friend'
     const currentRoomId = roomId ? Number(roomId) : null
 
-    //데이터 패칭 - chatroom(roomId,userId,content,unreadCount)
-    const chatRoomData: ChatRoomInfo[] = [
-        { userId: 1, nickname: '김철수', role: 'STUDENT', roomId: 101, content: '안녕하세요!', unreadCount: 3 },
-        { userId: 2, nickname: '이영희', role: 'STUDENT', roomId: 102, content: '과제 언제까지예요?', unreadCount: 1 },
-        { userId: 3, nickname: '박민준', role: 'TEACHER', lectureTitle: 'React 심화반', roomId: 103, content: '강의 자료 올려드렸습니다.', unreadCount: 5 },
-        { userId: 4, nickname: '최수진', role: 'STUDENT', roomId: 104, content: null, unreadCount: 0 },
-        { userId: 5, nickname: '정호준', role: 'TEACHER', lectureTitle: 'Spring Boot 입문', roomId: 105, content: '질문 남겨주세요!', unreadCount: 0 },
-        { userId: 6, nickname: '한지민', role: 'STUDENT', roomId: 106, content: '감사합니다 :)', unreadCount: 2 },
-        { userId: 7, nickname: '윤서연', role: 'TEACHER', lectureTitle: 'Next.js 실전', roomId: 107, content: null, unreadCount: 0 },
-        { userId: 8, nickname: '강동현', role: 'STUDENT', roomId: 108, content: '확인했습니다!', unreadCount: 0 },
-        { userId: 9, nickname: '임나영', role: 'TEACHER', lectureTitle: 'TypeScript 기초', roomId: 109, content: '다음 강의는 목요일입니다.', unreadCount: 7 },
-        { userId: 10, nickname: '송재원', role: 'STUDENT', roomId: 110, content: null, unreadCount: 0 },
-    ]
+
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get('accessToken')?.value;
+    console.log(accessToken)
+    if (!accessToken) {
+        redirect('/auth/login');
+    }
+
+    const roomResponse = await getChatRoomsService(accessToken)
+    if (roomResponse.status !== 200) {
+        return
+    }
+    const chatRoomData = roomResponse?.data;
 
     //데이터패칭 - 친구 목록 데이터(상태관련)
     const users: friendInfo[] = [
@@ -92,12 +102,12 @@ export default async function StudentChatPage({
                         {/* {chatRoomData.map(data => (
                             <ChatRoomItem data={data} key={data.roomId} />
                         ))} */}
-                        {chatRoomData.length === 0 ? (
+                        {chatRoomData?.length === 0 ? (
                             <div className="p-5 text-center text-sm text-slate-400 my-auto">
                                 채팅방이 존재하지 않습니다.
                             </div>
                         ) : (
-                            chatRoomData.map(data => (
+                            chatRoomData?.map(data => (
                                 <ChatRoomItem data={data} key={data.roomId} />
                             ))
                         )}
@@ -108,7 +118,7 @@ export default async function StudentChatPage({
 
                 {currentStatus !== 'request' ? (
                     <div className="flex-1">
-                        <ChatRoomArea currentRoomId={currentRoomId} />
+                        <ChatRoomArea currentRoomId={currentRoomId} accessToken={accessToken} />
                     </div>
                 ) : (
                     <div className="p-3 flex flex-col gap-2 overflow-y-scroll w-full scrollbar-none">
@@ -143,6 +153,7 @@ import { getChatRoomsService } from "@/app/services/phone/chat/service";
 import ChatRoomArea from "@/components/common/ChatRoomArea";
 import ChatRoomItem from "@/components/common/ChatRoomItem";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 // interface ChatRoomInfo {
 //     roomId: number;
