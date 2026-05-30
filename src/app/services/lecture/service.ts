@@ -22,7 +22,9 @@ export const getLectures = async (payload: GetLecturesRequest): Promise<LectureL
 
   console.log('????', `/api/v1/lectures?${queryString}`);
 
-  const response = await fetchWithAuth(`/api/v1/lectures?${queryString}`);
+  const response = await fetchWithAuth(`/api/v1/lectures?${queryString}`, {
+    cache: 'no-store'
+  });
 
   if (!response.ok) {
     const errorData = await response.json();
@@ -53,7 +55,9 @@ export const getLectures = async (payload: GetLecturesRequest): Promise<LectureL
 // 강의 상세 조회
 
 export const getLectureById = async (id: string): Promise<LectureDetail> => {
-  const response = await fetchWithAuth(`/api/v1/lectures/${id}`);
+  const response = await fetchWithAuth(`/api/v1/lectures/${id}`, {
+    cache: 'no-store'
+  });
   if (!response.ok) {
     const errorData = await response.json();
     throw new Error(errorData.message || '강의 정보를 불러오는데 실패하였습니다.');
@@ -77,7 +81,8 @@ export const getLectureById = async (id: string): Promise<LectureDetail> => {
 export const updateLectureStatus = async (id: string, payload: StatusRequest) => {
   const response = await fetchWithAuth(`/api/v1/lectures/${id}/status`, {
     method: 'PATCH',
-    body: JSON.stringify(payload)
+    body: JSON.stringify(payload),
+    cache: 'no-store'
   });
   console.log(response);
   if (!response.ok) {

@@ -1,10 +1,10 @@
 import Image from 'next/image';
 import logo from '../assets/img/header_logo.png'
-import admin from '../assets/img/admin.svg'
-import dashboard from '../assets/img/layout-dashboard.svg'
-import community from '../assets/img/users.svg'
-import folder from '../assets/img/folder-open.svg'
-import money from '../assets/img/receipt.svg'
+import admin from '@/app/assets/img/admin.svg'
+import dashboard from '@/app/assets/img/layout-dashboard.svg'
+import community from '@/app/assets/img/users.svg'
+import folder from '@/app/assets/img/folder-open.svg'
+import money from '@/app/assets/img/receipt.svg'
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 

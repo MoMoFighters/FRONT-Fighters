@@ -4,8 +4,11 @@ import { Button } from "@/components/ui/button";
 import TwoButtonModal from "@/features/modal/TwoButtonModal";
 import { toast } from "sonner";
 import { updateLectureStatusAction } from "../../action";
+import { useRouter } from "next/navigation";
 
 export default function AcceptLectureBtn({ id }: { id: number }) {
+
+    const router = useRouter();
 
     const handleAcceptLecture = async () => {
 
@@ -19,6 +22,7 @@ export default function AcceptLectureBtn({ id }: { id: number }) {
             toast.success('강의 승인 절차 처리 성공', {
                 duration: 1000
             });
+            router.push('/admin/lectures');
 
         } catch (error) {
 

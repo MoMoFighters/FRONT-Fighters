@@ -52,7 +52,9 @@ export default function LectureItem({
                         <div
                             className="w-16 h-12 border border-slate-50 rounded-lg shrink-0 bg-center bg-cover"
                             style={{
-                                backgroundImage: `url(${lecture.thumbnailUrl})`,
+                                backgroundImage: lecture.thumbnailUrl
+                                    ? `url(${lecture.thumbnailUrl})`
+                                    : 'none'
                             }}
                         />
                         <div className="flex-1 min-w-0">
@@ -86,7 +88,9 @@ export default function LectureItem({
                     <div
                         className="rounded-2xl border border-slate-50 max-w-100 h-56.25 bg-center bg-cover"
                         style={{
-                            backgroundImage: `url(${lecture.thumbnailUrl})`,
+                            backgroundImage: lecture.thumbnailUrl
+                                ? `url(${lecture.thumbnailUrl})`
+                                : 'none'
                         }}
                     />
 
@@ -167,7 +171,9 @@ export default function LectureItem({
                             w-24 h-16 rounded-lg border border-slate-50
                             bg-center bg-cover shrink-0"
                             style={{
-                                backgroundImage: `url(${lecture.thumbnailUrl})`,
+                                backgroundImage: lecture.thumbnailUrl
+                                    ? `url(${lecture.thumbnailUrl})`
+                                    : 'none'
                             }}
                         />
 

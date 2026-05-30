@@ -1,5 +1,5 @@
 import ChapterItem from "@/components/common/ChapterItem";
-import { Chapter } from "../../page";
+import { Chapter } from "@/features/lecture/type";
 
 export default async function ChapterDetailPage({ params }: {
     params: Promise<{
@@ -10,15 +10,64 @@ export default async function ChapterDetailPage({ params }: {
     const { chapterId, lectureId } = await params;
 
     const dummyChapters: Chapter[] = [
-        { id: 1, orderNo: 1, title: '오리엔테이션 및 준비운동', duration: '10:30' },
-        { id: 2, orderNo: 2, title: '상체 근력 운동 기초', duration: '15:20' },
-        { id: 3, orderNo: 3, title: '하체 근력 운동 기초', duration: '12:45' },
-        { id: 4, orderNo: 4, title: '코어 운동으로 체간 강화', duration: '14:00' },
-        { id: 5, orderNo: 5, title: '유산소 운동 루틴', duration: '18:30' },
-        { id: 6, orderNo: 6, title: '스트레칭과 마무리', duration: '10:00' },
+        {
+            chapterId: 1,
+            lectureId: 10,
+            title: "강의 소개 및 환경 설정",
+            orderNo: 1,
+            videoUrl: "https://example.com/videos/chapter1.mp4",
+            videoSizeBytes: 104857600, // 100MB
+            videoStatus: "READY",
+            durationSec: 780,
+            originalFilename: "chapter1-intro.mp4",
+        },
+        {
+            chapterId: 2,
+            lectureId: 10,
+            title: "Spring Boot 프로젝트 생성",
+            orderNo: 2,
+            videoUrl: "https://example.com/videos/chapter2.mp4",
+            videoSizeBytes: 157286400, // 150MB
+            videoStatus: "READY",
+            durationSec: 1320,
+            originalFilename: "chapter2-project.mp4",
+        },
+        {
+            chapterId: 3,
+            lectureId: 10,
+            title: "REST API 기본 구현",
+            orderNo: 3,
+            videoUrl: "https://example.com/videos/chapter3.mp4",
+            videoSizeBytes: 209715200, // 200MB
+            videoStatus: "READY",
+            durationSec: 1850,
+            originalFilename: "chapter3-rest-api.mp4",
+        },
+        {
+            chapterId: 4,
+            lectureId: 10,
+            title: "데이터베이스 연동하기",
+            orderNo: 4,
+            videoUrl: "https://example.com/videos/chapter4.mp4",
+            videoSizeBytes: 262144000, // 250MB
+            videoStatus: "PROCESSING",
+            durationSec: 2100,
+            originalFilename: "chapter4-database.mp4",
+        },
+        {
+            chapterId: 5,
+            lectureId: 10,
+            title: "배포 및 마무리",
+            orderNo: 5,
+            videoUrl: "https://example.com/videos/chapter5.mp4",
+            videoSizeBytes: 125829120, // 120MB
+            videoStatus: "READY",
+            durationSec: 960,
+            originalFilename: "chapter5-deploy.mp4",
+        },
     ];
 
-    const chapter: Chapter | undefined = dummyChapters.find((chapter) => chapter.id === Number(chapterId));
+    const chapter = dummyChapters.find((chapter) => chapter.chapterId === Number(chapterId));
 
     if (!chapter) {
         return (
@@ -36,7 +85,7 @@ export default async function ChapterDetailPage({ params }: {
                 </div>
                 <div className="flex-1 h-120 bg-white border-2 border-slate-200 rounded-lg p-4 overflow-y-auto">
                     {dummyChapters.map((item) => (
-                        <ChapterItem key={item.id} chapter={item} role="admin" />
+                        <ChapterItem key={item.chapterId} chapter={item} role="admin" />
                     ))}
                 </div>
             </div>
