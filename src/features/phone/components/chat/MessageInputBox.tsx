@@ -35,34 +35,51 @@ export default function MessageInputBox({ chatRoomId }: { chatRoomId: number | n
 
 'use client'
 
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { sendMessageAction } from "../../chatAction";
+import { toast } from "sonner";
 
 interface Props {
     chatRoomId: number | null;
+    reload: {
+        reload: boolean;
+        setReload: any;
+    }
+
 }
 
-export default function MessageInputBox({ chatRoomId }: Props) {
-    // 1. useActionState에 액션과 초기값 바인딩
-    const [state, formAction, isPending] = useActionState(sendMessageAction, {
-        success: false,
-        message: "",
-    });
+export default function MessageInputBox({ chatRoomId, reload }: Props) {
 
     const inputRef = useRef<HTMLInputElement>(null);
+    const [isSending, setIsSending] = useState(false);
+    const [content, setContent] = useState("")
 
-    // 메시지 전송 성공 시 입력창 비우기
-    useEffect(() => {
-        if (state.success && inputRef.current) {
-            inputRef.current.value = "";
+
+    const handleSend = async () => {
+        setIsSending(true)
+        if (!content || !chatRoomId) { return }
+        const response = await sendMessageAction({ content, roomId: chatRoomId });
+        if (response.status !== 201) {
+            toast.error(response.message, {
+                duration: 1000
+            })
+            return
         }
-    }, [state]);
+        setContent('');
+        setIsSending(false);
+        reload.setReload(!reload.reload);
+    }
+
+    useEffect(() => {
+        setIsSending(false);
+        setContent("");
+    }, [chatRoomId])
 
     return (
         <div className="flex flex-col bg-slate-50">
             {/* 2. form의 action 속성에 formAction 전달 */}
-            <form className="flex flex-row px-3 py-2 gap-1" action={formAction}>
+            <div className="flex flex-row px-3 py-2 gap-1">
                 {/* Hidden input들로 roomId를 서버에 함께 전송 */}
                 <input type="hidden" name="roomId" value={chatRoomId || ""} />
 
@@ -72,17 +89,18 @@ export default function MessageInputBox({ chatRoomId }: Props) {
                     name="content"
                     className="flex-1 border border-slate-300 px-2 py-1 rounded-sm text-slate-700 focus:outline-none"
                     placeholder="내용을 입력하세요..."
-                    disabled={isPending || !chatRoomId}
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    disabled={isSending || !chatRoomId}
                 />
-                <Button type="submit" disabled={isPending || !chatRoomId}>
-                    {isPending ? "전송중..." : "전송"}
+                <Button
+                    type="button"
+                    disabled={isSending || !content}
+                    onClick={handleSend}
+                >
+                    {isSending ? "전송중..." : "전송"}
                 </Button>
-            </form>
-
-            {/* 에러 발생 시 사용자에게 문구 노출 */}
-            {!state.success && state.message && (
-                <p className="text-xs text-red-500 px-3 pb-1">{state.message}</p>
-            )}
+            </div>
         </div>
     );
 }

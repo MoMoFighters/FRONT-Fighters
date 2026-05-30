@@ -149,6 +149,7 @@ import close from '@/app/assets/img/close.svg';
 import ChatItem from "./ChatItem";
 import MessageInputBox from "@/features/phone/components/chat/MessageInputBox";
 import { ChatMessage, getChatHistoryService } from "@/app/services/phone/chat/service";
+import { toast } from "sonner";
 
 
 interface ChatRoomAreaProps {
@@ -162,6 +163,7 @@ export default function ChatRoomArea({
 }: ChatRoomAreaProps) {
 
     const pathname = usePathname();
+    const [reload, setReload] = useState(false);
 
     const [messages, setMessages] =
         useState<ChatMessage[]>([]);
@@ -182,107 +184,83 @@ export default function ChatRoomArea({
         const loadMessages = async () => {
 
             try {
-
                 const response =
                     await getChatHistoryService({
                         roomId: currentRoomId,
                         accessToken,
                     });
-
                 setMessages(
                     response.data ?? []
                 );
-
             } catch (error) {
-
-                console.error(error);
-
                 setMessages([]);
             }
         };
 
         loadMessages();
 
+        const interval = setInterval(() => {
+            loadMessages();
+        }, 1000);
+
+        return () => {
+            clearInterval(interval);
+        };
+
     }, [
         currentRoomId,
         accessToken,
+        reload
     ]);
+
+    const handleScroll = (
+        e: React.UIEvent<HTMLDivElement>
+    ) => {
+
+        if (
+            e.currentTarget.scrollTop === 0
+        ) {
+
+            console.log(
+                "최상단 도달"
+            );
+        }
+    };
 
     if (!currentRoomId) {
 
         return (
             <div
-                className="
-                    flex
-                    justify-center
-                    items-center
-                    h-full
-                    flex-col
-                    gap-2
-                "
+                className="flex justify-center items-center h-full flex-col gap-2"
             >
-                <MessageCirclePlus
-                    className="h-12 w-12"
-                />
-
-                <p
-                    className="
-                        font-bold
-                        text-2xl
-                    "
-                >
+                <MessageCirclePlus className="h-12 w-12" />
+                <p className="font-bold text-2xl">
                     채팅방을 선택해주세요
                 </p>
             </div>
         );
     }
 
-    const opponentName =
-        messages[0]?.nickname ??
-        '채팅방';
+    const opponentName = messages.filter(item => !item.isMine)[0]?.nickname ?? '알수없음';
 
     return (
         <div className="flex flex-col h-full min-h-0">
 
             {/* 상단바 */}
             <div
-                className="
-                    h-14
-                    shrink-0
-                    border-b
-                    border-slate-200
-                    pl-2
-                    py-2
-                    flex
-                    flex-row
-                    items-center
-                "
+                className="h-14 shrink-0 border-b border-slate-200 pl-2 py-2 flex flex-row items-center"
             >
                 <div
-                    className="
-                        flex-1
-                        flex
-                        items-center
-                    "
+                    className="flex-1 flex items-center"
                 >
                     <p
-                        className="
-                            ml-2
-                            text-lg
-                            font-semibold
-                            text-slate-900
-                        "
+                        className="ml-2 text-lg font-semibold text-slate-900"
                     >
                         {opponentName}
                     </p>
 
                     <p
-                        className="
-                            text-[12px]
-                            ml-1
-                            font-semibold
-                            text-slate-500
-                        "
+                        className="text-[12px] ml-1 font-semibold text-slate-500"
                     >
                         님과의 대화
                     </p>
@@ -299,32 +277,17 @@ export default function ChatRoomArea({
 
             {/* 채팅 영역 */}
             <div
-                className="
-                    flex-1
-                    min-h-0
-                    overflow-y-auto
-                    scrollbar-none
-                    p-2
-                    flex
-                    flex-col
-                    gap-2
-                "
+                className="flex-1 min-h-0 overflow-y-auto scrollbar-none p-2 flex flex-col gap-2"
+                onScroll={handleScroll}
             >
                 {
                     messages.length === 0 ? (
 
                         <div
-                            className="
-                                flex
-                                justify-center
-                                items-center
-                                h-full
-                            "
+                            className="flex justify-center items-center h-full"
                         >
                             <p
-                                className="
-                                    text-slate-400
-                                "
+                                className="text-slate-400"
                             >
                                 아직 채팅 내역이 없습니다.
                             </p>
@@ -335,32 +298,16 @@ export default function ChatRoomArea({
                         messages.map(message => (
 
                             <ChatItem
-                                key={
-                                    message.messageId
-                                }
+                                key={message.messageId}
 
-                                id={
-                                    message.messageId
-                                }
+                                id={message.messageId}
 
-                                isMine={
-                                    message.isMine
-                                }
+                                isMine={message.isMine}
 
-                                message={
-                                    message.content
-                                }
+                                message={message.content}
 
-                                time={
-                                    new Date(
-                                        message.createdAt
-                                    ).toLocaleTimeString(
-                                        'ko-KR',
-                                        {
-                                            hour: '2-digit',
-                                            minute: '2-digit',
-                                        }
-                                    )
+                                time={new Date(message.createdAt).toLocaleTimeString('ko-KR',
+                                    { hour: '2-digit', minute: '2-digit', })
                                 }
                             />
 
@@ -372,16 +319,11 @@ export default function ChatRoomArea({
 
             {/* 입력창 */}
             <div
-                className="
-                    shrink-0
-                    border-t
-                    border-slate-200
-                "
+                className="shrink-0 border-t border-slate-200"
             >
                 <MessageInputBox
-                    chatRoomId={
-                        currentRoomId
-                    }
+                    chatRoomId={currentRoomId}
+                    reload={{ reload, setReload }}
                 />
             </div>
 

@@ -22,10 +22,6 @@ import FriendItem from "@/components/phone/friends/FriendItem";
 type currentRoomId = number | null;
 type accessToken = string | null
 
-interface ChatRoomAreaProps {
-    currentRoomId: currentRoomId;
-    accessToken: accessToken;
-}
 
 interface friendInfo {
     userId: number;
@@ -154,6 +150,7 @@ import ChatRoomArea from "@/components/common/ChatRoomArea";
 import ChatRoomItem from "@/components/common/ChatRoomItem";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { ChatRoomListData } from "@/features/phone/chatType";
 
 // interface ChatRoomInfo {
 //     roomId: number;
