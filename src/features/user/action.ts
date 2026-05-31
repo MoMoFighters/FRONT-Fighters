@@ -5,9 +5,12 @@ import {
     editMyInfoService,
     nicknameCheckService,
     EditMyInfoResponse,
-    NicknameCheckResponse
+    NicknameCheckResponse,
+    updateTeacherStatus
 } from "@/app/services/user/service";
+import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
+import { UpdateTeacherStatusResponse } from "./type";
 
 // 내 정보 불러오기 인터페이스 규격
 export interface MomoUserInfoResponse {
@@ -129,3 +132,15 @@ export const checkAndRegisterNickname = async (
     return result;
 
 };
+
+export const updateTeacherStatusAction = async (id: string, status: string): Promise<UpdateTeacherStatusResponse> => {
+    const payload = {
+        action: status,
+        reason: status === "APPROVED" ? '증빙서류 인정되어 강사님의 승인이 완료되었습니다.' : "부적절한 증빙서류로 승인이 거절되었습니다. 다시 제출해주세요."
+    }
+    const result = await updateTeacherStatus(id, payload);
+
+    revalidatePath('/admin/users');
+
+    return result;
+}

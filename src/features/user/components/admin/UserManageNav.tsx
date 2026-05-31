@@ -19,7 +19,7 @@ export default function UserManageNav() {
             return;
         }
 
-        if (filter === 'delete') {
+        if (filter === 'deleted') {
             router.push(`/admin/users?status=${filter}`);
             return;
         }
@@ -80,7 +80,7 @@ export default function UserManageNav() {
 
             <Button
                 variant="ghost"
-                onClick={() => handleClickFilter("delete")}
+                onClick={() => handleClickFilter("deleted")}
                 className={`
                     text-lg
                     font-semibold

@@ -1,17 +1,17 @@
-import { User } from "@/app/admin/users/page";
 import UpdateUserStatusBtn from "../buttons/UpdateUserStatusBtn";
 import DownloadProofDocBtn from "../buttons/DownloadProofDocBtn";
 import { SearchX } from "lucide-react";
+import { UserResponse } from "../../type";
 
 interface AdminUsersListProps {
-    users: User[];
+    users: UserResponse[];
     status?: string;
 }
 
 export default function AdminUsersList({ users, status }: AdminUsersListProps) {
     return (
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-            {status === "delete" ? (
+            {status === "deleted" ? (
                 <div className="bg-slate-500 grid grid-cols-6 px-12 py-3 text-slate-50 font-semibold">
                     <div>이름</div>
                     <div>사용자 유형</div>
@@ -38,7 +38,7 @@ export default function AdminUsersList({ users, status }: AdminUsersListProps) {
                     </div>
                 )}
 
-                {status === "delete" ? (
+                {status === "deleted" ? (
                     users.map((user) => {
                         return (
                             <div
@@ -52,10 +52,10 @@ export default function AdminUsersList({ users, status }: AdminUsersListProps) {
                                 <div
                                     className="col-span-2 text-slate-900 hover:text-slate-700 transition-colors"
                                 >
-                                    {user.email}
+                                    {user.email ? user.email : "-"}
                                 </div>
 
-                                <div className="text-slate-900 text-center">{user.deletedAt}</div>
+                                <div className="text-slate-900 text-center">{user.deletedAt?.split('T')[0]}</div>
 
                                 <div className="text-slate-600 text-center">탈퇴</div>
                             </div>
@@ -70,15 +70,15 @@ export default function AdminUsersList({ users, status }: AdminUsersListProps) {
                             >
                                 <div className="text-slate-900 font-medium">{user.name}</div>
 
-                                <div className="text-slate-900">{user.role === "teacher" ? "강사" : "수강생"}</div>
+                                <div className="text-slate-900">{user.role === "TEACHER" ? "강사" : "수강생"}</div>
 
                                 <div
-                                    className="col-span-2 text-slate-900 hover:text-slate-700 transition-colors"
+                                    className='col-span-2 text-slate-900 hover:text-slate-700 transition-colors'
                                 >
-                                    {user.email}
+                                    {user.email ? user.email : "카카오 로그인 유저"}
                                 </div>
 
-                                <div className="text-slate-900 text-center">{user.createdAt}</div>
+                                <div className="text-slate-900 text-center">{user.createdAt?.split('T')[0]}</div>
 
                                 <UpdateUserStatusBtn user={user} />
 
@@ -86,17 +86,12 @@ export default function AdminUsersList({ users, status }: AdminUsersListProps) {
                                     <div className="flex items-center gap-2">
                                         <span className="text-xs text-slate-600">신고:</span>
                                         <span
-                                            className={`text-xs font-semibold ${user.reportCount === 3
-                                                ? 'text-red-600'
-                                                : user.reportCount === 2 || user.reportCount === 1
-                                                    ? 'text-amber-600'
-                                                    : 'text-slate-600'
-                                                }`}
+                                            className={'text-xs font-semibold text-slate-600'}
                                         >
-                                            {user.reportCount}/3
+                                            0/3
                                         </span>
                                     </div>
-                                    {user.role === 'teacher' && <DownloadProofDocBtn user={user} />}
+                                    {user.role === 'TEACHER' && <DownloadProofDocBtn user={user} />}
                                 </div>
 
                             </div>
