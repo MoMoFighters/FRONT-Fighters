@@ -10,10 +10,11 @@ interface LoginSuccessModalProps {
     state: {
         success: boolean;
         message: string;
+        isTemp?: boolean;
     };
 }
 
-export default function LoginSuccessModal({
+export default function LoginResultModal({
     setIsModal,
     state
 }: LoginSuccessModalProps) {
@@ -22,37 +23,28 @@ export default function LoginSuccessModal({
 
     const handleConfirm = async () => {
 
+        if (!state.success) {
+            setIsModal(false);
+            return;
+        }
+
         const result = await loginSuccessAction();
 
         if (!result.success || !result.data) {
-            // alert(result.message);
+            setIsModal(false);
             return;
         }
-        console.log(result)
 
-        const { role, is_temp, nickname } = result.data;
+        const { role, is_temp } = result.data;
 
-        switch (role) {
-            case "TEACHER":
-                router.push("/teacher");
-                break;
+        if (role === "TEACHER") router.push("/teacher");
+        if (role === "ADMIN") router.push("/admin");
 
-            case "ADMIN":
-                router.push("/admin");
-                break;
-
-            case "STUDENT":
-                if (is_temp) {
-                    router.push("/student/mypage/edit");
-                } else if (!nickname) {
-                    router.push("/student");
-                } else {
-                    router.push("/student");
-                }
-                break;
+        if (role === "STUDENT") {
+            router.push(is_temp ? "/student/mypage/edit" : "/student");
         }
 
-        setIsModal(false)
+        setIsModal(false);
     };
 
     return (
@@ -106,7 +98,7 @@ export default function LoginSuccessModal({
 
                     {
                         state.success &&
-                        state.isTemp && (
+                        state?.isTemp && (
                             <p
                                 className="mt-3 text-red-500 font-medium text-sm"
                             >

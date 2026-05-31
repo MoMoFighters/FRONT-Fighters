@@ -1,7 +1,7 @@
 
-import { getCalendarSchedulesAction } from '@/features/phone/action';
+import { getCalendarSchedulesAction } from '@/features/phone/todoAction';
 import Calendar from '@/features/phone/components/todo/Calendar';
-import { ScheduleItem } from '@/features/phone/type';
+import { ScheduleItem } from '@/features/phone/todoType';
 
 
 

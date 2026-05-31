@@ -18,9 +18,6 @@ import { EmailVerifyForm, KakaoLoginResponse, LoginRequest, LoginResponse, Login
 
 
 // 이메일 인증코드 발송
-
-
-
 export const sendEmailCodeService = async (
     emailData: SendEmailCodeForm
 ): Promise<SendEmailCodeResponse> => {
@@ -78,33 +75,23 @@ export const studentSignupService = async (
     return result;
 };
 
-
 // 강사 회원가입
 export const teacherSignupService = async (
-    signupData: TeacherSignupForm
+    formData: FormData
 ) => {
-
-    const formData = new FormData();
-
-    formData.append('email', signupData.email);
-    formData.append('password', signupData.password);
-    formData.append('name', signupData.name);
-    formData.append('category', signupData.category);
-
-    if (signupData.proof) {
-        formData.append('proof', signupData.proof);
-    }
-
+    console.log('1s')
     const response = await fetch(
         `${BASE_SERVER_URL}/api/v1/auth/signup/teacher`,
         {
             method: 'POST',
-            body: formData,
+            body: formData, // 👈 그대로
         }
     );
+    console.log('2s', response)
 
     const result = await response.json();
 
+    console.log('3s', result)
     if (!response.ok) {
         throw new Error(
             result.message ||
@@ -112,6 +99,7 @@ export const teacherSignupService = async (
         );
     }
 
+    console.log('4 service 끝')
     return result;
 };
 
@@ -147,7 +135,7 @@ export const emailVerifyService = async (
 
 
 
-// 로그인
+// 로그인 서비스
 
 export const loginService = async ({
     email,
@@ -167,21 +155,11 @@ export const loginService = async ({
                 }),
             }
         );
+        if (!response.ok) {
+            console.log('통신에러');
+            throw new Error('통신 에러 발생')
+        }
         const result: LoginResponse = await response.json();
-
-        if (response.status === 400) {
-            throw new Error(
-                result.message ||
-                "이메일 또는 비밀번호를 입력해주세요."
-            );
-        }
-
-        if (response.status === 401) {
-            throw new Error(
-                result.message ||
-                "이메일 또는 비밀번호가 올바르지 않습니다."
-            );
-        }
 
         return result;
 
@@ -198,7 +176,7 @@ export const loginService = async ({
 
 
 
-
+// 로그인 성공 모달(결과 띄우는것)
 export const loginSuccessService = async (
     accessToken: string
 ): Promise<LoginSuccessResponse> => {
@@ -255,6 +233,7 @@ export const loginSuccessService = async (
 };
 
 
+//임시비번 발급 서비스
 
 export const tempPwService = async (
     email: string
@@ -311,6 +290,8 @@ export const tempPwService = async (
 };
 
 
+
+// 로그아웃서비스
 export type LogoutServiceResponse = {
     success: boolean;
     message: string;
@@ -352,14 +333,20 @@ export interface AuthRefreshResponse {
     expiresIn: number;
 }
 
-export const authRefresh = async (refreshToken: string): Promise<AuthRefreshApiResponse> => {
+export const authRefresh = async (
+    refreshToken: string,
+    accessToken: string
+): Promise<AuthRefreshApiResponse> => {
     const response = await fetch(`${BASE_SERVER_URL}/api/v1/auth/newtoken`,
         {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Refresh-Token': `${refreshToken}`
-            }
+            },
+            body: JSON.stringify({
+                accessToken
+            })
         }
     )
     if (!response.ok) {
@@ -371,9 +358,6 @@ export const authRefresh = async (refreshToken: string): Promise<AuthRefreshApiR
 
 
 // 카카오 API 관련 서비스 함수
-
-
-
 export const kakaoLogin = async (
     code: string
 ): Promise<KakaoLoginResponse> => {

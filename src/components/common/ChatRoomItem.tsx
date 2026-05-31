@@ -4,21 +4,14 @@ import Image from "next/image";
 import user from '@/app/assets/img/user.svg'
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ChatRoomListData } from "@/features/phone/chatType";
 
-interface ChatRoomInfo {
-    userId: number;
-    nickname: string;
-    lectureTitle?: string;
-    role: 'student' | 'teacher';
-    roomId: number;
-    content?: string | null;
-    unreadCount: number;
-}
 
-export default function ChatRoomItem({ data }: { data: ChatRoomInfo }) {
+
+export default function ChatRoomItem({ data }: { data: ChatRoomListData }) {
 
     const pathname = usePathname();
-    const { roomId, nickname, content, role, lectureTitle, userId, } = data as ChatRoomInfo
+    const { roomId, nickname, content, role, lectureTitle, userId, unreadCount } = data as ChatRoomListData
 
     const href =
         pathname.startsWith('/teacher')
@@ -31,26 +24,35 @@ export default function ChatRoomItem({ data }: { data: ChatRoomInfo }) {
     return (
         <Link href={href}>
             <div
-                className="p-5 flex flex-row gap-3 w-80 bg-slate-50 hover:bg-slate-100 cursor-pointer"
+                className="p-5 flex flex-row gap-3 w-80 bg-slate-50 hover:bg-slate-100 cursor-pointer items-center"
                 key={data.roomId}
             >
-                <div className="rounded-full bg-pink-100 w-10 h-10 flex justify-center my-auto">
-                    <p className="my-auto font-bold">{nickname[0]}</p>
-                </div>
+                {data.profileImageUrl ? (
+                    <Image
+                        src={data.profileImageUrl || ""}
+                        alt='프사' width={40} height={40}
+                        className="rounded-full bg-pink-100 flex justify-center my-auto" />
+                ) : (
+                    <div className="rounded-full bg-pink-100 flex justify-center my-auto w-10 h-10">
+                        <p className="my-auto font-bold">{nickname[0]}</p>
+                    </div>
+                )}
+
                 <div className="flex flex-col gap-1 flex-1">
                     <div className="flex flex-row gap-1 items-end">
                         <p className="font-bold text-md text-slate-800">{nickname}</p>
                         <p className="text-sm text-slate-900 mb-0.5">
-                            {`${role === 'teacher' ? "(강사)" : ""}`}
+                            {`${role === 'TEACHER' ? "(강사)" : ""}`}
                         </p>
                     </div>
 
                     <p className="text-sm text-slate-400">{content}</p>
                 </div>
-                <div>
-                    ...
-                    {/* 나중에 홍근님 드롭다운 모달 연결하기 */}
-                </div>
+                {unreadCount !== 0 ? (
+                    <div className="bg-pink-400 w-6 h-6 rounded-full items-center text-center flex justify-center">
+                        <p className="text-slate-50 text-[12px] font-bold">{unreadCount}</p>
+                    </div>
+                ) : ""}
             </div>
         </Link>
         // 데이터 형식 맞춰서 아래꺼로 나중에 바꾸기

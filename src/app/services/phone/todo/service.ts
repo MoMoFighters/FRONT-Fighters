@@ -1,6 +1,6 @@
 // Todo 관련
 
-import { CheckTodoRequest, CheckTodoResponse, CreateTodoProps, CreateTodoResponse, DeleteTodoRequest, DeleteTodoResponse, EditTodoRequest, EditTodoResponse, GetTodoListRequest, GetTodoListResponse, ScheduleItem } from "@/features/phone/type";
+import { CheckTodoRequest, CheckTodoResponse, CreateTodoProps, CreateTodoResponse, DeleteTodoRequest, DeleteTodoResponse, EditTodoRequest, EditTodoResponse, GetTodoListRequest, GetTodoListResponse, ScheduleItem } from "@/features/phone/todoType";
 
 /*
  - Todo 목록 월별 조회(byUserId)

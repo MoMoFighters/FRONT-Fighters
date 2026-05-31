@@ -1257,11 +1257,11 @@ export default function SignupForm() {
                             id="category"
                             className="border border-slate-300 py-2 px-2 h-10 text-slate-700 focus:outline-none focus:border-slate-500 transition-colors bg-white"
                         >
-                            <option value="study">학문</option>
-                            <option value="art">예체능</option>
-                            <option value="health">헬스케어</option>
-                            <option value="beauty">뷰티</option>
-                            <option value="cook">요리</option>
+                            <option value="STUDY">학문</option>
+                            <option value="ART">예체능</option>
+                            <option value="FITNESS">헬스케어</option>
+                            <option value="BEAUTY">뷰티</option>
+                            <option value="COOK">요리</option>
                         </select>
 
                         <label className="text-right font-bold text-slate-700" htmlFor="proof">강사 인증 자료</label>

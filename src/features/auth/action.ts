@@ -70,22 +70,22 @@ export const studentSignupAction = async (signupData: StudentSignupForm) => {
 
 // 2. 강사 회원가입 액션
 export const teacherSignupAction = async (formData: FormData) => {
+    console.log('1a')
     try {
-        const signupData = {
-            email: formData.get('email') as string,
-            password: formData.get('password') as string,
-            name: formData.get('name') as string,
-            category: formData.get('category') as string,
-            proof: formData.get('proof') as File, // 파일 객체 파싱
-        };
-
-        await teacherSignupService(signupData);
+        await teacherSignupService(formData);
+        console.log('2a')
     } catch (error) {
+        console.log('3a error start')
         return {
             success: false,
-            message: error instanceof Error ? error.message : '강사 회원가입에 실패하였습니다.',
+            message:
+                error instanceof Error
+                    ? error.message
+                    : '강사 회원가입에 실패하였습니다.',
         };
     }
+
+    console.log('4a action end')
     redirect('/auth/login');
 };
 
@@ -210,16 +210,9 @@ export const loginAction = async (
     }
 };
 
+
+
 // 로그인 성공 모달
-// actions/auth/auth-action.ts
-
-
-
-
-
-
-
-
 export const loginSuccessAction = async (): Promise<LoginSuccessActionState> => {
 
     try {
@@ -307,7 +300,6 @@ export type LogoutActionState = {
     success: boolean;
     message: string;
 };
-
 export const logoutAction = async (): Promise<LogoutActionState> => {
 
     try {
@@ -316,20 +308,13 @@ export const logoutAction = async (): Promise<LogoutActionState> => {
         const accessToken = cookieStore.get("accessToken")?.value;
         const refreshToken = cookieStore.get("refreshToken")?.value;
 
-        console.log("1. ACTION START");
-        console.log("2. tokens:", accessToken, refreshToken);
-
-        // 토큰 없으면 바로 처리
         if (!accessToken || !refreshToken) {
             return {
                 success: false,
                 message: "다시 로그인 해주세요.",
             };
         }
-        console.log("3. BEFORE SERVICE");
-        // 서버 로그아웃 요청
         await logoutService(accessToken, refreshToken);
-        console.log("4. AFTER SERVICE");
         // 쿠키 삭제
         cookieStore.delete("accessToken");
         cookieStore.delete("refreshToken");
@@ -353,26 +338,27 @@ export const logoutAction = async (): Promise<LogoutActionState> => {
 
 
 // 로그인 연장 액션 함수
-
 export const authRefreshAction = async (): Promise<AuthRefreshApiResponse> => {
 
     const cookieStore = await cookies();
 
     const refreshToken = cookieStore.get("refreshToken")?.value;
+    const accessToken = cookieStore.get("accessToken")?.value;
 
-    if (!refreshToken) {
+    if (!refreshToken || !accessToken) {
         throw new Error('로그인 연장 실패!');
     }
 
-    const refreshData = await authRefresh(refreshToken);
+    const refreshData = await authRefresh(refreshToken, accessToken);
 
     if (refreshData?.data) {
-        cookieStore.delete('accessToken');
-        cookieStore.set('accessToken', refreshData.data.accessToken, {
-            httpOnly: true,     // 자바스크립트 접근 불가 (XSS 방지)
-            maxAge: 60 * 60,    // 1시간
-            path: '/'
-        })
+        cookieStore.set('accessToken', refreshData.data.accessToken,
+            {
+                httpOnly: true,
+                maxAge: 60 * 60,
+                path: '/',
+            }
+        );
     }
     return refreshData;
 }

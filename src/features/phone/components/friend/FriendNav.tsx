@@ -1,7 +1,5 @@
 'use client'
-import Image from "next/image";
 import Link from "next/link";
-import SearchUserListPage from "@/app/student/phone/friends/search/page";
 import SearchFriendModal from "./SearchFriendModal";
 import { useState } from "react";
 

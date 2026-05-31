@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { googleLoginAction } from '@/features/auth/action';
 import { toast } from 'sonner';
-import LoginSuccessModal from '@/features/auth/components/LoginSuccessModal';
+import LoginSuccessModal from '@/features/auth/components/LoginResultModal';
 
 export default function GoogleCallbackPage() {
     const searchParams = useSearchParams();

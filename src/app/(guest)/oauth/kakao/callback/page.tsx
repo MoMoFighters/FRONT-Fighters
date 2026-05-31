@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { handleKakaoLoginCallback } from '@/features/auth/action';
 import { toast } from 'sonner';
-import LoginSuccessModal from '@/features/auth/components/LoginSuccessModal';
+import LoginSuccessModal from '@/features/auth/components/LoginResultModal';
 
 export default function KakaoCallbackPage() {
     const router = useRouter();
