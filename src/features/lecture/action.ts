@@ -1,7 +1,7 @@
 'use server'
 
-import { updateLectureStatus, updateVideoProgress, updateVideoProgressByExit } from "@/app/services/lecture/service";
-import { StatusApiUrl, StatusRequest, UpdateVideoProgressByExitRequest, UpdateVideoProgressRequest } from "./type";
+import { enrollLectureById, updateLectureStatus, updateVideoProgress, updateVideoProgressByExit } from "@/app/services/lecture/service";
+import { enrollLectureActionResponse, StatusApiUrl, StatusRequest, UpdateVideoProgressByExitRequest, UpdateVideoProgressRequest } from "./type";
 import { revalidatePath } from "next/cache";
 
 
@@ -37,3 +37,13 @@ export const updateVideoProgressByExitAction = async (
         payload
     );
 };
+
+export const enrollLectureAction = async (lectureId: string) => {
+    await enrollLectureById(lectureId);
+    revalidatePath('/student/lectures');
+    revalidatePath('/student/study/lectures');
+    revalidatePath('/student/fitness/lectures');
+    revalidatePath('/student/cook/lectures');
+    revalidatePath('/student/beauty/lectures');
+    revalidatePath('/student/art/lectures');
+}

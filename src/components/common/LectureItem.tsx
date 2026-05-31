@@ -135,7 +135,7 @@ export default function LectureItem({
                     </div>
                 )}
 
-                {role === "student" && !lecture.isEnrolled && <EnrollLectureBtn />}
+                {role === "student" && !lecture.isEnrolled && <EnrollLectureBtn lectureId={lecture.id} />}
 
                 {role === "teacher" && lecture.lectureStatus !== "WAITING" && (
                     <div>

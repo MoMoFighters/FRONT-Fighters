@@ -184,3 +184,26 @@ export interface LectureMetaResponse {
 
     chapters: ChapterMeta[];
 }
+
+// 수강 신청 response 타입 정의
+
+export interface EnrollLectureData {
+    enrollmentId: number,
+    lectureId: number,
+    userId: number,
+    totalProgress: number,
+    completedCount: number,
+    enrolledAt: string
+}
+export interface EnrollLectureResponse {
+    status: number,
+    success: boolean,
+    message: string,
+    data: EnrollLectureData
+    errors: {}
+}
+
+export interface enrollLectureActionResponse {
+    success: boolean,
+    message: string
+}

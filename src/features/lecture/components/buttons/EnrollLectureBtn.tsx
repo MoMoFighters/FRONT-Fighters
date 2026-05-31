@@ -3,26 +3,41 @@
 import { Button } from "@/components/ui/button";
 import TwoButtonModal from "@/features/modal/TwoButtonModal";
 import { toast } from "sonner";
+import { enrollLectureAction } from "../../action";
+import { useRouter } from "next/navigation";
 
-export default function EnrollLectureBtn() {
+export default function EnrollLectureBtn({ lectureId }: { lectureId: number }) {
 
-    const handleEnrollLecture = () => {
+    const router = useRouter();
+
+    const handleEnrollLecture = async () => {
 
         try {
+            const result = await enrollLectureAction(String(lectureId));
 
-            console.log('수강 신청');
-
-            // await updateUserStatusAction({
-            //     lectureId: id,
-            //     status: "ACTIVE",
-            // });
+            router.refresh();
 
             toast.success('성공적으로 수강 신청 되었습니다!', {
                 duration: 1000
             });
-        } catch {
-            // error 메시지 잡아오기
-            toast.error('');
+        } catch (error) {
+
+            if (!(error instanceof Error)) {
+                toast.error('알 수 없는 오류가 발생했습니다.');
+                return;
+            }
+
+            const [status, message] =
+                error.message.split('|');
+
+            if (status === '409') {
+                toast.error(
+                    message || '이미 수강 신청한 강의입니다.'
+                );
+                return;
+            }
+
+            toast.error(message);
         }
     };
 
