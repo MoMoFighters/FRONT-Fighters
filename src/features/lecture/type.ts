@@ -17,6 +17,13 @@ export interface Lecture {
     category: CategoryApiUrl;
     lectureStatus: string;
     averageRating: number;
+    isEnrolled?: boolean;
+}
+
+export interface LectureProgress {
+    totalProgress: number;
+    completedCount: number;
+    totalChapterCount: number;
 }
 
 export interface LectureDetail {
@@ -41,6 +48,23 @@ export interface Chapter {
     videoStatus: string;
     durationSec: number;
     originalFilename: string;
+
+    progressRate?: number;
+    watchedSeconds?: number;
+    isCompleted?: boolean;
+
+    isAccessible?: boolean;
+}
+
+export interface ChapterProgress {
+    chapterId: number,
+    title: string,
+    orderNo: number,
+    watchedSeconds: number,
+    durationSec: number,
+    progressRate: number,
+    isCompleted: boolean,
+    isAccessible?: boolean
 }
 
 export interface LectureListInfo {
@@ -100,4 +124,63 @@ export interface LecturesApiResponse {
 
 export interface StatusRequest {
     lectureStatus: StatusApiUrl;
+}
+
+// 영상 시청 시간 관련 request 타입 정의
+
+export interface UpdateVideoProgressRequest {
+    playbackSeconds: number;
+}
+
+export interface UpdateVideoProgressByExitRequest {
+    playbackSeconds: number;
+    lastPositionSec: number;
+}
+
+// 영상 시청 시간 관련 response 타입 정의
+
+export interface UpdateVideoProgressResponse {
+    chapterId: number;
+    watchedSeconds: number;
+    progressRate: number;
+    isCompleted: boolean;
+    totalProgress: number;
+    completedCount: number;
+}
+
+// 이어보기 response 타입 정의
+
+export interface ResumeResponse {
+    lectureId: number;
+    chapterId: number;
+    chapterTitle: string;
+    lastPositionSec: number;
+    durationSec: number;
+    totalProgress: number;
+}
+
+// 메타 데이터 타입 정의
+
+export interface ChapterMeta {
+    chapterId: number;
+    title: string;
+    orderNo: number;
+    durationSec: number;
+    progressRate: number;
+    isCompleted: boolean;
+    isAccessible: boolean;
+}
+
+export interface LectureMetaResponse {
+    lectureId: number;
+    lectureTitle: string;
+    thumbnailUrl: string | null;
+
+    totalChapterCount: number;
+
+    currentChapterId: number;
+    currentChapterNo: number;
+    currentChapterTitle: string;
+
+    chapters: ChapterMeta[];
 }

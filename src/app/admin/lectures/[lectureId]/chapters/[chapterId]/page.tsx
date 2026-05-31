@@ -1,5 +1,5 @@
 import ChapterItem from "@/components/common/ChapterItem";
-import { Chapter } from "../../page";
+import { Chapter } from "@/features/lecture/type";
 
 export default async function ChapterDetailPage({ params }: {
     params: Promise<{
@@ -9,18 +9,83 @@ export default async function ChapterDetailPage({ params }: {
 }) {
     const { chapterId, lectureId } = await params;
 
+
     const dummyChapters: Chapter[] = [
-        { id: 1, orderNo: 1, title: '오리엔테이션 및 준비운동', duration: '10:30' },
-        { id: 2, orderNo: 2, title: '상체 근력 운동 기초', duration: '15:20' },
-        { id: 3, orderNo: 3, title: '하체 근력 운동 기초', duration: '12:45' },
-        { id: 4, orderNo: 4, title: '코어 운동으로 체간 강화', duration: '14:00' },
-        { id: 5, orderNo: 5, title: '유산소 운동 루틴', duration: '18:30' },
-        { id: 6, orderNo: 6, title: '스트레칭과 마무리', duration: '10:00' },
+        {
+            chapterId: 1,
+            lectureId: 1,
+            title: "강의 소개",
+            orderNo: 1,
+            videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
+            videoSizeBytes: 104857600,
+            videoStatus: "READY",
+            durationSec: 600,
+            originalFilename: "intro.mp4",
+            progressRate: 100,
+            watchedSeconds: 600,
+            isCompleted: true,
+        },
+        {
+            chapterId: 2,
+            lectureId: 1,
+            title: "변수와 타입",
+            orderNo: 2,
+            videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
+            videoSizeBytes: 209715200,
+            videoStatus: "READY",
+            durationSec: 900,
+            originalFilename: "variable.mp4",
+            progressRate: 70,
+            watchedSeconds: 630,
+            isCompleted: false,
+        },
+        {
+            chapterId: 3,
+            lectureId: 1,
+            title: "함수",
+            orderNo: 3,
+            videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
+            videoSizeBytes: 314572800,
+            videoStatus: "READY",
+            durationSec: 1200,
+            originalFilename: "function.mp4",
+            progressRate: 35,
+            watchedSeconds: 420,
+            isCompleted: false,
+        },
+        {
+            chapterId: 4,
+            lectureId: 1,
+            title: "객체",
+            orderNo: 4,
+            videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
+            videoSizeBytes: 419430400,
+            videoStatus: "READY",
+            durationSec: 1500,
+            originalFilename: "object.mp4",
+            progressRate: 0,
+            watchedSeconds: 0,
+            isCompleted: false,
+        },
+        {
+            chapterId: 5,
+            lectureId: 1,
+            title: "비동기 처리",
+            orderNo: 5,
+            videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
+            videoSizeBytes: 524288000,
+            videoStatus: "READY",
+            durationSec: 1800,
+            originalFilename: "async.mp4",
+            progressRate: 0,
+            watchedSeconds: 0,
+            isCompleted: false,
+        },
     ];
 
-    const chapter: Chapter | undefined = dummyChapters.find((chapter) => chapter.id === Number(chapterId));
+    const currentChapter = dummyChapters.find((item) => item.chapterId === Number(chapterId));
 
-    if (!chapter) {
+    if (!currentChapter) {
         return (
             <div>
                 존재하지 않는 챕터입니다.
@@ -32,11 +97,23 @@ export default async function ChapterDetailPage({ params }: {
         <div>
             <div className="flex gap-10">
                 <div className="bg-slate-300 w-160 h-90 rounded-lg">
-                    {chapter?.title}
+                    {currentChapter?.title}
                 </div>
                 <div className="flex-1 h-120 bg-white border-2 border-slate-200 rounded-lg p-4 overflow-y-auto">
                     {dummyChapters.map((item) => (
-                        <ChapterItem key={item.id} chapter={item} role="admin" />
+                        <div
+                            key={item.chapterId}
+                            className={
+                                item.chapterId === Number(chapterId)
+                                    ? "ring-2 ring-green-400 rounded-lg"
+                                    : ""
+                            }
+                        >
+                            <ChapterItem
+                                chapter={item}
+                                role="admin"
+                            />
+                        </div>
                     ))}
                 </div>
             </div>

@@ -15,6 +15,7 @@ import TwoButtonModal from "@/features/modal/TwoButtonModal";
 import { toast } from "sonner";
 import { updateLectureStatusAction } from "../../action";
 import { StatusApiUrl } from "../../type";
+import { useRouter } from "next/navigation";
 
 type ModalType =
     | 'accept'
@@ -28,12 +29,12 @@ export default function UpdateLectureStatusBtn({
     id: number;
 }) {
 
+    const router = useRouter();
+
     const [dropdownOpen, setDropdownOpen] = useState(false);
 
     const [modalType, setModalType] =
         useState<ModalType>(null);
-
-    let error;
 
     const handleUpdateLectureStatus = async (lectureStatus: StatusApiUrl) => {
         console.log('handleUpdateLectureStatus');
@@ -47,6 +48,8 @@ export default function UpdateLectureStatusBtn({
             toast.success('강의 승인 절차 처리 성공', {
                 duration: 1000
             });
+
+            router.push('/admin/lectures');
         } catch (error) {
             // error 메시지 잡아오기
             toast.error(

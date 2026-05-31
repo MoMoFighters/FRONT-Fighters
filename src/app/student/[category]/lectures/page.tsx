@@ -132,9 +132,7 @@ export default async function LectureListByCategory({
                                 lecture={lecture}
                                 role="student"
                                 mode="list"
-                                href={filter === "my"
-                                    ? `/student/${category}/lectures/${lecture.id}?filter=my`
-                                    : `/student/${category}/lectures/${lecture.id}`}
+                                href={`/student/${category}/lectures/${lecture.id}`}
                             />
                         ))}
 

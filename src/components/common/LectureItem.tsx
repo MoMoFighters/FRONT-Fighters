@@ -8,14 +8,15 @@ import EnrollLectureBtn from "@/features/lecture/components/buttons/EnrollLectur
 import AcceptLectureBtn from "@/features/lecture/components/buttons/AcceptLectureBtn";
 import RejectLectureBtn from "@/features/lecture/components/buttons/RejectLectureBtn";
 import { Button } from "../ui/button";
-import { Lecture } from "@/features/lecture/type";
+import { Lecture, LectureProgress } from "@/features/lecture/type";
+import { Progress } from "../ui/progress";
 
 interface LectureItemProps {
     lecture: Lecture;
     role: string;
     mode: string;
     href?: string;
-    isEnrolled?: boolean;
+    progressData?: LectureProgress
 }
 
 export default function LectureItem({
@@ -23,7 +24,7 @@ export default function LectureItem({
     role,
     mode,
     href,
-    isEnrolled
+    progressData
 }: LectureItemProps) {
 
     const categoryColors: Record<string, string> = {
@@ -52,7 +53,9 @@ export default function LectureItem({
                         <div
                             className="w-16 h-12 border border-slate-50 rounded-lg shrink-0 bg-center bg-cover"
                             style={{
-                                backgroundImage: `url(${lecture.thumbnailUrl})`,
+                                backgroundImage: lecture.thumbnailUrl
+                                    ? `url(${lecture.thumbnailUrl})`
+                                    : 'none'
                             }}
                         />
                         <div className="flex-1 min-w-0">
@@ -86,7 +89,9 @@ export default function LectureItem({
                     <div
                         className="rounded-2xl border border-slate-50 max-w-100 h-56.25 bg-center bg-cover"
                         style={{
-                            backgroundImage: `url(${lecture.thumbnailUrl})`,
+                            backgroundImage: lecture.thumbnailUrl
+                                ? `url(${lecture.thumbnailUrl})`
+                                : 'none'
                         }}
                     />
 
@@ -114,6 +119,13 @@ export default function LectureItem({
                         </div>
                     </div>
                 </div>
+
+                {role === "student" && lecture.isEnrolled &&
+                    <div className="absolute w-120 bottom-7 right-6 flex gap-3 items-center text-sm text-slate-400">
+                        <Progress value={progressData?.totalProgress} className="flex-1" /> {progressData?.completedCount} / {progressData?.totalChapterCount}
+                    </div>
+                }
+
                 {role === 'admin' && lecture.lectureStatus === 'ACTIVE' && <DeleteLectureBtn mode="text" id={lecture.id} />}
 
                 {role === 'admin' && lecture.lectureStatus === 'WAITING' && (
@@ -123,7 +135,7 @@ export default function LectureItem({
                     </div>
                 )}
 
-                {role === "student" && !isEnrolled && <EnrollLectureBtn />}
+                {role === "student" && !lecture.isEnrolled && <EnrollLectureBtn />}
 
                 {role === "teacher" && lecture.lectureStatus !== "WAITING" && (
                     <div>
@@ -167,13 +179,15 @@ export default function LectureItem({
                             w-24 h-16 rounded-lg border border-slate-50
                             bg-center bg-cover shrink-0"
                             style={{
-                                backgroundImage: `url(${lecture.thumbnailUrl})`,
+                                backgroundImage: lecture.thumbnailUrl
+                                    ? `url(${lecture.thumbnailUrl})`
+                                    : 'none'
                             }}
                         />
 
                         <div className="flex-1 min-w-0">
 
-                            <div className="flex items-center gap-3 mb-2 min-w-0">
+                            <div className="flex items-center gap-3 mb-1 min-w-0">
 
                                 <span
                                     className={`
