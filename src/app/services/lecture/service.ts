@@ -1,6 +1,6 @@
 // 강의 관련 (공동)
 
-import { ChapterProgress, GetLecturesRequest, LectureDetail, LectureListInfo, LectureMetaResponse, LectureProgress, LecturesApiResponse, ResumeResponse, StatusRequest, UpdateVideoProgressByExitRequest, UpdateVideoProgressRequest, UpdateVideoProgressResponse } from "@/features/lecture/type";
+import { ChapterProgress, EnrollLectureResponse, GetLecturesRequest, LectureDetail, LectureListInfo, LectureMetaResponse, LectureProgress, LecturesApiResponse, ResumeResponse, StatusRequest, UpdateVideoProgressByExitRequest, UpdateVideoProgressRequest, UpdateVideoProgressResponse } from "@/features/lecture/type";
 import { fetchWithAuth } from "@/lib/api"
 import { notFound } from "next/navigation";
 
@@ -283,6 +283,29 @@ export const getChapterVideo = async (lectureId: string, chapterId: string): Pro
   console.log('강의 동영상', result);
 
   return result.data.presignedUrl;
+}
+
+// 수강 신청
+
+export const enrollLectureById = async (id: string): Promise<EnrollLectureResponse> => {
+  const response = await fetchWithAuth(`/api/v1/lectures/${id}/enrollments`, {
+    method: "POST",
+    cache: 'no-store'
+  })
+
+  if (!response.ok) {
+    const errorData = await response.json();
+
+
+    throw new Error(
+      `${errorData.status}|${errorData.message}`
+    );
+  }
+
+  const data = await response.json();
+  console.log('수강신청', data);
+
+  return data;
 }
 
 /*

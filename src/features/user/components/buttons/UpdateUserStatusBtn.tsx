@@ -27,36 +27,6 @@ export default function UpdateUserStatusBtn({ user }: { user: User }) {
 
     const [modalType, setModalType] = useState<ModalType>(null);
 
-    const [dropdownOpen, setDropdownOpen] = useState(false);
-    const [modalType, setModalType] = useState<'block' | 'delete' | null>(null);
-
-    const modalConfig = (() => {
-        switch (modalType) {
-            case 'block':
-                return {
-                    open: true,
-                    title: '해당 친구를 차단하시겠습니까?',
-                    description: '차단 시 더 이상 친구 목록에서 보이지 않습니다.',
-                    onConfirm: () => {
-                        // 차단 액션 연결 예정
-                    },
-                };
-
-            case 'delete':
-                return {
-                    open: true,
-                    title: '해당 친구를 삭제하시겠습니까?',
-                    description: '친구 관계가 해제됩니다.',
-                    onConfirm: () => {
-                        // 친구 삭제 액션 연결 예정
-                    },
-                };
-
-            default:
-                return null;
-        }
-    })();
-
     const updateUserStatus = async (
         status: string
     ) => {
@@ -93,7 +63,7 @@ export default function UpdateUserStatusBtn({ user }: { user: User }) {
                     open: true,
                     title: '해당 강사를 승인하시겠습니까?',
                     description: '승인 후 해당 강사의 활동이 가능합니다.',
-                    onConfirm: () => updateUserStatus('active'),
+                    onConfirm: () => updateUserStatus('ACTIVE'),
                 };
 
             case 'reject':
@@ -101,7 +71,7 @@ export default function UpdateUserStatusBtn({ user }: { user: User }) {
                     open: true,
                     title: '강사 승인을 거절하시겠습니까?',
                     description: '강사 승인 요청이 거절됩니다.',
-                    onConfirm: () => updateUserStatus('rejected'),
+                    onConfirm: () => updateUserStatus('REJECTED'),
                 };
 
             case 'ban':
@@ -109,7 +79,7 @@ export default function UpdateUserStatusBtn({ user }: { user: User }) {
                     open: true,
                     title: '해당 회원을 일시 정지하시겠습니까?',
                     description: '회원이 일정 기간 서비스 이용이 제한됩니다.',
-                    onConfirm: () => updateUserStatus('banned'),
+                    onConfirm: () => updateUserStatus('BANNED'),
                 };
 
             case 'black':
@@ -117,7 +87,7 @@ export default function UpdateUserStatusBtn({ user }: { user: User }) {
                     open: true,
                     title: '해당 회원을 영구 정지하시겠습니까?',
                     description: '해당 회원이 영구적으로 서비스 이용이 제한됩니다.',
-                    onConfirm: () => updateUserStatus('black'),
+                    onConfirm: () => updateUserStatus('BLACK'),
                 };
 
             case 'activate':
@@ -125,7 +95,7 @@ export default function UpdateUserStatusBtn({ user }: { user: User }) {
                     open: true,
                     title: '해당 회원을 다시 활성화하시겠습니까?',
                     description: '해당 회원의 상태가 정상 활동 상태로 변경됩니다.',
-                    onConfirm: () => updateUserStatus('active'),
+                    onConfirm: () => updateUserStatus('ACTIVE'),
                 };
 
             default:
