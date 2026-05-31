@@ -1,39 +1,196 @@
+'use client'
+
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import {
+    sendFriendRequestAction,
+    cancelFriendRequestAction,
+    acceptFriendRequestAction,
+    rejectFriendRequestAction,
+    blockFriendAction,
+    unblockFriendAction,
+    createChatRoomAction,
+    deleteFriendAction,
+} from "../../chatAction";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useState } from "react";
+import TwoButtonModal from "@/features/modal/TwoButtonModal";
+import { useRouter } from "next/navigation";
 
-interface friendStatus {
-    userId: number;
-    status: 'sent' | 'recieved' | 'block' | null;
+interface Props {
+    data: {
+        userId: number;
+        status: 'none' | 'SENT' | 'FRIEND' | 'RECEIVED' | 'BLOCK';
+    };
 }
-// type friendStatus = 'sent' | 'recieved' | 'block';
 
-
-export default function UpdateFriendStatusBtn({ data }: { data: friendStatus }) {
-
+export default function UpdateFriendStatusBtn({ data }: Props) {
     const { status, userId } = data;
+    const router = useRouter();
 
-    const buttonText =
-        status === 'recieved' ? ['수락', '거절']
-            : status === 'sent' ? ['', '취소']
-                : status === null ? ["", "요청"] : ["", ""]
+    const handleAction = async (actionFn: (userId: number) => Promise<any>) => {
+        const result = await actionFn(userId);
+        if (!result.success) {
+            toast.error(result.message, { duration: 2000 });
+            return;
+        }
+        toast.success(result.message, { duration: 2000 });
+    };
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [modalType, setModalType] = useState<'BLOCK' | 'DELETE' | null>(null);
+    const handleCreateChatRoom = async () => {
+        const response = await createChatRoomAction(userId);
 
-    const buttonStyle =
-        status === 'recieved' ? ['bg-sky-500', 'bg-slate-200']
-            : status === 'sent' ? ['', 'bg-slate-200']
-                : status === null ? ["", "bg-slate-200"] : ["", ""]
-    const buttonAPI =
-        status === 'recieved' ? ['수락', '거절']
-            : status === 'sent' ? ['', '취소']
-                : status === null ? ["", ""] : ["", ""]
+        if (response.status !== 200 && response.status !== 201) {
+            toast.error(response.message, {
+                duration: 1000
+            });
+            return;
+        }
+        toast(response.message, {
+            duration: 1000
+        })
+
+        router.push(
+            `/student/phone/friends?status=friend&roomId=${response.data?.roomId}`
+        );
+        // router.refresh()
+    };
+
+    const modalConfig = (() => {
+        switch (modalType) {
+            case 'BLOCK':
+                return {
+                    open: true,
+                    title: '해당 친구를 차단하시겠습니까?',
+                    description: '차단 시 더 이상 친구 목록에서 보이지 않습니다.',
+                    onConfirm: async () => {
+                        const response = await blockFriendAction(userId)
+                        if (!response.success) {
+                            toast.error(response.message)
+                            return
+                        }
+                        toast(response.message)
+                    },
+                };
+
+            case 'DELETE':
+                return {
+                    open: true,
+                    title: '해당 친구를 삭제하시겠습니까?',
+                    description: '친구 관계가 해제됩니다.',
+                    onConfirm: async () => {
+                        const response = await deleteFriendAction(userId)
+                        if (!response.success) {
+                            toast.error(response.message)
+                            return
+                        }
+                        toast(response.message)
+                    },
+                };
+
+            default:
+                return null;
+        }
+    })();
+
     return (
-        <div className="flex flex-row gap-3 items-center">
-            {buttonText[0] ? (
-                <Button className={`${buttonStyle[0]} text-slate-50 cursor-pointer px-3`}>
-                    {buttonText[0]}
+        <div className="flex flex-row gap-2 items-center">
+            {status === 'none' && (
+                <Button
+                    className="bg-slate-200 text-slate-900"
+                    onClick={() => handleAction(sendFriendRequestAction)}
+                >
+                    요청
                 </Button>
-            ) : ''}
-            <Button className={`${buttonStyle[1]} text-slate-900 cursor-pointer px-3`}>
-                {buttonText[1]}
-            </Button>
+            )}
+            {status === 'SENT' && (
+                <Button
+                    className="bg-slate-200 text-slate-900"
+                    onClick={() => handleAction(cancelFriendRequestAction)}
+                >
+                    취소
+                </Button>
+            )}
+            {status === 'RECEIVED' && (
+                <>
+                    <Button
+                        className="bg-sky-500 text-white"
+                        onClick={() => handleAction(acceptFriendRequestAction)}
+                    >
+                        수락
+                    </Button>
+                    <Button
+                        className="bg-slate-200 text-slate-900"
+                        onClick={() => handleAction(rejectFriendRequestAction)}
+                    >
+                        거절
+                    </Button>
+                </>
+            )}
+            {status === 'FRIEND' && (
+                <div className="flex gap-2">
+                    <Button
+                        className="bg-blue-100 text-blue-600"
+                        onClick={handleCreateChatRoom}
+                    >
+                        채팅하기
+                    </Button>
+
+                    <DropdownMenu
+                        open={dropdownOpen}
+                        onOpenChange={setDropdownOpen}
+                    >
+                        <DropdownMenuTrigger asChild>
+                            <Button className="bg-red-100 text-red-500">
+                                관리
+                            </Button>
+                        </DropdownMenuTrigger>
+
+                        <DropdownMenuContent align="center">
+                            <DropdownMenuItem
+                                className="justify-center text-red-700 focus:text-red-700 focus:bg-red-50"
+                                onClick={() => {
+                                    setDropdownOpen(false);
+                                    setModalType('BLOCK');
+                                }}
+                            >
+                                차단하기
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem
+                                className="justify-center text-red-700 focus:text-red-700 focus:bg-red-50"
+                                onClick={() => {
+                                    setDropdownOpen(false);
+                                    setModalType('DELETE');
+                                }}
+                            >
+                                친구삭제
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    <TwoButtonModal
+                        open={modalConfig?.open}
+                        onOpenChange={(open) => {
+                            if (!open) {
+                                setModalType(null);
+                            }
+                        }}
+                        title={modalConfig?.title}
+                        description={modalConfig?.description}
+                        onConfirm={modalConfig?.onConfirm}
+                    />
+                </div>
+            )}
+            {status === 'BLOCK' && (
+                <Button
+                    className="bg-slate-200 text-slate-900"
+                    onClick={() => handleAction(unblockFriendAction)}
+                >
+                    차단해제
+                </Button>
+            )}
         </div>
     );
 }

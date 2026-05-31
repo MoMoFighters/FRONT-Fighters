@@ -100,3 +100,22 @@ export interface ChatMessage {
     isMine: boolean;
     profileImageUrl: string;
 }
+
+
+export interface SearchedUser {
+    userId: number;
+    name: string;
+    status: 'none' | 'SENT' | 'FRIEND' | 'RECEIVED' | 'BLOCK';
+    role: 'STUDENT' | 'TEACHER';
+    profileImageUrl: string;
+    lectureTitle?: string;
+}
+
+export interface SearchUserResponse {
+    timestamp: string;
+    status: number;
+    code: string;
+    message: string;
+    data: SearchedUser[];
+    errors: object;
+}

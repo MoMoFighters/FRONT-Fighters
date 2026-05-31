@@ -27,7 +27,6 @@ export interface LoginRequest {
 }
 // 로그인 시도 시 응답 값
 export interface LoginResponse {
-    success: boolean;
     data?: {
         accessToken: string;
         refreshToken: string;
@@ -36,6 +35,9 @@ export interface LoginResponse {
         is_temp?: boolean;
     };
     message: string;
+    timestamp: string;
+    status: number;
+    code: 'PENDING' | "REJECTED" | "BANNED" | "DELETED" | "ACTIVE" | "BLACK"
 }
 
 // 이메일 인증 코드 발송

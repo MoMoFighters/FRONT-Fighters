@@ -1,47 +1,45 @@
 'use client'
 import Image from "next/image";
-import user from '@/app/assets/img/user.svg'
 import { useEffect, useState } from "react";
 import close from '@/app/assets/img/close.svg'
 import search from "@/app/assets/img/user-plus.svg"
 import { Button } from "@/components/ui/button";
 import FriendItem from "@/components/phone/friends/FriendItem";
+import { searchUserAction } from "../../chatAction";
 
 interface friendInfo {
     userId: number;
     name: string;
-    status: 'sent' | 'recieved' | 'block';
-    profile: string;
+    status: 'none' | 'SENT' | 'FRIEND' | 'RECEIVED' | 'BLOCK';
+    role: 'STUDENT' | 'TEACHER';
+    profileImageUrl: string;
+    lectureTitle?: string;
+}
+
+interface SearchFriendModalProps {
+    searchModal: boolean;
+    setSearchModal: any;
 }
 
 export default function SearchFriendModal() {
 
-    const users: friendInfo[] = [
-        { userId: 1, name: '김철수', status: 'sent', profile: '김' },
-        { userId: 2, name: '이영희', status: 'recieved', profile: '이' },
-        { userId: 3, name: '박민준', status: 'block', profile: '박' },
-        { userId: 4, name: '최수진', status: 'sent', profile: '최' },
-        { userId: 5, name: '정호준', status: 'recieved', profile: '정' },
-        { userId: 6, name: '한지민', status: 'sent', profile: '한' },
-        { userId: 7, name: '윤서연', status: 'block', profile: '윤' },
-        { userId: 8, name: '강동현', status: 'recieved', profile: '강' },
-        { userId: 9, name: '임나영', status: 'sent', profile: '임' },
-        { userId: 10, name: '송재원', status: 'block', profile: '송' },
-        { userId: 11, name: '오지훈', status: 'recieved', profile: '오' },
-        { userId: 12, name: '배수현', status: 'sent', profile: '배' },
-        { userId: 13, name: '신동엽', status: 'block', profile: '신' },
-        { userId: 14, name: '황민서', status: 'recieved', profile: '황' },
-        { userId: 15, name: '류지아', status: 'sent', profile: '류' },
-    ]
+    const [users, setUsers] = useState<friendInfo[]>([])
     // const users: friendInfo[] = [];
 
     const [isModal, setIsModal] = useState(false)
+    const [searchValue, setSearchValue] = useState('');
+    const [message, setMessage] = useState('닉네임을 통해 검색해보세요');
 
-    // const [users, setUsers] = useState([]);
-
-    useEffect(() => {
-        // 나중에 데이터 패칭 받아서 상태관리하기
-    }, [])
+    const handleSearch = async (e: any) => {
+        e.preventDefault();
+        const data = await searchUserAction(searchValue);
+        console.log(data);
+        const searchResult = data?.data ?? [];
+        // 학생만
+        const filteredResult = searchResult.filter(user => user.role === 'STUDENT')
+        setUsers(filteredResult)
+        setMessage(filteredResult.length === 0 ? "존재하지 않는 사용자입니다. 닉네임을 확인해주세요." : data?.message);
+    }
 
     if (!isModal) return (
         <div
@@ -75,31 +73,34 @@ export default function SearchFriendModal() {
                         <p className="font-bold text-center text-xl mb-2">친구 찾기</p>
                     </div>
                     <form
-                        action=""
+                        onSubmit={handleSearch}
                         className="flex flex-row gap-2 mt-2"
                     >
                         <input
                             type="text"
                             className="flex-1 border border-slate-300 py-2 px-2 w-full text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-slate-500 transition-colors"
                             placeholder="닉네임을 입력하세요..."
-                            name='nickname'
+                            name='name'
+                            value={searchValue}
+                            onChange={(e) => setSearchValue(e.target.value)}
                         />
                         <Button
                             className="py-auto h-10.5 px-4 bg-mauve-500"
-                            type='button'
+                            type='submit'
+                            disabled={!searchValue}
                         >
                             검색
                         </Button>
                     </form>
-                    <div className="overflow-y-scroll h-full scrollbar-none mt-2">
+                    <div className="overflow-y-scroll h-full scrollbar-none mt-2 gap-1">
                         {users.length !== 0 ?
-                            users.map(user => (
-                                <FriendItem friendInfo={{ name: user.name, profile: user.profile, userId: user.userId }} />
+                            users.filter(user => user.status === "none").map(user => (
+                                <FriendItem friendInfo={{ status: user.status, name: user.name, profile: user.profileImageUrl, userId: user.userId }} key={user.userId} />
                             ))
                             : (
                                 <div className="flex justify-center align-middle h-full">
                                     <p className="my-auto py-auto font-bold text-xl text-slate-900">
-                                        해당 조건으로 검색된 유저가 없습니다.
+                                        {message}
                                     </p>
                                 </div>
                             )}

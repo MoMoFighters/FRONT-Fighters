@@ -46,43 +46,43 @@ interface Props {
         reload: boolean;
         setReload: any;
     }
-
 }
 
 export default function MessageInputBox({ chatRoomId, reload }: Props) {
 
     const inputRef = useRef<HTMLInputElement>(null);
     const [isSending, setIsSending] = useState(false);
-    const [content, setContent] = useState("")
+    const [content, setContent] = useState("");
+    const [isFocus, setIsFocus] = useState(false);
 
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (!content.trim() || !chatRoomId || isSending) return;
 
-    const handleSend = async () => {
-        setIsSending(true)
-        if (!content || !chatRoomId) { return }
+        setIsSending(true);
         const response = await sendMessageAction({ content, roomId: chatRoomId });
+
         if (response.status !== 201) {
-            toast.error(response.message, {
-                duration: 1000
-            })
-            return
+            toast.error(response.message, { duration: 1000 });
+            setIsSending(false);
+            return;
         }
+
         setContent('');
+        inputRef.current?.focus();
         setIsSending(false);
-        reload.setReload(!reload.reload);
-    }
+        setIsFocus(true);
+    };
 
     useEffect(() => {
         setIsSending(false);
         setContent("");
-    }, [chatRoomId])
+        inputRef.current?.focus();
+    }, [chatRoomId, isFocus]);
 
     return (
         <div className="flex flex-col bg-slate-50">
-            {/* 2. form의 action 속성에 formAction 전달 */}
-            <div className="flex flex-row px-3 py-2 gap-1">
-                {/* Hidden input들로 roomId를 서버에 함께 전송 */}
-                <input type="hidden" name="roomId" value={chatRoomId || ""} />
-
+            <form className="flex flex-row px-3 py-2 gap-1" onSubmit={handleSubmit}>
                 <input
                     ref={inputRef}
                     type="text"
@@ -94,13 +94,12 @@ export default function MessageInputBox({ chatRoomId, reload }: Props) {
                     disabled={isSending || !chatRoomId}
                 />
                 <Button
-                    type="button"
-                    disabled={isSending || !content}
-                    onClick={handleSend}
+                    type="submit"
+                    disabled={isSending || !content.trim()}
                 >
                     {isSending ? "전송중..." : "전송"}
                 </Button>
-            </div>
+            </form>
         </div>
     );
 }

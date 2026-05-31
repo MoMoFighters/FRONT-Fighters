@@ -9,7 +9,7 @@ import { useActionState, useEffect, useState } from "react";
 import Link from "next/link";
 import { GOOGLE_AUTH_LINK, javascriptkey } from "@/lib/config/oauth/oauthAPI";
 import { loginAction, loginSuccessAction } from "../action";
-import LoginSuccessModal from "./LoginSuccessModal";
+import LoginResultModal from "./LoginResultModal";
 
 export default function LoginForm() {
     const googleAuthLink = GOOGLE_AUTH_LINK;
@@ -48,16 +48,11 @@ export default function LoginForm() {
     }, [])
 
     useEffect(() => {
-        if (state.message) {
+        if (state?.message) {
             setIsModal(true);
         }
-    }, [state])
+    }, [state.message])
 
-
-    const handleLoginSuccess = async () => {
-        await loginSuccessAction()
-        setIsModal(false)
-    }
 
     return (
         <>
@@ -166,9 +161,12 @@ export default function LoginForm() {
                 )}
 
             </div>
-            {isModal ? (
-                <LoginSuccessModal setIsModal={setIsModal} state={state} />
-            ) : ""}
+            {isModal && (
+                <LoginResultModal
+                    setIsModal={setIsModal}
+                    state={state}
+                />
+            )}
         </>
     );
 }

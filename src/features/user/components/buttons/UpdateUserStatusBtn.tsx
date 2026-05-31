@@ -25,8 +25,37 @@ export default function UpdateUserStatusBtn({ user }: { user: User }) {
 
     const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
 
-    const [modalType, setModalType] =
-        useState<ModalType>(null);
+    const [modalType, setModalType] = useState<ModalType>(null);
+
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [modalType, setModalType] = useState<'block' | 'delete' | null>(null);
+
+    const modalConfig = (() => {
+        switch (modalType) {
+            case 'block':
+                return {
+                    open: true,
+                    title: '해당 친구를 차단하시겠습니까?',
+                    description: '차단 시 더 이상 친구 목록에서 보이지 않습니다.',
+                    onConfirm: () => {
+                        // 차단 액션 연결 예정
+                    },
+                };
+
+            case 'delete':
+                return {
+                    open: true,
+                    title: '해당 친구를 삭제하시겠습니까?',
+                    description: '친구 관계가 해제됩니다.',
+                    onConfirm: () => {
+                        // 친구 삭제 액션 연결 예정
+                    },
+                };
+
+            default:
+                return null;
+        }
+    })();
 
     const updateUserStatus = async (
         status: string

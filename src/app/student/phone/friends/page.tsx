@@ -3,9 +3,16 @@ import MessageInputBox from "@/features/phone/components/chat/MessageInputBox";
 import FriendNav from "@/features/phone/components/friend/FriendNav";
 import Image from "next/image";
 import Link from "next/link";
-// import ChatRoomItem from "@/components/common/ChatRoomItem";
 import FriendItem from "@/components/phone/friends/FriendItem";
-// import ChatRoomArea from "@/components/common/ChatRoomArea";
+
+import { getChatRoomsService, getReceivedFriendRequestsService, getSentFriendRequestsService } from "@/app/services/phone/chat/service";
+import ChatRoomArea from "@/components/common/ChatRoomArea";
+import ChatRoomItem from "@/components/common/ChatRoomItem";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import SearchFriendModal from "@/features/phone/components/friend/SearchFriendModal";
+import { getMyInfo, MomoUserInfo, MomoUserInfoResponse } from "@/features/user/action";
+import MyProfileDropdown from "@/features/phone/components/friend/MyProfileDropdown";
 
 // interface ChatRoomInfo {
 //     roomId: number;
@@ -25,9 +32,9 @@ type accessToken = string | null
 
 interface friendInfo {
     userId: number;
-    name: string;
-    status: 'sent' | 'recieved' | 'block';
-    profile: string;
+    nickname: string;
+    status: 'SENT' | 'RECEIVED' | 'BLOCK' | "NONE" | "FRIEND";
+    profileImageUrl: string;
 }
 
 export default async function StudentChatPage({
@@ -47,50 +54,44 @@ export default async function StudentChatPage({
     if (!accessToken) {
         redirect('/auth/login');
     }
+    const myInfo: MomoUserInfoResponse = await getMyInfo();
 
+    //데이터패칭 - 채팅방데이터
     const roomResponse = await getChatRoomsService(accessToken)
     if (roomResponse.status !== 200) {
         return
     }
     const chatRoomData = roomResponse?.data;
 
-    //데이터패칭 - 친구 목록 데이터(상태관련)
-    const users: friendInfo[] = [
-        { userId: 1, name: '김철수', status: 'sent', profile: '김' },
-        { userId: 2, name: '이영희', status: 'recieved', profile: '이' },
-        { userId: 3, name: '박민준', status: 'block', profile: '박' },
-        { userId: 4, name: '최수진', status: 'sent', profile: '최' },
-        { userId: 5, name: '정호준', status: 'recieved', profile: '정' },
-        { userId: 6, name: '한지민', status: 'sent', profile: '한' },
-        { userId: 7, name: '윤서연', status: 'block', profile: '윤' },
-        { userId: 8, name: '강동현', status: 'recieved', profile: '강' },
-        { userId: 9, name: '임나영', status: 'sent', profile: '임' },
-        { userId: 10, name: '송재원', status: 'block', profile: '송' },
-        { userId: 11, name: '오지훈', status: 'recieved', profile: '오' },
-        { userId: 12, name: '배수현', status: 'sent', profile: '배' },
-        { userId: 13, name: '신동엽', status: 'block', profile: '신' },
-        { userId: 14, name: '황민서', status: 'recieved', profile: '황' },
-        { userId: 15, name: '류지아', status: 'sent', profile: '류' },
-    ]
+    //데이터패칭 - 친구 목록 데이터
+    let received: friendInfo[] = [];
+    let sent: friendInfo[] = [];
+    const receivedResponse = await getReceivedFriendRequestsService(accessToken!);
+    if (receivedResponse.status === 200) {
+        received = receivedResponse.data ?? [];
+    } else { return }
+
+    const sentResponse = await getSentFriendRequestsService(accessToken!);
+    if (sentResponse.status === 200) {
+        sent = sentResponse.data ?? [];
+    } else { return }
+
 
     return (
-        <div className="flex flex-col mx-3 h-full overflow-hidden">
+        <div className="flex flex-col mx-3 h-full">
             <FriendNav status={currentStatus} />
             <div className="flex flex-row overflow-hidden flex-1 min-h-0">
                 <div className="border-r border-slate-200 flex flex-col min-h-0">
 
                     {/* 내 프로필 */}
                     <div className="p-5 flex flex-row gap-3 w-80 border-b border-slate-200">
-                        <div className="rounded-full bg-pink-100 w-10 h-10 flex justify-center my-auto">
-                            <p className="my-auto font-bold">홍</p>
+                        <Image src={myInfo.data?.profileImageUrl || ""} alt="내 프로필" className="rounded-full flex justify-center my-auto" width={40} height={40}>
+
+                        </Image>
+                        <div className="flex flex-col gap-1 flex-1 align-middle justify-center">
+                            <p className="font-bold text-md text-slate-900">{myInfo.data?.nickname} (나)</p>
                         </div>
-                        <div className="flex flex-col gap-1 flex-1 align-middle">
-                            <p className="font-bold text-md text-slate-900">홍길동 (나)</p>
-                            <p className="text-sm text-slate-400">최근 메시지입니다.</p>
-                        </div>
-                        <div>
-                            ...
-                        </div>
+                        <MyProfileDropdown myChatRoomId={chatRoomData?.[0]?.roomId} />
                     </div>
 
                     {/* 내 친구 목록에 해당하는 채팅방 나열 */}
@@ -103,7 +104,7 @@ export default async function StudentChatPage({
                                 채팅방이 존재하지 않습니다.
                             </div>
                         ) : (
-                            chatRoomData?.map(data => (
+                            chatRoomData?.slice(1).map(data => (
                                 <ChatRoomItem data={data} key={data.roomId} />
                             ))
                         )}
@@ -114,28 +115,38 @@ export default async function StudentChatPage({
 
                 {currentStatus !== 'request' ? (
                     <div className="flex-1">
-                        <ChatRoomArea currentRoomId={currentRoomId} accessToken={accessToken} />
+                        <ChatRoomArea currentRoomId={currentRoomId} accessToken={accessToken} isMine={currentRoomId === chatRoomData?.[0]?.roomId} />
                     </div>
                 ) : (
                     <div className="p-3 flex flex-col gap-2 overflow-y-scroll w-full scrollbar-none">
 
-                        <div className="flex flex-col">
-                            <p className="mb-1 text-lg font-semibold">받은 친구 요청</p>
+                        <div className="">
+                            <p className="mb-1 text-lg font-semibold">👤받은 친구 요청</p>
                             {/* 받은 친구 목록 나열 */}
                             <div className="flex flex-col gap-1">
-                                {users.filter(item => item.status === "recieved").map(friend => (
-                                    <FriendItem friendInfo={{ name: friend.name, status: "recieved", profile: friend.profile, userId: friend.userId }} key={friend.userId} />
-                                ))}
+
+                                {received.length ?
+                                    received.map(friend => (
+                                        <FriendItem friendInfo={{ name: friend.nickname, status: "RECEIVED", profile: friend.profileImageUrl, userId: friend.userId }} key={friend.userId} />
+                                    )) : (
+                                        <div className="w-max py-2 flex flex-row">
+                                            <p className="text-xl text-slate-700 font-bold">❓받은 요청이 없습니다.</p>
+                                        </div>
+                                    )}
                             </div>
                         </div>
 
-                        <div>
-                            <p className="mb-1 text-lg font-semibold mt-1">보낸 친구 요청</p>
+                        <div className="border-t border-slate-900">
+                            <p className="mb-1 text-lg font-semibold mt-1">👤보낸 친구 요청</p>
                             {/* 보낸 친구 목록 나열 */}
                             <div className="flex flex-col gap-1">
-                                {users.filter(item => item.status === "sent").map(friend => (
-                                    <FriendItem friendInfo={{ name: friend.name, status: "sent", profile: friend.profile, userId: friend.userId }} key={friend.userId} />
-                                ))}
+                                {sent.length ? sent.map(friend => (
+                                    <FriendItem friendInfo={{ name: friend.nickname, status: "SENT", profile: friend.profileImageUrl, userId: friend.userId }} key={friend.userId} />
+                                )) : (
+                                    <div className="w-max py-2 flex flex-row">
+                                        <p className="text-xl text-slate-700 font-bold">❓보낸 요청이 없습니다.</p>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -145,89 +156,3 @@ export default async function StudentChatPage({
     );
 }
 
-import { getChatRoomsService } from "@/app/services/phone/chat/service";
-import ChatRoomArea from "@/components/common/ChatRoomArea";
-import ChatRoomItem from "@/components/common/ChatRoomItem";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import { ChatRoomListData } from "@/features/phone/chatType";
-
-// interface ChatRoomInfo {
-//     roomId: number;
-//     userId: number;
-//     nickname: string;
-//     role: 'student' | 'teacher';
-//     lectureTitle?: string;
-//     content?: string | null;
-//     unreadCount: number;
-//     createdAt?: string;
-// }
-
-// export default async function StudentChatPage({
-//     searchParams
-// }: {
-//     searchParams: Promise<{ roomId?: string }>
-// }) {
-//     const params = await searchParams;
-//     const roomId = params.roomId;
-//     const currentRoomId = roomId ? Number(roomId) : null;
-
-//     // 1. 쿠키에서 토큰 꺼내기
-//     const cookieStore = await cookies();
-//     const accessToken = cookieStore.get('accessToken')?.value || "";
-
-//     // 2. [GET] /api/v1/messages/rooms API를 통해 자동으로 개설되어 있는 방 목록 조회
-//     let chatRoomData: ChatRoomInfo[] = [];
-
-//     try {
-//         if (accessToken) {
-//             const response = await getChatRoomsService({ accessToken });
-//             if (response.success) {
-//                 // 백엔드 명세서 규격에 맞게 매핑
-//                 chatRoomData = response.data.map((room) => ({
-//                     roomId: room.roomId,
-//                     userId: room.userId,
-//                     nickname: room.nickname,
-//                     // 백엔드가 대문자로 줄 경우를 대비해 소문자 포맷팅
-//                     role: room.role.toLowerCase() as 'student' | 'teacher',
-//                     lectureTitle: room.lectureTitle,
-//                     content: room.content,
-//                     unreadCount: room.unreadCount,
-//                     createdAt: room.createdAt
-//                 }));
-//             }
-//         }
-//     } catch (error) {
-//         console.error("채팅방 목록 로드 실패:", error);
-//         // 실패 시 가짜 Mock 데이터나 빈 배열 처리
-//     }
-
-//     // 만약 데이터가 없을 때 백엔드 가이드("채팅을 시작한 친구가 없어요...") 처리용 조건부 렌더링도 가능합니다.
-
-//     return (
-//         <div className="flex flex-col h-full max-w-6xl mx-auto">
-
-//             {/* 메인 컨텐츠 영역 */}
-//             <div className="flex flex-row border border-slate-200 overflow-hidden flex-1 min-h-0 bg-white">
-
-//                 {/* 왼쪽: 자동으로 생성되어 있는 채팅방 리스트 */}
-//                 <div className="flex flex-col overflow-hidden overflow-y-scroll min-h-0 w-80 shrink-0 scrollbar-none border-r border-slate-200">
-//                     {chatRoomData.length === 0 ? (
-//                         <div className="p-5 text-center text-sm text-slate-400 my-auto">
-//                             채팅방이 존재하지 않습니다.
-//                         </div>
-//                     ) : (
-//                         chatRoomData.map(data => (
-//                             <ChatRoomItem data={data} key={data.roomId} />
-//                         ))
-//                     )}
-//                 </div>
-
-//                 {/* 오른쪽: 선택된 채팅방 상세 내역 Area */}
-//                 <div className="overflow-hidden flex-1 h-auto">
-//                     <ChatRoomArea currentRoomId={currentRoomId} />
-//                 </div>
-//             </div>
-//         </div>
-//     );
-// }
