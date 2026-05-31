@@ -1,7 +1,7 @@
 'use server'
 
-import { updateLectureStatus } from "@/app/services/lecture/service";
-import { StatusApiUrl, StatusRequest } from "./type";
+import { updateLectureStatus, updateVideoProgress, updateVideoProgressByExit } from "@/app/services/lecture/service";
+import { StatusApiUrl, StatusRequest, UpdateVideoProgressByExitRequest, UpdateVideoProgressRequest } from "./type";
 import { revalidatePath } from "next/cache";
 
 
@@ -11,3 +11,29 @@ export const updateLectureStatusAction = async (id: string, status: StatusApiUrl
     await updateLectureStatus(id, payload);
     revalidatePath('/admin/lectures');
 }
+
+export const updateVideoProgressAction = async (
+    lectureId: string,
+    chapterId: string,
+    payload: UpdateVideoProgressRequest
+) => {
+
+    return await updateVideoProgress(
+        lectureId,
+        chapterId,
+        payload
+    );
+};
+
+export const updateVideoProgressByExitAction = async (
+    lectureId: string,
+    chapterId: string,
+    payload: UpdateVideoProgressByExitRequest
+) => {
+
+    return await updateVideoProgressByExit(
+        lectureId,
+        chapterId,
+        payload
+    );
+};

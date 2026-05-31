@@ -1,6 +1,6 @@
 // 강의 관련 (공동)
 
-import { ChapterProgress, GetLecturesRequest, LectureDetail, LectureListInfo, LectureProgress, LecturesApiResponse, StatusRequest } from "@/features/lecture/type";
+import { ChapterProgress, GetLecturesRequest, LectureDetail, LectureListInfo, LectureMetaResponse, LectureProgress, LecturesApiResponse, ResumeResponse, StatusRequest, UpdateVideoProgressByExitRequest, UpdateVideoProgressRequest, UpdateVideoProgressResponse } from "@/features/lecture/type";
 import { fetchWithAuth } from "@/lib/api"
 import { notFound } from "next/navigation";
 
@@ -166,6 +166,123 @@ export const getChaptersById = async (lectureId: string): Promise<ChapterProgres
 
   return result.data.chapters;
 
+}
+
+// 영상 시청 중 10초 마다 시청 시점 업데이트
+
+export const updateVideoProgress = async (lectureId: string, chapterId: string, payload: UpdateVideoProgressRequest): Promise<UpdateVideoProgressResponse> => {
+  const response = await fetchWithAuth(`/api/v1/lectures/${lectureId}/chapters/${chapterId}/progress`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+    cache: 'no-store'
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+
+
+    throw new Error(
+      `${errorData.status}|${errorData.message}`
+    );
+  }
+
+  const result = await response.json();
+
+  return result.data;
+}
+
+// 영상 시청 중 나가기 버튼을 눌렀을 경우 시청 시점 업데이트
+
+export const updateVideoProgressByExit = async (lectureId: string, chapterId: string, payload: UpdateVideoProgressByExitRequest): Promise<UpdateVideoProgressResponse> => {
+  const response = await fetchWithAuth(`/api/v1/lectures/${lectureId}/chapters/${chapterId}/exit`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+    cache: 'no-store'
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+
+
+    throw new Error(
+      `${errorData.status}|${errorData.message}`
+    );
+  }
+
+  const result = await response.json();
+
+  return result.data;
+}
+
+// 영상 이어보기
+
+export const getResumeInfo = async (
+  lectureId: string,
+  chapterId: string
+): Promise<ResumeResponse> => {
+
+  const response = await fetchWithAuth(`/api/v1/lectures/${lectureId}/chapters/${chapterId}/resume`, {
+    cache: 'no-store'
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+
+
+    throw new Error(
+      `${errorData.status}|${errorData.message}`
+    );
+  }
+
+  const result = await response.json();
+  console.log('이어보기', result);
+
+  return result.data;
+}
+
+// 강의 메타데이터 조회
+
+export const getLectureMeta = async (lectureId: string): Promise<LectureMetaResponse> => {
+  const response = await fetchWithAuth(`/api/v1/lectures/${lectureId}/meta`, {
+    cache: 'no-store'
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+
+
+    throw new Error(
+      `${errorData.status}|${errorData.message}`
+    );
+  }
+
+  const result = await response.json();
+  console.log('메타데이터', result);
+
+  return result.data;
+
+}
+
+// 강의 영상 재생
+
+export const getChapterVideo = async (lectureId: string, chapterId: string): Promise<string> => {
+  const response = await fetchWithAuth(`/api/v1/lectures/${lectureId}/chapters/${chapterId}/stream`, {
+    cache: 'no-store'
+  })
+
+  if (!response.ok) {
+    const errorData = await response.json();
+
+
+    throw new Error(
+      `${errorData.status}|${errorData.message}`
+    );
+  }
+
+  const result = await response.json();
+  console.log('강의 동영상', result);
+
+  return result.data.presignedUrl;
 }
 
 /*

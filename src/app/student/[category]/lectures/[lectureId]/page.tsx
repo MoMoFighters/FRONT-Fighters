@@ -34,9 +34,14 @@ export default async function LectureByCategoryDetail({ searchParams, params }: 
 
     const lecture = await getLectureById(lectureId);
 
-    const progressData = await getLectureProgress(lectureId);
+    const progressData = lecture.isEnrolled
+        ? await getLectureProgress(lectureId)
+        : undefined;
 
-    const chaptersData = await getChaptersById(lectureId);
+    const chaptersData = lecture.isEnrolled
+        ? await getChaptersById(lectureId)
+        : [];
+
 
     console.log(chaptersData, '?!');
 
@@ -48,9 +53,12 @@ export default async function LectureByCategoryDetail({ searchParams, params }: 
 
             return {
                 ...chapter,
+                videoUrl:
+                    "https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4",
                 progressRate: progress?.progressRate ?? 0,
                 watchedSeconds: progress?.watchedSeconds ?? 0,
                 isCompleted: progress?.isCompleted ?? false,
+                isAccessible: progress?.isAccessible ?? false,
             };
         })
         : lecture.chapters;
@@ -67,14 +75,6 @@ export default async function LectureByCategoryDetail({ searchParams, params }: 
         (currentPage - 1) * REVIEWS_PER_PAGE,
         currentPage * REVIEWS_PER_PAGE
     );
-
-    if (!lecture) {
-        return (
-            <div>
-                존재하지 않는 강의입니다.
-            </div>
-        );
-    }
 
     return (
         <div className="p-12 relative">
