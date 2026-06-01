@@ -6,6 +6,7 @@ import { revalidatePath } from 'next/cache';
 import {
     createLecture,
     createChapter,
+    uploadChapterVideo,
 } from './lectureCreateService';
 
 export interface CreateLectureActionResponse {
@@ -21,15 +22,21 @@ export const createLectureWithChaptersAction = async (
     prevState: CreateLectureActionResponse,
     formData: FormData
 ): Promise<CreateLectureActionResponse> => {
+
     try {
-        const cookieStore = await cookies();
+
+        const cookieStore =
+            await cookies();
 
         const accessToken =
-            cookieStore.get('accessToken')?.value;
+            cookieStore
+                .get('accessToken')
+                ?.value;
 
         if (!accessToken) {
             return {
-                timestamp: new Date().toISOString(),
+                timestamp:
+                    new Date().toISOString(),
                 status: 401,
                 code: 'UNAUTHORIZED',
                 message: '로그인이 필요합니다.',
@@ -43,8 +50,9 @@ export const createLectureWithChaptersAction = async (
 
         const savedChapters: Array<{
             title: string;
-            videoFile: File;
             orderNo: number;
+            durationSec: number;
+            videoFile: File;
         }> = [];
 
         for (
@@ -52,6 +60,7 @@ export const createLectureWithChaptersAction = async (
             i <= chapterCount;
             i++
         ) {
+
             const title =
                 formData.get(
                     `chapterTitle_${i}`
@@ -62,15 +71,28 @@ export const createLectureWithChaptersAction = async (
                     `video_${i}`
                 ) as File;
 
+            const durationSec =
+                Number(
+                    formData.get(
+                        `durationSec_${i}`
+                    ) ?? 0
+                );
+
             if (title?.trim()) {
+
                 savedChapters.push({
                     title,
-                    videoFile,
                     orderNo: i,
+                    durationSec,
+                    videoFile,
                 });
             }
         }
 
+        /**
+         * STEP 1
+         * 강의 생성
+         */
         const lectureResult =
             await createLecture(
                 formData,
@@ -82,33 +104,72 @@ export const createLectureWithChaptersAction = async (
 
         if (!lectureId) {
             return {
-                timestamp: new Date().toISOString(),
+                timestamp:
+                    new Date().toISOString(),
                 status: 500,
                 code: 'FAIL',
-                message: '강의 ID를 확인할 수 없습니다.',
+                message:
+                    '강의 생성 후 lectureId를 찾을 수 없습니다.',
                 errors: {},
             };
         }
 
+        /**
+         * STEP 2
+         * 챕터 생성
+         * -> chapterId 획득
+         * -> 영상 등록
+         */
         for (const chapter of savedChapters) {
-            await createChapter(
-                lectureId,
-                {
-                    title: chapter.title,
-                    orderNo: chapter.orderNo,
-                    videoFile:
-                        chapter.videoFile,
-                },
-                accessToken
-            );
+
+            const chapterResult =
+                await createChapter(
+                    lectureId,
+                    {
+                        title:
+                            chapter.title,
+
+                        orderNo:
+                            chapter.orderNo,
+                    },
+                    accessToken
+                );
+
+            const chapterId =
+                chapterResult.data?.chapterId;
+
+            if (!chapterId) {
+                throw new Error(
+                    '챕터 생성 후 chapterId를 찾을 수 없습니다.'
+                );
+            }
+
+            if (
+                chapter.videoFile &&
+                chapter.videoFile.size > 0
+            ) {
+
+                await uploadChapterVideo(
+                    lectureId,
+                    chapterId,
+                    chapter.videoFile,
+                    chapter.durationSec,
+                    accessToken
+                );
+            }
         }
 
-        revalidatePath('/teacher/lecture');
+        revalidatePath(
+            '/teacher/lecture'
+        );
 
         return lectureResult;
+
     } catch (error) {
+
         return {
-            timestamp: new Date().toISOString(),
+            timestamp:
+                new Date().toISOString(),
             status: 500,
             code: 'FAIL',
             message:

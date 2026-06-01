@@ -63,7 +63,7 @@ export default function LectureItem({
                             {lecture.lectureStatus === "ACTIVE" && <div className="flex items-center gap-3 text-[10px] text-slate-500">
                                 <span className="flex items-center gap-1">
                                     <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                                    {lecture.averageRating}
+                                    {lecture.averageRating} / 5
                                 </span>
                             </div>}
                             {lecture.lectureStatus === "WAITING" && <p className="text-xs text-amber-600 font-medium">관리자 승인 대기중입니다</p>}
