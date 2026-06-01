@@ -1,5 +1,8 @@
 // 학생, 강사 - 마이페이지 기능
 
+import { GetUsersRequest, GetUsersResponse, UpdateTeacherStatusRequest, UpdateTeacherStatusResponse } from "@/features/user/type";
+import { fetchWithAuth } from "@/lib/api";
+
 /*
  - 내 상세 정보 조회
  - 내 정보 수정
@@ -150,3 +153,69 @@ export const nicknameCheckService = async (
    const result = await response.json();
    return result;
 };
+
+// 관리자 - 회원 전체 조회
+
+export const getUsers = async (
+   payload: GetUsersRequest
+): Promise<GetUsersResponse> => {
+
+   const queryString =
+      new URLSearchParams(
+         Object.entries(payload)
+            .filter(
+               ([_, value]) =>
+                  value !== undefined
+            )
+            .map(([key, value]) => [
+               key,
+               String(value)
+            ])
+      ).toString();
+
+   const response =
+      await fetchWithAuth(
+         `/api/v1/users?${queryString}`,
+         {
+            cache: 'no-store'
+         }
+      );
+
+   if (!response.ok) {
+
+      const errorData =
+         await response.json();
+
+      throw new Error(
+         `${errorData.status}|${errorData.message}`
+      );
+   }
+
+   const result =
+      await response.json();
+
+   console.log(result, '회원 전체 조회');
+
+   return result.data;
+}
+
+// 관리자 - 강사 승인
+
+export const updateTeacherStatus = async (userId: string, payload: UpdateTeacherStatusRequest): Promise<UpdateTeacherStatusResponse> => {
+   const response = await fetchWithAuth(`/api/v1/users/${userId}/role`, {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+   });
+
+   if (!response.ok) {
+      const errorData = await response.json();
+
+      throw new Error(
+         `${errorData.status}|${errorData.message}`
+      );
+   }
+
+   const result = await response.json();
+   console.log('강사 상태 변경', result);
+   return result.data;
+}
