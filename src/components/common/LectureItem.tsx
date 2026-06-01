@@ -111,12 +111,14 @@ export default function LectureItem({
                         <p className="text-md text-slate-500 leading-relaxed mb-25">{lecture.description}</p>
 
                         {/* Rating */}
-                        <div className="flex items-center gap-2 text-sm text-slate-600">
-                            <span className="font-bold">평점 :</span>
-                            <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                            <span className="font-bold">{lecture.averageRating}</span>
-                            <span className="text-slate-400">/ 5.0 점</span>
-                        </div>
+                        {lecture.lectureStatus && (
+                            <div className="flex items-center gap-2 text-sm text-slate-600">
+                                <span className="font-bold">평점 :</span>
+                                <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                                <span className="font-bold">{lecture.averageRating}</span>
+                                <span className="text-slate-400">/ 5.0 점</span>
+                            </div>
+                        )}
                     </div>
                 </div>
 

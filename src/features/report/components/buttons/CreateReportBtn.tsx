@@ -29,6 +29,8 @@ import {
 } from "@/components/ui/select";
 import TwoButtonModal from "@/features/modal/TwoButtonModal";
 import { toast } from "sonner";
+import { CreateReportAction } from "../../action";
+import { CreateReportRequest } from "../../type";
 
 interface ReportFormData {
     reason: string;
@@ -49,11 +51,7 @@ export default function CreateReportBtn() {
     });
 
     // 신고하기 버튼 클릭
-    const handleOpenConfirmModal = (
-        e: React.FormEvent<HTMLFormElement>
-    ) => {
-
-        e.preventDefault();
+    const handleOpenConfirmModal = () => {
 
         // 간단 검증
         if (!formData.reason) {
@@ -77,11 +75,19 @@ export default function CreateReportBtn() {
     const handleCreateReport = async () => {
 
         try {
+            console.log('1');
+            const payload: CreateReportRequest = {
+                targetType: "LECTURE", // 일단 모듈 3에서는 고정
+                targetId: 1, // 마찬가지
+                reason: formData.reason,
+                detail: formData.reasonDetail
+            }
+            console.log('2', payload);
 
-            console.log(formData);
+            const reportResponse = await CreateReportAction(payload);
 
-            // 실제 API 호출
-            // await createReport(payload);
+            console.log('3', reportResponse);
+            console.log('api호출 결과', reportResponse);
 
             toast.success('신고 접수 성공', {
                 duration: 1000
@@ -99,9 +105,12 @@ export default function CreateReportBtn() {
 
         } catch (error) {
 
-            toast.error('신고 접수 실패', {
-                duration: 1000
-            });
+            const message =
+                error instanceof Error
+                    ? error.message.split('|')[1]
+                    : '회원 상태 변경 실패';
+
+            toast.error(message);
         }
     };
 
@@ -112,18 +121,17 @@ export default function CreateReportBtn() {
                 onOpenChange={setIsModal}
             >
 
-                <DialogTrigger asChild>
-                    <Button
-                        variant="destructive"
-                        className="absolute w-15 bottom-5 right-5"
-                    >
-                        신고
-                    </Button>
-                </DialogTrigger>
+                <Button
+                    variant="destructive"
+                    className="absolute w-15 bottom-5 right-5"
+                    onClick={() => setIsModal(true)}
+                >
+                    신고
+                </Button>
 
                 <DialogContent className="sm:max-w-sm">
 
-                    <form onSubmit={handleOpenConfirmModal}>
+                    <div>
 
                         <DialogHeader>
 
@@ -226,16 +234,17 @@ export default function CreateReportBtn() {
                             </DialogClose>
 
                             <Button
-                                type="submit"
+                                type="button"
                                 variant="destructive"
                                 className="cursor-pointer"
+                                onClick={handleOpenConfirmModal}
                             >
                                 신고하기
                             </Button>
 
                         </DialogFooter>
 
-                    </form>
+                    </div>
 
                 </DialogContent>
 

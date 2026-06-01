@@ -12,6 +12,7 @@ import {
     PaginationPrevious,
 } from "@/components/ui/pagination";
 import { getLectureById } from "@/app/services/lecture/service";
+import { notFound } from "next/navigation";
 
 interface LectureDetailPageProps {
     params: Promise<{
@@ -54,11 +55,7 @@ export default async function LectureDetailPage({ params, searchParams }: Lectur
     );
 
     if (!lecture) {
-        return (
-            <div>
-                존재하지 않는 강의입니다.
-            </div>
-        );
+        notFound();
     }
 
     return (

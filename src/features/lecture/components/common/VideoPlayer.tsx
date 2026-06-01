@@ -258,7 +258,7 @@ export default function VideoPlayer({
                         chapter.durationSec % 60
                     ).padStart(2, '0')}`}
 
-                    {" "}· 챕터 : 1/5
+                    {" "}· 챕터 : {currentChapterNo}/{totalChapterCount}
                 </p>
             </div>
 

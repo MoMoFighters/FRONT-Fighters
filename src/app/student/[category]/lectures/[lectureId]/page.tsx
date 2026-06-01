@@ -5,6 +5,7 @@ import MovePageBackBtn from "@/components/common/MovePageBackBtn";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import LectureDetailList from "@/features/lecture/components/common/LectureDetailList";
 import LectureDetailNav from "@/features/lecture/components/common/LectureDetailNav";
+import { notFound } from "next/navigation";
 
 interface LectureByCategoryDetailProps {
     params: Promise<{
@@ -34,6 +35,10 @@ export default async function LectureByCategoryDetail({ searchParams, params }: 
 
     const lecture = await getLectureById(lectureId);
 
+    if (!lecture) {
+        notFound();
+    }
+
     const progressData = lecture.isEnrolled
         ? await getLectureProgress(lectureId)
         : undefined;
@@ -41,9 +46,6 @@ export default async function LectureByCategoryDetail({ searchParams, params }: 
     const chaptersData = lecture.isEnrolled
         ? await getChaptersById(lectureId)
         : [];
-
-
-    console.log(chaptersData, '?!');
 
     const chapters = lecture.isEnrolled
         ? lecture.chapters.map((chapter) => {
@@ -62,8 +64,6 @@ export default async function LectureByCategoryDetail({ searchParams, params }: 
             };
         })
         : lecture.chapters;
-
-    console.log(chapters, '챕터 정보 병합 확인');
 
     // module 4 이후 - 수강평 기능 중 페이지네이션
     const currentPage = Number(page ?? 1);

@@ -1,9 +1,9 @@
-import { BookOpen, ChefHat, ChevronRight, Dumbbell, Heart, Palette, Sparkles, TrendingUp, Users } from "lucide-react";
+import { BookOpen, ChefHat, ChevronRight, Dumbbell, Palette, Sparkles, TrendingUp, Users } from "lucide-react";
 import cityImage from '@/app/assets/img/momocity.png'
 import Image from "next/image";
 import Link from "next/link";
 
-export default function Home() {
+export default async function Home() {
 
   const categories = [
     { id: 1, name: '학습', icon: BookOpen, count: 156 },

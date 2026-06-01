@@ -133,6 +133,8 @@ export const checkAndRegisterNickname = async (
 
 };
 
+// 강사 승인 액션 함수
+
 export const updateTeacherStatusAction = async (id: string, status: string): Promise<UpdateTeacherStatusResponse> => {
     const payload = {
         action: status,
