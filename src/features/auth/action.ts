@@ -9,6 +9,7 @@ import {
     loginService,
     loginSuccessService,
     logoutService,
+    nicknameRegistService,
     sendEmailCodeService,
     studentSignupService,
     teacherSignupService,
@@ -17,7 +18,7 @@ import {
 import { cookies } from 'next/headers';
 
 import { redirect } from 'next/navigation';
-import { LoginActionState, LoginSuccessActionState, StudentSignupForm, TempPwActionState } from './type';
+import { LoginSuccessActionState, StudentSignupForm, TempPwActionState } from './type';
 
 
 // 이메일 인증 액션
@@ -130,24 +131,39 @@ export const sendEmailCodeAction = async (
 
 
 // 로그인 액션 함수
+export interface LoginActionState {
+    timestamp: string;
+    status: number;
+    code: string;
+    message: string;
+}
+
 export const loginAction = async (
-    prevState: LoginActionState,
-    formData: FormData
+    email: string,
+    password: string
 ): Promise<LoginActionState> => {
 
     try {
 
-        const email =
-            formData.get('email') as string;
+        const result =
+            await loginService({
+                email,
+                password,
+            });
 
-        const password =
-            formData.get('password') as string;
-
-
-        const result = await loginService({
-            email,
-            password,
-        });
+        // 로그인 실패
+        if (result.status !== 200) {
+            return {
+                timestamp:
+                    result.timestamp,
+                status:
+                    result.status,
+                code:
+                    result.code,
+                message:
+                    result.message,
+            };
+        }
 
         const accessToken =
             result.data?.accessToken;
@@ -155,15 +171,14 @@ export const loginAction = async (
         const refreshToken =
             result.data?.refreshToken;
 
-
         const cookieStore =
             await cookies();
-        console.log(accessToken)
 
-        // access token 저장
         if (accessToken) {
 
-            cookieStore.set('accessToken', accessToken,
+            cookieStore.set(
+                'accessToken',
+                accessToken,
                 {
                     httpOnly: true,
                     path: '/',
@@ -173,8 +188,6 @@ export const loginAction = async (
             );
         }
 
-
-        // refresh token 저장
         if (refreshToken) {
 
             cookieStore.set(
@@ -189,19 +202,25 @@ export const loginAction = async (
             );
         }
 
-
-        // 성공 메시지만 반환
         return {
-            success: true,
+            timestamp:
+                result.timestamp,
+            status:
+                result.status,
+            code:
+                result.code,
             message:
-                result.message ||
-                '로그인에 성공하였습니다.',
+                result.message,
         };
 
     } catch (error) {
 
         return {
-            success: false,
+            timestamp:
+                new Date().toISOString(),
+            status: 500,
+            code:
+                'INTERNAL_SERVER_ERROR',
             message:
                 error instanceof Error
                     ? error.message
@@ -216,44 +235,37 @@ export const loginAction = async (
 export const loginSuccessAction = async (): Promise<LoginSuccessActionState> => {
 
     try {
+
         const cookieStore =
             await cookies();
+
         const accessToken =
             cookieStore
                 .get('accessToken')
                 ?.value;
-        // 토큰 없음
+
         if (!accessToken) {
             return {
-                success: false,
+                timestamp:
+                    new Date().toISOString(),
+                status: 401,
+                code: 'UNAUTHORIZED',
                 message:
                     '다시 로그인 해주세요',
             };
         }
-        const result = await loginSuccessService(accessToken);
-        console.log(result)
-        return {
-            success: true,
 
-            message:
-                '사용자 정보를 불러왔습니다.',
-
-            data: {
-                role:
-                    result.data!.role,
-
-                is_temp:
-                    result.data!.is_temp,
-
-                nickname:
-                    result.data!.nickname,
-            },
-        };
+        return await loginSuccessService(
+            accessToken
+        );
 
     } catch (error) {
 
         return {
-            success: false,
+            timestamp:
+                new Date().toISOString(),
+            status: 500,
+            code: 'INTERNAL_SERVER_ERROR',
             message:
                 error instanceof Error
                     ? error.message
@@ -344,14 +356,17 @@ export const authRefreshAction = async (): Promise<AuthRefreshApiResponse> => {
 
     const refreshToken = cookieStore.get("refreshToken")?.value;
     const accessToken = cookieStore.get("accessToken")?.value;
-
+    // console.log(1)
     if (!refreshToken || !accessToken) {
-        throw new Error('로그인 연장 실패!');
+        throw new Error('로그인 연장 실패');
     }
+    // console.log(2)
 
     const refreshData = await authRefresh(refreshToken, accessToken);
+    // console.log(3, refreshData)
 
     if (refreshData?.data) {
+        // console.log(4)
         cookieStore.set('accessToken', refreshData.data.accessToken,
             {
                 httpOnly: true,
@@ -359,7 +374,9 @@ export const authRefreshAction = async (): Promise<AuthRefreshApiResponse> => {
                 path: '/',
             }
         );
+        // console.log(5)
     }
+    // console.log(6)
     return refreshData;
 }
 
@@ -438,4 +455,39 @@ export const googleLoginAction = async (code: string) => {
         success: true,
         data: resData
     };
+};
+
+// 닉네임 입력모달에서 사용할 닉네임 등록 액션
+export interface NicknameRegistResponse {
+    timestamp: string;
+    status: number;
+    code: string;
+    message: string;
+    data?: {
+        nickname: string;
+    };
+}
+
+export const nicknameRegistAction = async (
+    nickname: string
+): Promise<NicknameRegistResponse> => {
+
+    const cookieStore = await cookies();
+
+    const accessToken =
+        cookieStore.get('accessToken')?.value;
+
+    if (!accessToken) {
+        return {
+            status: 401,
+            message: '로그인이 필요합니다.',
+            code: 'FAIL',
+            timestamp: new Date().toISOString(),
+        };
+    }
+
+    return await nicknameRegistService(
+        nickname,
+        accessToken
+    );
 };

@@ -2,7 +2,7 @@ import dayjs from 'dayjs'
 
 import TodoItem from './TodoItem'
 import AddTodoArea from './AddTodoArea'
-import { ScheduleItem } from '../../todoType'
+import { ScheduleItem } from '../../type'
 
 
 

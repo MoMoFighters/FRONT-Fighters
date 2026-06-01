@@ -12,7 +12,7 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
 
 import TodoSection from './TodoSection'
-import { ScheduleItem } from '../../todoType'
+import { ScheduleItem } from '../../type'
 
 
 

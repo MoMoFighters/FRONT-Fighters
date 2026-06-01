@@ -1,7 +1,7 @@
 
-import { getCalendarSchedulesAction } from '@/features/phone/todoAction';
+import { getCalendarSchedulesAction } from '@/features/phone/action';
 import Calendar from '@/features/phone/components/todo/Calendar';
-import { ScheduleItem } from '@/features/phone/todoType';
+import { redirect } from 'next/navigation';
 
 
 
@@ -18,7 +18,16 @@ export default async function CalendarPage({
     const { month } = await searchParams;
     const date = month as string;
 
+    const today = new Date();
 
+    const currentMonth =
+        `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-01`;
+
+    if (!month) {
+        redirect(
+            `/student/phone/calendar?month=${currentMonth}`
+        );
+    }
 
 
     const schedules = await getCalendarSchedulesAction({ date });

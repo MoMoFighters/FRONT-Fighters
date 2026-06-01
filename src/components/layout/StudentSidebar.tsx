@@ -7,8 +7,12 @@ import calendar from '@/app/assets/img/calendar-check.svg'
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import CreateReportBtn from '@/features/report/components/buttons/CreateReportBtn';
+import { getMyInfo } from '@/features/user/action';
 
-export default function StudentSidebar() {
+export default async function StudentSidebar() {
+
+    const myInfo = await getMyInfo();
+
     return (
         <aside className="w-60 h-full flex flex-col border-r border-slate-200 bg-slate-50 px-2.5 relative">
             {/* <Image
@@ -19,7 +23,7 @@ export default function StudentSidebar() {
                 height={20}
                 priority
             /> */}
-            <Link href="/student"><h2 className='text-xl pl-2 text-mauve-500 font-bold cursor-pointer mt-6'>홍길동 님의 도시</h2></Link>
+            <Link href="/student"><h2 className='text-xl pl-2 text-mauve-500 font-bold cursor-pointer mt-6'>{myInfo.data?.nickname} 님의 도시</h2></Link>
             <Link href="/student/mypage">
                 <Button variant="ghost" className='flex w-55 gap-2.5 justify-start mt-5 py-5'>
                     <Image

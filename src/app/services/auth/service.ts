@@ -1,5 +1,5 @@
 const BASE_SERVER_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-import { EmailVerifyForm, KakaoLoginResponse, LoginRequest, LoginResponse, LoginSuccessResponse, SendEmailCodeForm, SendEmailCodeResponse, StudentSignupForm, TeacherSignupForm, TempPwResponse } from "@/features/auth/type";
+import { EmailVerifyForm, KakaoLoginResponse, LoginRequest, LoginResponse, LoginSuccessActionState, SendEmailCodeForm, SendEmailCodeResponse, StudentSignupForm, TeacherSignupForm, TempPwResponse } from "@/features/auth/type";
 
 // 자체 로그인,회원가입 관련
 
@@ -141,95 +141,67 @@ export const loginService = async ({
     email,
     password,
 }: LoginRequest): Promise<LoginResponse> => {
-    try {
-        const response = await fetch(
-            `${BASE_SERVER_URL}/api/v1/auth/login`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    email,
-                    password,
-                }),
-            }
+
+    const response = await fetch(
+        `${BASE_SERVER_URL}/api/v1/auth/login`,
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type':
+                    'application/json',
+            },
+            body: JSON.stringify({
+                email,
+                password,
+            }),
+        }
+    );
+
+    const result: LoginResponse =
+        await response.json();
+
+    // 서버 에러만 throw
+    if (response.status >= 500) {
+        throw new Error(
+            result.message ||
+            '서버 오류가 발생했습니다.'
         );
-        if (!response.ok) {
-            console.log('통신에러');
-            throw new Error('통신 에러 발생')
-        }
-        const result: LoginResponse = await response.json();
-
-        return result;
-
-    } catch (error) {
-        if (error instanceof Error) {
-            throw error;
-        }
-        throw new Error("알수없는 오류가 발생했습니다.");
     }
 
-
+    return result;
 };
-
 
 
 
 // 로그인 성공 모달(결과 띄우는것)
 export const loginSuccessService = async (
     accessToken: string
-): Promise<LoginSuccessResponse> => {
+): Promise<LoginSuccessActionState> => {
 
-    try {
-        const response = await fetch(
-            `${BASE_SERVER_URL}/api/v1/auth/login/completed`,
-            {
-                method: 'GET',
-
-                headers: {
-                    Authorization:
-                        `Bearer ${accessToken}`,
-                },
-            }
-        );
-
-        // 토큰 만료
-        if (response.status === 401) {
-            const result:
-                LoginSuccessResponse =
-                await response.json();
-            throw new Error(
-                result.message ||
-                '다시 로그인 해주세요'
-            );
+    const response = await fetch(
+        `${BASE_SERVER_URL}/api/v1/auth/login/completed`,
+        {
+            method: 'GET',
+            headers: {
+                Authorization:
+                    `Bearer ${accessToken}`,
+            },
         }
+    );
 
-        if (!response.ok) {
-            const result:
-                LoginSuccessResponse =
-                await response.json();
-            throw new Error(result.message || 'zplkppl');
-        }
+    const result:
+        LoginSuccessActionState =
+        await response.json();
 
-        const result:
-            LoginSuccessResponse =
-            await response.json();
-
-
-        return result;
-
-
-    } catch (error) {
-
-        if (error instanceof Error) {
-            throw error;
-        }
-
+    // 500은 글로벌 에러
+    if (response.status >= 500) {
         throw new Error(
-            '알수없는 오류가 발생했습니다.'
+            result.message ||
+            '서버 오류'
         );
     }
+
+    return result;
 };
 
 
@@ -337,21 +309,23 @@ export const authRefresh = async (
     refreshToken: string,
     accessToken: string
 ): Promise<AuthRefreshApiResponse> => {
+    // console.log(1)
     const response = await fetch(`${BASE_SERVER_URL}/api/v1/auth/newtoken`,
         {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Refresh-Token': `${refreshToken}`
-            },
-            body: JSON.stringify({
-                accessToken
-            })
+                'Refresh-Token': `${refreshToken}`,
+                'Authorization': `Bearer ${accessToken}`
+            }
         }
     )
+    // console.log(2, response)
     if (!response.ok) {
+        // console.log(3, 'no ok')
         return response.json();
     }
+    // console.log(4, 'ok')
     return response.json();
 }
 
@@ -379,8 +353,8 @@ export const kakaoLogin = async (
     const result = await response.json();
 
     if (!response.ok) {
-        console.log(response.status); // 400, 401, 404, 500 등 그대로 나옴
-        console.log(response.statusText);
+        // console.log(response.status);
+        // console.log(response.statusText);
         throw new Error(
             result.message ||
             '카카오 로그인에 실패하였습니다.'
@@ -420,4 +394,38 @@ export const googleLoginService = async (code: string) => {
 
     // 3. 성공 시 백엔드가 준 { accessToken, refreshToken }을 안전하게 리턴
     return data.data;
+};
+
+
+// 닉네임 입력모달에서 사용할 닉네임 등록 서비스
+export interface NicknameRegistResponse {
+    timestamp: string;
+    status: number;
+    code: string;
+    message: string;
+    data?: {
+        nickname: string;
+    };
+}
+
+export const nicknameRegistService = async (
+    nickname: string,
+    accessToken: string
+): Promise<NicknameRegistResponse> => {
+
+    const response = await fetch(
+        `${BASE_SERVER_URL}/api/v1/user/register/nickname`,
+        {
+            method: 'PATCH',
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                nickname,
+            }),
+        }
+    );
+
+    return await response.json();
 };
