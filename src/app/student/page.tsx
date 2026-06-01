@@ -105,7 +105,7 @@ export default async function StudentMainPage() {
             </div>
             {/* 포인트 상점 위치 고정 */}
             <div className="absolute top-[60%] right-[12%]">
-                <BuildingItem category="market" />
+                <BuildingItem category="payments" />
             </div>
         </div>
     );

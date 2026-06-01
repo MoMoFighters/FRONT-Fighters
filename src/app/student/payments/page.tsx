@@ -1,5 +1,10 @@
+import noReady from '@/app/assets/img/no-ready.png'
+import Image from 'next/image';
+
 export default function PaymentsPage() {
     return (
-        <div>결제 관련 페이지 - module 4 이후</div>
+        <div>
+            <Image src={noReady} alt='noReady' className='h-[calc(100vh-144px)]' />
+        </div>
     );
 }

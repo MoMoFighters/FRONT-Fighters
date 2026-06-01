@@ -46,7 +46,7 @@ export default async function StudentSidebar() {
                     <p className='text-[16px] text-slate-900 font-semibold'>Payments</p>
                 </Button>
             </Link>
-            <Link href="/student/library">
+            <Link href="/student/community">
                 <Button variant="ghost" className='flex w-55 gap-2.5 justify-start mt-3 py-5'>
                     <Image
                         src={community}
