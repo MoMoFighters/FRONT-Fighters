@@ -4,7 +4,6 @@ import art from '@/app/assets/img/arts.png'
 import cook from '@/app/assets/img/cook.png'
 import health from '@/app/assets/img/health.png'
 import beauty from '@/app/assets/img/beauty.png'
-import beauty2 from '@/app/assets/img/beauty-4.png'
 import library from '@/app/assets/img/library.png'
 import mypage from '@/app/assets/img/mypage.png'
 import market from '@/app/assets/img/market.png'
@@ -70,7 +69,7 @@ export default function BuildingItem({ category, level }: BuildingItemProps) {
             explain = '마이 페이지로 이동합니다.'
             break;
 
-        case 'market':
+        case 'payments':
             image = market;
             label = '상점';
             building = '포인트 상점';
@@ -84,10 +83,15 @@ export default function BuildingItem({ category, level }: BuildingItemProps) {
             explain = ''
     }
 
+    const moveHref = (category === "community" && '/student/community')
+        || (category === "mypage" && '/student/mypage')
+        || (category === "payments" && '/student/payments')
+        || `/student/${category}`
+
     return (
         <HoverCard openDelay={50} closeDelay={50}>
             <HoverCardTrigger asChild>
-                <Link href={`/student/${category}`}>
+                <Link href={moveHref}>
                     <div className="relative w-45 h-30  rounded-lg cursor-pointer hover:scale-[1.02] transition-all">
                         <Image
                             src={image}

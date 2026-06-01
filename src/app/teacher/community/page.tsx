@@ -1,5 +1,8 @@
+import noReady from '@/app/assets/img/no-ready.png'
+import Image from 'next/image';
+
 export default function TeacherCommunityPage() {
     return (
-        <div>강사 도서관 페이지(module4이후)</div>
+        <Image src={noReady} alt='noReady' className='h-[calc(100vh-144px)]' />
     );
 }

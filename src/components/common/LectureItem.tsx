@@ -111,7 +111,7 @@ export default function LectureItem({
                         <p className="text-md text-slate-500 leading-relaxed mb-25">{lecture.description}</p>
 
                         {/* Rating */}
-                        {lecture.lectureStatus && (
+                        {lecture.lectureStatus === 'ACTIVE' && (
                             <div className="flex items-center gap-2 text-sm text-slate-600">
                                 <span className="font-bold">평점 :</span>
                                 <Star className="w-4 h-4 fill-amber-400 text-amber-400" />

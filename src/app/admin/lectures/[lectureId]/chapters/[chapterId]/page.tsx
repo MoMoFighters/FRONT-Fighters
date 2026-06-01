@@ -2,6 +2,7 @@ import { getChapterVideo, getLectureMeta, getResumeInfo } from "@/app/services/l
 import ChapterItem from "@/components/common/ChapterItem";
 import LecturePreviewPlayer from "@/features/lecture/components/common/LecturePreviewPlayer";
 import { Chapter } from "@/features/lecture/type";
+import { notFound } from "next/navigation";
 
 export default async function ChapterDetailPage({ params }: {
     params: Promise<{
@@ -36,11 +37,7 @@ export default async function ChapterDetailPage({ params }: {
         );
 
     if (!currentChapter) {
-        return (
-            <div>
-                존재하지 않는 챕터입니다.
-            </div>
-        );
+        notFound();
     }
 
     return (
