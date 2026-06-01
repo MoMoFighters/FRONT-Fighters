@@ -138,7 +138,6 @@ export default function VideoPlayer({
                         toast.success(
                             '챕터 수강 완료!'
                         );
-                        router.refresh();
                     }
 
                     console.log(
@@ -198,6 +197,11 @@ export default function VideoPlayer({
             }
         };
 
+    const handleVideoEnded = () => {
+
+        router.refresh();
+    };
+
     return (
         <div className="flex flex-col">
 
@@ -224,6 +228,7 @@ export default function VideoPlayer({
                 onTimeUpdate={
                     handleTimeUpdate
                 }
+                onEnded={handleVideoEnded}
                 className="
                     w-160 h-90
                     rounded-tl-lg
