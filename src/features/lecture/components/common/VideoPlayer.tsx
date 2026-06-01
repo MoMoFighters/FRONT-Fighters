@@ -6,6 +6,7 @@ import TwoButtonModal from "@/features/modal/TwoButtonModal";
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { updateVideoProgressAction, updateVideoProgressByExitAction } from "../../action";
+import { toast } from "sonner";
 
 interface VideoPlayerProps {
     chapter: Chapter;
@@ -30,6 +31,11 @@ export default function VideoPlayer({
     const watchedSecondsRef =
         useRef(
             chapter.watchedSeconds ?? 0
+        );
+
+    const isCompletedRef =
+        useRef(
+            chapter.isCompleted ?? false
         );
 
     const currentPositionRef =
@@ -122,6 +128,18 @@ export default function VideoPlayer({
                                     )
                             }
                         );
+
+                    if (
+                        result.isCompleted &&
+                        !isCompletedRef.current
+                    ) {
+                        isCompletedRef.current = true;
+
+                        toast.success(
+                            '챕터 수강 완료!'
+                        );
+                        router.refresh();
+                    }
 
                     console.log(
                         'server',
