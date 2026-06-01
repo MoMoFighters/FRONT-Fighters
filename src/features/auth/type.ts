@@ -8,16 +8,16 @@ export interface KakaoLoginResponse {
 }
 
 // 로그인 성공 모달에서 api 호출 시 응답값
-export interface LoginSuccessResponse {
-    success: boolean;
-
+export interface LoginSuccessActionState {
+    status: number;
+    message: string;
+    timestamp: string;
+    code: string;
     data?: {
         role: string;
         is_temp: boolean;
         nickname: string | null;
     };
-
-    message?: string;
 }
 
 // 로그인 시도 시 보낼 값
@@ -79,9 +79,10 @@ export interface EmailVerifyForm {
 
 // 로그인 성공 모달에서 클릭 시 응답값
 export interface LoginSuccessActionState {
-    success: boolean;
+    status: number;
     message: string;
-
+    timestamp: string;
+    code: string;
     data?: {
         role: string;
         is_temp: boolean;
@@ -91,7 +92,9 @@ export interface LoginSuccessActionState {
 
 // 로그인 시도 시 입력값
 export interface LoginActionState {
-    success: boolean;
+    timestamp: string;
+    status: number;
+    code: string;
     message: string;
 }
 

@@ -2,6 +2,8 @@ import Image from "next/image";
 import city from '@/app/assets/img/momocity.png'
 import CreateBuildingBtn from "@/components/city/CreateBuildingBtn";
 import BuildingItem from "@/components/city/BuildingItem";
+import { getMyInfo } from "@/features/user/action";
+import NicknameInputModal from "@/features/auth/components/NicknameInputModal";
 
 interface Building {
     position: string;
@@ -25,7 +27,9 @@ const POSITIONS = [
     "fifth",
 ] as const;
 
-export default function StudentMainPage() {
+export default async function StudentMainPage() {
+
+    const myInfo = await getMyInfo();
 
     // 테스트용 데이터, 백엔드 팀원과 소통 필요 null 인지 아예 없는 옵셔널인지..
     const buildings: Building[] = [
@@ -58,6 +62,7 @@ export default function StudentMainPage() {
 
     return (
         <div className="relative w-full h-full scrollbar-hidden">
+            <NicknameInputModal nickIsNull={myInfo.data?.nickname === null ? true : false} />
             <Image
                 src={city}
                 alt="도시배경"
