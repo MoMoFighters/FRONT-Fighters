@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import upload from "@/app/assets/img/fileUpload.svg";
 
 type Chapter = {
@@ -23,11 +23,29 @@ export default function LectureFormChapterItem({ chapter, mode, onDelete }: Lect
     const [videoFile, setVideoFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
+    // 비디오 메타데이터 상태 관리
+    const [duration, setDuration] = useState<number>(0);
+    const [fileSize, setFileSize] = useState<number>(0);
+    const [fileName, setFileName] = useState<string>("");
+
     const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
+
         setVideoFile(file);
-        setPreviewUrl(URL.createObjectURL(file));
+        setFileSize(file.size);
+        setFileName(file.name);
+
+        const objectUrl = URL.createObjectURL(file);
+        setPreviewUrl(objectUrl);
+
+        // 비디오 재생 시간(duration) 추출을 위한 가상 엘리먼트 생성
+        const videoElement = document.createElement("video");
+        videoElement.src = objectUrl;
+        videoElement.onloadedmetadata = () => {
+            // 소수점 버림 처리하여 초 단위 정수로 저장
+            setDuration(Math.floor(videoElement.duration));
+        };
     };
 
     return (
@@ -50,6 +68,11 @@ export default function LectureFormChapterItem({ chapter, mode, onDelete }: Lect
             {/* orderNo hidden - 챕터 순서를 index로 서버에 전달 */}
             <input type="hidden" name={`orderNo_${index}`} value={index} />
 
+            {/* 💡 백엔드 동영상 API 스펙 대응을 위한 메타데이터 Hidden Inputs */}
+            <input type="hidden" name={`videoSizeBytes_${index}`} value={fileSize} />
+            <input type="hidden" name={`durationSec_${index}`} value={duration} />
+            <input type="hidden" name={`originalFilename_${index}`} value={fileName} />
+
             {/* 챕터 제목 */}
             <div className="grid grid-cols-[90px_1fr] items-center gap-3">
                 <label className="text-sm font-medium text-slate-700">챕터 제목 *</label>
@@ -67,10 +90,7 @@ export default function LectureFormChapterItem({ chapter, mode, onDelete }: Lect
             <div className="grid grid-cols-[90px_1fr] gap-3">
                 <label className="pt-3 text-sm font-medium text-slate-700">동영상 *</label>
 
-                {/* 💡 보완: 전체 영역을 감싸는 label 배치 */}
                 <label className="flex min-h-36 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-300 bg-white p-4 hover:bg-slate-50">
-
-                    {/* ⚠️ [핵심 수정] input 태그를 조건부 렌더링 밖으로 빼서 폼 전송 시 항상 파일이 유지되도록 함 */}
                     <input
                         type="file"
                         accept="video/*"
@@ -80,7 +100,6 @@ export default function LectureFormChapterItem({ chapter, mode, onDelete }: Lect
                         onChange={handleVideoChange}
                     />
 
-                    {/* 내부 UI 구성 요소만 조건부 토글 */}
                     {previewUrl ? (
                         <div className="flex w-full flex-col items-center gap-3">
                             <video src={previewUrl} controls className="max-h-48 w-full rounded-md" />
