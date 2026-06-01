@@ -99,8 +99,6 @@ export default async function AdminLectureListPage({
         return `?${params.toString()}`;
     };
 
-    console.log(responseData.content[0].id, '?????');
-
     return (
         <div>
 

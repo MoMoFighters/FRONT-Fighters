@@ -1,6 +1,7 @@
 import { getChapterVideo, getLectureMeta, getResumeInfo } from "@/app/services/lecture/service";
 import ChapterItem from "@/components/common/ChapterItem";
 import VideoPlayer from "@/features/lecture/components/common/VideoPlayer";
+import { notFound } from "next/navigation";
 
 export default async function ChapterViewPage({ params }: {
     params: Promise<{
@@ -12,6 +13,10 @@ export default async function ChapterViewPage({ params }: {
     const { chapterId, lectureId } = await params;
 
     const metaData = await getLectureMeta(lectureId);
+
+    if (!metaData) {
+        throw new Error('강의 정보를 불러올 수 없습니다.');
+    }
 
     const videoUrl = await getChapterVideo(lectureId, chapterId);
 
@@ -32,11 +37,7 @@ export default async function ChapterViewPage({ params }: {
 
 
     if (!currentChapter) {
-        return (
-            <div>
-                존재하지 않는 챕터입니다.
-            </div>
-        );
+        notFound();
     }
 
     return (

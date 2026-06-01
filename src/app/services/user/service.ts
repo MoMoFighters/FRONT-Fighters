@@ -173,13 +173,7 @@ export const getUsers = async (
             ])
       ).toString();
 
-   const response =
-      await fetchWithAuth(
-         `/api/v1/users?${queryString}`,
-         {
-            cache: 'no-store'
-         }
-      );
+   const response = await fetchWithAuth(`/api/v1/users?${queryString}`);
 
    if (!response.ok) {
 

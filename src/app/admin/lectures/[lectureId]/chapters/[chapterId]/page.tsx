@@ -1,4 +1,6 @@
+import { getChapterVideo, getLectureMeta, getResumeInfo } from "@/app/services/lecture/service";
 import ChapterItem from "@/components/common/ChapterItem";
+import LecturePreviewPlayer from "@/features/lecture/components/common/LecturePreviewPlayer";
 import { Chapter } from "@/features/lecture/type";
 
 export default async function ChapterDetailPage({ params }: {
@@ -10,80 +12,28 @@ export default async function ChapterDetailPage({ params }: {
     const { chapterId, lectureId } = await params;
 
 
-    const dummyChapters: Chapter[] = [
-        {
-            chapterId: 1,
-            lectureId: 1,
-            title: "강의 소개",
-            orderNo: 1,
-            videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
-            videoSizeBytes: 104857600,
-            videoStatus: "READY",
-            durationSec: 600,
-            originalFilename: "intro.mp4",
-            progressRate: 100,
-            watchedSeconds: 600,
-            isCompleted: true,
-        },
-        {
-            chapterId: 2,
-            lectureId: 1,
-            title: "변수와 타입",
-            orderNo: 2,
-            videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
-            videoSizeBytes: 209715200,
-            videoStatus: "READY",
-            durationSec: 900,
-            originalFilename: "variable.mp4",
-            progressRate: 70,
-            watchedSeconds: 630,
-            isCompleted: false,
-        },
-        {
-            chapterId: 3,
-            lectureId: 1,
-            title: "함수",
-            orderNo: 3,
-            videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
-            videoSizeBytes: 314572800,
-            videoStatus: "READY",
-            durationSec: 1200,
-            originalFilename: "function.mp4",
-            progressRate: 35,
-            watchedSeconds: 420,
-            isCompleted: false,
-        },
-        {
-            chapterId: 4,
-            lectureId: 1,
-            title: "객체",
-            orderNo: 4,
-            videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
-            videoSizeBytes: 419430400,
-            videoStatus: "READY",
-            durationSec: 1500,
-            originalFilename: "object.mp4",
-            progressRate: 0,
-            watchedSeconds: 0,
-            isCompleted: false,
-        },
-        {
-            chapterId: 5,
-            lectureId: 1,
-            title: "비동기 처리",
-            orderNo: 5,
-            videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
-            videoSizeBytes: 524288000,
-            videoStatus: "READY",
-            durationSec: 1800,
-            originalFilename: "async.mp4",
-            progressRate: 0,
-            watchedSeconds: 0,
-            isCompleted: false,
-        },
-    ];
+    const metaData = await getLectureMeta(lectureId);
 
-    const currentChapter = dummyChapters.find((item) => item.chapterId === Number(chapterId));
+    if (!metaData) {
+        throw new Error('강의 정보를 불러올 수 없습니다.');
+    }
+
+    const videoUrl = await getChapterVideo(lectureId, chapterId);
+
+    console.log(videoUrl, '동영상 url');
+
+    const resume =
+        await getResumeInfo(
+            lectureId,
+            chapterId
+        );
+
+    const currentChapter =
+        metaData.chapters.find(
+            (chapter) =>
+                chapter.chapterId ===
+                Number(chapterId)
+        );
 
     if (!currentChapter) {
         return (
@@ -96,24 +46,36 @@ export default async function ChapterDetailPage({ params }: {
     return (
         <div>
             <div className="flex gap-10">
-                <div className="bg-slate-300 w-160 h-90 rounded-lg">
-                    {currentChapter?.title}
-                </div>
+                <LecturePreviewPlayer
+                    title={currentChapter.title}
+                    durationSec={currentChapter.durationSec}
+                    videoUrl={videoUrl}
+                    currentChapterNo={
+                        metaData.currentChapterNo
+                    }
+
+                    totalChapterCount={
+                        metaData.totalChapterCount
+                    }
+                />
                 <div className="flex-1 h-120 bg-white border-2 border-slate-200 rounded-lg p-4 overflow-y-auto">
-                    {dummyChapters.map((item) => (
-                        <div
+                    {metaData.chapters.map((item) => (
+                        <ChapterItem
                             key={item.chapterId}
-                            className={
-                                item.chapterId === Number(chapterId)
-                                    ? "ring-2 ring-green-400 rounded-lg"
-                                    : ""
-                            }
-                        >
-                            <ChapterItem
-                                chapter={item}
-                                role="admin"
-                            />
-                        </div>
+
+                            chapter={{
+                                ...item,
+                                lectureId:
+                                    Number(lectureId),
+
+                                videoUrl: '',
+                                videoSizeBytes: 0,
+                                videoStatus: 'READY',
+                                originalFilename: ''
+                            }}
+
+                            role="admin"
+                        />
                     ))}
                 </div>
             </div>

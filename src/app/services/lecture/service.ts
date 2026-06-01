@@ -23,9 +23,7 @@ export const getLectures = async (payload: GetLecturesRequest): Promise<LectureL
 
   console.log('????', `/api/v1/lectures?${queryString}`);
 
-  const response = await fetchWithAuth(`/api/v1/lectures?${queryString}`, {
-    cache: 'no-store'
-  });
+  const response = await fetchWithAuth(`/api/v1/lectures?${queryString}`);
 
   if (response.status === 404) {
     notFound();
@@ -64,9 +62,7 @@ export const getLectures = async (payload: GetLecturesRequest): Promise<LectureL
 // 강의 상세 조회
 
 export const getLectureById = async (id: string): Promise<LectureDetail> => {
-  const response = await fetchWithAuth(`/api/v1/lectures/${id}`, {
-    cache: 'no-store'
-  });
+  const response = await fetchWithAuth(`/api/v1/lectures/${id}`);
 
   if (response.status === 404) {
     notFound();
@@ -102,7 +98,6 @@ export const updateLectureStatus = async (id: string, payload: StatusRequest) =>
   const response = await fetchWithAuth(`/api/v1/lectures/${id}/status`, {
     method: 'PATCH',
     body: JSON.stringify(payload),
-    cache: 'no-store'
   });
   console.log('강의 상태 변경 확인용', response);
 
@@ -121,9 +116,7 @@ export const updateLectureStatus = async (id: string, payload: StatusRequest) =>
 // 강의별 진척도 조회
 
 export const getLectureProgress = async (id: string): Promise<LectureProgress> => {
-  const response = await fetchWithAuth(`/api/v1/lectures/${id}/progress`, {
-    cache: 'no-store'
-  });
+  const response = await fetchWithAuth(`/api/v1/lectures/${id}/progress`);
 
   if (!response.ok) {
     const errorData = await response.json();
@@ -148,9 +141,7 @@ export const getLectureProgress = async (id: string): Promise<LectureProgress> =
 // 챕터별 진척도 조회
 
 export const getChaptersById = async (lectureId: string): Promise<ChapterProgress[]> => {
-  const response = await fetchWithAuth(`/api/v1/lectures/${lectureId}/chapters/progress`, {
-    cache: 'no-store'
-  });
+  const response = await fetchWithAuth(`/api/v1/lectures/${lectureId}/chapters/progress`);
 
   if (!response.ok) {
     const errorData = await response.json();
@@ -174,7 +165,6 @@ export const updateVideoProgress = async (lectureId: string, chapterId: string, 
   const response = await fetchWithAuth(`/api/v1/lectures/${lectureId}/chapters/${chapterId}/progress`, {
     method: "PATCH",
     body: JSON.stringify(payload),
-    cache: 'no-store'
   });
 
   if (!response.ok) {
@@ -197,7 +187,6 @@ export const updateVideoProgressByExit = async (lectureId: string, chapterId: st
   const response = await fetchWithAuth(`/api/v1/lectures/${lectureId}/chapters/${chapterId}/exit`, {
     method: "PATCH",
     body: JSON.stringify(payload),
-    cache: 'no-store'
   });
 
   if (!response.ok) {
@@ -221,9 +210,7 @@ export const getResumeInfo = async (
   chapterId: string
 ): Promise<ResumeResponse> => {
 
-  const response = await fetchWithAuth(`/api/v1/lectures/${lectureId}/chapters/${chapterId}/resume`, {
-    cache: 'no-store'
-  });
+  const response = await fetchWithAuth(`/api/v1/lectures/${lectureId}/chapters/${chapterId}/resume`);
 
   if (!response.ok) {
     const errorData = await response.json();
@@ -243,9 +230,7 @@ export const getResumeInfo = async (
 // 강의 메타데이터 조회
 
 export const getLectureMeta = async (lectureId: string): Promise<LectureMetaResponse> => {
-  const response = await fetchWithAuth(`/api/v1/lectures/${lectureId}/meta`, {
-    cache: 'no-store'
-  });
+  const response = await fetchWithAuth(`/api/v1/lectures/${lectureId}/meta`);
 
   if (!response.ok) {
     const errorData = await response.json();
@@ -266,9 +251,7 @@ export const getLectureMeta = async (lectureId: string): Promise<LectureMetaResp
 // 강의 영상 재생
 
 export const getChapterVideo = async (lectureId: string, chapterId: string): Promise<string> => {
-  const response = await fetchWithAuth(`/api/v1/lectures/${lectureId}/chapters/${chapterId}/stream`, {
-    cache: 'no-store'
-  })
+  const response = await fetchWithAuth(`/api/v1/lectures/${lectureId}/chapters/${chapterId}/stream`)
 
   if (!response.ok) {
     const errorData = await response.json();
@@ -290,7 +273,6 @@ export const getChapterVideo = async (lectureId: string, chapterId: string): Pro
 export const enrollLectureById = async (id: string): Promise<EnrollLectureResponse> => {
   const response = await fetchWithAuth(`/api/v1/lectures/${id}/enrollments`, {
     method: "POST",
-    cache: 'no-store'
   })
 
   if (!response.ok) {

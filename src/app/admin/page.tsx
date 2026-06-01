@@ -5,8 +5,10 @@ import book from '@/app/assets/img/book.svg'
 import money from '@/app/assets/img/money.svg'
 import { AlertCircle, Bell, ChevronRight, Clock, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { getReports } from "../services/report/service";
+import { Report } from "@/features/report/type";
 
-export default function Page() {
+export default async function Page() {
 
     // 더미 데이터 - module 4 이후, 다만 신고 로그는 module 3에 할 수도 있음, 접근 | 에러 로그는 백엔드와 상의 필요
     const announcements = [
@@ -17,16 +19,7 @@ export default function Page() {
         { id: 5, title: '보안 업데이트 완료', date: '2026-05-16', time: '13:45', priority: 'high' },
     ];
 
-    const reportLogs = [
-        { id: 1, reporter: '사용자123', target: '게시글 #4521', reason: '스팸/광고', status: 'pending', time: '2시간 전' },
-        { id: 2, reporter: '사용자456', target: '댓글 #8932', reason: '욕설/비방', status: 'resolved', time: '5시간 전' },
-        { id: 3, reporter: '사용자789', target: '강의 #2341', reason: '저작권 침해', status: 'pending', time: '1일 전' },
-        { id: 4, reporter: '사용자234', target: '사용자 프로필', reason: '부적절한 내용', status: 'rejected', time: '1일 전' },
-        { id: 5, reporter: '사용자567', target: '게시글 #4201', reason: '허위 정보', status: 'pending', time: '2일 전' },
-        { id: 6, reporter: '사용자567', target: '게시글 #4201', reason: '허위 정보', status: 'pending', time: '2일 전' },
-        { id: 7, reporter: '사용자567', target: '게시글 #4201', reason: '허위 정보', status: 'pending', time: '2일 전' },
-        { id: 8, reporter: '사용자567', target: '게시글 #4201', reason: '허위 정보', status: 'pending', time: '2일 전' },
-    ];
+    const reportLogs: Report[] = await getReports();
 
     const errorLogs = [
         { id: 1, type: 'API Error', message: 'Payment gateway timeout', level: 'critical', time: '10분 전' },
@@ -176,31 +169,31 @@ export default function Page() {
                     <div className="divide-y divide-slate-100 overflow-y-auto scrollbar-thin flex-1">
                         {reportLogs.map((item) => (
                             <div
-                                key={item.id}
+                                key={item.reportId}
                                 className="px-5 py-3.5 hover:bg-slate-50 transition-colors cursor-pointer group"
                             >
                                 <div className="flex items-start justify-between gap-3 mb-2">
                                     <div className="flex-1 min-w-0">
                                         <h4 className="text-sm font-semibold text-slate-900 truncate mb-1">
-                                            {item.target}
+                                            {item.targetType} / {item.reason}
                                         </h4>
-                                        <p className="text-xs text-slate-500">{item.reason}</p>
+                                        <p className="text-xs text-slate-500">{item.detail}</p>
                                     </div>
                                     <span
-                                        className={`text-xs px-2 py-1 rounded-full font-medium shrink-0 ${item.status === 'pending'
+                                        className={`text-xs px-2 py-1 rounded-full font-medium shrink-0 ${item.status === 'PENDING'
                                             ? 'bg-amber-100 text-amber-700'
-                                            : item.status === 'resolved'
+                                            : item.status === 'RESOLVED'
                                                 ? 'bg-emerald-100 text-emerald-700'
                                                 : 'bg-slate-100 text-slate-600'
                                             }`}
                                     >
-                                        {item.status === 'pending' ? '대기중' : item.status === 'resolved' ? '해결' : '반려'}
+                                        {item.status === 'PENDING' ? '대기중' : item.status === 'RESOLVED' ? '해결' : '반려'}
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-2 text-xs text-slate-400">
-                                    <span>{item.reporter}</span>
+                                    <span>{item.reporterUserId}</span>
                                     <span>•</span>
-                                    <span>{item.time}</span>
+                                    <span>{item.reportedAt.split('T')[0]}</span>
                                 </div>
                             </div>
                         ))}
