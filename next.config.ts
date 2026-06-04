@@ -1,9 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig = {
+  // 아래꺼 주석으로 하고 개발
+  devIndicators: false,
+  // 위에꺼 주석으로 하고 개발
   experimental: {
     serverActions: {
-      bodySizeLimit: "50mb",
+      bodySizeLimit: "500mb",
     },
   },
 
@@ -16,6 +19,7 @@ const nextConfig = {
         pathname: "/**",
       },
     ],
+    // formats: ['image/webp', 'image/avif']
   },
 } satisfies NextConfig;
 

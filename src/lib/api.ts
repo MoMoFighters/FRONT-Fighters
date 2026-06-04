@@ -10,6 +10,8 @@ export async function fetchWithAuth(endpoint: string, options: RequestInit = {})
     const cookieStore = await cookies();
     const accessToken = cookieStore.get('accessToken')?.value;
 
+    console.log("??????accessToken", accessToken)
+
     // Header 설정
     const headers = {
         'Content-Type': 'application/json',

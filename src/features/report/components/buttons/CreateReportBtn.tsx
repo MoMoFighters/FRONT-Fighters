@@ -188,7 +188,7 @@ export default function CreateReportBtn() {
                                                 부적절한 컨텐츠
                                             </SelectItem>
 
-                                            <SelectItem value="ETC">
+                                            <SelectItem value="OTHER">
                                                 기타
                                             </SelectItem>
 

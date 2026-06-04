@@ -1,16 +1,15 @@
-'use client'
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { CheckCircle2, XCircle } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Button } from '@/components/ui/button';
+import { CheckCircle2, XCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
-import { loginSuccessAction } from "../action";
+import { loginSuccessAction } from '../action';
 
 interface LoginResultModalProps {
     setIsModal: React.Dispatch<
         React.SetStateAction<boolean>
     >;
-
     state: {
         timestamp: string;
         status: number;
@@ -23,73 +22,69 @@ export default function LoginResultModal({
     setIsModal,
     state,
 }: LoginResultModalProps) {
-
     const router = useRouter();
 
     const isSuccess =
-        state.status === 200;
+        state.status === 200 || state.status === 201;
 
     const handleConfirm = async () => {
         if (!isSuccess) {
             setIsModal(false);
-            return;
+            router.push('/auth/login')
         }
 
-        const result = await loginSuccessAction();
+        try {
+            const result = await loginSuccessAction();
 
-        if (result.status !== 200) {
-            setIsModal(false);
-            return;
-        }
-
-        const { role, is_temp, nickname, } = result.data!;
-
-        // 닉네임 미설정
-        if (!nickname) {
-            setIsModal(false);
-            router.refresh();
-            return;
-        }
-
-        if (role === 'TEACHER') {
-            router.push('/teacher');
-            return;
-        }
-
-        if (role === 'ADMIN') {
-            router.push('/admin');
-            return;
-        }
-
-        if (role === 'STUDENT') {
-
-            if (is_temp) {
-                router.push('/student/mypage/edit');
+            if (
+                result.status !== 200 &&
+                result.status !== 201
+            ) {
+                setIsModal(false);
                 return;
             }
 
-            router.push('/student');
-            return;
-        }
+            const { role, is_temp } = result.data!;
 
-        setIsModal(false);
+            if (role === 'TEACHER') {
+                router.replace('/teacher');
+                return;
+            }
+
+            if (role === 'ADMIN') {
+                router.replace('/admin');
+                return;
+            }
+
+            if (role === 'STUDENT') {
+                if (is_temp) {
+                    router.replace('/student/mypage/edit');
+                    return;
+                }
+
+                router.replace('/student');
+                return;
+            }
+
+            setIsModal(false);
+        } catch {
+            setIsModal(false);
+        }
     };
 
     return (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-            <div className="bg-white w-[420px] rounded-xl shadow-2xl border border-slate-200 p-8 flex flex-col items-center gap-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+            <div className="flex w-[420px] flex-col items-center gap-4 rounded-xl border border-slate-200 bg-white p-8 shadow-2xl">
                 {isSuccess ? (
-                    <CheckCircle2
-                        className="w-14 h-14 text-green-500"
-                    />
+                    <CheckCircle2 className="h-14 w-14 text-green-500" />
                 ) : (
-                    <XCircle
-                        className="w-14 h-14 text-red-500"
-                    />
+                    <XCircle className="h-14 w-14 text-red-500" />
                 )}
 
                 <p className="text-2xl font-bold text-slate-900">
-                    {isSuccess ? '도시 입장 완료 🏙️' : '로그인 실패'}
+                    {isSuccess
+                        ? '도시 입장 완료 🏙️'
+                        : '로그인 실패'}
                 </p>
 
                 <div className="text-center">
@@ -100,11 +95,10 @@ export default function LoginResultModal({
 
                 <Button
                     onClick={handleConfirm}
-                    className="mt-2 w-full h-11 bg-slate-900 hover:bg-slate-800"
+                    className="mt-2 h-11 w-full bg-slate-900 hover:bg-slate-800"
                 >
                     확인
                 </Button>
-
             </div>
         </div>
     );

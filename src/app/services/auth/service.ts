@@ -364,11 +364,26 @@ export const kakaoLogin = async (
     return result;
 };
 
+export interface GoogleLoginData {
+    timestamp: string;
+    status: number;
+    code: string;
+    message: string;
+    data?: {
+        accessToken: string;
+        refreshToken: string;
+        status: string;
+        expiresIn: number;
+    }
+}
+
 
 
 // 구글 API 관련 서비스 함수
 // 추후 김태완이 알아서 정의할 예정
-export const googleLoginService = async (code: string) => {
+export const googleLoginService = async (
+    code: string
+): Promise<GoogleLoginData> => {
     const res = await fetch(
         `${BASE_SERVER_URL}/api/v1/auth/googlelogin`,
         {
@@ -380,20 +395,17 @@ export const googleLoginService = async (code: string) => {
         }
     );
 
+    const response: GoogleLoginData =
+        await res.json();
+
     if (!res.ok) {
-        const errorText = await res.text().catch(() => "");
-        console.error(`백엔드 통신 실패 (${res.status}):`, errorText);
-        throw new Error(`서버 통신 에러 (${res.status})`);
+        throw new Error(
+            response.message ||
+            `서버 통신 에러 (${res.status})`
+        );
     }
 
-    const data = await res.json();
-
-    if (data.success === false) {
-        throw new Error(data.message || "로그인에 실패하였습니다.");
-    }
-
-    // 3. 성공 시 백엔드가 준 { accessToken, refreshToken }을 안전하게 리턴
-    return data.data;
+    return response;
 };
 
 

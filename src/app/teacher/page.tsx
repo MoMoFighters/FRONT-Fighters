@@ -49,7 +49,7 @@ export default async function TeacherMainPage() {
                         <Star className="w-8 h-8" />
                     </div>
                     <div className="flex flex-col gap-2">
-                        <p className="font-bold text-2xl">{dummyLectures[0].averageRating.toFixed(1)}</p>
+                        <p className="font-bold text-2xl">{dummyLectures[0]?.averageRating.toFixed(1) || 0}</p>
                         <p className="text-lg">평균 평점</p>
                     </div>
                 </div>
@@ -57,9 +57,11 @@ export default async function TeacherMainPage() {
             <p className="text-xl font-semibold mt-3">📖 진행중인 강의</p>
             <div className="flex flex-col max-h-100 overflow-y-auto scrollbar-none gap-2 rounded-md bg-indigo-50 p-4">
                 <div className="flex-1 flex flex-col gap-2">
-                    {dummyLectures.map(lecture =>
+                    {dummyLectures.length > 0 ? dummyLectures.map(lecture =>
                         <LectureItem key={lecture.id} lecture={lecture} role='teacher' mode='teacherList' href={`/teacher/lectures/${lecture.id}`} />
-                    )}
+                    ) : <div className="mx-auto my-auto text-md text-slate-500 font-medium">
+                        아직 진행중인 강의가 존재하지 않습니다.
+                    </div>}
                 </div>
             </div>
             <p className="text-xl font-semibold mt-3">❓ 최근 들어온 질문</p>
