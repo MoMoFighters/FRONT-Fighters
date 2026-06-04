@@ -35,6 +35,8 @@ export default async function ChapterViewPage({ params }: {
                 Number(chapterId)
         );
 
+    // console.log('?', currentChapter);
+
 
     if (!currentChapter) {
         notFound();

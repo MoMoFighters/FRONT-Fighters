@@ -8,6 +8,7 @@ import {
     createChapter,
     uploadChapterVideo,
 } from './lectureCreateService';
+import { redirect } from 'next/navigation';
 
 export interface CreateLectureActionResponse {
     timestamp: string;
@@ -159,9 +160,7 @@ export const createLectureWithChaptersAction = async (
             }
         }
 
-        revalidatePath(
-            '/teacher/lecture'
-        );
+
 
         return lectureResult;
 
@@ -178,5 +177,8 @@ export const createLectureWithChaptersAction = async (
                     : '강의 등록에 실패했습니다.',
             errors: {},
         };
+    } finally {
+        revalidatePath('/teacher/lectures');
+        redirect('/teacher/lectures');
     }
 };

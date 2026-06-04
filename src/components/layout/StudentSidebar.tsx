@@ -23,7 +23,7 @@ export default async function StudentSidebar() {
                 height={20}
                 priority
             /> */}
-            <Link href="/student"><h2 className='text-xl pl-2 text-mauve-500 font-bold cursor-pointer mt-6'>{myInfo.data?.nickname} 님의 도시</h2></Link>
+            <Link href="/student"><h2 className='text-xl pl-2 text-mauve-500 font-bold cursor-pointer mt-6'>{myInfo.data?.nickname || "알수없음"} 님의 도시</h2></Link>
             <Link href="/student/mypage">
                 <Button variant="ghost" className='flex w-55 gap-2.5 justify-start mt-5 py-5'>
                     <Image

@@ -1068,6 +1068,7 @@ export default function SignupForm() {
             return;
         }
 
+
         setErrorActionState(null);
         const currentForm = e.currentTarget;
         const formData = new FormData(currentForm);
@@ -1269,6 +1270,7 @@ export default function SignupForm() {
                             type="file"
                             id="proof"
                             name="proof"
+                            // required
                             className="border border-slate-300 py-1.5 px-2 h-10 text-sm text-slate-700 focus:outline-none focus:border-slate-500 transition-colors file:mr-4 file:py-0 file:px-2 file:rounded-none file:border-0 file:text-sm file:bg-slate-200 file:text-slate-700 hover:file:bg-slate-300"
                         />
                     </>

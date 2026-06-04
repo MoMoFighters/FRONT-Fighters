@@ -425,36 +425,37 @@ export const handleKakaoLoginCallback = async (code: string) => {
 
 // 구글용 액션 함수
 export const googleLoginAction = async (code: string) => {
-    // 위에서 수정한 서비스 함수 호출 (성공 시 { accessToken, refreshToken }가 옴)
-    const resData = await googleLoginService(code);
-    console.log(resData)
+    const response = await googleLoginService(code);
+
+    const tokenData = response.data;
+
+    if (!tokenData) {
+        throw new Error('토큰 정보가 존재하지 않습니다.');
+    }
 
     const cookieStore = await cookies();
 
-    const accessToken = resData?.accessToken;
-    const refreshToken = resData?.refreshToken;
-
-    if (accessToken) {
-        cookieStore.set('accessToken', accessToken, {
+    cookieStore.set(
+        'accessToken',
+        tokenData.accessToken,
+        {
             httpOnly: true,
             path: '/',
             maxAge: 60 * 60,
-        });
-    }
+        }
+    );
 
-    if (refreshToken) {
-        cookieStore.set('refreshToken', refreshToken, {
+    cookieStore.set(
+        'refreshToken',
+        tokenData.refreshToken,
+        {
             httpOnly: true,
             path: '/',
             maxAge: 60 * 60 * 24 * 30,
-        });
-    }
+        }
+    );
 
-    // page.tsx에서 부드럽게 감지할 수 있도록 성공 깃발과 함께 리턴
-    return {
-        success: true,
-        data: resData
-    };
+    return response; // 백엔드 응답 그대로
 };
 
 // 닉네임 입력모달에서 사용할 닉네임 등록 액션
