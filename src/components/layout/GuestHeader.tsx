@@ -5,24 +5,23 @@ import { Button } from "@/components/ui/button";
 
 export default function GuestHeader() {
     return (
-        <header className="h-16 border-b border-slate-200 bg-slate-50">
+        <header className="h-12 border-b border-slate-200 bg-slate-50">
             <div className="flex h-full w-full justify-between items-center px-2">
-                <Link href='/' className="flex items-center">
+                <Link href='/'>
                     <Image
                         src={logo}
                         alt="MOMOCITY 로고"
-                        className="mt-3"
-                        width={150}
-                        height={20}
+                        className="mt-2 ml-6 opacity-80"
+                        width={110}
                         priority
                     />
                 </Link>
-                <div className="flex gap-2 mr-4">
+                <div className="flex gap-1 mr-4">
                     <Link href="/auth/login">
-                        <Button variant="ghost">로그인</Button>
+                        <Button variant="ghost" className="text-xs">로그인</Button>
                     </Link>
                     <Link href="/auth/signup">
-                        <Button variant="ghost">회원가입</Button>
+                        <Button variant="ghost" className="text-xs">회원가입</Button>
                     </Link>
                 </div>
             </div>

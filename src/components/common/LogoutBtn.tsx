@@ -20,7 +20,7 @@ export default function LogoutBtn() {
     };
 
     return (
-        <Button variant="ghost" onClick={handleLogout}>
+        <Button variant="ghost" className="text-xs" onClick={handleLogout}>
             로그아웃
         </Button>
     );

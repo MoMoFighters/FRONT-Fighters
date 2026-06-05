@@ -92,12 +92,13 @@ export default function BuildingItem({ category, level }: BuildingItemProps) {
         <HoverCard openDelay={50} closeDelay={50}>
             <HoverCardTrigger asChild>
                 <Link href={moveHref}>
-                    <div className="relative w-45 h-30  rounded-lg cursor-pointer hover:scale-[1.02] transition-all">
+                    <div className="relative w-45 h-30 rounded-lg cursor-pointer hover:scale-[1.02] transition-all">
                         <Image
                             src={image}
                             alt="건물 이미지"
+                            fill
+                            sizes="10vw"
                             className="w-45 absolute bottom-5"
-                            priority
                         />
 
                         <div
@@ -105,7 +106,7 @@ export default function BuildingItem({ category, level }: BuildingItemProps) {
                     absolute
                     left-1/2
                     -translate-x-1/2
-                    bottom-0
+                    -bottom-2
 
                     px-4
                     py-1.5

@@ -123,7 +123,7 @@ export default function CreateReportBtn() {
 
                 <Button
                     variant="destructive"
-                    className="absolute w-15 bottom-5 right-5"
+                    className="absolute w-12 bottom-5 right-5 text-xs"
                     onClick={() => setIsModal(true)}
                 >
                     신고

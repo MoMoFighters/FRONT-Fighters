@@ -3,6 +3,7 @@
 import { Toaster } from 'sonner';
 import '../app/globals.css'
 import Script from 'next/script';
+import { TooltipProvider } from '@/components/ui/tooltip';
 
 export default function RootLayout({
   children,
@@ -29,7 +30,7 @@ export default function RootLayout({
           }}
         />
 
-        {children}
+        <TooltipProvider>{children}</TooltipProvider>
 
         <Toaster
           position="top-center"

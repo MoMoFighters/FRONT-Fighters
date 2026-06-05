@@ -1,9 +1,13 @@
 import Image from "next/image";
-import city from '@/app/assets/img/momocity.png'
+import city from '@/app/assets/img/cityImg.png'
+import logo from '@/app/assets/img/logo.png'
+import logo2 from '@/app/assets/img/logo2.png'
 import CreateBuildingBtn from "@/components/city/CreateBuildingBtn";
 import BuildingItem from "@/components/city/BuildingItem";
 import { getMyInfo } from "@/features/user/action";
 import NicknameInputModal from "@/features/auth/components/NicknameInputModal";
+import OnSidebarBtn from '@/features/city/components/buttons/OnSidebarBtn'
+import arthall from '@/app/assets/img/arthall.png'
 
 interface Building {
     position: string;
@@ -12,11 +16,11 @@ interface Building {
 }
 
 const POSITION_STYLE = {
-    first: "top-[19%] left-[5%]",
-    second: "top-[19%] left-[22%]",
-    third: "top-[19%] left-[38%]",
-    fourth: "top-[68%] left-[15%]",
-    fifth: "top-[68%] left-[35%]",
+    first: "top-[18%] left-[6%]",
+    second: "top-[18%] left-[23%]",
+    third: "top-[18%] left-[39%]",
+    fourth: "top-[66%] left-[16%]",
+    fifth: "top-[66%] left-[36%]",
 };
 
 const POSITIONS = [
@@ -61,15 +65,24 @@ export default async function StudentMainPage() {
     ]
 
     return (
-        <div className="relative w-full h-full scrollbar-hidden">
+        <div className="relative w-full h-full overflow-hidden">
             <NicknameInputModal nickIsNull={myInfo.data?.nickname === null ? true : false} />
             <Image
                 src={city}
                 alt="도시배경"
-                className="w-full h-auto"
+                fill
+                quality={80}
                 priority
             />
-            {POSITIONS.map((position) => {
+            <OnSidebarBtn />
+            <div className="absolute top-15 left-70">
+                <Image
+                    src={arthall}
+                    alt="예술 건물"
+                    width={350}
+                />
+            </div>
+            {/* {POSITIONS.map((position) => {
 
                 const building = buildings.find(
                     (building) => building.position === position
@@ -94,19 +107,16 @@ export default async function StudentMainPage() {
                         )}
                     </div>
                 );
-            })}
-            {/* 도서관 위치 고정 */}
-            <div className="absolute top-[10%] right-[12%]">
+            })} */}
+            {/* <div className="absolute top-[10%] right-[12%]">
                 <BuildingItem category="community" />
             </div>
-            {/* 집 위치 고정 */}
             <div className="absolute top-[35%] right-[12%]">
                 <BuildingItem category="mypage" />
             </div>
-            {/* 포인트 상점 위치 고정 */}
             <div className="absolute top-[60%] right-[12%]">
                 <BuildingItem category="payments" />
-            </div>
+            </div> */}
         </div>
     );
 }
