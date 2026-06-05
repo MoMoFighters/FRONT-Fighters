@@ -356,17 +356,13 @@ export const authRefreshAction = async (): Promise<AuthRefreshApiResponse> => {
 
     const refreshToken = cookieStore.get("refreshToken")?.value;
     const accessToken = cookieStore.get("accessToken")?.value;
-    // console.log(1)
     if (!refreshToken || !accessToken) {
         throw new Error('로그인 연장 실패');
     }
-    // console.log(2)
 
     const refreshData = await authRefresh(refreshToken, accessToken);
-    // console.log(3, refreshData)
 
     if (refreshData?.data) {
-        // console.log(4)
         cookieStore.set('accessToken', refreshData.data.accessToken,
             {
                 httpOnly: true,
@@ -374,9 +370,7 @@ export const authRefreshAction = async (): Promise<AuthRefreshApiResponse> => {
                 path: '/',
             }
         );
-        // console.log(5)
     }
-    // console.log(6)
     return refreshData;
 }
 

@@ -53,7 +53,7 @@ export default async function LectureCategoryListPage({ params }: { params: Prom
                 <Image
                     src={image}
                     alt="이미지"
-                    className="w-full h-auto"
+                    fill
                     priority
                 />
                 <div className="absolute top-10 left-5 w-60 h-15 p-2 bg-black/50 flex flex-col gap-2">
