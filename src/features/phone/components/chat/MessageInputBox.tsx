@@ -39,6 +39,7 @@ import { useActionState, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { sendMessageAction } from "../../chatAction";
 import { toast } from "sonner";
+import { Send } from "lucide-react";
 
 interface Props {
     chatRoomId: number | null;
@@ -81,23 +82,50 @@ export default function MessageInputBox({ chatRoomId, reload }: Props) {
     }, [chatRoomId, isFocus]);
 
     return (
-        <div className="flex flex-col bg-slate-50">
-            <form className="flex flex-row px-3 py-2 gap-1" onSubmit={handleSubmit}>
+        <div className="bg-white border-t border-slate-200">
+            <form
+                className="flex items-center gap-2 px-3 py-3"
+                onSubmit={handleSubmit}
+            >
                 <input
                     ref={inputRef}
                     type="text"
                     name="content"
-                    className="flex-1 border border-slate-300 px-2 py-1 rounded-sm text-slate-700 focus:outline-none"
-                    placeholder="내용을 입력하세요..."
+                    className="
+                flex-1
+                h-10
+                px-4
+                rounded-full
+                bg-slate-100
+                text-slate-700
+                placeholder:text-slate-400
+                focus:outline-none
+                focus:ring-2
+                focus:ring-indigo-200
+                transition-all
+            "
+                    placeholder="메시지를 입력하세요..."
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                     disabled={isSending || !chatRoomId}
                 />
+
                 <Button
                     type="submit"
                     disabled={isSending || !content.trim()}
+                    className="
+                h-10
+                px-4
+                rounded-full
+                bg-indigo-500
+                hover:bg-indigo-600
+                text-white
+                shadow-sm
+                disabled:bg-slate-300
+            "
                 >
-                    {isSending ? "전송중..." : "전송"}
+                    {/* {isSending ? "전송중..." : "전송"} */}
+                    <Send />
                 </Button>
             </form>
         </div>

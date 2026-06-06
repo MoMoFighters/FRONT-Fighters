@@ -184,9 +184,8 @@ export default function ChatRoomArea({
     return (
         <>
             <div className="flex flex-col h-full min-h-0">
-                {/* 상단바 */}
                 <div
-                    className="h-14 shrink-0 border-b border-slate-200 pl-2 py-2 flex flex-row items-center gap-2"
+                    className="h-14 shrink-0 border-b border-slate-200 bg-slate-50 pl-2 py-2 flex flex-row items-center gap-2"
                 >
                     <div className="flex items-center">
                         {isMine ? (
@@ -204,14 +203,16 @@ export default function ChatRoomArea({
                             </>
                         )}
                     </div>
+
                     {isMine ? "" : (
                         <Button
-                            className="px-2 py-1 bg-red-500"
+                            className="px-2 py-1 bg-rose-400 hover:bg-rose-500"
                             onClick={() => handleLeaveRoom(currentRoomId)}
                         >
                             나가기
                         </Button>
                     )}
+
                     <div className="flex-1"></div>
 
                     <Link href={href}>
@@ -223,59 +224,44 @@ export default function ChatRoomArea({
                     </Link>
                 </div>
 
-                {/* 채팅 영역 */}
                 <div
-                    className="flex-1 min-h-0 overflow-y-auto scrollbar-none p-2 flex flex-col gap-2"
+                    ref={scrollRef}
+                    className="flex-1 min-h-0 overflow-y-auto scrollbar-none p-4 flex flex-col gap-3 bg-slate-50"
                     onScroll={handleScroll}
                 >
-                    {
-                        messages.length === 0 ? (
-
-                            <div
-                                className="flex justify-center items-center h-full"
-                            >
-                                <p
-                                    className="text-slate-400"
-                                >
-                                    아직 채팅 내역이 없습니다.
-                                </p>
-                            </div>
-
-                        ) : (
-
-                            messages.map(message => (
-
-                                <ChatItem
-                                    key={message.messageId}
-
-                                    id={message.messageId}
-
-                                    isMine={message.isMine}
-
-                                    message={message.content}
-
-                                    time={new Date(message.createdAt).toLocaleTimeString('ko-KR',
-                                        { hour: '2-digit', minute: '2-digit', })
-                                    }
-                                />
-
-                            ))
-
-                        )
-                    }
+                    {messages.length === 0 ? (
+                        <div className="flex justify-center items-center h-full">
+                            <p className="text-slate-400">
+                                아직 채팅 내역이 없습니다.
+                            </p>
+                        </div>
+                    ) : (
+                        messages.map((message) => (
+                            <ChatItem
+                                key={message.messageId}
+                                id={message.messageId}
+                                isMine={message.isMine}
+                                message={message.content}
+                                time={new Date(
+                                    message.createdAt
+                                ).toLocaleTimeString("ko-KR", {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                })}
+                            />
+                        ))
+                    )}
                 </div>
 
-                {/* 입력창 */}
                 <div
-                    className="shrink-0 border-t border-slate-200"
+                    className="shrink-0 border-t border-slate-200 bg-white"
                 >
                     <MessageInputBox
                         chatRoomId={currentRoomId}
                         reload={{ reload, setReload }}
                     />
                 </div>
-
-            </div >
+            </div>
         </>
     );
 }

@@ -1,11 +1,16 @@
+import { BatteryFull, Wifi } from "lucide-react";
+
 export default function PhoneTopBar() {
     return (
-        <div className="w-full h-7 bg-slate-200 text-center grid grid-cols-3 items-center">
-            <div className="text-left pl-3 font-semibold text-sm">MOMO Telecom</div>
-            <div className="flex-1 text-center">
-                {/* <p className="ml-2 font-semibold text-sm">04:44</p> */}
+        <div className="w-full h-7 px-3 bg-white flex items-center justify-between border-b border-slate-100">
+            <p className="text-xs font-semibold text-slate-800">
+                09:41
+            </p>
+
+            <div className="flex items-center gap-1 text-slate-700">
+                <Wifi size={13} strokeWidth={2.2} />
+                <BatteryFull size={15} strokeWidth={2.2} />
             </div>
-            <div className="text-right pr-3 font-semibold text-sm">100%</div>
         </div>
     );
 }
