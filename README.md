@@ -1,36 +1,126 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+📚 MOMOCITY
+---
+📁 파일 구조
+[src]
+├── [app]                         # Next.js App Router
+│   ├── (guest)                   # 비회원 영역
+│   │   ├── auth
+│   │   │   ├── login/page.tsx
+│   │   │   └── signup/page.tsx
+│   │   ├── oauth
+│   │   │   ├── google/callback/page.tsx
+│   │   │   └── kakao/callback/page.tsx
+│   │   ├── error/page.tsx
+│   │   └── page.tsx              # 소개 페이지
+│   │
+│   ├── student                   # 수강생 영역
+│   │   ├── lectures
+│   │   ├── community
+│   │   ├── payments
+│   │   ├── phone
+│   │   ├── users
+│   │   └── mypage
+│   │
+│   ├── teacher                   # 강사 영역
+│   │   ├── lectures
+│   │   ├── community
+│   │   └── ask
+│   │
+│   ├── admin                     # 관리자 영역
+│   │   ├── users
+│   │   ├── lectures
+│   │   └── sales
+│   │
+│   ├── assets
+│   │   ├── img
+│   │   └── style
+│   │
+│   ├── layout.tsx
+│   ├── error.tsx
+│   └── not-found.tsx
+│
+├── [components]                  # 공통 UI 컴포넌트
+│   ├── common
+│   │   ├── LectureItem.tsx
+│   │   ├── ReviewItem.tsx
+│   │   ├── ChatItem.tsx
+│   │   └── ChapterItem.tsx
+│   │
+│   ├── layout
+│   │   ├── GuestHeader.tsx
+│   │   ├── AuthHeader.tsx
+│   │   ├── StudentSidebar.tsx
+│   │   ├── TeacherSidebar.tsx
+│   │   ├── AdminSidebar.tsx
+│   │   ├── Footer.tsx
+│   │   └── StudentShell.tsx
+│   │
+│   ├── city
+│   ├── mypage
+│   ├── phone
+│   └── ui                        # shadcn/ui 공통 컴포넌트
+│       ├── button.tsx
+│       ├── dialog.tsx
+│       ├── input.tsx
+│       ├── select.tsx
+│       └── ...
+│
+├── [features]                    # 기능 단위 모듈
+│   ├── auth                      # 로그인 / 회원가입
+│   ├── lecture                   # 강의 관련 기능
+│   ├── phone                     # 가상 휴대폰 기능
+│   ├── report                    # 신고 기능
+│   ├── user                      # 회원 기능
+│   ├── city                      # 도시 기능
+│   └── modal                     # 모달 기능
+│
+├── [lib]                         # 공통 라이브러리
+│   ├── api.ts                    # Axios 설정
+│   ├── socket.ts                 # Socket 연결
+│   ├── config
+│   │   └── oauth
+└───└── utils
 
-## Getting Started
+---
+🤝 협업 규칙
 
-First, run the development server:
+작업은 아래 순서에 따라 진행합니다.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+단계	내용
+0️⃣	Discussion 작성
+1️⃣	Issue 작성
+2️⃣	Branch 생성
+3️⃣	작업 진행
+4️⃣	Commit & Push
+5️⃣	Pull Request
+6️⃣	Code Review 후 Merge
+---
+📝 Issue 작성 규칙
+제목
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+설명
+- 작업 목적
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+작업 내용
+- [ ] 작업1
+- [ ] 작업2
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+기타
+- 참고사항
+---
+🔀 Pull Request 작성 규칙
+## 관련 이슈
+#이슈번호
 
-## Learn More
+## 작업 내용
+- 작업 내용 작성
 
-To learn more about Next.js, take a look at the following resources:
+## 스크린샷
+💻 Coding Convention
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
+## 코드컨벤션
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 네이밍 규칙
+Component
+PascalCase
