@@ -110,16 +110,16 @@
 ---
 ## 📝 Issue 작성 규칙
 
-제목
+### 제목
 
-설명
+### 설명
 - 작업 목적
 
-작업 내용
+### 작업 내용
 - [ ] 작업1
 - [ ] 작업2
 
-기타
+### 기타
 - 참고사항
 ---
 ## 🔀 Pull Request 작성 규칙
@@ -127,10 +127,10 @@
 ### 관련 이슈
 #이슈번호
 
-## 작업 내용
-- 작업 내용 작성
+### 작업 내용
+작업 내용 작성
 
-## 스크린샷
+### 스크린샷
 💻 Coding Convention
 
 ---
@@ -138,6 +138,9 @@
 
 ### 네이밍 규칙
 Component : PascalCase
+
 Function : camelCase
+
 Variable : camelCase
+
 Constant : UPPER_SNAKE_CASE
