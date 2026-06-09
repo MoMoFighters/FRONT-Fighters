@@ -1,6 +1,7 @@
 📚 MOMOCITY
 ---
 📁 파일 구조
+```bash
 [src]
 ├── [app]                         # Next.js App Router
 │   ├── (guest)                   # 비회원 영역
@@ -80,7 +81,7 @@
 │   ├── config
 │   │   └── oauth
 └───└── utils
-
+```
 ---
 🤝 협업 규칙
 
