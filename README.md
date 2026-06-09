@@ -83,11 +83,13 @@
 └───└── utils
 ```
 ---
-🤝 협업 규칙
+## 🤝 협업 규칙
 
 작업은 아래 순서에 따라 진행합니다.
 
-단계	내용
+### 단계	내용
+
+```bash
 0️⃣	Discussion 작성
 1️⃣	Issue 작성
 2️⃣	Branch 생성
@@ -95,8 +97,19 @@
 4️⃣	Commit & Push
 5️⃣	Pull Request
 6️⃣	Code Review 후 Merge
+```
+
+### 브랜치 명명 규칙
+
+```bash
+접두어/(api or ui)/도메인_세부기능
+
+예 : feat/ui/student_phone
+```
+
 ---
-📝 Issue 작성 규칙
+## 📝 Issue 작성 규칙
+
 제목
 
 설명
@@ -109,8 +122,9 @@
 기타
 - 참고사항
 ---
-🔀 Pull Request 작성 규칙
-## 관련 이슈
+## 🔀 Pull Request 작성 규칙
+
+### 관련 이슈
 #이슈번호
 
 ## 작업 내용
@@ -123,5 +137,7 @@
 ## 코드컨벤션
 
 ### 네이밍 규칙
-Component
-PascalCase
+Component : PascalCase
+Function : camelCase
+Variable : camelCase
+Constant : UPPER_SNAKE_CASE
