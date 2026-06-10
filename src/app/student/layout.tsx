@@ -1,16 +1,18 @@
-import AUthHeader from "@/components/layout/AuthHeader";
-import StudentShell from "@/components/layout/StudentShell";
-import StudentSidebar from "@/components/layout/StudentSidebar";
+import AuthHeader from "@/components/layout/AuthHeader";
+import Footer from "@/components/layout/Footer";
+import StudentLayoutShell from "@/components/layout/StudentLayoutShell";
 
 export default function StudentLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-
     return (
-        <div className="h-screen overflow-hidden bg-slate-50">
-            <StudentShell sidebar={<StudentSidebar />} header={<AUthHeader role="student" />}>{children}</StudentShell>
-        </div>
+        <StudentLayoutShell
+            header={<AuthHeader role="student" />}
+            footer={<Footer />}
+        >
+            {children}
+        </StudentLayoutShell>
     );
 }

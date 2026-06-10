@@ -1,12 +1,9 @@
 import Image from "next/image";
 import city from '@/app/assets/img/cityImg.png'
-import logo from '@/app/assets/img/logo.png'
-import logo2 from '@/app/assets/img/logo2.png'
 import CreateBuildingBtn from "@/components/city/CreateBuildingBtn";
 import BuildingItem from "@/components/city/BuildingItem";
 import { getMyInfo } from "@/features/user/action";
 import NicknameInputModal from "@/features/auth/components/NicknameInputModal";
-import OnSidebarBtn from '@/features/city/components/buttons/OnSidebarBtn'
 import arthall from '@/app/assets/img/arthall.png'
 
 interface Building {
@@ -65,7 +62,7 @@ export default async function StudentMainPage() {
     ]
 
     return (
-        <div className="relative w-full h-full overflow-hidden">
+        <div className="w-full h-full relative overflow-hidden">
             <NicknameInputModal nickIsNull={myInfo.data?.nickname === null ? true : false} />
             <Image
                 src={city}
@@ -73,8 +70,8 @@ export default async function StudentMainPage() {
                 fill
                 quality={80}
                 priority
+                className="object-cover"
             />
-            <OnSidebarBtn />
             <div className="absolute top-15 left-70">
                 <Image
                     src={arthall}

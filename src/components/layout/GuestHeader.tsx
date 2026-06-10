@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 
 export default function GuestHeader() {
     return (
-        <header className="h-12 border-b border-slate-200 bg-slate-50">
+        <header className="h-14 border-b border-slate-200 bg-white flxed top-0 left-0 z-40">
             <div className="flex h-full w-full justify-between items-center px-2">
                 <Link href='/'>
                     <Image

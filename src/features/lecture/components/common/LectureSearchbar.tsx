@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import { Search, X } from "lucide-react";
-import { useParams } from "next/navigation";
 
 interface LectureSearchbarProps {
     status?: string;
@@ -14,8 +13,6 @@ interface LectureSearchbarProps {
 export default function LectureSearchbar({ status, keyword, category, filter }: LectureSearchbarProps) {
 
     const urlParams = new URLSearchParams();
-
-    const routeParams = useParams();
 
     if (status) {
         urlParams.set("status", status);

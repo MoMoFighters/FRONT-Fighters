@@ -1,58 +1,50 @@
-'use client'
+import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
-import { useRouter, useSearchParams } from "next/navigation";
+export default function StudentLectureNav({ keyword, filter }: { keyword?: string, filter?: string }) {
 
-export default function StudentLectureNav({ category }: { category: string }) {
-    const router = useRouter();
-    const searchParams = useSearchParams();
+    const createFilterHref = (nextFilter?: string) => {
+        const params = new URLSearchParams();
 
-    const searchStatus = searchParams.get("filter");
-
-    const handleClickFilter = (filter?: string) => {
-
-        if (!filter) {
-            router.push(`/student/${category}/lectures`);
-            return;
+        if (keyword) {
+            params.set("keyword", keyword);
         }
-        router.push(`/student/${category}/lectures?filter=${filter}`);
+
+        if (nextFilter) {
+            params.set("filter", nextFilter);
+        }
+
+        return `?${params.toString()}`;
     };
 
     return (
-        <div className="flex items-center gap-2 mb-4">
+        <div className="mb-6 border-b border-slate-200">
+            <nav className="flex gap-8">
+                <Link
+                    href={createFilterHref()}
+                    className={`
+                                            border-b-2 px-1 pb-4 text-sm font-bold transition
+                                            ${filter !== "my"
+                            ? "border-indigo-400 text-indigo-500"
+                            : "border-transparent text-slate-500 hover:text-slate-900"
+                        }
+                                        `}
+                >
+                    전체
+                </Link>
 
-            <Button
-                variant="ghost"
-                onClick={() => handleClickFilter()}
-                className={`
-                    text-lg
-                    font-semibold
-
-                    ${!searchStatus
-                        ? "text-slate-900"
-                        : "text-slate-500"
-                    }
-                `}
-            >
-                전체
-            </Button>
-
-            <Button
-                variant="ghost"
-                onClick={() => handleClickFilter("my")}
-                className={`
-                    text-lg
-                    font-semibold
-
-                    ${searchStatus === "my"
-                        ? "text-slate-900"
-                        : "text-slate-500"
-                    }
-                `}
-            >
-                내 강의
-            </Button>
-
+                <Link
+                    href={createFilterHref("my")}
+                    className={`
+                                            border-b-2 px-1 pb-4 text-sm font-bold transition
+                                            ${filter === "my"
+                            ? "border-indigo-400 text-indigo-500"
+                            : "border-transparent text-slate-500 hover:text-slate-900"
+                        }
+                                        `}
+                >
+                    내 강의
+                </Link>
+            </nav>
         </div>
     );
 }

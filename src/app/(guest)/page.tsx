@@ -15,18 +15,18 @@ export default async function Home() {
 
   return (
     <>
-      <section className="relative bg-linear-to-br from-mauve-50 via-mauve-100/50 to-slate-100 py-24 overflow-hidden">
+      <section className="relative bg-linear-to-br from-indigo-50 via-indigo-100/50 to-indigo-100 py-24 overflow-hidden">
         <div className="max-w-7xl mx-auto px-8">
           <div className="grid grid-cols-2 gap-16 items-center">
             {/* Left Content */}
             <div>
-              <div className="inline-block px-4 py-2 bg-mauve-200 text-mauve-700 rounded-full text-sm font-semibold mb-6">
+              <div className="inline-block px-4 py-2 bg-indigo-100 text-indigo-700 rounded-full text-sm font-semibold mb-6">
                 🎓 학습이 도시를 성장시킵니다
               </div>
               <h1 className="text-6xl font-bold text-slate-900 mb-6 leading-tight">
                 당신의 성장이
                 <br />
-                <span className="text-transparent bg-clip-text bg-mauve-500 from-mauve-600 to-mauve-700">
+                <span className="text-transparent bg-clip-text bg-indigo-500 from-indigo-600 to-indigo-700">
                   도시가 됩니다
                 </span>
               </h1>
@@ -37,13 +37,12 @@ export default async function Home() {
               </p>
               <div className="flex items-center gap-4">
                 <Link href="/auth/login">
-                  <button className="cursor-pointer px-8 py-4 bg-mauve-500 hover:bg-mauve-600 text-white rounded-xl font-bold text-lg hover:from-mauve-700 hover:to-mauve-800 transition-all shadow-lg hover:shadow-xl transform hover:scale-105">
+                  <button className="cursor-pointer px-8 py-4 bg-indigo-400 hover:bg-indigo-500 text-white rounded-xl font-bold text-lg transition-all shadow-lg hover:shadow-xl transform hover:scale-105">
                     시작하기
                   </button>
                 </Link>
               </div>
 
-              {/* Stats */}
               <div className="grid grid-cols-3 gap-8 mt-12 pt-12 border-t border-slate-200">
                 <div>
                   <div className="text-3xl font-bold text-slate-900">12,000+</div>
@@ -60,10 +59,9 @@ export default async function Home() {
               </div>
             </div>
 
-            {/* Right Visual */}
             <div className="relative">
               <div className="relative bg-white rounded-3xl shadow-2xl p-8 transform rotate-2 hover:rotate-0 transition-transform">
-                <div className="absolute -top-4 -right-4 w-24 h-24 bg-linear-to-br from-mauve-400 to-mauve-600 rounded-2xl flex items-center justify-center text-4xl shadow-lg">
+                <div className="absolute -top-4 -right-4 w-24 h-24 bg-linear-to-br from-indigo-400 to-indigo-500 rounded-2xl flex items-center justify-center text-4xl shadow-lg">
                   🏙️
                 </div>
                 <div
@@ -91,7 +89,7 @@ export default async function Home() {
           </div>
 
           <Link href="/auth/login">
-            <button className=" absolute right-8 top-0 px-6 py-3 cursor-pointer bg-mauve-500 text-white rounded-xl font-semibold hover:bg-mauve-600 flex items-center gap-2 transition-all shadow-lg hover:shadow-xl transform hover:scale-101">
+            <button className=" absolute right-8 top-0 px-6 py-3 cursor-pointer bg-indigo-400 text-white rounded-xl font-semibold hover:bg-indigo-500 flex items-center gap-2 transition-all shadow-lg hover:shadow-xl transform hover:scale-101">
               전체 보기
               <ChevronRight className="w-5 h-5" />
             </button>
@@ -128,8 +126,8 @@ export default async function Home() {
 
           <div className="grid grid-cols-3 gap-8">
             <div className="text-center p-8">
-              <div className="w-20 h-20 bg-linear-to-br from-mauve-100 to-mauve-200 rounded-3xl flex items-center justify-center mx-auto mb-6">
-                <TrendingUp className="w-10 h-10 text-mauve-600" />
+              <div className="w-20 h-20 bg-linear-to-br from-indigo-100 to-indigo-200 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                <TrendingUp className="w-10 h-10 text-indigo-600" />
               </div>
               <h3 className="text-2xl font-bold text-slate-900 mb-3">성장이 보입니다</h3>
               <p className="text-slate-600 leading-relaxed">
@@ -138,8 +136,8 @@ export default async function Home() {
             </div>
 
             <div className="text-center p-8">
-              <div className="w-20 h-20 bg-linear-to-br from-mauve-100 to-mauve-200 rounded-3xl flex items-center justify-center mx-auto mb-6">
-                <BookOpen className="w-10 h-10 text-mauve-600" />
+              <div className="w-20 h-20 bg-linear-to-br from-indigo-100 to-indigo-200 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                <BookOpen className="w-10 h-10 text-indigo-600" />
               </div>
               <h3 className="text-2xl font-bold text-slate-900 mb-3">무제한 학습</h3>
               <p className="text-slate-600 leading-relaxed">
@@ -148,8 +146,8 @@ export default async function Home() {
             </div>
 
             <div className="text-center p-8">
-              <div className="w-20 h-20 bg-linear-to-br from-mauve-100 to-mauve-200 rounded-3xl flex items-center justify-center mx-auto mb-6">
-                <Users className="w-10 h-10 text-mauve-600" />
+              <div className="w-20 h-20 bg-linear-to-br from-indigo-100 to-indigo-200 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                <Users className="w-10 h-10 text-indigo-600" />
               </div>
               <h3 className="text-2xl font-bold text-slate-900 mb-3">함께 성장</h3>
               <p className="text-slate-600 leading-relaxed">

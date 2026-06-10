@@ -1,6 +1,5 @@
 import AUthHeader from "../../components/layout/AuthHeader";
 import Footer from "../../components/layout/Footer";
-import TeacherSidebar from "../../components/layout/TeacherSidebar";
 
 export default function TeacherLayout({
     children,
@@ -13,9 +12,6 @@ export default function TeacherLayout({
                 <AUthHeader role="teacher" />
             </div>
             <div className="flex pt-16 h-full">
-                <div className="fixed left-0 top-16 bottom-0 w-60">
-                    <TeacherSidebar />
-                </div>
                 <main className="ml-60 flex-1 h-full overflow-y-auto">
                     <div className="min-h-full flex flex-col">
 
