@@ -111,7 +111,7 @@ export default async function MyLecturesListPage({ searchParams }: MyLecturesLis
                                     lecture={lecture}
                                     role="student"
                                     mode="list"
-                                    href={`/student/${lecture.category}/lectures/${lecture.id}`}
+                                    href={`/student/${lecture.category.toLowerCase()}/lectures/${lecture.id}`}
                                 />
                             ))}
 

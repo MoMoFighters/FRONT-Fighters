@@ -92,7 +92,7 @@ export default function StudentLectureItem({
                         }
                     `}
                 >
-                    {lecture.isEnrolled ? "학습 중" : "미시작"}
+                    {lecture.isEnrolled ? "학습 중" : "미시청"}
                 </span>
             </div>
         </Link>
