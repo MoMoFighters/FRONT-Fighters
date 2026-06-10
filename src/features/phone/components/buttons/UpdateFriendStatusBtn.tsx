@@ -98,40 +98,44 @@ export default function UpdateFriendStatusBtn({ data }: Props) {
         <div className="flex flex-row gap-2 items-center">
             {status === 'none' && (
                 <Button
-                    className="bg-slate-200 text-slate-900"
+                    className="h-9 px-4 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg shadow-sm"
                     onClick={() => handleAction(sendFriendRequestAction)}
                 >
-                    요청
+                    친구추가
                 </Button>
             )}
+
             {status === 'SENT' && (
                 <Button
-                    className="bg-slate-200 text-slate-900"
+                    className="h-9 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg"
                     onClick={() => handleAction(cancelFriendRequestAction)}
                 >
-                    취소
+                    요청취소
                 </Button>
             )}
+
             {status === 'RECEIVED' && (
                 <>
                     <Button
-                        className="bg-sky-500 text-white"
+                        className="h-9 px-4 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg shadow-sm"
                         onClick={() => handleAction(acceptFriendRequestAction)}
                     >
                         수락
                     </Button>
+
                     <Button
-                        className="bg-slate-200 text-slate-900"
+                        className="h-9 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg"
                         onClick={() => handleAction(rejectFriendRequestAction)}
                     >
                         거절
                     </Button>
                 </>
             )}
+
             {status === 'FRIEND' && (
                 <div className="flex gap-2">
                     <Button
-                        className="bg-blue-100 text-blue-600"
+                        className="h-9 px-4 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg shadow-sm"
                         onClick={handleCreateChatRoom}
                     >
                         채팅하기
@@ -142,14 +146,20 @@ export default function UpdateFriendStatusBtn({ data }: Props) {
                         onOpenChange={setDropdownOpen}
                     >
                         <DropdownMenuTrigger asChild>
-                            <Button className="bg-red-100 text-red-500">
+                            <Button
+                                variant="outline"
+                                className="h-9 px-4 border-slate-200 text-slate-700 hover:bg-slate-50 rounded-lg"
+                            >
                                 관리
                             </Button>
                         </DropdownMenuTrigger>
 
-                        <DropdownMenuContent align="center">
+                        <DropdownMenuContent
+                            align="center"
+                            className="rounded-xl border-slate-200"
+                        >
                             <DropdownMenuItem
-                                className="justify-center text-red-700 focus:text-red-700 focus:bg-red-50"
+                                className="justify-center text-amber-600 focus:text-amber-600 focus:bg-amber-50"
                                 onClick={() => {
                                     setDropdownOpen(false);
                                     setModalType('BLOCK');
@@ -159,7 +169,7 @@ export default function UpdateFriendStatusBtn({ data }: Props) {
                             </DropdownMenuItem>
 
                             <DropdownMenuItem
-                                className="justify-center text-red-700 focus:text-red-700 focus:bg-red-50"
+                                className="justify-center text-red-600 focus:text-red-600 focus:bg-red-50"
                                 onClick={() => {
                                     setDropdownOpen(false);
                                     setModalType('DELETE');
@@ -183,9 +193,10 @@ export default function UpdateFriendStatusBtn({ data }: Props) {
                     />
                 </div>
             )}
+
             {status === 'BLOCK' && (
                 <Button
-                    className="bg-slate-200 text-slate-900"
+                    className="h-9 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg"
                     onClick={() => handleAction(unblockFriendAction)}
                 >
                     차단해제

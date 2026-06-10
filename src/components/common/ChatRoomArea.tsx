@@ -6,7 +6,6 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { usePathname, useRouter } from "next/navigation";
-import { MessageCirclePlus } from "lucide-react";
 
 import close from '@/app/assets/img/close.svg';
 
@@ -14,10 +13,10 @@ import ChatItem from "./ChatItem";
 import MessageInputBox from "@/features/phone/components/chat/MessageInputBox";
 import { ChatMessage, getChatHistoryService } from "@/app/services/phone/chat/service";
 import { toast } from "sonner";
-import SearchFriendModal from "@/features/phone/components/friend/SearchFriendModal";
 import { leaveChatroomAction, readMessageAction } from "@/features/phone/chatAction";
 import { Button } from "../ui/button";
 import MyFriendListModal from "@/features/phone/components/friend/MyFriendListModal";
+import { getSocket } from "@/lib/socket";
 
 
 interface ChatRoomAreaProps {
@@ -49,7 +48,7 @@ export default function ChatRoomArea({
     const href =
         pathname.startsWith('/teacher')
             ? '/teacher/ask'
-            : '/student/phone/friends';
+            : '/student/phone/friends?status=chat';
 
     const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -68,19 +67,14 @@ export default function ChatRoomArea({
         if (scrollRef.current && isBottom) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
         }
-    }, [currentRoomId])
+    }, [currentRoomId, messages, isBottom])
 
     useEffect(() => {
-
         if (!currentRoomId) {
-
-            setMessages([]);
             return;
         }
 
-
         const loadMessages = async () => {
-
             try {
                 const response =
                     await getChatHistoryService({
@@ -90,30 +84,101 @@ export default function ChatRoomArea({
                 setMessages(
                     response.data ?? []
                 );
-            } catch (error) {
+            } catch {
                 setMessages([]);
             }
         };
 
         loadMessages();
-
-        const interval = setInterval(() => {
-            readMessageAction(currentRoomId);
-            if (!isBottom) {
-                return
-            }
-            loadMessages();
-        }, 1000);
-
-        return () => {
-            clearInterval(interval);
-        };
-
     }, [
         currentRoomId,
         accessToken,
         reload,
-        isBottom
+    ]);
+
+    useEffect(() => {
+        if (!currentRoomId) {
+            return;
+        }
+
+        const socket = getSocket(accessToken);
+
+        if (!socket.connected) {
+            socket.connect();
+        }
+
+        socket.emit("joinRoom", currentRoomId);
+        socket.emit("room:join", { roomId: currentRoomId });
+
+        const handleReceiveMessage = (payload: unknown) => {
+            const messagePayload = payload as {
+                roomId?: number;
+                data?: ChatMessage;
+                message?: ChatMessage;
+            } & Partial<ChatMessage>;
+
+            if (
+                messagePayload.roomId &&
+                messagePayload.roomId !== currentRoomId
+            ) {
+                return;
+            }
+
+            const newMessage =
+                messagePayload.data ??
+                messagePayload.message ??
+                messagePayload;
+
+            if (!newMessage.messageId) {
+                return;
+            }
+
+            setMessages(prev => {
+                const alreadyExists = prev.some(
+                    message =>
+                        message.messageId ===
+                        newMessage.messageId
+                );
+
+                if (alreadyExists) {
+                    return prev;
+                }
+
+                return [
+                    ...prev,
+                    newMessage as ChatMessage
+                ];
+            });
+
+            readMessageAction(currentRoomId);
+        };
+
+        const handleConnectError = () => {
+            toast.error(
+                '채팅 서버 연결에 실패했습니다.',
+                { duration: 1000 }
+            );
+        };
+
+        socket.on("receiveMessage", handleReceiveMessage);
+        socket.on("newMessage", handleReceiveMessage);
+        socket.on("message", handleReceiveMessage);
+        socket.on("chat:message", handleReceiveMessage);
+        socket.on("connect_error", handleConnectError);
+
+        return () => {
+            socket.emit("leaveRoom", currentRoomId);
+            socket.emit("room:leave", { roomId: currentRoomId });
+
+            socket.off("receiveMessage", handleReceiveMessage);
+            socket.off("newMessage", handleReceiveMessage);
+            socket.off("message", handleReceiveMessage);
+            socket.off("chat:message", handleReceiveMessage);
+            socket.off("connect_error", handleConnectError);
+        };
+    }, [
+        currentRoomId,
+        accessToken,
     ]);
 
     const handleScroll = async (
@@ -152,11 +217,13 @@ export default function ChatRoomArea({
                     accessToken,
                     lastMessageId: oldestMessageId
                 });
-                var newdata: ChatMessage[] = response.data ?? [];
-                newdata = [...newdata, ...messages]
+                const newdata: ChatMessage[] = [
+                    ...(response.data ?? []),
+                    ...messages,
+                ];
                 setMessages(newdata);
 
-            } catch (error) {
+            } catch {
                 toast.error('메시지를 불러오는 중 오류가 발생했습니다.')
             } finally {
                 setIsLoadingOld(false);
@@ -184,9 +251,8 @@ export default function ChatRoomArea({
     return (
         <>
             <div className="flex flex-col h-full min-h-0">
-                {/* 상단바 */}
                 <div
-                    className="h-14 shrink-0 border-b border-slate-200 pl-2 py-2 flex flex-row items-center gap-2"
+                    className="h-14 shrink-0 border-b border-slate-200 bg-slate-50 pl-2 py-2 flex flex-row items-center gap-2"
                 >
                     <div className="flex items-center">
                         {isMine ? (
@@ -204,14 +270,16 @@ export default function ChatRoomArea({
                             </>
                         )}
                     </div>
+
                     {isMine ? "" : (
                         <Button
-                            className="px-2 py-1 bg-red-500"
+                            className="px-2 py-1 bg-rose-400 hover:bg-rose-500"
                             onClick={() => handleLeaveRoom(currentRoomId)}
                         >
                             나가기
                         </Button>
                     )}
+
                     <div className="flex-1"></div>
 
                     <Link href={href}>
@@ -223,59 +291,45 @@ export default function ChatRoomArea({
                     </Link>
                 </div>
 
-                {/* 채팅 영역 */}
                 <div
-                    className="flex-1 min-h-0 overflow-y-auto scrollbar-none p-2 flex flex-col gap-2"
+                    ref={scrollRef}
+                    className="flex-1 min-h-0 overflow-y-auto scrollbar-none p-4 flex flex-col gap-3 bg-slate-50"
                     onScroll={handleScroll}
                 >
-                    {
-                        messages.length === 0 ? (
-
-                            <div
-                                className="flex justify-center items-center h-full"
-                            >
-                                <p
-                                    className="text-slate-400"
-                                >
-                                    아직 채팅 내역이 없습니다.
-                                </p>
-                            </div>
-
-                        ) : (
-
-                            messages.map(message => (
-
-                                <ChatItem
-                                    key={message.messageId}
-
-                                    id={message.messageId}
-
-                                    isMine={message.isMine}
-
-                                    message={message.content}
-
-                                    time={new Date(message.createdAt).toLocaleTimeString('ko-KR',
-                                        { hour: '2-digit', minute: '2-digit', })
-                                    }
-                                />
-
-                            ))
-
-                        )
-                    }
+                    {messages.length === 0 ? (
+                        <div className="flex justify-center items-center h-full">
+                            <p className="text-slate-400">
+                                아직 채팅 내역이 없습니다.
+                            </p>
+                        </div>
+                    ) : (
+                        messages.map((message) => (
+                            <ChatItem
+                                key={message.messageId}
+                                id={message.messageId}
+                                isMine={message.isMine}
+                                message={message.content}
+                                time={new Date(
+                                    message.createdAt
+                                ).toLocaleTimeString("ko-KR", {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                })}
+                            />
+                        ))
+                    )}
                 </div>
 
-                {/* 입력창 */}
                 <div
-                    className="shrink-0 border-t border-slate-200"
+                    className="shrink-0 border-t border-slate-200 bg-white"
                 >
                     <MessageInputBox
+                        key={currentRoomId}
                         chatRoomId={currentRoomId}
                         reload={{ reload, setReload }}
                     />
                 </div>
-
-            </div >
+            </div>
         </>
     );
 }

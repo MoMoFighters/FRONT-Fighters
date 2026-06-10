@@ -5,17 +5,65 @@ interface MessageData {
     time: string;
 }
 
-export default function ChatItem({ isMine, message, time, id }: MessageData) {
-    const messageStyle = isMine ? "flex-row-reverse" : "flex-row";
-    const messageColor = !isMine ? "bg-slate-50" : "bg-sky-500";
-    const textColor = !isMine ? 'text-slate-900' : 'text-slate-50'
-
+export default function ChatItem({
+    isMine,
+    message,
+    time,
+    id,
+}: MessageData) {
     return (
-        <div className={`${messageStyle} w-full flex align-bottom gap-2`} key={id}>
-            <div className={`max-w-70 ${messageColor} h-auto py-2 px-3 rounded-md border border-slate-300`}>
-                <p className={textColor}>{message}</p>
-            </div>
-            <p className="mt-auto">{time}</p>
+        <div
+            className={`w-full flex gap-2 ${isMine ? "justify-end" : "justify-start"
+                }`}
+            key={id}
+        >
+            {!isMine ? (
+                <>
+                    <div
+                        className="
+                    max-w-[300px]
+                    w-fit
+                    bg-white
+                    px-4
+                    py-2
+                    rounded-[20px]
+                    rounded-bl-md
+                    shadow-sm
+                "
+                    >
+                        <p className="text-slate-800 break-words whitespace-pre-wrap">
+                            {message}
+                        </p>
+                    </div>
+
+                    <p className="mt-auto text-xs text-slate-400 shrink-0">
+                        {time}
+                    </p>
+                </>
+            ) : (
+                <>
+                    <p className="mt-auto text-xs text-slate-400 shrink-0">
+                        {time}
+                    </p>
+
+                    <div
+                        className="
+                    max-w-[300px]
+                    w-fit
+                    bg-indigo-500
+                    px-4
+                    py-2
+                    rounded-[20px]
+                    rounded-br-md
+                    shadow-sm
+                "
+                    >
+                        <p className="text-white break-words whitespace-pre-wrap">
+                            {message}
+                        </p>
+                    </div>
+                </>
+            )}
         </div>
     );
 }
