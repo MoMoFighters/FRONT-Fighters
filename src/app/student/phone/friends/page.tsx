@@ -1,199 +1,157 @@
-import ChatItem from "@/components/common/ChatItem";
-import MessageInputBox from "@/features/phone/components/chat/MessageInputBox";
 import FriendNav from "@/features/phone/components/friend/FriendNav";
-import Image from "next/image";
-import Link from "next/link";
-import FriendItem from "@/components/phone/friends/FriendItem";
-
-import { getChatRoomsService, getReceivedFriendRequestsService, getSentFriendRequestsService } from "@/app/services/phone/chat/service";
-import ChatRoomArea from "@/components/common/ChatRoomArea";
-import ChatRoomItem from "@/components/common/ChatRoomItem";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import SearchFriendModal from "@/features/phone/components/friend/SearchFriendModal";
-import { getMyInfo, MomoUserInfo, MomoUserInfoResponse } from "@/features/user/action";
+import FriendList from "@/features/phone/components/friend/FriendList";
+import FriendDetail from "@/features/phone/components/friend/FriendDetail";
+import RequestList from "@/features/phone/components/friend/RequestList";
+import FriendSearchList from "@/features/phone/components/friend/FriendSearchList";
 import MyProfileDropdown from "@/features/phone/components/friend/MyProfileDropdown";
 
-// interface ChatRoomInfo {
-//     roomId: number;
-//     userId: number;
-//     nickname: string;
-//     role: 'STUDENT' | 'TEACHER';
-//     lectureTitle?: string;
-//     content?: string | null;
-//     unreadCount: number;
+import ChatRoomArea from "@/components/common/ChatRoomArea";
+import ChatRoomItem from "@/components/common/ChatRoomItem";
 
+import {
+    getChatRoomsService,
+    getFriendsService,
+    getReceivedFriendRequestsService,
+    getSentFriendRequestsService,
+} from "@/app/services/phone/chat/service";
 
-// }
+import { getMyInfo, MomoUserInfoResponse } from "@/features/user/action";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import Image from "next/image";
 
-type currentRoomId = number | null;
-type accessToken = string | null
-
-
-interface friendInfo {
-    userId: number;
-    nickname: string;
-    status: 'SENT' | 'RECEIVED' | 'BLOCK' | "NONE" | "FRIEND";
-    profileImageUrl: string;
-}
+type CurrentStatus = "friend" | "request" | "chat";
 
 export default async function StudentChatPage({
-    searchParams
+    searchParams,
 }: {
-    searchParams: Promise<{ status?: string; roomId?: string }>
+    searchParams: Promise<{
+        status?: string;
+        roomId?: string;
+        friendId?: string;
+    }>;
 }) {
+    const { status, roomId, friendId } = await searchParams;
 
-    const { status, roomId } = await searchParams
-    const currentStatus = (status as 'friend' | 'request') ?? 'friend'
-    const currentRoomId = roomId ? Number(roomId) : null
+    const currentStatus = (
+        status === "request" || status === "chat" || status === "friend"
+            ? status
+            : "friend"
+    ) as CurrentStatus;
 
+    const currentRoomId = roomId ? Number(roomId) : null;
+    const currentFriendId = friendId ? Number(friendId) : null;
 
     const cookieStore = await cookies();
-    const accessToken = cookieStore.get('accessToken')?.value;
-    console.log(accessToken)
+    const accessToken = cookieStore.get("accessToken")?.value;
+
     if (!accessToken) {
-        redirect('/auth/login');
+        redirect("/auth/login");
     }
+
     const myInfo: MomoUserInfoResponse = await getMyInfo();
 
-    //데이터패칭 - 채팅방데이터
-    const roomResponse = await getChatRoomsService(accessToken)
-    if (roomResponse.status !== 200) {
-        return
-    }
-    const chatRoomData = roomResponse?.data;
+    const roomResponse = await getChatRoomsService(accessToken);
+    const chatRoomData = roomResponse.status === 200 ? roomResponse.data ?? [] : [];
 
-    //데이터패칭 - 친구 목록 데이터
-    let received: friendInfo[] = [];
-    let sent: friendInfo[] = [];
-    const receivedResponse = await getReceivedFriendRequestsService(accessToken!);
-    if (receivedResponse.status === 200) {
-        received = receivedResponse.data ?? [];
-    } else { return }
+    const friendsResponse = await getFriendsService(accessToken);
+    const friends = friendsResponse.status === 200 ? friendsResponse.data ?? [] : [];
 
-    const sentResponse = await getSentFriendRequestsService(accessToken!);
-    if (sentResponse.status === 200) {
-        sent = sentResponse.data ?? [];
-    } else { return }
+    const receivedResponse = await getReceivedFriendRequestsService(accessToken);
+    const received = receivedResponse.status === 200 ? receivedResponse.data ?? [] : [];
 
+    const sentResponse = await getSentFriendRequestsService(accessToken);
+    const sent = sentResponse.status === 200 ? sentResponse.data ?? [] : [];
+
+    const myChatRoom = chatRoomData[0];
+    const otherChatRooms = chatRoomData.slice(1);
+
+    const selectedFriend =
+        friends.find(friend => friend.userId === currentFriendId) ?? null;
 
     return (
-        <div className="flex flex-col mx-3 h-full bg-white rounded-2xl overflow-hidden border border-slate-200">
+        <div className="mx-3 flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white">
             <FriendNav status={currentStatus} />
 
-            <div className="flex flex-row overflow-hidden flex-1 min-h-0">
-                <div className="border-r border-slate-200 flex flex-col min-h-0 bg-white w-80">
-                    <div className="px-4 py-3 flex flex-row gap-3 w-80 items-center border-b border-slate-100 bg-white">
-                        <Image
-                            src={myInfo.data?.profileImageUrl || ""}
-                            alt="내 프로필"
-                            className="rounded-full object-cover w-12 h-12"
-                            width={48}
-                            height={48}
+            {currentStatus === "friend" && (
+                <div className="min-h-0 flex-1 grid grid-cols-[4fr_6fr] overflow-hidden">
+
+                    <div className="flex min-h-0 flex-1 flex-col overflow-hidden border-r border-slate-200 bg-white">
+                        <div className="flex items-center gap-3 border-b border-slate-200 bg-white px-4 py-3">
+                            <Image
+                                src={myInfo.data?.profileImageUrl || ""}
+                                alt="프로필"
+                                className="h-12 w-12 rounded-full object-cover"
+                                width={48}
+                                height={48}
+                            />
+
+                            <div className="flex min-w-0 flex-1 flex-col">
+                                <p className="truncate font-semibold text-slate-800">
+                                    {myInfo.data?.nickname}
+                                </p>
+                                <p className="text-sm text-slate-400">
+                                    내 프로필
+                                </p>
+                            </div>
+
+                            <MyProfileDropdown myChatRoomId={myChatRoom?.roomId} />
+                        </div>
+                        <FriendList
+                            friends={friends}
+                            selectedFriendId={currentFriendId}
                         />
 
-                        <div className="flex flex-col flex-1 min-w-0">
-                            <p className="font-semibold text-slate-800 truncate">
-                                {myInfo.data?.nickname}
-                                <span className="ml-1 text-slate-400 font-normal">
-                                    (나)
-                                </span>
+                    </div>
+                    <FriendDetail friend={selectedFriend} />
+                </div>
+            )}
+
+            {currentStatus === "request" && (
+                <div className="grid min-h-0 flex-1 grid-cols-2 overflow-hidden">
+                    <RequestList received={received} sent={sent} />
+                    <FriendSearchList />
+                </div>
+            )}
+
+            {currentStatus === "chat" && (
+                <div className="flex min-h-0 flex-1 overflow-hidden">
+                    <div className="flex w-80 shrink-0 flex-col border-r border-slate-200 bg-white">
+                        <div className="border-b border-slate-100 px-4 py-3">
+                            <p className="font-semibold text-slate-900">
+                                채팅 목록
                             </p>
                         </div>
 
-                        <MyProfileDropdown
-                            myChatRoomId={chatRoomData?.[0]?.roomId}
-                        />
+                        <div className="min-h-0 flex-1 overflow-y-auto scrollbar-none">
+                            {myChatRoom && (
+                                <ChatRoomItem data={myChatRoom} />
+                            )}
+
+                            {otherChatRooms.length > 0 ? (
+                                otherChatRooms.map(room => (
+                                    <ChatRoomItem
+                                        key={room.roomId}
+                                        data={room}
+                                    />
+                                ))
+                            ) : (
+                                <div className="flex h-full items-center justify-center p-5 text-center text-sm text-slate-400">
+                                    채팅방이 존재하지 않습니다.
+                                </div>
+                            )}
+                        </div>
                     </div>
 
-                    <div className="flex flex-col overflow-y-scroll flex-1 min-h-0 scrollbar-none bg-white">
-                        {chatRoomData?.length === 0 ? (
-                            <div className="p-5 text-center text-sm text-slate-400 my-auto">
-                                채팅방이 존재하지 않습니다.
-                            </div>
-                        ) : (
-                            chatRoomData?.slice(1).map(data => (
-                                <ChatRoomItem
-                                    data={data}
-                                    key={data.roomId}
-                                />
-                            ))
-                        )}
-                    </div>
-                </div>
-
-                {currentStatus !== 'request' ? (
-                    <div className="flex-1 bg-white">
+                    <div className="min-w-0 flex-1 bg-white">
                         <ChatRoomArea
                             currentRoomId={currentRoomId}
                             accessToken={accessToken}
-                            isMine={
-                                currentRoomId ===
-                                chatRoomData?.[0]?.roomId
-                            }
+                            isMine={currentRoomId === myChatRoom?.roomId}
                         />
                     </div>
-                ) : (
-                    <div className="p-5 flex flex-col gap-5 overflow-y-scroll w-full scrollbar-none bg-slate-50">
-                        <div>
-                            <p className="mb-3 text-lg font-semibold text-slate-900">
-                                👤받은 친구 요청
-                            </p>
-
-                            <div className="flex flex-col gap-2">
-                                {received.length ? (
-                                    received.map(friend => (
-                                        <FriendItem
-                                            friendInfo={{
-                                                name: friend.nickname,
-                                                status: "RECEIVED",
-                                                profile: friend.profileImageUrl,
-                                                userId: friend.userId
-                                            }}
-                                            key={friend.userId}
-                                        />
-                                    ))
-                                ) : (
-                                    <div className="w-max py-3">
-                                        <p className="text-slate-500 font-medium">
-                                            받은 요청이 없습니다.
-                                        </p>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-
-                        <div className="border-t border-slate-200 pt-4">
-                            <p className="mb-3 text-lg font-semibold text-slate-900">
-                                👤보낸 친구 요청
-                            </p>
-
-                            <div className="flex flex-col gap-2">
-                                {sent.length ? (
-                                    sent.map(friend => (
-                                        <FriendItem
-                                            friendInfo={{
-                                                name: friend.nickname,
-                                                status: "SENT",
-                                                profile: friend.profileImageUrl,
-                                                userId: friend.userId
-                                            }}
-                                            key={friend.userId}
-                                        />
-                                    ))
-                                ) : (
-                                    <div className="w-max py-3">
-                                        <p className="text-slate-500 font-medium">
-                                            보낸 요청이 없습니다.
-                                        </p>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                )}
-            </div>
+                </div>
+            )}
         </div>
     );
 }
-

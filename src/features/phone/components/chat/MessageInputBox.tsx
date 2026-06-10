@@ -35,7 +35,7 @@ export default function MessageInputBox({ chatRoomId }: { chatRoomId: number | n
 
 'use client'
 
-import { useActionState, useEffect, useRef, useState } from "react";
+import { type Dispatch, type SetStateAction, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { sendMessageAction } from "../../chatAction";
 import { toast } from "sonner";
@@ -45,7 +45,7 @@ interface Props {
     chatRoomId: number | null;
     reload: {
         reload: boolean;
-        setReload: any;
+        setReload: Dispatch<SetStateAction<boolean>>;
     }
 }
 
@@ -54,7 +54,12 @@ export default function MessageInputBox({ chatRoomId, reload }: Props) {
     const inputRef = useRef<HTMLInputElement>(null);
     const [isSending, setIsSending] = useState(false);
     const [content, setContent] = useState("");
-    const [isFocus, setIsFocus] = useState(false);
+
+    const focusInput = () => {
+        requestAnimationFrame(() => {
+            inputRef.current?.focus();
+        });
+    };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -66,20 +71,19 @@ export default function MessageInputBox({ chatRoomId, reload }: Props) {
         if (response.status !== 201) {
             toast.error(response.message, { duration: 1000 });
             setIsSending(false);
+            focusInput();
             return;
         }
 
         setContent('');
-        inputRef.current?.focus();
+        reload.setReload(!reload.reload);
         setIsSending(false);
-        setIsFocus(true);
+        focusInput();
     };
 
     useEffect(() => {
-        setIsSending(false);
-        setContent("");
-        inputRef.current?.focus();
-    }, [chatRoomId, isFocus]);
+        focusInput();
+    }, [chatRoomId]);
 
     return (
         <div className="bg-white border-t border-slate-200">
@@ -108,6 +112,7 @@ export default function MessageInputBox({ chatRoomId, reload }: Props) {
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                     disabled={isSending || !chatRoomId}
+                    autoFocus={true}
                 />
 
                 <Button

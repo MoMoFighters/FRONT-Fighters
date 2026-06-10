@@ -1,42 +1,78 @@
 import UpdateFriendStatusBtn from "@/features/phone/components/buttons/UpdateFriendStatusBtn";
 import Image from "next/image";
+import Link from "next/link";
 
-
-interface friendInfo {
+interface FriendInfo {
     userId: number;
     name: string;
-    status: 'none' | 'SENT' | 'FRIEND' | 'RECEIVED' | 'BLOCK';
+    status: "none" | "SENT" | "FRIEND" | "RECEIVED" | "BLOCK";
     profile: string;
 }
 
-export default function FriendItem({ friendInfo }: { friendInfo: friendInfo }) {
+interface FriendItemProps {
+    friendInfo: FriendInfo;
+    showActions?: boolean;
+    href?: string;
+    selected?: boolean;
+}
 
+export default function FriendItem({
+    friendInfo,
+    showActions = true,
+    href,
+    selected = false,
+}: FriendItemProps) {
     const { name, profile, userId } = friendInfo;
-    const status = friendInfo.status ?? null
+    const status = friendInfo.status ?? null;
 
-
-
-    return (
-        <div className="flex flex-row items-center gap-3 px-4 py-3 rounded-xl bg-white border">
-            <div className="w-11 h-11 rounded-full overflow-hidden bg-indigo-50 flex items-center justify-center shrink-0">
-                <Image
-                    src={profile}
-                    alt="프사"
-                    width={44}
-                    height={44}
-                    className="object-cover"
-                />
+    const content = (
+        <div
+            className={`
+                flex flex-row items-center gap-3 rounded-xl border px-4 py-3 transition-colors
+                ${selected
+                    ? "border-mauve-200 bg-mauve-50"
+                    : "border-slate-200 bg-white hover:bg-slate-50"
+                }
+                ${href ? "cursor-pointer" : ""}
+            `}
+        >
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-indigo-50">
+                {profile ? (
+                    <Image
+                        src={profile}
+                        alt="프로필"
+                        width={44}
+                        height={44}
+                        className="h-11 w-11 object-cover"
+                    />
+                ) : (
+                    <p className="font-bold text-indigo-600">
+                        {name[0]}
+                    </p>
+                )}
             </div>
 
-            <div className="flex-1 min-w-0">
-                <p className="font-medium text-slate-800 truncate">
+            <div className="min-w-0 flex-1">
+                <p className="truncate font-medium text-slate-800">
                     {name}
                 </p>
             </div>
 
-            <UpdateFriendStatusBtn
-                data={{ status, userId }}
-            />
+            {showActions && (
+                <UpdateFriendStatusBtn
+                    data={{ status, userId }}
+                />
+            )}
         </div>
     );
+
+    if (href) {
+        return (
+            <Link href={href}>
+                {content}
+            </Link>
+        );
+    }
+
+    return content;
 }

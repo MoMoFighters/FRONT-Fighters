@@ -6,7 +6,6 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { usePathname, useRouter } from "next/navigation";
-import { MessageCirclePlus } from "lucide-react";
 
 import close from '@/app/assets/img/close.svg';
 
@@ -14,10 +13,10 @@ import ChatItem from "./ChatItem";
 import MessageInputBox from "@/features/phone/components/chat/MessageInputBox";
 import { ChatMessage, getChatHistoryService } from "@/app/services/phone/chat/service";
 import { toast } from "sonner";
-import SearchFriendModal from "@/features/phone/components/friend/SearchFriendModal";
 import { leaveChatroomAction, readMessageAction } from "@/features/phone/chatAction";
 import { Button } from "../ui/button";
 import MyFriendListModal from "@/features/phone/components/friend/MyFriendListModal";
+import { getSocket } from "@/lib/socket";
 
 
 interface ChatRoomAreaProps {
@@ -49,7 +48,7 @@ export default function ChatRoomArea({
     const href =
         pathname.startsWith('/teacher')
             ? '/teacher/ask'
-            : '/student/phone/friends';
+            : '/student/phone/friends?status=chat';
 
     const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -68,19 +67,14 @@ export default function ChatRoomArea({
         if (scrollRef.current && isBottom) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
         }
-    }, [currentRoomId])
+    }, [currentRoomId, messages, isBottom])
 
     useEffect(() => {
-
         if (!currentRoomId) {
-
-            setMessages([]);
             return;
         }
 
-
         const loadMessages = async () => {
-
             try {
                 const response =
                     await getChatHistoryService({
@@ -90,30 +84,101 @@ export default function ChatRoomArea({
                 setMessages(
                     response.data ?? []
                 );
-            } catch (error) {
+            } catch {
                 setMessages([]);
             }
         };
 
         loadMessages();
-
-        const interval = setInterval(() => {
-            readMessageAction(currentRoomId);
-            if (!isBottom) {
-                return
-            }
-            loadMessages();
-        }, 1000);
-
-        return () => {
-            clearInterval(interval);
-        };
-
     }, [
         currentRoomId,
         accessToken,
         reload,
-        isBottom
+    ]);
+
+    useEffect(() => {
+        if (!currentRoomId) {
+            return;
+        }
+
+        const socket = getSocket(accessToken);
+
+        if (!socket.connected) {
+            socket.connect();
+        }
+
+        socket.emit("joinRoom", currentRoomId);
+        socket.emit("room:join", { roomId: currentRoomId });
+
+        const handleReceiveMessage = (payload: unknown) => {
+            const messagePayload = payload as {
+                roomId?: number;
+                data?: ChatMessage;
+                message?: ChatMessage;
+            } & Partial<ChatMessage>;
+
+            if (
+                messagePayload.roomId &&
+                messagePayload.roomId !== currentRoomId
+            ) {
+                return;
+            }
+
+            const newMessage =
+                messagePayload.data ??
+                messagePayload.message ??
+                messagePayload;
+
+            if (!newMessage.messageId) {
+                return;
+            }
+
+            setMessages(prev => {
+                const alreadyExists = prev.some(
+                    message =>
+                        message.messageId ===
+                        newMessage.messageId
+                );
+
+                if (alreadyExists) {
+                    return prev;
+                }
+
+                return [
+                    ...prev,
+                    newMessage as ChatMessage
+                ];
+            });
+
+            readMessageAction(currentRoomId);
+        };
+
+        const handleConnectError = () => {
+            toast.error(
+                '채팅 서버 연결에 실패했습니다.',
+                { duration: 1000 }
+            );
+        };
+
+        socket.on("receiveMessage", handleReceiveMessage);
+        socket.on("newMessage", handleReceiveMessage);
+        socket.on("message", handleReceiveMessage);
+        socket.on("chat:message", handleReceiveMessage);
+        socket.on("connect_error", handleConnectError);
+
+        return () => {
+            socket.emit("leaveRoom", currentRoomId);
+            socket.emit("room:leave", { roomId: currentRoomId });
+
+            socket.off("receiveMessage", handleReceiveMessage);
+            socket.off("newMessage", handleReceiveMessage);
+            socket.off("message", handleReceiveMessage);
+            socket.off("chat:message", handleReceiveMessage);
+            socket.off("connect_error", handleConnectError);
+        };
+    }, [
+        currentRoomId,
+        accessToken,
     ]);
 
     const handleScroll = async (
@@ -152,11 +217,13 @@ export default function ChatRoomArea({
                     accessToken,
                     lastMessageId: oldestMessageId
                 });
-                var newdata: ChatMessage[] = response.data ?? [];
-                newdata = [...newdata, ...messages]
+                const newdata: ChatMessage[] = [
+                    ...(response.data ?? []),
+                    ...messages,
+                ];
                 setMessages(newdata);
 
-            } catch (error) {
+            } catch {
                 toast.error('메시지를 불러오는 중 오류가 발생했습니다.')
             } finally {
                 setIsLoadingOld(false);
@@ -257,6 +324,7 @@ export default function ChatRoomArea({
                     className="shrink-0 border-t border-slate-200 bg-white"
                 >
                     <MessageInputBox
+                        key={currentRoomId}
                         chatRoomId={currentRoomId}
                         reload={{ reload, setReload }}
                     />

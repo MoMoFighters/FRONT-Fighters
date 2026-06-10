@@ -16,7 +16,7 @@ export default function ChatRoomItem({ data }: { data: ChatRoomListData }) {
     const href =
         pathname.startsWith('/teacher')
             ? `/teacher/ask?roomId=${roomId}`
-            : `/student/phone/friends?status=friend&roomId=${roomId}`;
+            : `/student/phone/friends?status=chat&roomId=${roomId}`;
 
 
     //searchParams로 온클릭 걸어서 오른쪽에 채팅방 상세 내역 띄워주기
