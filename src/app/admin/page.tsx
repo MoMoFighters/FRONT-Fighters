@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { getReports } from "../services/report/service";
 import { Report } from "@/features/report/type";
 
-export default async function Page() {
+export default async function AdminDashboardPage() {
 
     // 더미 데이터 - module 4 이후, 다만 신고 로그는 module 3에 할 수도 있음, 접근 | 에러 로그는 백엔드와 상의 필요
     const announcements = [
