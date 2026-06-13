@@ -21,8 +21,6 @@ export const getLectures = async (payload: GetLecturesRequest): Promise<LectureL
         ])
     ).toString();
 
-  console.log('????', `/api/v1/lectures?${queryString}`);
-
   const response = await fetchWithAuth(`/api/v1/lectures?${queryString}`);
 
   if (response.status === 404) {

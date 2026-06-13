@@ -1,57 +1,19 @@
-import { StaticImageData } from "next/image";
 import { BookOpen, SearchX } from "lucide-react";
 
 import { getLectures } from "@/app/services/lecture/service";
 import {
-    CategoryApiUrl,
     CategoryUrl,
     GetLecturesRequest,
 } from "@/features/lecture/type";
 
-import school from "@/app/assets/img/school.png";
-import arthall from "@/app/assets/img/arthall.png";
-import health from "@/app/assets/img/health.png";
-import cook from "@/app/assets/img/cook.png";
-import beauty from "@/app/assets/img/beauty.png";
 import ListPagination from "@/components/common/ListPagination";
 import CategoryBuildingCard from "@/features/lecture/components/student/CategoryBuildingCard";
+import getCategoryMeta from "@/features/lecture/components/student/category";
 import LearningProgressCard from "@/features/lecture/components/student/LearningProgressCard";
 import ResumeLectureCard from "@/features/lecture/components/student/ResumeLectureCard";
 import StudentLectureList from "@/features/lecture/components/student/StudentLectureList";
 import StudentLectureListToolbar from "@/features/lecture/components/student/StudentLectureListToolbar";
 import StudentPageHeader from "@/features/student/components/StudentPageHeader";
-
-const CATEGORY_MAP: Record<CategoryUrl, CategoryApiUrl> = {
-    study: "STUDY",
-    fitness: "FITNESS",
-    cook: "COOK",
-    beauty: "BEAUTY",
-    art: "ART",
-};
-
-const CATEGORY_LABEL_MAP: Record<CategoryUrl, string> = {
-    study: "학습",
-    fitness: "운동",
-    cook: "요리",
-    beauty: "뷰티",
-    art: "예술",
-};
-
-const CATEGORY_BUILDING_MAP: Record<CategoryUrl, string> = {
-    study: "학교",
-    fitness: "피트니스센터",
-    cook: "식당",
-    beauty: "백화점",
-    art: "아트홀",
-};
-
-const CATEGORY_IMAGE_MAP: Record<CategoryUrl, StaticImageData> = {
-    study: school,
-    fitness: health,
-    cook,
-    beauty,
-    art: arthall,
-};
 
 interface LectureListByCategoryProps {
     searchParams: Promise<{
@@ -72,21 +34,23 @@ export default async function LectureListByCategory({
     const { category } = await params;
     const { keyword, filter, page } = await searchParams;
 
+    const categoryMeta = getCategoryMeta(category);
+
     const payload: GetLecturesRequest = {
-        category: CATEGORY_MAP[category],
+        category: categoryMeta.apiValue,
         keyword,
         enrolled: filter === "my",
         page: Number(page) || 1,
     };
 
+    const categoryLabel = categoryMeta.label;
+    const buildingName = categoryMeta.buildingName;
+    const buildingImage = categoryMeta.buildingImage;
+
     const responseData = await getLectures(payload);
 
     const currentPage = Number(page) || 1;
     const totalPages = responseData.totalPages;
-
-    const categoryLabel = CATEGORY_LABEL_MAP[category];
-    const buildingName = CATEGORY_BUILDING_MAP[category];
-    const buildingImage = CATEGORY_IMAGE_MAP[category];
 
     // 하드코딩 - 추후 실제 학습/건물 성장 데이터로 교체 필요
     const categoryProgress = 42;
@@ -165,7 +129,7 @@ export default async function LectureListByCategory({
                 )}
             </section>
 
-            <aside className="sticky top-24 h-fit space-y-5">
+            <aside className="sticky top-10 self-start space-y-5">
                 <CategoryBuildingCard
                     category={category}
                     buildingName={buildingName}

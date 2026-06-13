@@ -16,6 +16,7 @@ interface StudentLectureListProps {
     category: CategoryUrl;
     categoryLabel: string;
     buildingImage: StaticImageData;
+    getHref?: (lecture: Lecture) => string;
 }
 
 export default function StudentLectureList({
@@ -23,6 +24,7 @@ export default function StudentLectureList({
     category,
     categoryLabel,
     buildingImage,
+    getHref,
 }: StudentLectureListProps) {
     return (
         <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
@@ -30,7 +32,7 @@ export default function StudentLectureList({
                 <StudentLectureItem
                     key={lecture.id}
                     lecture={lecture}
-                    href={`/student/${category}/lectures/${lecture.id}`}
+                    href={getHref ? getHref(lecture) : `/student/${category}/lectures/${lecture.id}`}
                     categoryLabel={categoryLabel}
                     buildingImage={buildingImage}
                     progress={getLectureProgress(
