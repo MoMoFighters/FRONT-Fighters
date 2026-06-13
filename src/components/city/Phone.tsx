@@ -11,6 +11,7 @@ export default function Phone() {
     const [isRing, setIsRing] = useState(false)
     const [now, setNow] = useState(0)
 
+    // 폰 : 메신저(친구메시지) + 캘린더 + 커뮤니티 + 돈관련
     const imgChange = [phoneHead, phoneHeadOn]
 
     useEffect(() => {

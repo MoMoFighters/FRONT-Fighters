@@ -20,7 +20,7 @@ import {
     blockFriendAction,
     createChatRoomAction,
     deleteFriendAction,
-} from "../../chatAction";
+} from "../../../chat/action";
 import { useState } from "react";
 
 interface FriendDetailProps {

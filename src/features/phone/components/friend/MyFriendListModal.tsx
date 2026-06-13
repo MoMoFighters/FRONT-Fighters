@@ -6,7 +6,7 @@ import close from '@/app/assets/img/close.svg';
 import search from "@/app/assets/img/user-plus.svg";
 import FriendItem from "@/components/phone/friends/FriendItem";
 import { MessageCirclePlus } from "lucide-react";
-import { getFriendsAction } from "../../chatAction";
+import { getFriendsAction } from "../../../chat/action";
 
 interface friendInfo {
     userId: number;

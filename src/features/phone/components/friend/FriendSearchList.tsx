@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import FriendItem from "@/components/phone/friends/FriendItem";
-import { searchUserAction } from "../../chatAction";
+import { searchUserAction } from "../../../chat/action";
 
 interface FriendInfo {
     userId: number;

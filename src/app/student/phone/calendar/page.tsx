@@ -1,5 +1,5 @@
 
-import { getCalendarSchedulesAction } from '@/features/phone/action';
+import { getCalendarSchedulesAction } from '@/features/todo/action';
 import Calendar from '@/features/phone/components/todo/Calendar';
 import { redirect } from 'next/navigation';
 

@@ -11,7 +11,7 @@ import {
     unblockFriendAction,
     createChatRoomAction,
     deleteFriendAction,
-} from "../../chatAction";
+} from "../../../chat/action";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import TwoButtonModal from "@/features/modal/TwoButtonModal";

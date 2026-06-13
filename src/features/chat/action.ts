@@ -10,7 +10,7 @@ import {
     BaseResponse,
     SearchedUser,
     SendMessageData,
-} from '@/features/phone/chatType';
+} from '@/features/chat/type';
 
 export interface SendMessageActionRequest {
     roomId: number;

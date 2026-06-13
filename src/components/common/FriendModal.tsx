@@ -3,7 +3,7 @@
 import { useActionState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { createChatRoomAction } from "@/features/phone/chatAction";
+import { createChatRoomAction } from "@/features/chat/action";
 
 // 임시 가상 친구 데이터 (원래는 백엔드에서 받아와야 합니다)
 interface FriendInfo {

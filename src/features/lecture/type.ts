@@ -1,84 +1,158 @@
-export type CategoryApiUrl =
+export type LectureCategory =
     "STUDY" | "FITNESS" | "COOK" | "BEAUTY" | "ART";
 
-export type CategoryUrl =
-    "study" | "fitness" | "cook" | "beauty" | "art";
-
-export type StatusApiUrl =
+export type LectureStatus =
     "WAITING" | "ACTIVE" | "HOLD" | "DELETE";
+
+export type VideoStatus =
+    "UPLOADING" | 'ENCODING' | 'READY' | 'FAILED';
 
 // 실제로 화면에서 필요한 강의의 타입 정의
 
 export interface Lecture {
-    id: number;
+    lectureId: number;
+
+    teacherId?: number;
+    teacherName?: string;
+
     title: string;
     description: string;
     thumbnailUrl: string;
-    category: CategoryApiUrl;
-    lectureStatus: string;
+    category: LectureCategory;
+    lectureStatus: LectureStatus;
     averageRating: number;
-    isEnrolled?: boolean;
+    reviewCount: number;
+    chapters: Chapter[];
+    createdAt: string;
+    updatedAt: string;
+
+    //수강 중인 학생의 경우
+    isEnrolled?: boolean; //신청여부
+    totalProgress?: number; //해당 학생이 이 강의를 얼만큼 들었는가 (%)
 }
 
-export interface LectureProgress {
-    totalProgress: number;
-    completedCount: number;
-    totalChapterCount: number;
-}
+
 
 export interface LectureDetail {
-    id: number;
+    lectureId: number;
+
+    teacherId?: number;
+    teacherName?: string;
+
     title: string;
     description: string;
     thumbnailUrl: string;
-    category: CategoryApiUrl;
-    lectureStatus: string;
+    category: LectureCategory;
     averageRating: number;
+    reviewCount: number;
     chapters: Chapter[];
-    isEnrolled?: boolean;
+    createdAt: string;
+    updatedAt: string;
+
+    // 관리자, 강사의 경우
+    lectureStatus?: LectureStatus;
+
+    //수강 중인 학생의 경우
+    isEnrolled?: boolean; //신청여부
+    totalProgress?: number; //해당 학생이 이 강의를 얼만큼 들었는가 (%)
 }
+
+
+export interface LectureList {
+    lectureId: number;
+
+    teacherId?: number;
+    teacherName?: string;
+
+    title: string;
+    description: string;
+    thumbnailUrl: string;
+    category: LectureCategory;
+    averageRating: number;
+    reviewCount: number;
+    // 총 챕터 수
+    createdAt: string;
+    updatedAt: string;
+
+    // 관리자, 강사의 경우
+    lectureStatus?: LectureStatus;
+
+    //수강 중인 학생의 경우
+    isEnrolled?: boolean; //신청여부
+    totalProgress?: number; //해당 학생이 이 강의를 얼만큼 들었는가 (%)
+}
+
+
+
+
+
+
+
 
 export interface Chapter {
     chapterId: number;
-    lectureId: number;
     title: string;
     orderNo: number;
-    videoUrl: string;
-    videoSizeBytes: number;
-    videoStatus: string;
     durationSec: number;
-    originalFilename: string;
 
-    progressRate?: number;
-    watchedSeconds?: number;
+    // 챕터 영상 시청 시 임시발급 url
+    presignedUrl?: string;
+
+    // videoStatus?: VideoStatus;
+    // videoSizeBytes: number;
+    // thumbnailUrl : string;
+
+
+    // 수강 중인 학생의 경우
     isCompleted?: boolean;
-
     isAccessible?: boolean;
+
+    // 영상을 볼때
+    watchedSeconds?: number;
+    lastPositionSec?: number;
+    /*     아래 둘중 하나 날리셈     */
+    totalProgress?: number;
+    progressRate?: number;
 }
 
-export interface ChapterProgress {
-    chapterId: number,
-    title: string,
-    orderNo: number,
-    watchedSeconds: number,
-    durationSec: number,
-    progressRate: number,
-    isCompleted: boolean,
-    isAccessible?: boolean
+// 🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑
+export interface Review {
+    id: number;
+    lectureId: number;
+    lectureTitle: string;
+    authorId: number;
+    authorName: string;
+    rating: number;
+    description: string;
+    createdAt: string;
 }
 
-export interface LectureListInfo {
+
+// // 강의의 총 진척도 필요없으면 지우셈 필요없으면 지우셈 필요없으면 지우셈 필요없으면 지우셈 필요없으면 지우셈 
+// export interface LectureProgress {
+//     totalProgress: number;
+//     completedCount: number;
+//     totalChapterCount: number;
+// }
+
+
+
+// 🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑
+export interface LectureListResponse {
     content: Lecture[];
     page: number;
     size: number;
     totalElements: number;
     totalPages: number;
+
+    // 🍑🍑🍑카테고리별 total progress 추가🍑🍑🍑🍑🍑🍑
+    // 🍑🍑🍑마지막으로 본 강의 정보 추가🍑🍑🍑🍑🍑🍑
 }
 
-// 강의 목록 조회에서 필요한 props 타입 정의
 
-export interface GetLecturesRequest {
-    category?: CategoryApiUrl;
+// 강의 목록 조회에서 필요한 props 타입 정의 🍑request->payload로 이름변경
+export interface GetLecturesPayload {
+    category?: LectureCategory;
     keyword?: string;
     status?: string;
     enrolled?: boolean;
@@ -86,58 +160,30 @@ export interface GetLecturesRequest {
 }
 
 
-// 강의 조회 응답값에 대한 types 정의
-
-export interface LectureResponse {
-    lectureId: number;
-    teacherId: number;
-    title: string;
-    description: string;
-    thumbnailUrl: string;
-    category: CategoryApiUrl;
-    lectureStatus: string;
-    averageRating: number;
-    reviewCount: number;
-    isEnrolled?: boolean;
-    createdAt: string;
-}
 
 
-export interface LecturesResponse {
-    content: LectureResponse[];
-    page: number;
-    size: number;
-    totalElements: number;
-    totalPages: number;
-}
-
-export interface LecturesApiResponse {
-    timestamp: string;
-    status: number;
-    success: boolean;
-    message: string;
-    data: LecturesResponse;
-    errors: Record<string, string>;
-}
-
-// 강의 상태 변경 request 타입 정의
-
-export interface StatusRequest {
-    lectureStatus: StatusApiUrl;
-}
+//🍑🍑🍑🍑🍑🍑🍑🍑🍑
+//🍑🍑🍑 export interface StatusRequest {
+//     lectureStatus: LectureStatus;
+// }
 
 // 영상 시청 시간 관련 request 타입 정의
 
-export interface UpdateVideoProgressRequest {
-    playbackSeconds: number;
-}
+// export interface UpdateVideoProgressRequest {
+//     playbackSeconds: number;
+// }
+
+
+
+
+
+
+// 홍근티비가 상의 후 변경할수도있음!!!!!!!
 
 export interface UpdateVideoProgressByExitRequest {
     playbackSeconds: number;
     lastPositionSec: number;
 }
-
-// 영상 시청 시간 관련 response 타입 정의
 
 export interface UpdateVideoProgressResponse {
     chapterId: number;
@@ -148,8 +194,6 @@ export interface UpdateVideoProgressResponse {
     completedCount: number;
 }
 
-// 이어보기 response 타입 정의
-
 export interface ResumeResponse {
     lectureId: number;
     chapterId: number;
@@ -159,51 +203,74 @@ export interface ResumeResponse {
     totalProgress: number;
 }
 
-// 메타 데이터 타입 정의
 
-export interface ChapterMeta {
-    chapterId: number;
-    title: string;
-    orderNo: number;
-    durationSec: number;
-    progressRate: number;
-    isCompleted: boolean;
-    isAccessible: boolean;
-}
 
-export interface LectureMetaResponse {
-    lectureId: number;
-    lectureTitle: string;
-    thumbnailUrl: string | null;
 
-    totalChapterCount: number;
 
-    currentChapterId: number;
-    currentChapterNo: number;
-    currentChapterTitle: string;
 
-    chapters: ChapterMeta[];
-}
 
-// 수강 신청 response 타입 정의
 
-export interface EnrollLectureData {
-    enrollmentId: number,
-    lectureId: number,
-    userId: number,
-    totalProgress: number,
-    completedCount: number,
-    enrolledAt: string
-}
-export interface EnrollLectureResponse {
-    status: number,
-    success: boolean,
-    message: string,
-    data: EnrollLectureData
-    errors: {}
-}
+// 🍑🍑🍑🍑메타 데이터 타입 정의🍑🍑🍑🍑
 
-export interface enrollLectureActionResponse {
-    success: boolean,
-    message: string
+// export interface ChapterMeta {
+//     chapterId: number;
+//     title: string;
+//     orderNo: number;
+//     durationSec: number;
+//     progressRate: number;
+//     isCompleted: boolean;
+//     isAccessible: boolean;
+// }
+
+// export interface LectureMetaResponse {
+//     lectureId: number;
+//     lectureTitle: string;
+//     thumbnailUrl: string | null;
+
+//     totalChapterCount: number;
+
+//     currentChapterId: number;
+//     currentChapterNo: number;
+//     currentChapterTitle: string;
+
+//     chapters: ChapterMeta[];
+// }
+
+
+
+
+
+
+
+
+
+// 🍑🍑🍑🍑이건 없애는 방향으로 추진🍑🍑🍑🍑
+// 🍑🍑🍑🍑수강 신청 response 타입 정의🍑🍑🍑🍑
+
+// export interface LectureEnrollResponse {
+//     enrollmentId: number,
+//     lectureId: number,
+//     userId: number,
+//     totalProgress: number,
+//     completedCount: number,
+//     enrolledAt: string
+// }
+// export interface EnrollLectureResponse {
+//     status: number,
+//     success: boolean,
+//     message: string,
+//     data: LectureEnrollResponse
+//     errors: {}
+// }
+
+
+
+
+
+//🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑
+//등록 관련
+//🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑
+
+export interface 다시정의하세요 {
+
 }

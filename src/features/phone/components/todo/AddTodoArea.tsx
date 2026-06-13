@@ -8,7 +8,7 @@ import {
     useState,
 } from 'react'
 
-import { createTodoAction } from '../../action'
+import { createTodoAction } from '../../../todo/action'
 
 interface Props {
     selectedDate: string
