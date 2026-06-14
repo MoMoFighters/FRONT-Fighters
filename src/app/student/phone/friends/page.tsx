@@ -8,12 +8,13 @@ import MyProfileDropdown from "@/features/phone/components/friend/MyProfileDropd
 import ChatRoomArea from "@/components/common/ChatRoomArea";
 import ChatRoomItem from "@/components/common/ChatRoomItem";
 
+import { getChatRoomsService } from "@/app/services/phone/chat/service";
+
 import {
-    getChatRoomsService,
     getFriendsService,
     getReceivedFriendRequestsService,
     getSentFriendRequestsService,
-} from "@/app/services/phone/chat/service";
+} from "@/app/services/phone/friend/service";
 
 import { getMyInfo, MomoUserInfoResponse } from "@/features/user/action";
 import { cookies } from "next/headers";

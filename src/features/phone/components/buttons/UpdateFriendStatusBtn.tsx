@@ -2,20 +2,15 @@
 
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import {
-    sendFriendRequestAction,
-    cancelFriendRequestAction,
-    acceptFriendRequestAction,
-    rejectFriendRequestAction,
-    blockFriendAction,
-    unblockFriendAction,
-    createChatRoomAction,
-    deleteFriendAction,
-} from "../../../chat/action";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import TwoButtonModal from "@/features/modal/TwoButtonModal";
 import { useRouter } from "next/navigation";
+import { createChatRoomAction } from "@/features/chat/action";
+import {
+    updateFriendStatus,
+    type FriendActionType,
+} from "@/features/friend/action";
 
 interface Props {
     data: {
@@ -28,13 +23,16 @@ export default function UpdateFriendStatusBtn({ data }: Props) {
     const { status, userId } = data;
     const router = useRouter();
 
-    const handleAction = async (actionFn: (userId: number) => Promise<any>) => {
-        const result = await actionFn(userId);
-        if (!result.success) {
-            toast.error(result.message, { duration: 2000 });
+    const handleAction = async (actionType: FriendActionType) => {
+        const response = await updateFriendStatus(actionType, userId);
+
+        if (response.status < 200 || response.status >= 300) {
+            toast.error(response.message, { duration: 2000 });
             return;
         }
-        toast.success(result.message, { duration: 2000 });
+
+        toast.success(response.message, { duration: 2000 });
+        router.refresh();
     };
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [modalType, setModalType] = useState<'BLOCK' | 'DELETE' | null>(null);
@@ -65,12 +63,16 @@ export default function UpdateFriendStatusBtn({ data }: Props) {
                     title: '해당 친구를 차단하시겠습니까?',
                     description: '차단 시 더 이상 친구 목록에서 보이지 않습니다.',
                     onConfirm: async () => {
-                        const response = await blockFriendAction(userId)
-                        if (!response.success) {
-                            toast.error(response.message)
-                            return
+                        const response = await updateFriendStatus("BLOCK", userId);
+
+                        if (response.status < 200 || response.status >= 300) {
+                            toast.error(response.message);
+                            return;
                         }
-                        toast(response.message)
+
+                        toast.success(response.message);
+                        setModalType(null);
+                        router.refresh();
                     },
                 };
 
@@ -80,12 +82,16 @@ export default function UpdateFriendStatusBtn({ data }: Props) {
                     title: '해당 친구를 삭제하시겠습니까?',
                     description: '친구 관계가 해제됩니다.',
                     onConfirm: async () => {
-                        const response = await deleteFriendAction(userId)
-                        if (!response.success) {
-                            toast.error(response.message)
-                            return
+                        const response = await updateFriendStatus("DELETE", userId);
+
+                        if (response.status < 200 || response.status >= 300) {
+                            toast.error(response.message);
+                            return;
                         }
-                        toast(response.message)
+
+                        toast.success(response.message);
+                        setModalType(null);
+                        router.refresh();
                     },
                 };
 
@@ -99,7 +105,7 @@ export default function UpdateFriendStatusBtn({ data }: Props) {
             {status === 'none' && (
                 <Button
                     className="h-9 px-4 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg shadow-sm"
-                    onClick={() => handleAction(sendFriendRequestAction)}
+                    onClick={() => handleAction("SEND")}
                 >
                     친구추가
                 </Button>
@@ -108,7 +114,7 @@ export default function UpdateFriendStatusBtn({ data }: Props) {
             {status === 'SENT' && (
                 <Button
                     className="h-9 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg"
-                    onClick={() => handleAction(cancelFriendRequestAction)}
+                    onClick={() => handleAction("CANCEL")}
                 >
                     요청취소
                 </Button>
@@ -118,14 +124,14 @@ export default function UpdateFriendStatusBtn({ data }: Props) {
                 <>
                     <Button
                         className="h-9 px-4 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg shadow-sm"
-                        onClick={() => handleAction(acceptFriendRequestAction)}
+                        onClick={() => handleAction("ACCEPT")}
                     >
                         수락
                     </Button>
 
                     <Button
                         className="h-9 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg"
-                        onClick={() => handleAction(rejectFriendRequestAction)}
+                        onClick={() => handleAction("REJECT")}
                     >
                         거절
                     </Button>
@@ -197,7 +203,7 @@ export default function UpdateFriendStatusBtn({ data }: Props) {
             {status === 'BLOCK' && (
                 <Button
                     className="h-9 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg"
-                    onClick={() => handleAction(unblockFriendAction)}
+                    onClick={() => handleAction("UNBLOCK")}
                 >
                     차단해제
                 </Button>

@@ -5,6 +5,7 @@ import BuildingItem from "@/components/city/BuildingItem";
 import { getMyInfo } from "@/features/user/action";
 import NicknameInputModal from "@/features/auth/components/NicknameInputModal";
 import arthall from '@/app/assets/img/arthall.png'
+import Phone from "@/components/city/Phone";
 
 interface Building {
     position: string;
@@ -79,6 +80,7 @@ export default async function StudentMainPage() {
                     width={350}
                 />
             </div>
+            <Phone />
             {/* {POSITIONS.map((position) => {
 
                 const building = buildings.find(
