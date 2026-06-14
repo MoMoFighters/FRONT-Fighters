@@ -72,7 +72,8 @@ export default function AdminDashboardPage() {
         },
     ];
 
-    // TODO: 승인/신고 요청을 통합 조회하는 관리자 작업 큐 API로 교체 예정입니다.
+    // TODO: 승인/신고 요청을 최신순으로 5~6개만 조회하는 관리자 작업 큐 API로 교체 예정입니다.
+    // 예: GET /api/v1/admin/dashboard/pending-tasks?size=5
     const pendingTasks: AdminDashboardTask[] = [
         {
             id: 1,
@@ -149,6 +150,18 @@ export default function AdminDashboardPage() {
             title: "[안내] 신고 처리 정책 변경 안내",
             writer: "운영팀",
             date: "2026-06-05",
+        },
+        {
+            id: 6,
+            title: "[안내] 관리자 접근 로그 보관 정책 안내",
+            writer: "운영팀",
+            date: "2026-06-01",
+        },
+        {
+            id: 7,
+            title: "[안내] 강사 승인 심사 절차 변경 안내",
+            writer: "운영팀",
+            date: "2026-05-29",
         },
     ];
 
