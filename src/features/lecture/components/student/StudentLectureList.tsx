@@ -17,6 +17,7 @@ interface StudentLectureListProps {
     categoryLabel: string;
     buildingImage: StaticImageData;
     getHref?: (lecture: Lecture) => string;
+    showLearningStatus?: boolean;
 }
 
 export default function StudentLectureList({
@@ -25,6 +26,7 @@ export default function StudentLectureList({
     categoryLabel,
     buildingImage,
     getHref,
+    showLearningStatus = true,
 }: StudentLectureListProps) {
     return (
         <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
@@ -39,6 +41,7 @@ export default function StudentLectureList({
                         lecture.isEnrolled,
                         index
                     )}
+                    showLearningStatus={showLearningStatus}
                 />
             ))}
         </div>

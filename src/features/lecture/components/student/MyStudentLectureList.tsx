@@ -35,6 +35,7 @@ export default function MyStudentLectureList({
                         categoryLabel={categoryMeta.label}
                         buildingImage={categoryMeta.buildingImage}
                         progress={getLectureProgress(index)}
+                        showLearningStatus
                     />
                 );
             })}

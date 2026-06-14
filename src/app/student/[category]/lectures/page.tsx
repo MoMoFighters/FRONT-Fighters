@@ -39,7 +39,7 @@ export default async function LectureListByCategory({
     const payload: GetLecturesRequest = {
         category: categoryMeta.apiValue,
         keyword,
-        enrolled: filter === "my",
+        enrolled: filter === "my" ? true : undefined,
         page: Number(page) || 1,
     };
 
@@ -104,6 +104,7 @@ export default async function LectureListByCategory({
                             category={category}
                             categoryLabel={categoryLabel}
                             buildingImage={buildingImage}
+                            showLearningStatus={filter === "my"}
                         />
 
                         <ListPagination
