@@ -37,7 +37,15 @@ interface ReportFormData {
     reasonDetail: string;
 }
 
-export default function CreateReportBtn() {
+interface CreateReportBtnProps {
+    triggerLabel?: string;
+    triggerClassName?: string;
+}
+
+export default function CreateReportBtn({
+    triggerLabel = "신고",
+    triggerClassName,
+}: CreateReportBtnProps) {
 
     // 신고 작성 모달
     const [isModal, setIsModal] = useState(false);
@@ -121,13 +129,23 @@ export default function CreateReportBtn() {
                 onOpenChange={setIsModal}
             >
 
-                <Button
-                    variant="destructive"
-                    className="absolute w-12 bottom-5 right-5 text-xs"
-                    onClick={() => setIsModal(true)}
-                >
-                    신고
-                </Button>
+                {triggerClassName ? (
+                    <button
+                        type="button"
+                        className={triggerClassName}
+                        onClick={() => setIsModal(true)}
+                    >
+                        {triggerLabel}
+                    </button>
+                ) : (
+                    <Button
+                        variant="destructive"
+                        className="absolute right-5 bottom-5 w-12 text-xs"
+                        onClick={() => setIsModal(true)}
+                    >
+                        {triggerLabel}
+                    </Button>
+                )}
 
                 <DialogContent className="sm:max-w-sm">
 

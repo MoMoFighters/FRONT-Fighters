@@ -17,7 +17,6 @@ interface VideoPlayerProps {
     chapter: Chapter;
     lectureTitle: string;
     currentChapterNo: number;
-    totalChapterCount: number;
     nextChapterHref?: string;
 }
 
@@ -32,7 +31,6 @@ export default function VideoPlayer({
     chapter,
     lectureTitle,
     currentChapterNo,
-    totalChapterCount,
     nextChapterHref,
 }: VideoPlayerProps) {
     const router = useRouter();
@@ -212,9 +210,6 @@ export default function VideoPlayer({
                         Chapter {currentChapterNo}. {chapter.title}
                     </p>
 
-                    <p className="mt-3 text-xs font-semibold text-slate-400">
-                        학습 기록 자동 저장 중
-                    </p>
                 </div>
 
                 <div>
@@ -224,10 +219,6 @@ export default function VideoPlayer({
 
                     <p className="mt-2 text-sm font-bold text-slate-950">
                         {formatDuration(chapter.durationSec)}
-                    </p>
-
-                    <p className="mt-3 text-xs font-semibold text-slate-400">
-                        {currentChapterNo} / {totalChapterCount}
                     </p>
                 </div>
             </div>

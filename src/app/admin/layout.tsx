@@ -13,7 +13,7 @@ export default function AdminLayout({
                 <div className="fixed left-0 top-14 bottom-0">
                     <AdminSidebar />
                 </div>
-                <main className="ml-48 p-12 flex-1 h-[calc(100vh-48px)] overflow-y-auto relative">
+                <main className="ml-60 h-[calc(100vh-56px)] flex-1 overflow-y-auto px-8 py-7">
                     {children}
                 </main>
             </div>
