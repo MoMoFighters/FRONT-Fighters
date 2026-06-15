@@ -199,10 +199,15 @@ export default function LoginForm() {
 
                 </form>
 
-                <div className="flex flex-row justify-center gap-7">
+                <div className="flex flex-row justify-center gap-7 mb-4">
                     <EmailInputModal />
                     <Link href='/auth/signup'>
-                        <p className="text-left text-slate-400">회원가입</p>
+                        <button
+                            type="button"
+                            className="cursor-pointer text-sm font-medium text-slate-400 transition-colors hover:text-slate-700"
+                        >
+                            회원가입
+                        </button>
                     </Link>
                 </div>
                 <hr className="border-0.5 border-slate-300 mt-[-16]" />
