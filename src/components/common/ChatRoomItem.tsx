@@ -4,14 +4,23 @@ import Image from "next/image";
 import user from '@/app/assets/img/user.svg'
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChatRoomListData } from "@/features/chat/type";
+import { ChatRoomListData } from "@/app/services/phone/chat/service";
 
 
 
 export default function ChatRoomItem({ data }: { data: ChatRoomListData }) {
 
     const pathname = usePathname();
-    const { roomId, nickname, content, role, lectureTitle, userId, unreadCount } = data as ChatRoomListData
+    const {
+        roomInfo,
+        content,
+        unreadCount,
+    } = data;
+    const opponent = roomInfo.memberInfo[0];
+    const roomId = roomInfo.roomId;
+    const nickname = opponent?.nickname ?? roomInfo.roomTitle ?? "채팅방";
+    const role = opponent?.role;
+    const profileImageUrl = opponent?.profileImageUrl;
 
     const href =
         pathname.startsWith('/teacher')
@@ -25,11 +34,11 @@ export default function ChatRoomItem({ data }: { data: ChatRoomListData }) {
         <Link href={href}>
             <div
                 className="px-4 py-3 flex flex-row gap-3 w-full hover:bg-slate-50 transition-colors cursor-pointer items-center border-b border-slate-100"
-                key={data.roomId}
+                key={roomId}
             >
-                {data.profileImageUrl ? (
+                {profileImageUrl ? (
                     <Image
-                        src={data.profileImageUrl || ""}
+                        src={profileImageUrl}
                         alt="프사"
                         width={48}
                         height={48}
@@ -38,7 +47,7 @@ export default function ChatRoomItem({ data }: { data: ChatRoomListData }) {
                 ) : (
                     <div className="rounded-full bg-indigo-100 text-indigo-700 flex justify-center items-center w-12 h-12 shrink-0">
                         <p className="font-bold">
-                            {nickname[0]}
+                            {nickname[0] ?? "?"}
                         </p>
                     </div>
                 )}

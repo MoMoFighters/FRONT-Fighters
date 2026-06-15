@@ -11,7 +11,7 @@ import close from '@/app/assets/img/close.svg';
 
 import ChatItem from "./ChatItem";
 import MessageInputBox from "@/features/phone/components/chat/MessageInputBox";
-import { ChatMessage, getChatHistoryService } from "@/app/services/phone/chat/service";
+import { ChatMessageData, getChatHistoryService } from "@/app/services/phone/chat/service";
 import { toast } from "sonner";
 import { leaveChatroomAction, readMessageAction } from "@/features/chat/action";
 import { Button } from "../ui/button";
@@ -22,13 +22,13 @@ import { getSocket } from "@/lib/socket";
 interface ChatRoomAreaProps {
     currentRoomId: number | null;
     accessToken: string;
-    isMine: boolean
+    isMine?: boolean
 }
 
 export default function ChatRoomArea({
     currentRoomId,
     accessToken,
-    isMine
+    isMine = false
 }: ChatRoomAreaProps) {
 
     const pathname = usePathname();
@@ -43,7 +43,7 @@ export default function ChatRoomArea({
 
 
     const [messages, setMessages] =
-        useState<ChatMessage[]>([]);
+        useState<ChatMessageData[]>([]);
 
     const href =
         pathname.startsWith('/teacher')
@@ -77,12 +77,9 @@ export default function ChatRoomArea({
         const loadMessages = async () => {
             try {
                 const response =
-                    await getChatHistoryService({
-                        roomId: currentRoomId,
-                        accessToken,
-                    });
+                    await getChatHistoryService(currentRoomId, accessToken);
                 setMessages(
-                    response.data ?? []
+                    response.data?.messages ?? []
                 );
             } catch {
                 setMessages([]);
@@ -113,9 +110,9 @@ export default function ChatRoomArea({
         const handleReceiveMessage = (payload: unknown) => {
             const messagePayload = payload as {
                 roomId?: number;
-                data?: ChatMessage;
-                message?: ChatMessage;
-            } & Partial<ChatMessage>;
+                data?: ChatMessageData;
+                message?: ChatMessageData;
+            } & Partial<ChatMessageData>;
 
             if (
                 messagePayload.roomId &&
@@ -146,7 +143,7 @@ export default function ChatRoomArea({
 
                 return [
                     ...prev,
-                    newMessage as ChatMessage
+                    newMessage as ChatMessageData
                 ];
             });
 
@@ -212,13 +209,13 @@ export default function ChatRoomArea({
             try {
                 const oldestMessageId =
                     messages[0]?.messageId;
-                const response = await getChatHistoryService({
-                    roomId: currentRoomId,
+                const response = await getChatHistoryService(
+                    currentRoomId,
                     accessToken,
-                    lastMessageId: oldestMessageId
-                });
-                const newdata: ChatMessage[] = [
-                    ...(response.data ?? []),
+                    oldestMessageId,
+                );
+                const newdata: ChatMessageData[] = [
+                    ...(response.data?.messages ?? []),
                     ...messages,
                 ];
                 setMessages(newdata);

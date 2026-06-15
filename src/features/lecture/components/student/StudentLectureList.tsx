@@ -32,9 +32,9 @@ export default function StudentLectureList({
         <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
             {lectures.map((lecture, index) => (
                 <StudentLectureItem
-                    key={lecture.id}
+                    key={lecture.lectureId}
                     lecture={lecture}
-                    href={getHref ? getHref(lecture) : `/student/${category}/lectures/${lecture.id}`}
+                    href={getHref ? getHref(lecture) : `/student/${category}/lectures/${lecture.lectureId}`}
                     categoryLabel={categoryLabel}
                     buildingImage={buildingImage}
                     progress={getLectureProgress(

@@ -1,7 +1,6 @@
 import { getChapterVideo, getLectureMeta, getResumeInfo } from "@/app/services/lecture/service";
 import ChapterItem from "@/components/common/ChapterItem";
 import LecturePreviewPlayer from "@/features/lecture/components/common/LecturePreviewPlayer";
-import { Chapter } from "@/features/lecture/type";
 import { notFound } from "next/navigation";
 
 export default async function ChapterDetailPage({ params }: {
@@ -62,13 +61,6 @@ export default async function ChapterDetailPage({ params }: {
 
                             chapter={{
                                 ...item,
-                                lectureId:
-                                    Number(lectureId),
-
-                                videoUrl: '',
-                                videoSizeBytes: 0,
-                                videoStatus: 'READY',
-                                originalFilename: ''
                             }}
 
                             role="admin"

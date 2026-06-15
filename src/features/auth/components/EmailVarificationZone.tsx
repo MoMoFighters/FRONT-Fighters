@@ -18,8 +18,8 @@ export default function EmailVerificationZone({
     const [isCodeSent, setIsCodeSent] = useState(false);
     const [timeLeft, setTimeLeft] = useState(0);
 
-    const [sendCodeState, setSendCodeState] = useState<{ success: boolean; message: string; expiresIn?: number } | null>(null);
-    const [verifyState, setVerifyState] = useState<{ success: boolean; message: string } | null>(null);
+    const [sendCodeState, setSendCodeState] = useState<{ isSuccess: boolean; message: string; expiresIn?: number } | null>(null);
+    const [verifyState, setVerifyState] = useState<{ isSuccess: boolean; message: string } | null>(null);
 
     const [isSendingCode, startSendCodeTransition] = useTransition();
     const [isVerifying, startVerifyTransition] = useTransition();
@@ -27,30 +27,34 @@ export default function EmailVerificationZone({
     const handleSendCode = () => {
         if (!email) return;
         startSendCodeTransition(async () => {
-            const formData = new FormData();
-            formData.append("email", email);
-            const result = await sendEmailCodeAction(null, formData);
-            setSendCodeState(result);
+            const result = await sendEmailCodeAction(email);
+            const isSuccess = result.status >= 200 && result.status < 300;
+            const expiresIn = result.data?.expiresIn;
+            setSendCodeState({
+                isSuccess,
+                message: result.message,
+                expiresIn,
+            });
 
-            if (result?.success && result.expiresIn) {
+            if (isSuccess && expiresIn) {
                 setIsCodeSent(true);
-                setTimeLeft(result.expiresIn);
+                setTimeLeft(expiresIn);
                 setVerifyState(null);
             }
         });
     };
 
     const handleVerifyCode = () => {
-        if (!validationCode) return;
+        if (!email || !validationCode) return;
         startVerifyTransition(async () => {
-            const formData = new FormData();
-            formData.append("email", email);
-            formData.append("validationCode", validationCode);
+            const result = await verifyEmailAction(email, validationCode);
+            const isSuccess = result.status >= 200 && result.status < 300;
+            setVerifyState({
+                isSuccess,
+                message: result.message,
+            });
 
-            const result = await verifyEmailAction(null, formData);
-            setVerifyState(result);
-
-            if (result?.success) {
+            if (isSuccess) {
                 setTimeLeft(0);
                 setIsEmailVerified(true);
             }
@@ -102,7 +106,7 @@ export default function EmailVerificationZone({
             {sendCodeState && (
                 <>
                     <div />
-                    <p className={`text-xs -mt-2 ${sendCodeState.success ? 'text-green-600' : 'text-red-500'}`}>
+                    <p className={`text-xs -mt-2 ${sendCodeState.isSuccess ? 'text-green-600' : 'text-red-500'}`}>
                         {sendCodeState.message}
                     </p>
                 </>
@@ -145,7 +149,7 @@ export default function EmailVerificationZone({
                                     : "인증 시간이 만료되었습니다. 다시 요청해주세요."
                             }
                         </p>
-                        {verifyState && !verifyState.success && (
+                        {verifyState && !verifyState.isSuccess && (
                             <p className="text-xs text-red-500 text-right">{verifyState.message}</p>
                         )}
                     </div>

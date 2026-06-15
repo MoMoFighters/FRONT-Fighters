@@ -66,7 +66,7 @@ export default function MessageInputBox({ chatRoomId, reload }: Props) {
         if (!content.trim() || !chatRoomId || isSending) return;
 
         setIsSending(true);
-        const response = await sendMessageAction({ content, roomId: chatRoomId });
+        const response = await sendMessageAction(chatRoomId, content);
 
         if (response.status !== 201) {
             toast.error(response.message, { duration: 1000 });

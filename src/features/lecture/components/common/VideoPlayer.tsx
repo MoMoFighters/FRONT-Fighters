@@ -14,6 +14,7 @@ import { Chapter } from "@/features/lecture/type";
 import TwoButtonModal from "@/features/modal/TwoButtonModal";
 
 interface VideoPlayerProps {
+    lectureId: string;
     chapter: Chapter;
     lectureTitle: string;
     currentChapterNo: number;
@@ -28,6 +29,7 @@ const formatDuration = (durationSec: number) => {
 };
 
 export default function VideoPlayer({
+    lectureId,
     chapter,
     lectureTitle,
     currentChapterNo,
@@ -92,7 +94,7 @@ export default function VideoPlayer({
 
             try {
                 const result = await updateVideoProgressAction(
-                    String(chapter.lectureId),
+                    lectureId,
                     String(chapter.chapterId),
                     {
                         playbackSeconds: Math.floor(
@@ -119,13 +121,13 @@ export default function VideoPlayer({
         return () => clearInterval(interval);
     }, [
         chapter.chapterId,
-        chapter.lectureId,
+        lectureId,
     ]);
 
     const handleExit = async () => {
         try {
             await updateVideoProgressByExitAction(
-                String(chapter.lectureId),
+                lectureId,
                 String(chapter.chapterId),
                 {
                     playbackSeconds: Math.floor(
@@ -182,7 +184,7 @@ export default function VideoPlayer({
                     className="aspect-video w-full bg-black"
                 >
                     <source
-                        src={chapter.videoUrl}
+                        src={chapter.presignedUrl}
                         type="video/mp4"
                     />
 

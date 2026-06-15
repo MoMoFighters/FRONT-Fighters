@@ -29,9 +29,9 @@ export default function MyStudentLectureList({
 
                 return (
                     <StudentLectureItem
-                        key={lecture.id}
+                        key={lecture.lectureId}
                         lecture={lecture}
-                        href={`/student/${category}/lectures/${lecture.id}`}
+                        href={`/student/${category}/lectures/${lecture.lectureId}`}
                         categoryLabel={categoryMeta.label}
                         buildingImage={categoryMeta.buildingImage}
                         progress={getLectureProgress(index)}

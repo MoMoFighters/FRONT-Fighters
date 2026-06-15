@@ -18,7 +18,7 @@ export default function LogoutBtn({
     const handleLogout = async () => {
         const result = await logoutAction();
 
-        if (result.success) {
+        if (result.status >= 200 && result.status < 300) {
             router.replace("/");
             router.refresh();
         } else {

@@ -1,7 +1,7 @@
 'use server'
 
 import { enrollLectureById, updateLectureStatus, updateVideoProgress, updateVideoProgressByExit } from "@/app/services/lecture/service";
-import { enrollLectureActionResponse, StatusApiUrl, StatusRequest, UpdateVideoProgressByExitRequest, UpdateVideoProgressRequest } from "./type";
+import { StatusApiUrl, StatusRequest, UpdateVideoProgressByExitRequest, UpdateVideoProgressRequest } from "./type";
 import { revalidatePath } from "next/cache";
 
 

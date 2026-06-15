@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 import { googleLoginAction } from '@/features/auth/action';
@@ -13,7 +13,7 @@ interface LoginResult {
     message: string;
 }
 
-export default function GoogleCallbackPage() {
+function GoogleCallbackContent() {
     const searchParams = useSearchParams();
     const authorizationCode = searchParams.get('code');
     const hasCalled = useRef(false);
@@ -82,5 +82,19 @@ export default function GoogleCallbackPage() {
                 />
             )}
         </>
+    );
+}
+
+export default function GoogleCallbackPage() {
+    return (
+        <Suspense
+            fallback={(
+                <div className="flex min-h-screen items-center justify-center bg-white font-medium text-slate-900">
+                    구글 로그인 처리 중입니다...
+                </div>
+            )}
+        >
+            <GoogleCallbackContent />
+        </Suspense>
     );
 }
