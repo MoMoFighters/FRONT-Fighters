@@ -132,9 +132,9 @@ export default async function LectureListPage({
                 )}
             </section>
 
-            <aside className="sticky top-10 self-start space-y-5">
-                <CategoryPreviewCard category={category} />
+            <aside className="sticky mt-4 top-5 self-start space-y-5">
                 <BuildGuideCard />
+                <CategoryPreviewCard category={category} />
             </aside>
         </main>
     );

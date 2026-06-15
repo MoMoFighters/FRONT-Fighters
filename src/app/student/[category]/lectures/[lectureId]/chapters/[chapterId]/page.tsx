@@ -119,7 +119,7 @@ export default async function ChapterViewPage({
                 <ChapterStudyInfoCard />
             </section>
 
-            <aside className="self-start pt-15">
+            <aside className="sticky mt-4 top-5 self-start">
                 <ChapterDetailList
                     category={category}
                     lectureId={lectureId}
