@@ -85,7 +85,7 @@ export default function UserManageNav() {
                     text-lg
                     font-semibold
 
-                    ${searchStatus === "delete"
+                    ${searchStatus === "deleted"
                         ? "text-slate-900"
                         : "text-slate-500"
                     }

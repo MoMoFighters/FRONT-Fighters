@@ -41,7 +41,7 @@ export default function StudentLayoutShell({
         <div className="flex min-h-screen flex-col bg-white">
             {header}
 
-            <main className="flex-1 overflow-y-auto bg-white">
+            <main className="flex-1 bg-white">
                 {children}
             </main>
 

@@ -1,40 +1,52 @@
 'use client'
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+
+const NAV_ITEMS = [
+    {
+        label: "내 정보",
+        href: "/student/mypage",
+        value: "mypage",
+    },
+    {
+        label: "내 강의",
+        href: "/student/mypage/lectures",
+        value: "lectures",
+    },
+    {
+        label: "신고 내역",
+        href: "/student/mypage/reports",
+        value: "reports",
+    },
+];
 
 export default function MyPageNav() {
-
     const pathName = usePathname();
-    const [navSelect, setNavSelect] = useState(pathName.split('/').pop())
-    // mypage, lectures, reports
-    useEffect(() => {
-        setNavSelect(pathName.split('/').pop())
-    }, [])
-    const selectedStyle = "text-slate-900 border-b-2 border-slate-900";
-    const defaultStyle = "text-slate-500"
+    const currentPage = pathName.split("/").pop() || "mypage";
 
     return (
-        <div className="border-b border-slate-200 flex flex-row gap-1">
-            <div className="w-3"></div>
-            <Link
-                href='/student/mypage'
-                className={`text-lg font-bold p-3 ${navSelect === 'mypage' ? selectedStyle : defaultStyle}`}
-            >
-                내 정보
-            </Link>
-            <Link
-                href='/student/mypage/lectures'
-                className={`text-lg font-bold p-3 ${navSelect === 'lectures' ? selectedStyle : defaultStyle}`}
-            >
-                내 강의
-            </Link>
-            <Link
-                href='/student/mypage/reports'
-                className={`text-lg font-bold p-3 ${navSelect === 'reports' ? selectedStyle : defaultStyle}`}
-            >
-                신고 내역
-            </Link>
+        <div className="mb-6 border-b border-slate-200">
+            <nav className="flex gap-8">
+                {NAV_ITEMS.map((item) => {
+                    const isActive = currentPage === item.value;
+
+                    return (
+                        <Link
+                            key={item.href}
+                            href={item.href}
+                            className={`
+                                border-b-2 px-1 pb-4 text-sm font-bold transition
+                                ${isActive
+                                    ? "border-indigo-400 text-indigo-500"
+                                    : "border-transparent text-slate-500 hover:text-slate-900"
+                                }
+                            `}
+                        >
+                            {item.label}
+                        </Link>
+                    );
+                })}
+            </nav>
         </div>
     );
 }

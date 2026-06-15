@@ -5,6 +5,7 @@ import BuildingItem from "@/components/city/BuildingItem";
 import { getMyInfo } from "@/features/user/action";
 import NicknameInputModal from "@/features/auth/components/NicknameInputModal";
 import arthall from '@/app/assets/img/arthall.png'
+import school from '@/app/assets/img/school.png'
 
 interface Building {
     position: string;
@@ -72,13 +73,13 @@ export default async function StudentMainPage() {
                 priority
                 className="object-cover"
             />
-            <div className="absolute top-15 left-70">
+            {/* <div className="absolute top-40 left-80">
                 <Image
-                    src={arthall}
+                    src={school}
                     alt="예술 건물"
-                    width={350}
+                    width={200}
                 />
-            </div>
+            </div> */}
             {/* {POSITIONS.map((position) => {
 
                 const building = buildings.find(
