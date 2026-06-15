@@ -1,14 +1,11 @@
 import Image, { StaticImageData } from "next/image";
-import school from '@/app/assets/img/school.png'
-import art from '@/app/assets/img/arts.png'
-import cook from '@/app/assets/img/cook.png'
-import health from '@/app/assets/img/health.png'
-import beauty from '@/app/assets/img/beauty.png'
 import library from '@/app/assets/img/library.png'
 import mypage from '@/app/assets/img/mypage.png'
 import market from '@/app/assets/img/market.png'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "../ui/hover-card";
 import Link from "next/link";
+import getCategoryMeta from "@/features/lecture/components/student/category";
+import { CategoryUrl } from "@/features/lecture/type";
 
 interface BuildingItemProps { category: string, level?: number }
 
@@ -21,38 +18,15 @@ export default function BuildingItem({ category, level }: BuildingItemProps) {
 
     switch (category) {
         case 'study':
-            image = school;
-            label = '학습';
-            building = '학교';
-            explain = '학습 카테고리 관련 강의를 수강할 수 있는 페이지로 이동합니다.'
-            break;
-
         case 'art':
-            image = art;
-            label = '예술';
-            building = '아트홀';
-            explain = '예술(음악, 미술 등) 카테고리 관련 강의를 수강할 수 있는 페이지로 이동합니다.'
-            break;
-
         case 'cook':
-            image = cook;
-            label = '요리';
-            building = '식당';
-            explain = '요리 카테고리 관련 강의를 수강할 수 있는 페이지로 이동합니다.'
-            break;
-
         case 'fitness':
-            image = health;
-            label = '운동';
-            building = '헬스장';
-            explain = '운동(헬스, 스포츠 등) 카테고리 관련 강의를 수강할 수 있는 페이지로 이동합니다.'
-            break;
-
         case 'beauty':
-            image = beauty;
-            label = '뷰티';
-            building = '백화점';
-            explain = '뷰티(패션, 화장 등) 카테고리 관련 강의를 수강할 수 있는 페이지로 이동합니다.'
+            const categoryMeta = getCategoryMeta(category as CategoryUrl);
+            image = categoryMeta.buildingImage;
+            label = categoryMeta.label;
+            building = categoryMeta.buildingName;
+            explain = categoryMeta.description;
             break;
 
         case 'community':
@@ -77,7 +51,8 @@ export default function BuildingItem({ category, level }: BuildingItemProps) {
             break;
 
         default:
-            image = school;
+            const defaultCategoryMeta = getCategoryMeta("study");
+            image = defaultCategoryMeta.buildingImage;
             label = '';
             building = '';
             explain = ''

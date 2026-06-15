@@ -11,13 +11,23 @@ export default function LectureFilterBtn() {
     const pathname = usePathname();
     const searchParams = useSearchParams();
 
-    const handleFilter = (category: string) => {
-
+    const handleFilter = (category?: string) => {
         const params = new URLSearchParams(searchParams);
 
-        params.set("category", category);
+        params.delete("page");
 
-        router.push(`${pathname}?${params.toString()}`);
+        if (category) {
+            params.set("category", category);
+        } else {
+            params.delete("category");
+        }
+
+        const queryString = params.toString();
+
+        router.push(queryString
+            ? `${pathname}?${queryString}`
+            : pathname
+        );
     };
 
     return (
@@ -44,7 +54,7 @@ export default function LectureFilterBtn() {
                                     focus:text-slate-700
                                     focus:bg-slate-50
                                 "
-                    onClick={() => handleFilter("")}
+                    onClick={() => handleFilter()}
                 >전체</DropdownMenuItem>
                 <DropdownMenuItem
                     className="

@@ -1,3 +1,5 @@
+import CreateReportBtn from "@/features/report/components/buttons/CreateReportBtn";
+
 export default function Footer() {
     return (
         <footer className="shrink-0 bg-white">
@@ -14,9 +16,10 @@ export default function Footer() {
                         <a href="#" className="hover:text-slate-900">
                             고객센터
                         </a>
-                        <a href="#" className="hover:text-slate-900">
-                            공지사항
-                        </a>
+                        <CreateReportBtn
+                            triggerLabel="신고하기"
+                            triggerClassName="cursor-pointer hover:text-slate-900"
+                        />
                     </nav>
 
                     <p className="text-xs text-slate-400">

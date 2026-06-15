@@ -6,14 +6,22 @@ import { toast } from "sonner";
 import { enrollLectureAction } from "../../action";
 import { useRouter } from "next/navigation";
 
-export default function EnrollLectureBtn({ lectureId }: { lectureId: number }) {
+interface EnrollLectureBtnProps {
+    lectureId: number;
+    className?: string;
+}
+
+export default function EnrollLectureBtn({
+    lectureId,
+    className,
+}: EnrollLectureBtnProps) {
 
     const router = useRouter();
 
     const handleEnrollLecture = async () => {
 
         try {
-            const result = await enrollLectureAction(String(lectureId));
+            await enrollLectureAction(String(lectureId));
 
             router.refresh();
 
@@ -45,7 +53,8 @@ export default function EnrollLectureBtn({ lectureId }: { lectureId: number }) {
         <TwoButtonModal
             trigger={(
                 <Button
-                    className="bg-blue-400 cursor-pointer hover:bg-blue-500 text-white font-semibold text-md py-6 px-6 rounded-md! absolute bottom-6 right-6">
+                    className={className ?? "absolute right-6 bottom-6 cursor-pointer rounded-md! bg-blue-400 px-6 py-6 text-md font-semibold text-white hover:bg-blue-500"}
+                >
                     수강 신청
                 </Button>
             )}
