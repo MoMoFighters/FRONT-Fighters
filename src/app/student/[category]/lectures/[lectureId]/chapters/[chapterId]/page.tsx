@@ -113,14 +113,13 @@ export default async function ChapterViewPage({
                     chapter={playerChapter}
                     lectureTitle={metaData.lectureTitle}
                     currentChapterNo={metaData.currentChapterNo}
-                    totalChapterCount={metaData.totalChapterCount}
                     nextChapterHref={nextChapterHref}
                 />
 
                 <ChapterStudyInfoCard />
             </section>
 
-            <aside className="sticky top-10 self-start">
+            <aside className="sticky mt-4 top-5 self-start">
                 <ChapterDetailList
                     category={category}
                     lectureId={lectureId}

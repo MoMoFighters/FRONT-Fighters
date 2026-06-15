@@ -214,9 +214,9 @@ export default async function LectureDetailPage({
                 </section>
             </section>
 
-            <aside className="sticky top-10 self-start space-y-5">
-                <CategoryPreviewCard />
+            <aside className="sticky mt-4 top-10 self-start space-y-5">
                 <BuildGuideCard />
+                <CategoryPreviewCard />
             </aside>
         </main>
     );

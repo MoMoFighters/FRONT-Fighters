@@ -17,17 +17,17 @@ export default async function AdminHeader() {
     };
 
     return (
-        <header className="h-14 border-b border-slate-100 bg-white opacity-90">
-            <div className="flex h-full w-full justify-between items-center px-2">
+        <header className="h-14 border-b border-slate-100 bg-white">
+            <div className="flex h-full w-full items-center justify-between pl-4 pr-8">
                 <Link href="/admin" className="flex items-center">
                     <Image
                         src={logo}
-                        alt="로고"
+                        alt="MOMOCITY 로고"
                         width={100}
                     />
                 </Link>
-                <div className="flex justify-end mr-4 items-center">
-                    <LogoutBtn />
+                <div className="flex items-center justify-end">
+                    <LogoutBtn iconOnly />
                 </div>
             </div>
         </header>

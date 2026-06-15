@@ -130,7 +130,7 @@ export default async function LectureListByCategory({
                 )}
             </section>
 
-            <aside className="sticky top-10 self-start space-y-5">
+            <aside className="sticky mt-4 top-10 self-start space-y-5">
                 <CategoryBuildingCard
                     category={category}
                     buildingName={buildingName}
