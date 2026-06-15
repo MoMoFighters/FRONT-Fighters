@@ -1,5 +1,5 @@
 import FriendItem from "@/components/phone/friends/FriendItem";
-import { FriendData } from "@/app/services/phone/chat/service";
+import type { FriendData } from "@/app/services/phone/friend/service";
 
 interface FriendListProps {
     friends: FriendData[];

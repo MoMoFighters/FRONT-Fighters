@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import close from '@/app/assets/img/close.svg';
 import FriendItem from "@/components/phone/friends/FriendItem";
-import { getBlockedFriendsAction, } from "../../../chat/action";
+import { getFriendListAction } from "@/features/friend/action";
 
 interface friendInfo {
     userId: number;
@@ -30,11 +30,11 @@ export default function BlockUserListModal({
         if (!open) return;
 
         const getFriends = async () => {
-            const response = await getBlockedFriendsAction();
+            const response = await getFriendListAction("BLOCKED");
 
             setMessage(response.message);
 
-            if (response.status === 200) {
+            if (response.status >= 200 && response.status < 300) {
                 setFriendList(response.data ?? []);
             } else {
                 setFriendList([]);

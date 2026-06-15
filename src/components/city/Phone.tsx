@@ -1,41 +1,147 @@
-'use client'
+"use client";
 
-import phone from '@/app/assets/img/tempPhone.png'
-import phoneHead from '@/app/assets/img/tempPhoneHead.png'
-import phoneHeadOn from '@/app/assets/img/tempPhoneOn.png'
-import Image from 'next/image'
-import { useEffect, useState } from 'react'
+import Link from "next/link";
+import {
+    Bell,
+    BellOff,
+    CalendarDays,
+    CreditCard,
+    MessageCircleMore,
+    Users,
+} from "lucide-react";
+import { useState } from "react";
+import {
+    HoverCard,
+    HoverCardContent,
+    HoverCardTrigger,
+} from "@/components/ui/hover-card";
 
-export default function Phone() {
-    const [isOn, setIsOn] = useState(false)
-    const [isRing, setIsRing] = useState(false)
-    const [now, setNow] = useState(0)
+interface PhoneProps {
+    hasNotification?: boolean;
+}
 
-    // 폰 : 메신저(친구메시지) + 캘린더 + 커뮤니티 + 돈관련
-    const imgChange = [phoneHead, phoneHeadOn]
+export default function Phone({
+    hasNotification = false,
+}: PhoneProps) {
+    const [notificationEnabled, setNotificationEnabled] = useState(true);
 
-    useEffect(() => {
-        if (!isRing) {
-            setNow(0)
-            return
-        }
-
-        const interval = setInterval(() => {
-            setNow(prev => (prev + 1) % 2)
-        }, 100)
-
-        return () => clearInterval(interval)
-    }, [isRing])
+    const notificationActive =
+        notificationEnabled && hasNotification;
 
     return (
-        <Image
-            onMouseEnter={() => setIsOn(true)}
-            onMouseLeave={() => setIsOn(false)}
-            onClick={() => setIsRing(prev => !prev)}
-            src={isRing ? imgChange[now] : (isOn ? phone : phoneHead)}
-            alt="폰"
-            width={150}
-            className="cursor-pointer"
-        />
-    )
+        <div className="group absolute -bottom-[300px] right-[8%] z-30 h-[330px] w-[200px] transition-[bottom] duration-500 ease-out hover:bottom-2 focus-within:bottom-4">
+            {notificationActive && (
+                <>
+                    <div className="pointer-events-none absolute -inset-2 rounded-[42px] bg-indigo-400/40 blur-xl animate-pulse" />
+                    <div className="pointer-events-none absolute -inset-1 rounded-[40px] border-2 border-indigo-300 animate-pulse" />
+                </>
+            )}
+
+            <div className="relative h-full overflow-hidden rounded-[38px] border-[9px] border-slate-950 bg-slate-950 shadow-2xl">
+                <div className="absolute left-1/2 top-2 z-20 h-3 w-15 -translate-x-1/2 rounded-full bg-slate-950" />
+
+                <div className="flex h-full flex-col overflow-hidden rounded-[28px] bg-slate-50">
+                    <header className="flex h-[76px] shrink-0 items-center justify-end border-b border-slate-200 bg-white px-5 pt-3">
+                        <HoverCard openDelay={200} closeDelay={100}>
+                            <HoverCardTrigger asChild>
+                                <button
+                                    type="button"
+                                    aria-pressed={notificationEnabled}
+                                    aria-label={notificationEnabled ? "알림 끄기" : "알림 켜기"}
+                                    onClick={() => setNotificationEnabled(previous => !previous)}
+                                    className="relative flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900"
+                                >
+                                    {notificationEnabled ? (
+                                        <Bell className="h-4 w-4" />
+                                    ) : (
+                                        <BellOff className="h-4 w-4" />
+                                    )}
+
+                                    {notificationActive && (
+                                        <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-white" />
+                                    )}
+                                </button>
+                            </HoverCardTrigger>
+
+                            <HoverCardContent side="left" className="w-auto px-3 py-2">
+                                {notificationEnabled ? "알림 끄기" : "알림 켜기"}
+                            </HoverCardContent>
+                        </HoverCard>
+                    </header>
+
+                    <main className="min-h-0 flex-1 px-5 py-6">
+                        <div className="grid grid-cols-2 gap-5">
+                            <HoverCard openDelay={200} closeDelay={100}>
+                                <HoverCardTrigger asChild>
+                                    <Link
+                                        href="/student/phone/friends?status=chat"
+                                        aria-label="메신저"
+                                        className="flex h-14 w-14 items-center justify-center rounded-lg bg-indigo-100 text-indigo-600 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-indigo-200 hover:shadow-md"
+                                    >
+                                        <MessageCircleMore className="h-7 w-7" />
+                                    </Link>
+                                </HoverCardTrigger>
+
+                                <HoverCardContent side="left" className="w-auto px-3 py-2">
+                                    메신저
+                                </HoverCardContent>
+                            </HoverCard>
+
+                            <HoverCard openDelay={200} closeDelay={100}>
+                                <HoverCardTrigger asChild>
+                                    <Link
+                                        href="/student/phone/calendar"
+                                        aria-label="캘린더"
+                                        className="flex h-14 w-14 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-emerald-200 hover:shadow-md"
+                                    >
+                                        <CalendarDays className="h-7 w-7" />
+                                    </Link>
+                                </HoverCardTrigger>
+
+                                <HoverCardContent side="right" className="w-auto px-3 py-2">
+                                    캘린더
+                                </HoverCardContent>
+                            </HoverCard>
+
+                            <HoverCard openDelay={200} closeDelay={100}>
+                                <HoverCardTrigger asChild>
+                                    <Link
+                                        href="/student/phone/membership"
+                                        aria-label="멤버십"
+                                        className="flex h-14 w-14 items-center justify-center rounded-lg bg-amber-100 text-amber-600 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-amber-200 hover:shadow-md"
+                                    >
+                                        <CreditCard className="h-7 w-7" />
+                                    </Link>
+                                </HoverCardTrigger>
+
+                                <HoverCardContent side="left" className="w-auto px-3 py-2">
+                                    멤버십
+                                </HoverCardContent>
+                            </HoverCard>
+
+                            <HoverCard openDelay={200} closeDelay={100}>
+                                <HoverCardTrigger asChild>
+                                    <Link
+                                        href="/student/phone/community"
+                                        aria-label="커뮤니티"
+                                        className="flex h-14 w-14 items-center justify-center rounded-lg bg-rose-100 text-rose-600 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-rose-200 hover:shadow-md"
+                                    >
+                                        <Users className="h-7 w-7" />
+                                    </Link>
+                                </HoverCardTrigger>
+
+                                <HoverCardContent side="right" className="w-auto px-3 py-2">
+                                    커뮤니티
+                                </HoverCardContent>
+                            </HoverCard>
+                        </div>
+                    </main>
+
+                    <footer className="flex h-12 shrink-0 items-center justify-center border-t border-slate-200 bg-white">
+                        <div className="h-1 w-24 rounded-full bg-slate-300" />
+                    </footer>
+                </div>
+            </div>
+        </div>
+    );
 }

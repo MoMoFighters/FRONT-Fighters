@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-
 import { nicknameRegistAction } from "../action";
 
 interface NicknameInputModalProps {

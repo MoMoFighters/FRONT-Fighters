@@ -240,7 +240,7 @@ export default function ChatRoomArea({
             >
                 <MyFriendListModal />
                 <p className="font-bold text-2xl">
-                    채팅방을 선택해주세요
+                    단체 채팅을 시작하려면 클릭하세요.
                 </p>
             </div>
         );

@@ -6,7 +6,8 @@ import close from '@/app/assets/img/close.svg';
 import search from "@/app/assets/img/user-plus.svg";
 import FriendItem from "@/components/phone/friends/FriendItem";
 import { MessageCirclePlus } from "lucide-react";
-import { getFriendsAction } from "../../../chat/action";
+import { getFriendListAction } from "@/features/friend/action";
+import { Button } from "@/components/ui/button";
 
 interface friendInfo {
     userId: number;
@@ -27,7 +28,7 @@ export default function MyFriendListModal() {
         if (!isModal) return;
 
         const getFriends = async () => {
-            const response = await getFriendsAction();
+            const response = await getFriendListAction("FRIEND");
 
             setMessage(response.message);
 
@@ -82,12 +83,12 @@ export default function MyFriendListModal() {
                     </div>
 
                     <div className="mt-2">
-                        <p className="font-bold text-center text-xl mb-2">
+                        <p className="font-bold text-center text-xl mb-2 border-b border-slate-300 pb-2">
                             내 친구 목록
                         </p>
                     </div>
 
-                    <div className="overflow-y-scroll h-full scrollbar-none mt-2 gap-1">
+                    <div className="overflow-y-scroll h-full scrollbar-none mt-2 gap-1 flex flex-col py-2">
                         {friendList.length !== 0 ? (
                             friendList
                                 .filter(friend => friend.status === 'FRIEND')
@@ -109,6 +110,11 @@ export default function MyFriendListModal() {
                                 </p>
                             </div>
                         )}
+                    </div>
+                    <div className="flex items-center justify-center mt-2 border-t border-slate-300 pt-2">
+                        <Button>
+                            채팅 시작하기
+                        </Button>
                     </div>
                 </div>
             </div>

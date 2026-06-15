@@ -1,488 +1,503 @@
-'use server'
+"use server";
+
+import { cookies } from "next/headers";
+import { ApiResponse } from "@/lib/api";
 
 import {
-    authRefresh,
-    AuthRefreshApiResponse,
-    AuthRefreshResponse,
-    emailVerifyService,
-    googleLoginService,
-    loginService,
-    loginSuccessService,
-    logoutService,
-    nicknameRegistService,
-    sendEmailCodeService,
     studentSignupService,
     teacherSignupService,
+    sendEmailCodeService,
+    emailVerifyService,
+    loginService,
+    loginSuccessService,
+    changePasswordService,
     tempPwService,
-} from '@/app/services/auth/service';
-import { cookies } from 'next/headers';
+    authRefresh,
+    logoutService,
+    nicknameRegistService,
+    kakaoLoginService,
+    googleLoginService,
+} from "@/app/services/auth/service";
 
-import { redirect } from 'next/navigation';
-import { LoginSuccessActionState, StudentSignupForm, TempPwActionState } from './type';
+
+const createErrorResponse = <T>(
+    error: unknown,
+    fallbackMessage: string
+): ApiResponse<T> => ({
+    timestamp: new Date().toISOString(),
+    status: 500,
+    code: "INTERNAL_SERVER_ERROR",
+    message:
+        error instanceof Error
+            ? error.message
+            : fallbackMessage,
+    data: null,
+});
+
+const createUnauthorizedResponse = <T>(): ApiResponse<T> => ({
+    timestamp: new Date().toISOString(),
+    status: 401,
+    code: "UNAUTHORIZED",
+    message: "로그인이 필요합니다.",
+    data: null,
+});
 
 
-// 이메일 인증 액션
-export const verifyEmailAction = async (
-    prevState: any,
-    formData: FormData
-) => {
+// ==========================================
+// 1-1. 학생 회원가입
+// ==========================================
 
+interface StudentSignupData {
+    userId: number;
+    email: string;
+    name: string;
+    role: string;
+    status: string;
+}
+
+export const studentSignupAction = async (
+    signupData: {
+        email: string;
+        password: string;
+        name: string;
+    }
+): Promise<ApiResponse<StudentSignupData>> => {
     try {
+        return await studentSignupService(signupData);
+    } catch (error) {
+        return createErrorResponse<StudentSignupData>(
+            error,
+            "학생 회원가입에 실패하였습니다."
+        );
+    }
+};
 
-        const email = formData.get('email') as string;
-        const code = formData.get('validationCode') as string;
 
-        await emailVerifyService({
+// ==========================================
+// 1-2. 강사 회원가입
+// ==========================================
+
+interface TeacherSignupData {
+    userId: number;
+    email: string;
+    name: string;
+    role: string;
+    category: string;
+    proof: string | null;
+    status: string;
+}
+
+export const teacherSignupAction = async (
+    formData: FormData
+): Promise<ApiResponse<TeacherSignupData>> => {
+    try {
+        return await teacherSignupService(formData);
+    } catch (error) {
+        return createErrorResponse<TeacherSignupData>(
+            error,
+            "강사 회원가입에 실패하였습니다."
+        );
+    }
+};
+
+
+// ==========================================
+// 1-n-1. 이메일 인증코드 발송
+// ==========================================
+
+interface SendEmailCodeData {
+    isDuplicated: boolean;
+    expiresIn: number;
+}
+
+export const sendEmailCodeAction = async (
+    email: string
+): Promise<ApiResponse<SendEmailCodeData>> => {
+    try {
+        return await sendEmailCodeService({
+            email,
+        });
+    } catch (error) {
+        return createErrorResponse<SendEmailCodeData>(
+            error,
+            "이메일 인증코드 발송에 실패하였습니다."
+        );
+    }
+};
+
+
+// ==========================================
+// 1-n-2. 이메일 인증하기
+// ==========================================
+
+type EmailVerifyData = null;
+
+export const verifyEmailAction = async (
+    email: string,
+    code: string
+): Promise<ApiResponse<EmailVerifyData>> => {
+    try {
+        return await emailVerifyService({
             email,
             code,
         });
-
-        return {
-            success: true,
-            message: '이메일 인증이 완료되었습니다.',
-        };
-
     } catch (error) {
-
-        return {
-            success: false,
-            message:
-                error instanceof Error
-                    ? error.message
-                    : '이메일 인증에 실패하였습니다.',
-        };
+        return createErrorResponse<EmailVerifyData>(
+            error,
+            "이메일 인증에 실패하였습니다."
+        );
     }
 };
 
 
-// 1. 학생 회원가입 액션
-export const studentSignupAction = async (signupData: StudentSignupForm) => {
-    try {
-        // 이미 껍데기가 순수 JSON 객체이므로 서비스에 바로 주입 가능!
-        await studentSignupService(signupData);
-    } catch (error) {
-        return {
-            success: false,
-            message: error instanceof Error ? error.message : '회원가입에 실패하였습니다.',
-        };
-    }
-    redirect('/auth/login');
-};
+// ==========================================
+// 2-1. 로그인
+// 성공 시 토큰을 쿠키에 저장
+// ==========================================
 
-// 2. 강사 회원가입 액션
-export const teacherSignupAction = async (formData: FormData) => {
-    console.log('1a')
-    try {
-        await teacherSignupService(formData);
-        console.log('2a')
-    } catch (error) {
-        console.log('3a error start')
-        return {
-            success: false,
-            message:
-                error instanceof Error
-                    ? error.message
-                    : '강사 회원가입에 실패하였습니다.',
-        };
-    }
-
-    console.log('4a action end')
-    redirect('/auth/login');
-};
-
-// 이메일 인증코드 발송 action
-
-export const sendEmailCodeAction = async (
-    prevState: any,
-    formData: FormData
-) => {
-
-    try {
-
-        const email = formData.get('email') as string;
-
-        const result =
-            await sendEmailCodeService({
-                email,
-            });
-
-        return {
-            success: true,
-            message: result.data.message,
-            expiresIn: result.data.expiresIn,
-        };
-
-    } catch (error) {
-
-        return {
-            success: false,
-            message:
-                error instanceof Error
-                    ? error.message
-                    : '이메일 인증코드 발송에 실패하였습니다.',
-        };
-    }
-};
-
-
-
-
-
-
-
-// 로그인 액션 함수
-export interface LoginActionState {
-    timestamp: string;
-    status: number;
-    code: string;
-    message: string;
+interface LoginData {
+    accessToken: string;
+    refreshToken: string;
+    status: string;
+    expiresIn: number;
 }
 
 export const loginAction = async (
     email: string,
     password: string
-): Promise<LoginActionState> => {
-
+): Promise<ApiResponse<LoginData>> => {
     try {
+        const result = await loginService({
+            email,
+            password,
+        });
 
-        const result =
-            await loginService({
-                email,
-                password,
-            });
-
-        // 로그인 실패
-        if (result.status !== 200) {
-            return {
-                timestamp:
-                    result.timestamp,
-                status:
-                    result.status,
-                code:
-                    result.code,
-                message:
-                    result.message,
-            };
+        if (!result.data) {
+            return result;
         }
 
-        const accessToken =
-            result.data?.accessToken;
+        const cookieStore = await cookies();
 
-        const refreshToken =
-            result.data?.refreshToken;
-
-        const cookieStore =
-            await cookies();
-
-        if (accessToken) {
-
-            cookieStore.set(
-                'accessToken',
-                accessToken,
-                {
-                    httpOnly: true,
-                    path: '/',
-                    maxAge:
-                        result.data?.expiresIn,
-                }
-            );
-        }
-
-        if (refreshToken) {
-
-            cookieStore.set(
-                'refreshToken',
-                refreshToken,
-                {
-                    httpOnly: true,
-                    path: '/',
-                    maxAge:
-                        60 * 60 * 24 * 7,
-                }
-            );
-        }
-
-        return {
-            timestamp:
-                result.timestamp,
-            status:
-                result.status,
-            code:
-                result.code,
-            message:
-                result.message,
-        };
-
-    } catch (error) {
-
-        return {
-            timestamp:
-                new Date().toISOString(),
-            status: 500,
-            code:
-                'INTERNAL_SERVER_ERROR',
-            message:
-                error instanceof Error
-                    ? error.message
-                    : '로그인에 실패하였습니다.',
-        };
-    }
-};
-
-
-
-// 로그인 성공 모달
-export const loginSuccessAction = async (): Promise<LoginSuccessActionState> => {
-
-    try {
-
-        const cookieStore =
-            await cookies();
-
-        const accessToken =
-            cookieStore
-                .get('accessToken')
-                ?.value;
-
-        if (!accessToken) {
-            return {
-                timestamp:
-                    new Date().toISOString(),
-                status: 401,
-                code: 'UNAUTHORIZED',
-                message:
-                    '다시 로그인 해주세요',
-            };
-        }
-
-        return await loginSuccessService(
-            accessToken
+        cookieStore.set(
+            "accessToken",
+            result.data.accessToken,
+            {
+                httpOnly: true,
+                path: "/",
+                maxAge: result.data.expiresIn,
+                sameSite: "lax",
+            }
         );
 
+        cookieStore.set(
+            "refreshToken",
+            result.data.refreshToken,
+            {
+                httpOnly: true,
+                path: "/",
+                maxAge: 60 * 60 * 24 * 7,
+                sameSite: "lax",
+            }
+        );
+
+        return result;
     } catch (error) {
-
-        return {
-            timestamp:
-                new Date().toISOString(),
-            status: 500,
-            code: 'INTERNAL_SERVER_ERROR',
-            message:
-                error instanceof Error
-                    ? error.message
-                    : '사용자 정보를 불러오는 데 실패하였습니다.',
-        };
-    }
-};
-
-export const tempPwAction = async (
-    prevState: TempPwActionState,
-    formData: FormData
-): Promise<TempPwActionState> => {
-
-    try {
-
-        const email =
-            formData.get('email') as string;
-
-
-        const result =
-            await tempPwService(email);
-
-
-        return {
-            success: true,
-            message:
-                result.message,
-        };
-
-    } catch (error) {
-
-        return {
-            success: false,
-            message:
-                error instanceof Error
-                    ? error.message
-                    : '임시 비밀번호 발급에 실패하였습니다.',
-        };
+        return createErrorResponse<LoginData>(
+            error,
+            "로그인에 실패하였습니다."
+        );
     }
 };
 
 
-export type LogoutActionState = {
-    success: boolean;
-    message: string;
-};
-export const logoutAction = async (): Promise<LogoutActionState> => {
+// ==========================================
+// 2-2. 로그인 완료 정보 조회
+// ==========================================
 
+interface LoginCompletedData {
+    role: "STUDENT" | "TEACHER" | "ADMIN";
+    is_tempPwd: boolean;
+    nickname: string | null;
+}
+
+export const loginSuccessAction = async (): Promise<
+    ApiResponse<LoginCompletedData>
+> => {
     try {
         const cookieStore = await cookies();
 
-        const accessToken = cookieStore.get("accessToken")?.value;
-        const refreshToken = cookieStore.get("refreshToken")?.value;
+        const accessToken =
+            cookieStore.get("accessToken")?.value;
+
+        if (!accessToken) {
+            return createUnauthorizedResponse<LoginCompletedData>();
+        }
+
+        return await loginSuccessService(accessToken);
+    } catch (error) {
+        return createErrorResponse<LoginCompletedData>(
+            error,
+            "로그인 정보를 불러오지 못했습니다."
+        );
+    }
+};
+
+
+// ==========================================
+// 3. 비밀번호 변경
+// ==========================================
+
+interface ChangePasswordData {
+    isPwdChanged: boolean;
+}
+
+export const changePasswordAction = async (
+    currentPassword: string,
+    password: string
+): Promise<ApiResponse<ChangePasswordData>> => {
+    try {
+        const cookieStore = await cookies();
+
+        const accessToken =
+            cookieStore.get("accessToken")?.value;
+
+        if (!accessToken) {
+            return createUnauthorizedResponse<ChangePasswordData>();
+        }
+
+        return await changePasswordService({
+            accessToken,
+            currentPassword,
+            password,
+        });
+    } catch (error) {
+        return createErrorResponse<ChangePasswordData>(
+            error,
+            "비밀번호 변경에 실패하였습니다."
+        );
+    }
+};
+
+
+// ==========================================
+// 4. 임시 비밀번호 발급
+// ==========================================
+
+type TempPasswordData = null;
+
+export const tempPwAction = async (
+    email: string
+): Promise<ApiResponse<TempPasswordData>> => {
+    try {
+        return await tempPwService(email);
+    } catch (error) {
+        return createErrorResponse<TempPasswordData>(
+            error,
+            "임시 비밀번호 발급에 실패하였습니다."
+        );
+    }
+};
+
+
+// ==========================================
+// 5. 자동 로그아웃 연장
+// 새 accessToken을 쿠키에 저장
+// ==========================================
+
+interface AuthRefreshData {
+    accessToken: string;
+    expiresIn: number;
+}
+
+export const authRefreshAction = async (): Promise<
+    ApiResponse<AuthRefreshData>
+> => {
+    try {
+        const cookieStore = await cookies();
+
+        const accessToken =
+            cookieStore.get("accessToken")?.value;
+
+        const refreshToken =
+            cookieStore.get("refreshToken")?.value;
 
         if (!accessToken || !refreshToken) {
-            return {
-                success: false,
-                message: "다시 로그인 해주세요.",
-            };
+            return createUnauthorizedResponse<AuthRefreshData>();
         }
-        await logoutService(accessToken, refreshToken);
-        // 쿠키 삭제
+
+        const result = await authRefresh(
+            refreshToken,
+            accessToken
+        );
+
+        if (result.data?.accessToken) {
+            cookieStore.set(
+                "accessToken",
+                result.data.accessToken,
+                {
+                    httpOnly: true,
+                    path: "/",
+                    maxAge: result.data.expiresIn,
+                    sameSite: "lax",
+                }
+            );
+        }
+
+        return result;
+    } catch (error) {
+        return createErrorResponse<AuthRefreshData>(
+            error,
+            "로그인 연장에 실패하였습니다."
+        );
+    }
+};
+
+
+// ==========================================
+// 6. 로그아웃
+// 성공 시 인증 쿠키 삭제
+// ==========================================
+
+type LogoutData = null;
+
+export const logoutAction = async (): Promise<
+    ApiResponse<LogoutData>
+> => {
+    try {
+        const cookieStore = await cookies();
+
+        const accessToken =
+            cookieStore.get("accessToken")?.value;
+
+        const refreshToken =
+            cookieStore.get("refreshToken")?.value;
+
+        if (!accessToken || !refreshToken) {
+            return createUnauthorizedResponse<LogoutData>();
+        }
+
+        const result = await logoutService(
+            accessToken,
+            refreshToken
+        );
+
         cookieStore.delete("accessToken");
         cookieStore.delete("refreshToken");
 
-        return {
-            success: true,
-            message: "로그아웃 되었습니다.",
-        };
-
+        return result;
     } catch (error) {
-
-        return {
-            success: false,
-            message:
-                error instanceof Error
-                    ? error.message
-                    : "로그아웃에 실패하였습니다.",
-        };
-    }
-};
-
-
-// 로그인 연장 액션 함수
-export const authRefreshAction = async (): Promise<AuthRefreshApiResponse> => {
-
-    const cookieStore = await cookies();
-
-    const refreshToken = cookieStore.get("refreshToken")?.value;
-    const accessToken = cookieStore.get("accessToken")?.value;
-    if (!refreshToken || !accessToken) {
-        throw new Error('로그인 연장 실패');
-    }
-
-    const refreshData = await authRefresh(refreshToken, accessToken);
-
-    if (refreshData?.data) {
-        cookieStore.set('accessToken', refreshData.data.accessToken,
-            {
-                httpOnly: true,
-                maxAge: 60 * 60,
-                path: '/',
-            }
+        return createErrorResponse<LogoutData>(
+            error,
+            "로그아웃에 실패하였습니다."
         );
     }
-    return refreshData;
-}
-
-
-// 카카오용 액션 함수
-import { kakaoLogin } from "@/app/services/auth/service";
-
-export const handleKakaoLoginCallback = async (code: string) => {
-    if (!code) {
-        throw new Error("인가 코드가 없습니다.");
-    }
-
-    // 1️⃣ 카카오 로그인 API 호출
-    const resData = await kakaoLogin(code);
-
-    console.log(resData);
-
-    const cookieStore = await cookies();
-
-    const accessToken = resData?.data?.accessToken;
-    const refreshToken = resData?.data?.refreshToken;
-
-    if (accessToken) {
-        cookieStore.set("accessToken", accessToken, {
-            httpOnly: true,
-            path: "/",
-            maxAge: 60 * 60, // 1시간
-        });
-    }
-
-    if (refreshToken) {
-        cookieStore.set("refreshToken", refreshToken, {
-            httpOnly: true,
-            path: "/",
-            maxAge: 60 * 60 * 24 * 30, // 30일
-        });
-    }
-
-    // 2️⃣ Google이랑 동일한 응답 구조 유지
-    return {
-        success: true,
-        data: resData.data,
-    };
 };
 
 
-// 구글용 액션 함수
-export const googleLoginAction = async (code: string) => {
-    const response = await googleLoginService(code);
+// ==========================================
+// 7. 닉네임 등록
+// accessToken은 쿠키에서 조회
+// ==========================================
 
-    const tokenData = response.data;
-
-    if (!tokenData) {
-        throw new Error('토큰 정보가 존재하지 않습니다.');
-    }
-
-    const cookieStore = await cookies();
-
-    cookieStore.set(
-        'accessToken',
-        tokenData.accessToken,
-        {
-            httpOnly: true,
-            path: '/',
-            maxAge: 60 * 60,
-        }
-    );
-
-    cookieStore.set(
-        'refreshToken',
-        tokenData.refreshToken,
-        {
-            httpOnly: true,
-            path: '/',
-            maxAge: 60 * 60 * 24 * 30,
-        }
-    );
-
-    return response; // 백엔드 응답 그대로
-};
-
-// 닉네임 입력모달에서 사용할 닉네임 등록 액션
-export interface NicknameRegistResponse {
-    timestamp: string;
-    status: number;
-    code: string;
-    message: string;
-    data?: {
-        nickname: string;
-    };
+interface NicknameRegistData {
+    nickname: string;
 }
 
 export const nicknameRegistAction = async (
     nickname: string
-): Promise<NicknameRegistResponse> => {
+): Promise<ApiResponse<NicknameRegistData>> => {
+    try {
+        const cookieStore = await cookies();
 
-    const cookieStore = await cookies();
+        const accessToken =
+            cookieStore.get("accessToken")?.value;
 
-    const accessToken =
-        cookieStore.get('accessToken')?.value;
+        if (!accessToken) {
+            return {
+                timestamp: new Date().toISOString(),
+                status: 401,
+                code: "UNAUTHORIZED",
+                message: "로그인이 필요합니다.",
+                data: null,
+            };
+        }
 
-    if (!accessToken) {
+        return await nicknameRegistService(
+            nickname,
+            accessToken
+        );
+    } catch (error) {
         return {
-            status: 401,
-            message: '로그인이 필요합니다.',
-            code: 'FAIL',
             timestamp: new Date().toISOString(),
+            status: 500,
+            code: "INTERNAL_SERVER_ERROR",
+            message:
+                error instanceof Error
+                    ? error.message
+                    : "닉네임 등록에 실패하였습니다.",
+            data: null,
         };
     }
+};
 
-    return await nicknameRegistService(
-        nickname,
-        accessToken
-    );
+// ==========================================
+// 8. 카카오, 구글 로그인 api
+// accessToken은 쿠키에서 조회
+// ==========================================
+
+interface OAuthLoginData {
+    accessToken: string;
+    refreshToken: string;
+    status: string;
+    expiresIn: number;
+}
+
+const setOAuthCookies = async (data: OAuthLoginData) => {
+    const cookieStore = await cookies();
+
+    cookieStore.set("accessToken", data.accessToken, {
+        httpOnly: true,
+        path: "/",
+        maxAge: data.expiresIn,
+        sameSite: "lax",
+    });
+
+    cookieStore.set("refreshToken", data.refreshToken, {
+        httpOnly: true,
+        path: "/",
+        maxAge: 60 * 60 * 24 * 30,
+        sameSite: "lax",
+    });
+};
+
+export const handleKakaoLoginCallback = async (
+    code: string
+): Promise<ApiResponse<OAuthLoginData>> => {
+    if (!code) {
+        throw new Error("카카오 인가 코드가 없습니다.");
+    }
+
+    const result = await kakaoLoginService(code);
+
+    if (result.data) {
+        await setOAuthCookies(result.data);
+    }
+
+    return result;
+};
+
+export const googleLoginAction = async (
+    code: string
+): Promise<ApiResponse<OAuthLoginData>> => {
+    if (!code) {
+        throw new Error("구글 인가 코드가 없습니다.");
+    }
+
+    const result = await googleLoginService(code);
+
+    if (result.data) {
+        await setOAuthCookies(result.data);
+    }
+
+    return result;
 };

@@ -1,132 +1,179 @@
-const BASE_SERVER_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-import { EmailVerifyForm, KakaoLoginResponse, LoginRequest, LoginResponse, LoginSuccessActionState, SendEmailCodeForm, SendEmailCodeResponse, StudentSignupForm, TeacherSignupForm, TempPwResponse } from "@/features/auth/type";
 import { ApiResponse } from "@/lib/api";
 
-// 자체 로그인,회원가입 관련
+const BASE_SERVER_URL =
+    process.env.NEXT_PUBLIC_API_BASE_URL;
+
 
 /*
   1-1. 학생 회원가입
   1-2. 강사 회원가입
   1-n-1. 이메일 인증코드 발송
-  1-n-2. 이메일 인증하기(인증코드 기반)
-  2. 로그인
+  1-n-2. 이메일 인증하기
+  2-1. 로그인
+  2-2. 로그인 완료 정보 조회
   3. 비밀번호 변경
-  4. 임시비밀번호 발급
+  4. 임시 비밀번호 발급
   5. 자동 로그아웃 연장
   6. 로그아웃
- */
+*/
 
 
+// ==========================================
+// 1-1. 학생 회원가입
+// POST /api/v1/auth/signup/student
+// ==========================================
 
-// 이메일 인증코드 발송
-export const sendEmailCodeService = async (
-    emailData: SendEmailCodeForm
-): Promise<SendEmailCodeResponse> => {
+export interface StudentSignupData {
+    userId: number;
+    email: string;
+    name: string;
+    role: string;
+    status: string;
+}
 
-    const response = await fetch(
-        `${BASE_SERVER_URL}/api/v1/auth/email/send`,
-        {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(emailData),
-        }
-    );
-
-    const result = await response.json();
-
-    if (!response.ok) {
-
-        throw new Error(
-            result.message ||
-            '이메일 인증코드 발송에 실패하였습니다.'
-        );
-    }
-
-    return result;
-};
-
-
-// 학생 회원가입
 export const studentSignupService = async (
-    signupData: StudentSignupForm
-) => {
-
+    signupData: {
+        email: string;
+        password: string;
+        name: string;
+    }
+): Promise<ApiResponse<StudentSignupData>> => {
     const response = await fetch(
         `${BASE_SERVER_URL}/api/v1/auth/signup/student`,
         {
-            method: 'POST',
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json",
             },
             body: JSON.stringify(signupData),
         }
     );
 
-    const result = await response.json();
+    const result: ApiResponse<StudentSignupData> =
+        await response.json();
 
     if (!response.ok) {
         throw new Error(
             result.message ||
-            '학생 회원가입에 실패하였습니다.'
+            "학생 회원가입에 실패하였습니다."
         );
     }
 
     return result;
 };
 
-// 강사 회원가입
+
+// ==========================================
+// 1-2. 강사 회원가입
+// POST /api/v1/auth/signup/teacher
+// ==========================================
+
+export interface TeacherSignupData {
+    userId: number;
+    email: string;
+    name: string;
+    role: string;
+    category: string;
+    proof: string | null;
+    status: string;
+}
+
 export const teacherSignupService = async (
     formData: FormData
-) => {
-    console.log('1s')
+): Promise<ApiResponse<TeacherSignupData>> => {
     const response = await fetch(
         `${BASE_SERVER_URL}/api/v1/auth/signup/teacher`,
         {
-            method: 'POST',
-            body: formData, // 👈 그대로
+            method: "POST",
+            body: formData,
         }
     );
-    console.log('2s', response)
 
-    const result = await response.json();
+    const result: ApiResponse<TeacherSignupData> =
+        await response.json();
 
-    console.log('3s', result)
     if (!response.ok) {
         throw new Error(
             result.message ||
-            '강사 회원가입에 실패하였습니다.'
+            "강사 회원가입에 실패하였습니다."
         );
     }
 
-    console.log('4 service 끝')
     return result;
 };
 
 
-// 이메일 인증
-export const emailVerifyService = async (
-    verifyData: EmailVerifyForm
-) => {
+// ==========================================
+// 1-n-1. 이메일 인증코드 발송
+// POST /api/v1/auth/email/send
+// ==========================================
 
+export interface SendEmailCodeData {
+    isDuplicated: boolean;
+    expiresIn: number;
+}
+
+export const sendEmailCodeService = async (
+    emailData: {
+        email: string;
+    }
+): Promise<ApiResponse<SendEmailCodeData>> => {
+    const response = await fetch(
+        `${BASE_SERVER_URL}/api/v1/auth/email/send`,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(emailData),
+        }
+    );
+
+    const result: ApiResponse<SendEmailCodeData> =
+        await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            result.message ||
+            "이메일 인증코드 발송에 실패하였습니다."
+        );
+    }
+
+    return result;
+};
+
+
+// ==========================================
+// 1-n-2. 이메일 인증하기
+// POST /api/v1/auth/email/verify
+// ==========================================
+
+export type EmailVerifyData = null;
+
+export const emailVerifyService = async (
+    verifyData: {
+        email: string;
+        code: string;
+    }
+): Promise<ApiResponse<EmailVerifyData>> => {
     const response = await fetch(
         `${BASE_SERVER_URL}/api/v1/auth/email/verify`,
         {
-            method: 'POST',
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json",
             },
             body: JSON.stringify(verifyData),
         }
     );
 
-    const result = await response.json();
+    const result: ApiResponse<EmailVerifyData> =
+        await response.json();
 
     if (!response.ok) {
         throw new Error(
             result.message ||
-            '이메일 인증에 실패하였습니다.'
+            "이메일 인증에 실패하였습니다."
         );
     }
 
@@ -134,38 +181,42 @@ export const emailVerifyService = async (
 };
 
 
+// ==========================================
+// 2-1. 로그인
+// POST /api/v1/auth/login
+// ==========================================
 
+export interface LoginData {
+    accessToken: string;
+    refreshToken: string;
+    status: string;
+    expiresIn: number;
+}
 
-// 로그인 서비스
-
-export const loginService = async ({
-    email,
-    password,
-}: LoginRequest): Promise<ApiResponse<LoginResponse>> => {
-
+export const loginService = async (
+    loginData: {
+        email: string;
+        password: string;
+    }
+): Promise<ApiResponse<LoginData>> => {
     const response = await fetch(
         `${BASE_SERVER_URL}/api/v1/auth/login`,
         {
-            method: 'POST',
+            method: "POST",
             headers: {
-                'Content-Type':
-                    'application/json',
+                "Content-Type": "application/json",
             },
-            body: JSON.stringify({
-                email,
-                password,
-            }),
+            body: JSON.stringify(loginData),
         }
     );
 
-    const result: ApiResponse<LoginResponse> =
+    const result: ApiResponse<LoginData> =
         await response.json();
 
-    // 서버 에러만 throw
-    if (response.status >= 500) {
+    if (!response.ok) {
         throw new Error(
             result.message ||
-            '서버 오류가 발생했습니다.'
+            "로그인에 실패하였습니다."
         );
     }
 
@@ -173,16 +224,24 @@ export const loginService = async ({
 };
 
 
+// ==========================================
+// 2-2. 로그인 완료 정보 조회
+// GET /api/v1/auth/login/completed
+// ==========================================
 
-// 로그인 성공 모달(결과 띄우는것)
+export interface LoginCompletedData {
+    role: "STUDENT" | "TEACHER" | "ADMIN";
+    is_tempPwd: boolean;
+    nickname: string | null;
+}
+
 export const loginSuccessService = async (
     accessToken: string
-): Promise<LoginSuccessActionState> => {
-
+): Promise<ApiResponse<LoginCompletedData>> => {
     const response = await fetch(
         `${BASE_SERVER_URL}/api/v1/auth/login/completed`,
         {
-            method: 'GET',
+            method: "GET",
             headers: {
                 Authorization:
                     `Bearer ${accessToken}`,
@@ -190,15 +249,13 @@ export const loginSuccessService = async (
         }
     );
 
-    const result:
-        LoginSuccessActionState =
+    const result: ApiResponse<LoginCompletedData> =
         await response.json();
 
-    // 500은 글로벌 에러
-    if (response.status >= 500) {
+    if (!response.ok) {
         throw new Error(
             result.message ||
-            '서버 오류'
+            "로그인 정보를 불러오지 못했습니다."
         );
     }
 
@@ -206,102 +263,101 @@ export const loginSuccessService = async (
 };
 
 
-//임시비번 발급 서비스
+// ==========================================
+// 3. 비밀번호 변경
+// PATCH /api/v1/user/update
+// ==========================================
+
+export interface ChangePasswordData {
+    isPwdChanged: boolean;
+}
+
+export const changePasswordService = async (
+    passwordData: {
+        accessToken: string;
+        currentPassword: string;
+        password: string;
+    }
+): Promise<ApiResponse<ChangePasswordData>> => {
+    const {
+        accessToken,
+        currentPassword,
+        password,
+    } = passwordData;
+
+    const response = await fetch(
+        `${BASE_SERVER_URL}/api/v1/user/update`,
+        {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization:
+                    `Bearer ${accessToken}`,
+            },
+            body: JSON.stringify({
+                currentPassword,
+                password,
+            }),
+        }
+    );
+
+    const result: ApiResponse<ChangePasswordData> =
+        await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            result.message ||
+            "비밀번호 변경에 실패하였습니다."
+        );
+    }
+
+    return result;
+};
+
+
+// ==========================================
+// 4. 임시 비밀번호 발급
+// POST /api/v1/auth/password/temp
+// ==========================================
+
+export type TempPasswordData = null;
 
 export const tempPwService = async (
     email: string
-): Promise<TempPwResponse> => {
-
-    try {
-
-        const response = await fetch(
-            `${BASE_SERVER_URL}/api/v1/auth/password/temp`,
-            {
-                method: 'POST',
-
-                headers: {
-                    'Content-Type':
-                        'application/json',
-                },
-
-                body: JSON.stringify({
-                    email,
-                }),
-            }
-        );
-
-
-        const result:
-            TempPwResponse =
-            await response.json();
-
-
-        if (
-            response.ok &&
-            result.success
-        ) {
-
-            return result;
+): Promise<ApiResponse<TempPasswordData>> => {
+    const response = await fetch(
+        `${BASE_SERVER_URL}/api/v1/auth/password/temp`,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                email,
+            }),
         }
+    );
 
+    const result: ApiResponse<TempPasswordData> =
+        await response.json();
 
+    if (!response.ok) {
         throw new Error(
             result.message ||
-            '임시 비밀번호 발급에 실패하였습니다.'
-        );
-
-    } catch (error) {
-
-        if (error instanceof Error) {
-            throw error;
-        }
-
-        throw new Error(
-            '알수없는 오류가 발생했습니다.'
+            "임시 비밀번호 발급에 실패하였습니다."
         );
     }
+
+    return result;
 };
 
 
+// ==========================================
+// 5. 자동 로그아웃 연장
+// POST /api/v1/auth/newtoken
+// ==========================================
 
-// 로그아웃서비스
-export type LogoutServiceResponse = {
-    success: boolean;
-    message: string;
-};
-
-export const logoutService = async (
-    accessToken: string,
-    refreshToken: string
-): Promise<LogoutServiceResponse> => {
-
-    const res = await fetch(`${BASE_SERVER_URL}/api/v1/auth/logout`, {
-        method: "POST",
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Refresh-Token": refreshToken,
-        },
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-        throw new Error(data?.message || "로그아웃 실패");
-    }
-
-    return data;
-};
-
-
-// 토큰 재발급 ( 헤더 - 연장 버튼 )
-
-export interface AuthRefreshApiResponse {
-    success: boolean;
-    message: string;
-    data?: AuthRefreshResponse;
-}
-
-export interface AuthRefreshResponse {
+export interface AuthRefreshData {
     accessToken: string;
     expiresIn: number;
 }
@@ -309,130 +365,92 @@ export interface AuthRefreshResponse {
 export const authRefresh = async (
     refreshToken: string,
     accessToken: string
-): Promise<AuthRefreshApiResponse> => {
-    // console.log(1)
-    const response = await fetch(`${BASE_SERVER_URL}/api/v1/auth/newtoken`,
-        {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Refresh-Token': `${refreshToken}`,
-                'Authorization': `Bearer ${accessToken}`
-            }
-        }
-    )
-    // console.log(2, response)
-    if (!response.ok) {
-        // console.log(3, 'no ok')
-        return response.json();
-    }
-    // console.log(4, 'ok')
-    return response.json();
-}
-
-
-
-// 카카오 API 관련 서비스 함수
-export const kakaoLogin = async (
-    code: string
-): Promise<KakaoLoginResponse> => {
-
+): Promise<ApiResponse<AuthRefreshData>> => {
     const response = await fetch(
-        `${BASE_SERVER_URL}/api/v1/auth/kakaologin`,
+        `${BASE_SERVER_URL}/api/v1/auth/newtoken`,
         {
-            method: 'POST',
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json",
+                "Refresh-Token": refreshToken,
+                Authorization:
+                    `Bearer ${accessToken}`,
             },
-            credentials: 'include',
-            body: JSON.stringify({
-                code
-            }),
         }
     );
 
-    const result = await response.json();
+    const result: ApiResponse<AuthRefreshData> =
+        await response.json();
 
     if (!response.ok) {
-        // console.log(response.status);
-        // console.log(response.statusText);
         throw new Error(
             result.message ||
-            '카카오 로그인에 실패하였습니다.'
+            "로그인 연장에 실패하였습니다."
         );
     }
 
     return result;
 };
 
-export interface GoogleLoginData {
-    timestamp: string;
-    status: number;
-    code: string;
-    message: string;
-    data?: {
-        accessToken: string;
-        refreshToken: string;
-        status: string;
-        expiresIn: number;
-    }
-}
 
+// ==========================================
+// 6. 로그아웃
+// POST /api/v1/auth/logout
+// ==========================================
 
+export type LogoutData = null;
 
-// 구글 API 관련 서비스 함수
-// 추후 김태완이 알아서 정의할 예정
-export const googleLoginService = async (
-    code: string
-): Promise<GoogleLoginData> => {
-    const res = await fetch(
-        `${BASE_SERVER_URL}/api/v1/auth/googlelogin`,
+export const logoutService = async (
+    accessToken: string,
+    refreshToken: string
+): Promise<ApiResponse<LogoutData>> => {
+    const response = await fetch(
+        `${BASE_SERVER_URL}/api/v1/auth/logout`,
         {
-            method: 'POST',
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json',
+                Authorization:
+                    `Bearer ${accessToken}`,
+                "Refresh-Token":
+                    refreshToken,
             },
-            body: JSON.stringify({ code }),
         }
     );
 
-    const response: GoogleLoginData =
-        await res.json();
+    const result: ApiResponse<LogoutData> =
+        await response.json();
 
-    if (!res.ok) {
+    if (!response.ok) {
         throw new Error(
-            response.message ||
-            `서버 통신 에러 (${res.status})`
+            result.message ||
+            "로그아웃에 실패하였습니다."
         );
     }
 
-    return response;
+    return result;
 };
 
 
-// 닉네임 입력모달에서 사용할 닉네임 등록 서비스
-export interface NicknameRegistResponse {
-    timestamp: string;
-    status: number;
-    code: string;
-    message: string;
-    data?: {
-        nickname: string;
-    };
+// ==========================================
+// 7. 닉네임 등록
+// PATCH /api/v1/user/register/nickname
+// ==========================================
+
+export interface NicknameRegistData {
+    nickname: string;
 }
 
 export const nicknameRegistService = async (
     nickname: string,
     accessToken: string
-): Promise<NicknameRegistResponse> => {
-
+): Promise<ApiResponse<NicknameRegistData>> => {
     const response = await fetch(
         `${BASE_SERVER_URL}/api/v1/user/register/nickname`,
         {
-            method: 'PATCH',
+            method: "PATCH",
             headers: {
+                "Content-Type": "application/json",
                 Authorization: `Bearer ${accessToken}`,
-                'Content-Type': 'application/json',
             },
             body: JSON.stringify({
                 nickname,
@@ -440,5 +458,88 @@ export const nicknameRegistService = async (
         }
     );
 
-    return await response.json();
+    const result: ApiResponse<NicknameRegistData> =
+        await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            result.message ||
+            "닉네임 등록에 실패하였습니다."
+        );
+    }
+
+    return result;
+};
+
+// ==========================================
+// 8-1. 카카오 로그인
+// POST /api/v1/auth/kakaologin
+// ==========================================
+
+export interface KakaoLoginData {
+    accessToken: string;
+    refreshToken: string;
+    status: string;
+    expiresIn: number;
+}
+
+export const kakaoLoginService = async (
+    code: string
+): Promise<ApiResponse<KakaoLoginData>> => {
+    const response = await fetch(
+        `${BASE_SERVER_URL}/api/v1/auth/kakaologin`,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ code }),
+        }
+    );
+
+    const result: ApiResponse<KakaoLoginData> = await response.json();
+
+    if (!response.ok) {
+        throw new Error(result.message || "카카오 로그인에 실패하였습니다.");
+    }
+
+    return result;
+};
+
+
+// ==========================================
+// 8-2. 구글 로그인
+// POST /api/v1/auth/googlelogin
+// ==========================================
+
+export interface GoogleLoginTokenData {
+    accessToken: string;
+    refreshToken: string;
+    status: string;
+    expiresIn: number;
+}
+
+export type GoogleLoginData = ApiResponse<GoogleLoginTokenData>;
+
+export const googleLoginService = async (
+    code: string
+): Promise<GoogleLoginData> => {
+    const response = await fetch(
+        `${BASE_SERVER_URL}/api/v1/auth/googlelogin`,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ code }),
+        }
+    );
+
+    const result: GoogleLoginData = await response.json();
+
+    if (!response.ok) {
+        throw new Error(result.message || "구글 로그인에 실패하였습니다.");
+    }
+
+    return result;
 };

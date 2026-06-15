@@ -15,13 +15,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import TwoButtonModal from "@/features/modal/TwoButtonModal";
-import { FriendData } from "@/app/services/phone/chat/service";
-import {
-    blockFriendAction,
-    createChatRoomAction,
-    deleteFriendAction,
-} from "../../../chat/action";
+import { FriendData } from "@/app/services/phone/friend/service";
 import { useState } from "react";
+import { createChatRoomAction } from "@/features/chat/action";
+import { updateFriendStatus } from "@/features/friend/action";
 
 interface FriendDetailProps {
     friend: FriendData | null;
@@ -72,14 +69,14 @@ export default function FriendDetail({ friend }: FriendDetailProps) {
                     title: "해당 친구를 차단하시겠습니까?",
                     description: "차단 후에는 친구 목록에서 보이지 않습니다.",
                     onConfirm: async () => {
-                        const response = await blockFriendAction(friend.userId);
+                        const response = await updateFriendStatus("BLOCK", friend.userId);
 
-                        if (!response.success) {
+                        if (response.status < 200 || response.status >= 300) {
                             toast.error(response.message);
                             return;
                         }
 
-                        toast(response.message);
+                        toast.success(response.message);
                         setModalType(null);
                         router.push("/student/phone/friends?status=friend");
                         router.refresh();
@@ -92,14 +89,14 @@ export default function FriendDetail({ friend }: FriendDetailProps) {
                     title: "해당 친구를 삭제하시겠습니까?",
                     description: "친구 관계가 해제됩니다.",
                     onConfirm: async () => {
-                        const response = await deleteFriendAction(friend.userId);
+                        const response = await updateFriendStatus("DELETE", friend.userId);
 
-                        if (!response.success) {
+                        if (response.status < 200 || response.status >= 300) {
                             toast.error(response.message);
                             return;
                         }
 
-                        toast(response.message);
+                        toast.success(response.message);
                         setModalType(null);
                         router.push("/student/phone/friends?status=friend");
                         router.refresh();

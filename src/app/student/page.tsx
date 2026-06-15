@@ -5,6 +5,7 @@ import BuildingItem from "@/components/city/BuildingItem";
 import { getMyInfo } from "@/features/user/action";
 import NicknameInputModal from "@/features/auth/components/NicknameInputModal";
 import arthall from '@/app/assets/img/arthall.png'
+import Phone from "@/components/city/Phone";
 import school from '@/app/assets/img/school.png'
 
 interface Building {
@@ -79,6 +80,8 @@ export default async function StudentMainPage() {
                     alt="예술 건물"
                     width={200}
                 />
+            </div>
+            <Phone />
             </div> */}
             {/* {POSITIONS.map((position) => {
 

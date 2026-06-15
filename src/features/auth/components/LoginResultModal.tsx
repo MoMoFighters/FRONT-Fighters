@@ -44,7 +44,7 @@ export default function LoginResultModal({
                 return;
             }
 
-            const { role, is_temp } = result.data!;
+            const { role, is_tempPwd } = result.data!;
 
             if (role === 'TEACHER') {
                 router.replace('/teacher');
@@ -57,7 +57,7 @@ export default function LoginResultModal({
             }
 
             if (role === 'STUDENT') {
-                if (is_temp) {
+                if (is_tempPwd) {
                     router.replace('/student/mypage/edit');
                     return;
                 }

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import FriendItem from "@/components/phone/friends/FriendItem";
-import { searchUserAction } from "../../../chat/action";
+import { searchUserAction } from "@/features/friend/action";
 
 interface FriendInfo {
     userId: number;
@@ -23,11 +23,25 @@ export default function FriendSearchList() {
         e.preventDefault();
 
         const response = await searchUserAction(searchValue);
+
+        if (response.status < 200 || response.status >= 300) {
+            setUsers([]);
+            setMessage(response.message);
+            return;
+        }
+
         const searchResult = response.data ?? [];
 
-        const filteredResult = searchResult.filter(
-            user => user.role === "STUDENT"
-        );
+        const filteredResult: FriendInfo[] = searchResult
+            .filter(user => user.role === "STUDENT")
+            .map(user => ({
+                userId: user.userId,
+                name: user.name ?? "이름 없음",
+                status: user.status,
+                role: user.role,
+                profileImageUrl: user.profileImageUrl ?? "",
+                lectureTitle: user.lectureTitle,
+            }));
 
         setUsers(filteredResult);
         setMessage(
