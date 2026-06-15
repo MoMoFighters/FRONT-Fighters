@@ -13,6 +13,7 @@ interface StudentLectureItemProps {
     progress?: number;
     chapterCount?: number;
     reviewCount?: number;
+    showLearningStatus?: boolean;
 }
 
 export default function StudentLectureItem({
@@ -23,6 +24,7 @@ export default function StudentLectureItem({
     progress = 0,
     chapterCount = 12,
     reviewCount = 133,
+    showLearningStatus = true,
 }: StudentLectureItemProps) {
     return (
         <Link
@@ -45,7 +47,7 @@ export default function StudentLectureItem({
                 />
             </div>
 
-            <div className="min-w-0">
+            <div className="flex h-full min-w-0 flex-col">
                 <div className="mb-2 flex items-center gap-2">
                     <span className="rounded-full bg-indigo-50 px-2.5 py-1 text-xs font-bold text-indigo-500">
                         {categoryLabel}
@@ -60,19 +62,21 @@ export default function StudentLectureItem({
                     {lecture.description}
                 </p>
 
-                <div className="mt-4 flex items-center gap-3 text-xs font-semibold text-slate-400">
-                    <Progress
-                        value={progress}
-                        id={`lecture-progress-${lecture.id}`}
-                        className="max-w-40"
-                    />
+                {showLearningStatus && (
+                    <div className="mt-auto flex items-center gap-3 text-xs font-semibold text-slate-400">
+                        <Progress
+                            value={progress}
+                            id={`lecture-progress-${lecture.id}`}
+                            className="max-w-40"
+                        />
 
-                    <span>진도율 {progress}%</span>
-                    <span>총 {chapterCount}강</span>
-                </div>
+                        <span>진도율 {progress}%</span>
+                        <span>총 {chapterCount}강</span>
+                    </div>
+                )}
             </div>
 
-            <div className="flex flex-col items-end gap-10">
+            <div className="flex h-full flex-col items-end justify-between">
                 <div className="flex items-center gap-1.5 text-sm font-bold text-slate-600">
                     <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
                     {lecture.averageRating ?? 0}
@@ -82,18 +86,20 @@ export default function StudentLectureItem({
                     ({reviewCount})
                 </div>
 
-                <span
-                    className={`
-                        rounded-lg border px-3 py-1.5
-                        text-sm font-bold
-                        ${lecture.isEnrolled
-                            ? "border-indigo-300 text-indigo-500"
-                            : "border-slate-300 text-slate-500"
-                        }
-                    `}
-                >
-                    {lecture.isEnrolled ? "학습 중" : "미시청"}
-                </span>
+                {showLearningStatus && (
+                    <span
+                        className={`
+                            rounded-lg border px-3 py-1.5
+                            text-sm font-bold
+                            ${lecture.isEnrolled
+                                ? "border-indigo-300 text-indigo-500"
+                                : "border-slate-300 text-slate-500"
+                            }
+                        `}
+                    >
+                        {lecture.isEnrolled ? "학습 중" : "미시청"}
+                    </span>
+                )}
             </div>
         </Link>
     );

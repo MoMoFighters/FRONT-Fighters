@@ -39,7 +39,6 @@ export default async function LectureListPage({
     const payload: GetLecturesRequest = {
         category: categoryMeta?.apiValue,
         keyword,
-        enrolled: false,
         page: Number(page) || 1,
     };
 
@@ -109,6 +108,7 @@ export default async function LectureListPage({
                             categoryLabel={categoryMeta?.label ?? "전체"}
                             buildingImage={categoryMeta?.buildingImage ?? defaultCategoryMeta.buildingImage}
                             getHref={(lecture) => `/student/lectures/${lecture.id}`}
+                            showLearningStatus={false}
                         />
 
                         <ListPagination
