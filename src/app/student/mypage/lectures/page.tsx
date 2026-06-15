@@ -1,4 +1,4 @@
-import { getLectures } from "@/app/services/lecture/service";
+﻿import { getLectures } from "@/app/services/lecture/service";
 import ListPagination from "@/components/common/ListPagination";
 import MyPageNav from "@/components/mypage/MyPageNav";
 import LectureFilterBtn from "@/features/lecture/components/buttons/LectureFilterBtn";
@@ -58,7 +58,7 @@ export default async function MyLecturesListPage({
     const totalPages = responseData.totalPages;
     const currentPage = Number(page) || 1;
 
-    // 하드코딩 - 추후 실제 학습/건물 성장 데이터로 교체 필요
+    // 하드코딩 - 추후 실제 데이터로 교체 필요
     const categoryProgress = 42;
     const buildingLevel = 3;
     const currentExp = 320;
@@ -80,7 +80,7 @@ export default async function MyLecturesListPage({
         return `?${params.toString()}`;
     }
 
-    // 하드코딩 - 추후 실제 이어보기 API 데이터로 교체 필요
+    // 하드코딩 - 추후 실제 데이터로 교체 필요
     const resumeLecture = responseData.content[0];
     const resumeCategory = resumeLecture
         ? CATEGORY_URL_MAP[resumeLecture.category]
@@ -99,14 +99,14 @@ export default async function MyLecturesListPage({
                             href: "/student",
                         },
                         {
-                            label: "마이페이지",
+                            label: "留덉씠?섏씠吏",
                             href: "/student/mypage",
                         },
                         {
-                            label: "내 강의",
+                            label: "??媛뺤쓽",
                         },
                     ]}
-                    title="내 강의"
+                    title="??媛뺤쓽"
                 />
 
                 <MyPageNav />
@@ -122,7 +122,7 @@ export default async function MyLecturesListPage({
 
                 <div className="mb-4 flex items-center justify-between">
                     <p className="text-sm font-semibold text-slate-500">
-                        전체 수강 강의{" "}
+                        ?꾩껜 ?섍컯 媛뺤쓽{" "}
                         <span className="text-indigo-500">
                             {responseData.totalElements}
                         </span>
@@ -150,8 +150,8 @@ export default async function MyLecturesListPage({
 
                         <p className="text-lg font-bold">
                             {category
-                                ? "해당 카테고리에 수강 중인 강의가 없습니다."
-                                : "아직 수강 중인 강의가 없습니다."}
+                                ? "?대떦 移댄뀒怨좊━???섍컯 以묒씤 媛뺤쓽媛 ?놁뒿?덈떎."
+                                : "?꾩쭅 ?섍컯 以묒씤 媛뺤쓽媛 ?놁뒿?덈떎."}
                         </p>
                     </div>
                 )}
@@ -176,7 +176,7 @@ export default async function MyLecturesListPage({
 
                         {resumeLecture && resumeCategoryMeta && resumeCategory && (
                             <ResumeLectureCard
-                                href={`/student/${resumeCategory}/lectures/${resumeLecture.id}`}
+                                href={`/student/${resumeCategory}/lectures/${resumeLecture.lectureId}`}
                                 thumbnail={resumeCategoryMeta.buildingImage}
                                 title={resumeLecture.title}
                                 description={resumeLecture.description}
@@ -190,7 +190,7 @@ export default async function MyLecturesListPage({
 
                         {resumeLecture && resumeCategoryMeta && resumeCategory && (
                             <ResumeLectureCard
-                                href={`/student/${resumeCategory}/lectures/${resumeLecture.id}`}
+                                href={`/student/${resumeCategory}/lectures/${resumeLecture.lectureId}`}
                                 thumbnail={resumeCategoryMeta.buildingImage}
                                 title={resumeLecture.title}
                                 description={resumeLecture.description}

@@ -1,4 +1,4 @@
-import Image, { StaticImageData } from "next/image";
+﻿import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
 import { Star } from "lucide-react";
 
@@ -66,11 +66,11 @@ export default function StudentLectureItem({
                     <div className="mt-auto flex items-center gap-3 text-xs font-semibold text-slate-400">
                         <Progress
                             value={progress}
-                            id={`lecture-progress-${lecture.id}`}
+                            id={`lecture-progress-${lecture.lectureId}`}
                             className="max-w-40"
                         />
 
-                        <span>진도율 {progress}%</span>
+                        <span>吏꾨룄??{progress}%</span>
                         <span>총 {chapterCount}강</span>
                     </div>
                 )}

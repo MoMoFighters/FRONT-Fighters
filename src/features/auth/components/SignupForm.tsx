@@ -998,18 +998,15 @@ export default function SignupForm() {
         setErrorActionState(null);
         startEmailTransition(async () => {
             try {
-                const formData = new FormData();
-                formData.append("email", email);
-
                 // Server Action 호출
-                const result = await sendEmailCodeAction(null, formData);
+                const result = await sendEmailCodeAction(email);
 
                 // 🔗 [연결 핵심] 백엔드 Response 구조 매핑
-                if (result?.success) {
+                if (result.status >= 200 && result.status < 300) {
                     setEmailValidationClicked(true);
 
                     // ✅ 200 OK 구조 데이터 접근: result.data.expiresIn (안전하게 내차 대안값 180 적용)
-                    const serverExpiresIn = result?.expiresIn || 180;
+                    const serverExpiresIn = result.data?.expiresIn || 180;
                     setTimeLeft(serverExpiresIn);
 
                     // 성공 안내 문구를 이메일 하단에 표기 (인증 코드가 이메일로 전송되었습니다.)
@@ -1042,13 +1039,9 @@ export default function SignupForm() {
         setErrorActionState(null);
         startEmailTransition(async () => {
             try {
-                const formData = new FormData();
-                formData.append("email", email);
-                formData.append("validationCode", validationCode);
+                const result = await verifyEmailAction(email, validationCode);
 
-                const result = await verifyEmailAction(null, formData);
-
-                if (result?.success) {
+                if (result.status >= 200 && result.status < 300) {
                     setTimeLeft(0);
                     setEmailValidated(true);
                 } else {
@@ -1082,7 +1075,7 @@ export default function SignupForm() {
                 };
 
                 const result = await studentSignupAction(studentJson);
-                if (result && !result.success) {
+                if (result && (result.status < 200 || result.status >= 300)) {
                     setErrorActionState(result.message);
                 }
             } else {
@@ -1090,7 +1083,7 @@ export default function SignupForm() {
                 formData.delete("validationCode");
 
                 const result = await teacherSignupAction(formData);
-                if (result && !result.success) {
+                if (result && (result.status < 200 || result.status >= 300)) {
                     setErrorActionState(result.message);
                 }
             }

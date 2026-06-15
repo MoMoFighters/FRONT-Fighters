@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 import { handleKakaoLoginCallback } from '@/features/auth/action';
@@ -13,7 +13,7 @@ interface LoginResult {
     message: string;
 }
 
-export default function KakaoCallbackPage() {
+function KakaoCallbackContent() {
     const searchParams = useSearchParams();
     const authorizationCode = searchParams.get('code');
     const hasCalled = useRef(false);
@@ -83,5 +83,19 @@ export default function KakaoCallbackPage() {
                 />
             )}
         </>
+    );
+}
+
+export default function KakaoCallbackPage() {
+    return (
+        <Suspense
+            fallback={(
+                <div className="flex min-h-screen items-center justify-center bg-white font-medium text-slate-900">
+                    카카오 로그인 처리 중입니다...
+                </div>
+            )}
+        >
+            <KakaoCallbackContent />
+        </Suspense>
     );
 }

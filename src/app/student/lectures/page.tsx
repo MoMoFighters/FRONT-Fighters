@@ -1,4 +1,4 @@
-import { BookOpen, SearchX } from "lucide-react";
+﻿import { BookOpen, SearchX } from "lucide-react";
 
 import { getLectures } from "@/app/services/lecture/service";
 import {
@@ -75,10 +75,10 @@ export default async function LectureListPage({
                             href: "/student",
                         },
                         {
-                            label: "강의 둘러보기",
+                            label: "媛뺤쓽 ?섎윭蹂닿린",
                         },
                     ]}
-                    title="강의 둘러보기"
+                    title="媛뺤쓽 ?섎윭蹂닿린"
                 />
 
                 <div className="mb-4 flex items-center gap-3">
@@ -92,7 +92,7 @@ export default async function LectureListPage({
 
                 <div className="mb-4 flex items-center justify-between">
                     <p className="text-sm font-semibold text-slate-500">
-                        전체 강의{" "}
+                        ?꾩껜 媛뺤쓽{" "}
                         <span className="text-indigo-500">
                             {responseData.totalElements}
                         </span>
@@ -105,9 +105,9 @@ export default async function LectureListPage({
                         <StudentLectureList
                             lectures={responseData.content}
                             category={category ?? "study"}
-                            categoryLabel={categoryMeta?.label ?? "전체"}
+                            categoryLabel={categoryMeta?.label ?? "?꾩껜"}
                             buildingImage={categoryMeta?.buildingImage ?? defaultCategoryMeta.buildingImage}
-                            getHref={(lecture) => `/student/lectures/${lecture.id}`}
+                            getHref={(lecture) => `/student/lectures/${lecture.lectureId}`}
                             showLearningStatus={false}
                         />
 
@@ -126,7 +126,7 @@ export default async function LectureListPage({
                         )}
 
                         <p className="text-lg font-bold">
-                            찾으시는 강의가 존재하지 않습니다.
+                            李얠쑝?쒕뒗 媛뺤쓽媛 議댁옱?섏? ?딆뒿?덈떎.
                         </p>
                     </div>
                 )}

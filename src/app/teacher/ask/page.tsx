@@ -106,7 +106,7 @@ export default async function TeacherAskPage({
                         chatRoomData?.map(
                             (data) => (
                                 <ChatRoomItem
-                                    key={data.roomId}
+                                    key={data.roomInfo.roomId}
                                     data={data}
                                 />
                             )
@@ -130,6 +130,7 @@ export default async function TeacherAskPage({
                         accessToken={
                             accessToken
                         }
+                        isMine={false}
                     />
                 </div>
 

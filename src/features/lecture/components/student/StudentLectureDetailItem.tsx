@@ -1,4 +1,4 @@
-import Image, { StaticImageData } from "next/image";
+﻿import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
 import { Play, Star } from "lucide-react";
 
@@ -45,7 +45,7 @@ export default function StudentLectureDetailItem({
 
                 <div className="flex min-w-0 flex-col">
                     <span className="w-fit rounded-full bg-indigo-50 px-3 py-1 text-sm font-bold text-indigo-500">
-                        {categoryLabel} 강의
+                        {categoryLabel} 媛뺤쓽
                     </span>
 
                     <h2 className="mt-4 text-3xl font-bold tracking-tight text-slate-950">
@@ -65,7 +65,7 @@ export default function StudentLectureDetailItem({
                             </span>
                         </span>
 
-                        <span>총 {chapterCount}개 챕터</span>
+                        <span>珥?{chapterCount}媛?梨뺥꽣</span>
 
                         <span>
                             {lecture.isEnrolled ? "학습 중" : "수강 전"}
@@ -76,29 +76,29 @@ export default function StudentLectureDetailItem({
                         {lecture.isEnrolled ? (
                             <div className="flex items-center gap-5">
                                 <span className="text-sm font-bold text-indigo-500">
-                                    학습 중
+                                    ?숈뒿 以?
                                 </span>
 
                                 <Progress value={progress} className="max-w-48" />
 
                                 <span className="text-sm font-semibold text-slate-500">
-                                    진도율 {progress}%
+                                    吏꾨룄??{progress}%
                                 </span>
 
                                 {firstChapterId && (
                                     <Link
-                                        href={`/student/${category}/lectures/${lecture.id}/chapters/${firstChapterId}`}
+                                        href={`/student/${category}/lectures/${lecture.lectureId}/chapters/${firstChapterId}`}
                                         className="ml-auto flex h-11 items-center gap-2 rounded-xl bg-slate-950 px-5 text-sm font-bold text-white transition hover:bg-slate-800"
                                     >
                                         <Play className="h-4 w-4 fill-white" />
-                                        이어보기
+                                        ?댁뼱蹂닿린
                                     </Link>
                                 )}
                             </div>
                         ) : (
                             <div className="flex justify-end">
                                 <EnrollLectureBtn
-                                    lectureId={lecture.id}
+                                    lectureId={lecture.lectureId}
                                     className="h-11 rounded-xl bg-indigo-500 px-5 text-sm font-bold text-white transition hover:bg-indigo-600"
                                 />
                             </div>

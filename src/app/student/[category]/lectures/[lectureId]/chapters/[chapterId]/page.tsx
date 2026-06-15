@@ -55,21 +55,12 @@ export default async function ChapterViewPage({
 
     const chapters: Chapter[] = metaData.chapters.map((chapter) => ({
         ...chapter,
-        lectureId: Number(lectureId),
-        videoUrl: "",
-        videoSizeBytes: 0,
-        videoStatus: "READY",
-        originalFilename: "",
     }));
 
     const playerChapter: Chapter = {
         ...currentChapter,
-        lectureId: Number(lectureId),
-        videoUrl,
+        presignedUrl: videoUrl,
         watchedSeconds: resume.lastPositionSec,
-        videoSizeBytes: 0,
-        videoStatus: "READY",
-        originalFilename: "",
     };
 
     const completedCount = metaData.chapters.filter(
@@ -110,6 +101,7 @@ export default async function ChapterViewPage({
                 />
 
                 <VideoPlayer
+                    lectureId={lectureId}
                     chapter={playerChapter}
                     lectureTitle={metaData.lectureTitle}
                     currentChapterNo={metaData.currentChapterNo}

@@ -27,9 +27,19 @@ export default function EmailInputModal() {
     ] = useState(false);
 
 
+    const sendTempPassword = async (_prevState: unknown, formData: FormData) => {
+        const email = String(formData.get("email") ?? "");
+        return tempPwAction(email);
+    };
+
     // action state
-    const [state, formAction, pending] = useActionState(tempPwAction,
-        { success: false, message: '' });
+    const [state, formAction, pending] = useActionState(sendTempPassword, {
+        timestamp: "",
+        status: 0,
+        code: "",
+        message: "",
+        data: null,
+    });
 
 
     // 결과 처리
@@ -38,7 +48,7 @@ export default function EmailInputModal() {
             return;
         }
         // 성공
-        if (state.success) {
+        if (state.status >= 200 && state.status < 300) {
             setTempPwSent(true);
             setInvalidEmail(false);
             return;

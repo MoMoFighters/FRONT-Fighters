@@ -1,6 +1,10 @@
 export type LectureCategory =
     "STUDY" | "FITNESS" | "COOK" | "BEAUTY" | "ART";
 
+export type CategoryApiUrl = LectureCategory;
+export type CategoryUrl =
+    "study" | "fitness" | "cook" | "beauty" | "art";
+
 export type LectureStatus =
     "WAITING" | "ACTIVE" | "HOLD" | "DELETE";
 
@@ -115,6 +119,14 @@ export interface Chapter {
     progressRate?: number;
 }
 
+export interface LectureProgress {
+    totalProgress: number;
+    completedCount: number;
+    totalChapterCount: number;
+}
+
+export type ChapterProgress = Chapter;
+
 // 🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑
 export interface Review {
     id: number;
@@ -159,6 +171,17 @@ export interface GetLecturesPayload {
     page?: number;
 }
 
+export type GetLecturesRequest = GetLecturesPayload;
+
+export interface StatusRequest {
+    lectureStatus: LectureStatus;
+}
+
+export type StatusApiUrl = LectureStatus;
+
+export interface UpdateVideoProgressRequest {
+    playbackSeconds: number;
+}
 
 
 
@@ -201,6 +224,34 @@ export interface ResumeResponse {
     lastPositionSec: number;
     durationSec: number;
     totalProgress: number;
+}
+
+export interface LectureMetaResponse {
+    lectureId: number;
+    lectureTitle: string;
+    thumbnailUrl: string | null;
+    totalChapterCount: number;
+    currentChapterId: number;
+    currentChapterNo: number;
+    currentChapterTitle: string;
+    chapters: Chapter[];
+}
+
+export interface LectureEnrollResponse {
+    enrollmentId: number;
+    lectureId: number;
+    userId: number;
+    totalProgress: number;
+    completedCount: number;
+    enrolledAt: string;
+}
+
+export interface EnrollLectureResponse {
+    timestamp: string;
+    status: number;
+    code: string;
+    message: string;
+    data?: LectureEnrollResponse | null;
 }
 
 

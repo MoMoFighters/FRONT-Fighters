@@ -26,15 +26,26 @@ interface FriendModalProps {
 export default function FriendModal({ isOpen, onClose }: FriendModalProps) {
     const router = useRouter();
 
+    const createChatRoomFormAction = async (
+        _prevState: Awaited<ReturnType<typeof createChatRoomAction>>,
+        formData: FormData,
+    ) => {
+        const userId = Number(formData.get("userId"));
+        return createChatRoomAction(userId);
+    };
+
     // Server Action 바인딩
-    const [state, formAction, isPending] = useActionState(createChatRoomAction, {
-        success: false,
+    const [state, formAction, isPending] = useActionState(createChatRoomFormAction, {
+        timestamp: "",
+        status: 0,
+        code: "",
         message: "",
+        data: null,
     });
 
     // 액션 수행 결과 감지 후 리다이렉트 처리
     useEffect(() => {
-        if (state.success && state.data?.roomId) {
+        if (state.status >= 200 && state.status < 300 && state.data?.roomId) {
             onClose(); // 모달 닫기
 
             // 현재 주소가 강사 페이지인지 학생 페이지인지 판별하여 리다이렉트
@@ -44,7 +55,7 @@ export default function FriendModal({ isOpen, onClose }: FriendModalProps) {
             } else {
                 router.push(`/student/phone/friends?status=friend&roomId=${state.data.roomId}`);
             }
-        } else if (!state.success && state.message) {
+        } else if (state.status >= 400 && state.message) {
             // 명세서에 명시된 에러 메시지(예: "자기 자신과는 대화창을 개설할 수 없습니다.") 노출
             alert(state.message);
         }
