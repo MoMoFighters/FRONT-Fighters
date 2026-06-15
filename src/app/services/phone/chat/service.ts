@@ -12,7 +12,7 @@ import {
     ReadMessageProps, ReadMessageData, CreateChatRoomProps,
     ChatRoomListData,
     SearchUserResponse,
-} from "@/features/phone/chatType";
+} from "@/features/chat/type";
 
 const BASE_SERVER_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 

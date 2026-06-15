@@ -1,3 +1,31 @@
+// 공용
+// 회원상태
+export type UserRole = 'STUDENT' | 'TEACHER' | 'ADMIN';
+export type UserStatus = 'ACTIVE' | 'PENDING' | 'REJECTED' | 'BANNED' | 'BLACK' | 'DELETED';
+export type UserCategory = 'FITNESS' | 'STUDY' | 'COOK' | 'BEAUTY' | 'ART';
+
+export interface User {
+    id: number;
+    name: string;
+    nickname: string | null;
+    role: UserRole;
+    status: UserStatus;
+    email: string | null;
+    createdAt: string;
+    profileImageUrl: string;
+    isTempPwd: boolean;
+    doNotDisturb: boolean;
+    isPaid: boolean;
+
+    deletedAt?: string;
+    proof?: string[]; // 증빙자료 url
+    category?: UserCategory;
+
+    // 🍑🍑🍑상의 필요🍑🍑🍑
+    // 멤버십 마감 되는 날짜
+}
+
+
 // 관리자 회원 전체 조회 타입 정의
 
 export interface GetUsersRequest {

@@ -13,7 +13,7 @@ import ChatItem from "./ChatItem";
 import MessageInputBox from "@/features/phone/components/chat/MessageInputBox";
 import { ChatMessage, getChatHistoryService } from "@/app/services/phone/chat/service";
 import { toast } from "sonner";
-import { leaveChatroomAction, readMessageAction } from "@/features/phone/chatAction";
+import { leaveChatroomAction, readMessageAction } from "@/features/chat/action";
 import { Button } from "../ui/button";
 import MyFriendListModal from "@/features/phone/components/friend/MyFriendListModal";
 import { getSocket } from "@/lib/socket";

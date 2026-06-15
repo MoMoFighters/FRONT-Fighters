@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import close from '@/app/assets/img/close.svg';
 import FriendItem from "@/components/phone/friends/FriendItem";
-import { getBlockedFriendsAction, } from "../../chatAction";
+import { getBlockedFriendsAction, } from "../../../chat/action";
 
 interface friendInfo {
     userId: number;

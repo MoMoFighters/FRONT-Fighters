@@ -4,7 +4,7 @@ import Image from "next/image";
 import user from '@/app/assets/img/user.svg'
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChatRoomListData } from "@/features/phone/chatType";
+import { ChatRoomListData } from "@/features/chat/type";
 
 
 

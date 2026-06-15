@@ -1,5 +1,6 @@
 const BASE_SERVER_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 import { EmailVerifyForm, KakaoLoginResponse, LoginRequest, LoginResponse, LoginSuccessActionState, SendEmailCodeForm, SendEmailCodeResponse, StudentSignupForm, TeacherSignupForm, TempPwResponse } from "@/features/auth/type";
+import { ApiResponse } from "@/lib/api";
 
 // 자체 로그인,회원가입 관련
 
@@ -140,7 +141,7 @@ export const emailVerifyService = async (
 export const loginService = async ({
     email,
     password,
-}: LoginRequest): Promise<LoginResponse> => {
+}: LoginRequest): Promise<ApiResponse<LoginResponse>> => {
 
     const response = await fetch(
         `${BASE_SERVER_URL}/api/v1/auth/login`,
@@ -157,7 +158,7 @@ export const loginService = async ({
         }
     );
 
-    const result: LoginResponse =
+    const result: ApiResponse<LoginResponse> =
         await response.json();
 
     // 서버 에러만 throw

@@ -1,3 +1,5 @@
+// 🍑🍑🍑 홍근 민섭 상의 후 결정 🍑🍑🍑
+
 export interface Report {
     reportId: number,
     reporterUserId: number,

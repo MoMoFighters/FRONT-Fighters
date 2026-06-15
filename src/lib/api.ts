@@ -1,6 +1,14 @@
-// fetch => 인증처리를 위한 fetch 개조
-
 import { cookies } from "next/headers";
+
+export interface ApiResponse<T> {
+    timestamp: string;
+    status: number;
+    code: string;
+    message: string;
+    data?: T | null;
+}
+
+// fetch => 인증처리를 위한 fetch 개조
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -9,8 +17,6 @@ export async function fetchWithAuth(endpoint: string, options: RequestInit = {})
     // 쿠키 accessToken 꺼내고
     const cookieStore = await cookies();
     const accessToken = cookieStore.get('accessToken')?.value;
-
-    console.log("??????accessToken", accessToken)
 
     // Header 설정
     const headers = {

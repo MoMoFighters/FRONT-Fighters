@@ -37,7 +37,7 @@ export default function MessageInputBox({ chatRoomId }: { chatRoomId: number | n
 
 import { type Dispatch, type SetStateAction, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { sendMessageAction } from "../../chatAction";
+import { sendMessageAction } from "../../../chat/action";
 import { toast } from "sonner";
 import { Send } from "lucide-react";
 

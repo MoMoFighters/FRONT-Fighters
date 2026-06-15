@@ -5,7 +5,7 @@ import close from '@/app/assets/img/close.svg'
 import search from "@/app/assets/img/user-plus.svg"
 import { Button } from "@/components/ui/button";
 import FriendItem from "@/components/phone/friends/FriendItem";
-import { searchUserAction } from "../../chatAction";
+import { searchUserAction } from "../../../chat/action";
 
 interface friendInfo {
     userId: number;
