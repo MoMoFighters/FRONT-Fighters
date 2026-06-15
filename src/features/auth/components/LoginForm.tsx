@@ -241,22 +241,7 @@ export default function LoginForm() {
                         <hr className="border-0.5 border-slate-300" />
 
                         <div
-                            className="
-                                bg-yellow-300
-                                border
-                                border-yellow-300
-                                text-slate-900
-                                font-bold
-                                text-center
-                                py-2
-                                cursor-pointer
-                                flex
-                                items-center
-                                justify-center
-                                gap-1.5
-                                rounded-none
-                                h-12.5
-                            "
+                            className="bg-yellow-300 border border-yellow-300 text-slate-900 font-bold text-center py-2 cursor-pointer flex items-center justify-center gap-1.5 rounded-none h-12.5"
                             onClick={
                                 handleKakaoLogin
                             }
