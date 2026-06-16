@@ -14,13 +14,13 @@ export default function Login() {
 
                 <LoginForm />
 
-                <hr className="border-0.5 border-slate-300" />
+                {/* <hr className="border-0.5 border-slate-300" />
                 <div className="flex flex-row justify-center gap-7">
                     <EmailInputModal />
                     <Link href='/auth/signup'>
                         <p className="text-left text-slate-400">회원가입</p>
                     </Link>
-                </div>
+                </div> */}
             </div>
         </>
     );

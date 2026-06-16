@@ -7,6 +7,8 @@ import kakao from '@/app/assets/img/kakao.svg';
 import google from '@/app/assets/img/google.svg';
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import googleIcon from "@/app/assets/img/google.svg"
+import naverIcon from "@/app/assets/img/NAVER_login_Dark_KR_green_icon_H56.png"
 
 import {
     GOOGLE_AUTH_LINK,
@@ -18,6 +20,7 @@ import {
 } from "../action";
 
 import LoginResultModal from "./LoginResultModal";
+import EmailInputModal from "./EmailInputModal";
 
 interface LoginActionState {
     timestamp: string;
@@ -34,8 +37,6 @@ export default function LoginForm() {
     const [showPassword, setShowPassword] =
         useState(false);
 
-    const [isTeacher, setIsTeacher] =
-        useState(false);
 
     const [isPending, setIsPending] =
         useState(false);
@@ -95,25 +96,6 @@ export default function LoginForm() {
         setIsPending(false);
     };
 
-    const leftBgColor =
-        isTeacher
-            ? 'bg-slate-200'
-            : 'bg-slate-400';
-
-    const rightBgColor =
-        isTeacher
-            ? 'bg-slate-400'
-            : 'bg-slate-200';
-
-    const leftTextColor =
-        isTeacher
-            ? 'text-slate-900'
-            : 'text-slate-50';
-
-    const rightTextColor =
-        isTeacher
-            ? 'text-slate-50'
-            : 'text-slate-900';
 
     return (
         <>
@@ -121,27 +103,7 @@ export default function LoginForm() {
 
                 <div className="grid grid-cols-2">
 
-                    <div
-                        className={`${leftBgColor} py-2 text-center cursor-pointer`}
-                        onClick={() =>
-                            setIsTeacher(false)
-                        }
-                    >
-                        <p className={`${leftTextColor} font-bold`}>
-                            수강생
-                        </p>
-                    </div>
 
-                    <div
-                        className={`${rightBgColor} py-2 text-center cursor-pointer`}
-                        onClick={() =>
-                            setIsTeacher(true)
-                        }
-                    >
-                        <p className={`${rightTextColor} font-bold`}>
-                            강사
-                        </p>
-                    </div>
 
                 </div>
 
@@ -155,13 +117,13 @@ export default function LoginForm() {
                         name="email"
                         placeholder="이메일 입력"
                         className="
-                            border border-slate-300
-                            py-2 px-2
-                            text-slate-700
-                            placeholder:text-slate-400
-                            focus:outline-none
-                            focus:border-slate-500
-                        "
+                                border border-slate-300
+                                py-2 px-2
+                                text-slate-700
+                                placeholder:text-slate-400
+                                focus:outline-none
+                                focus:border-slate-500
+                            "
                     />
 
                     <div className="max-w-md">
@@ -177,15 +139,15 @@ export default function LoginForm() {
                                 name="password"
                                 placeholder="비밀번호 입력"
                                 className="
-                                    border border-slate-300
-                                    py-2 px-2
-                                    w-full
-                                    pr-10
-                                    text-slate-700
-                                    placeholder:text-slate-400
-                                    focus:outline-none
-                                    focus:border-slate-500
-                                "
+                                        border border-slate-300
+                                        py-2 px-2
+                                        w-full
+                                        pr-10
+                                        text-slate-700
+                                        placeholder:text-slate-400
+                                        focus:outline-none
+                                        focus:border-slate-500
+                                    "
                             />
 
                             <button
@@ -196,12 +158,12 @@ export default function LoginForm() {
                                     )
                                 }
                                 className="
-                                    absolute
-                                    right-3
-                                    top-1/2
-                                    -translate-y-1/2
-                                    text-slate-500
-                                "
+                                        absolute
+                                        right-3
+                                        top-1/2
+                                        -translate-y-1/2
+                                        text-slate-500
+                                    "
                             >
                                 {
                                     showPassword
@@ -218,12 +180,13 @@ export default function LoginForm() {
                         type="submit"
                         disabled={isPending}
                         className="
-                            w-auto
-                            py-6
-                            cursor-pointer
-                            bg-mauve-500
-                            rounded-none
-                        "
+                                w-auto
+                                py-6
+                                cursor-pointer
+                                bg-indigo-500
+                                hover:bg-indigo-600
+                                rounded-none
+                            "
                     >
                         <p className="font-bold text-[17px]">
                             {
@@ -236,78 +199,47 @@ export default function LoginForm() {
 
                 </form>
 
-                {!isTeacher && (
-                    <>
-                        <hr className="border-0.5 border-slate-300" />
-
-                        <div
-                            className="
-                                bg-yellow-300
-                                border
-                                border-yellow-300
-                                text-slate-900
-                                font-bold
-                                text-center
-                                py-2
-                                cursor-pointer
-                                flex
-                                items-center
-                                justify-center
-                                gap-1.5
-                                rounded-none
-                                h-12.5
-                            "
-                            onClick={
-                                handleKakaoLogin
-                            }
+                <div className="flex flex-row justify-center gap-7 mb-4">
+                    <EmailInputModal />
+                    <Link href='/auth/signup'>
+                        <button
+                            type="button"
+                            className="cursor-pointer text-sm font-medium text-slate-400 transition-colors hover:text-slate-700"
                         >
-                            <Image
-                                src={kakao}
-                                width={20}
-                                height={20}
-                                alt="카카오"
-                                priority
-                            />
-                            <p>
-                                카카오톡으로 계속하기
-                            </p>
-                        </div>
+                            회원가입
+                        </button>
+                    </Link>
+                </div>
+                <hr className="border-0.5 border-slate-300 mt-[-16]" />
 
-                        <Link
-                            href={googleAuthLink}
-                            className="
-                                flex-row
-                                gap-1.5
-                                border
-                                border-slate-700
-                                bg-slate-50
-                                text-slate-700
-                                font-bold
-                                text-center
-                                py-2
-                                cursor-pointer
-                                flex
-                                items-center
-                                justify-center
-                                h-12.5
-                                rounded-none
-                            "
-                        >
-                            <Image
-                                src={google}
-                                width={20}
-                                height={20}
-                                alt="구글"
-                                priority
-                            />
-                            <p>
-                                구글로 계속하기
-                            </p>
-                        </Link>
-                    </>
-                )}
+                <div className="flex flex-row gap-10 justify-center">
+                    {/* <hr className="border-0.5 border-slate-300" /> */}
+
+                    {/* <div
+                        className="bg-yellow-300 border border-yellow-300 text-slate-900 font-bold text-center py-2 cursor-pointer flex items-center justify-center gap-1.5 rounded-none h-12.5"
+                    > */}
+                    <Image
+                        src={kakao}
+                        width={36}
+                        height={36}
+                        alt="카카오"
+                        priority
+                        className="bg-yellow-300 rounded-full p-2 w-10 h-10 cursor-pointer"
+                        onClick={
+                            handleKakaoLogin
+                        }
+                    />
+                    {/* </div> */}
+                    <a href={googleAuthLink}>
+                        <Image src={googleIcon} alt='구글' width={40} height={40} className="border border-slate-500 rounded-full p-2" />
+                    </a>
+                    <a href={googleAuthLink}>
+                        <Image src={naverIcon} alt='네이버' width={40} height={40} />
+                    </a>
+                </div>
 
             </div>
+
 
             {
                 isModal && (

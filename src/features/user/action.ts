@@ -1,4 +1,4 @@
-'use server'
+﻿'use server'
 
 import {
     getMyInfoService,
@@ -127,7 +127,6 @@ export const checkAndRegisterNickname = async (
             nickname
         );
 
-    console.log(result, '???');
 
     return result;
 

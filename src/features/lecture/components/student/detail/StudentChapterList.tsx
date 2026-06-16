@@ -1,5 +1,5 @@
-import { CategoryUrl, Chapter } from "@/features/lecture/type";
-import StudentChapterListItem from "@/features/lecture/components/student/StudentChapterListItem";
+﻿import { CategoryUrl, Chapter } from "@/features/lecture/type";
+import StudentChapterListItem from "@/features/lecture/components/student/detail/StudentChapterListItem";
 
 interface StudentChapterListProps {
     category: CategoryUrl;

@@ -1,4 +1,4 @@
-import { getChapterVideo, getLectureMeta, getResumeInfo } from "@/app/services/lecture/service";
+﻿import { getChapterVideo, getLectureMeta, getResumeInfo } from "@/app/services/lecture/service";
 import ChapterItem from "@/components/common/ChapterItem";
 import LecturePreviewPlayer from "@/features/lecture/components/common/LecturePreviewPlayer";
 import { notFound } from "next/navigation";
@@ -19,14 +19,6 @@ export default async function ChapterDetailPage({ params }: {
     }
 
     const videoUrl = await getChapterVideo(lectureId, chapterId);
-
-    console.log(videoUrl, '동영상 url');
-
-    const resume =
-        await getResumeInfo(
-            lectureId,
-            chapterId
-        );
 
     const currentChapter =
         metaData.chapters.find(

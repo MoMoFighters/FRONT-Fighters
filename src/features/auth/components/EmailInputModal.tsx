@@ -60,113 +60,111 @@ export default function EmailInputModal() {
 
     if (!isModal) {
         return (
-            <p
-                className="text-right text-slate-400 cursor-pointer mb-4"
-                onClick={() =>
-                    setIsModal(true)
-                }
+            <button
+                type="button"
+                className="cursor-pointer text-sm font-medium text-slate-400 transition-colors hover:text-slate-700"
+                onClick={() => setIsModal(true)}
             >
                 비밀번호 찾기
-            </p>
+            </button>
         );
     }
 
-
     return (
         <>
-            <p className="text-right text-slate-400 mb-4">
+            <button
+                type="button"
+                className="text-sm font-medium text-slate-400"
+                disabled
+            >
                 비밀번호 찾기
-            </p>
+            </button>
+
             <div
-                className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+                className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 px-4 backdrop-blur-sm"
                 onClick={() => setIsModal(false)}
             >
                 <div
-                    className="bg-white px-5 pb-8 pt-3 w-[40vw] rounded flex flex-col justify-center align-middle"
+                    className="relative w-full max-w-md rounded-2xl border border-slate-200 bg-white px-6 py-7 shadow-2xl"
                     onClick={(e) => e.stopPropagation()}
                 >
-                    {/* 닫기 */}
-                    <div className="flex flex-row">
-                        <div className="flex-1"></div>
+                    <button
+                        type="button"
+                        className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 transition-colors hover:bg-slate-200"
+                        onClick={() => setIsModal(false)}
+                        aria-label="닫기"
+                    >
                         <Image
                             src={close}
-                            alt='닫기'
-                            className="w-7 h-7 cursor-pointer"
-                            onClick={() => setIsModal(false)}
+                            alt="닫기"
+                            className="h-4 w-4 opacity-70"
                         />
+                    </button>
 
+                    <div className="mb-6 pr-10">
+                        <p className="text-sm font-semibold text-indigo-500">
+                            Account Help
+                        </p>
+                        <h1 className="mt-1 text-2xl font-bold text-slate-900">
+                            비밀번호 찾기
+                        </h1>
+                        <p className="mt-2 text-sm leading-6 text-slate-500">
+                            가입한 이메일로 임시 비밀번호가 발송됩니다.
+                        </p>
                     </div>
 
-                    <h1 className="text-center text-2xl font-semibold mb-4">
-                        비밀번호 찾기
-                    </h1>
                     {!tempPwSent ? (
-                        <form action={formAction}>
-                            <div className="flex justify-center">
-                                <p className='mb-5 mt-2 text-lg font-bold text-slate-900'>
+                        <form action={formAction} className="space-y-5">
+                            {invalidEmail && (
+                                <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
+                                    {state.message}
+                                </div>
+                            )}
 
-                                    {
-                                        !invalidEmail
-                                            ? '모모시티에 가입된 이메일을 입력해주세요.'
-                                            : state.message
-                                    }
-
-                                </p>
-
-                            </div>
-
-
-                            <div className="flex flex-row gap-3 mb-4 items-center px-2">
-
-                                <p className="my-automr-3">
+                            <div className="space-y-2">
+                                <label
+                                    htmlFor="email"
+                                    className="text-sm font-semibold text-slate-700"
+                                >
                                     이메일
-                                </p>
+                                </label>
 
                                 <input
                                     type="email"
+                                    id="email"
                                     name="email"
-                                    placeholder="이메일"
-                                    className="border border-slate-300 py-2 px-2 flex-1 text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-slate-500 transition-colors"
+                                    placeholder="이메일을 입력해 주세요"
+                                    className="h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm text-slate-700 outline-none transition-colors placeholder:text-slate-400 focus:border-indigo-400 focus:bg-white focus:ring-4 focus:ring-indigo-100"
                                 />
-
-                                <Button
-                                    disabled={pending}
-                                    className="w-30"
-                                >
-                                    {
-                                        pending
-                                            ? '발송 중...'
-                                            : '임시 비밀번호 발송'
-                                    }
-                                </Button>
-
                             </div>
 
+                            <Button
+                                disabled={pending}
+                                className="h-12 w-full rounded-xl bg-indigo-500 text-base font-bold text-white shadow-sm transition-colors hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-60"
+                            >
+                                {pending ? "발송 중..." : "임시 비밀번호 발송"}
+                            </Button>
                         </form>
-
                     ) : (
-                        <>
-                            <div>
-                                <p className="mb-5 mt-2 text-center text-lg font-bold">
+                        <div className="space-y-6">
+                            <div className="rounded-2xl border border-green-100 bg-green-50 px-5 py-6 text-center">
+                                <p className="text-lg font-bold text-green-700">
+                                    임시 비밀번호를 발송했습니다.
+                                </p>
+                                <p className="mt-2 text-sm leading-6 text-green-700/80">
+                                    이메일함을 확인한 뒤 임시 비밀번호로 로그인해 주세요.
                                 </p>
                             </div>
 
-                            <div className="flex justify-center">
-                                <Button
-                                    onClick={() =>
-                                        setIsModal(false)
-                                    }
-                                    className="px-7 py-2"
-                                >
-                                    닫기
-                                </Button>
-
-                            </div>
-                        </>
+                            <Button
+                                onClick={() => setIsModal(false)}
+                                className="h-12 w-full rounded-xl bg-slate-900 text-base font-bold text-white transition-colors hover:bg-slate-800"
+                            >
+                                닫기
+                            </Button>
+                        </div>
                     )}
-
                 </div>
-
             </div>
         </>
     );

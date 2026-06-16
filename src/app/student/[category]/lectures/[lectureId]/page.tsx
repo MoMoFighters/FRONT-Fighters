@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+﻿import { notFound } from "next/navigation";
 
 import {
     getChaptersById,
@@ -6,16 +6,16 @@ import {
     getLectureProgress,
 } from "@/app/services/lecture/service";
 import ListPagination from "@/components/common/ListPagination";
-import CategoryBuildingCard from "@/features/lecture/components/student/CategoryBuildingCard";
-import getCategoryMeta from "@/features/lecture/components/student/category";
-import LearningProgressCard from "@/features/lecture/components/student/LearningProgressCard";
-import ResumeLectureCard from "@/features/lecture/components/student/ResumeLectureCard";
-import StudentChapterList from "@/features/lecture/components/student/StudentChapterList";
-import StudentLectureDetailItem from "@/features/lecture/components/student/StudentLectureDetailItem";
-import StudentLectureDetailTabs from "@/features/lecture/components/student/StudentLectureDetailTabs";
+import CategoryBuildingCard from "@/features/lecture/components/student/shared/CategoryBuildingCard";
+import getCategoryMeta from "@/features/lecture/components/student/shared/category";
+import LearningProgressCard from "@/features/lecture/components/student/shared/LearningProgressCard";
+import ResumeLectureCard from "@/features/lecture/components/student/shared/ResumeLectureCard";
+import StudentChapterList from "@/features/lecture/components/student/detail/StudentChapterList";
+import StudentLectureDetailItem from "@/features/lecture/components/student/detail/StudentLectureDetailItem";
+import StudentLectureDetailTabs from "@/features/lecture/components/student/detail/StudentLectureDetailTabs";
 import StudentReviewList, {
     StudentReview,
-} from "@/features/lecture/components/student/StudentReviewList";
+} from "@/features/lecture/components/student/detail/StudentReviewList";
 import { CategoryUrl } from "@/features/lecture/type";
 import StudentPageHeader from "@/features/student/components/StudentPageHeader";
 

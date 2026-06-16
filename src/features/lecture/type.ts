@@ -35,8 +35,6 @@ export interface Lecture {
     totalProgress?: number; //해당 학생이 이 강의를 얼만큼 들었는가 (%)
 }
 
-
-
 export interface LectureDetail {
     lectureId: number;
 
@@ -86,13 +84,6 @@ export interface LectureList {
     totalProgress?: number; //해당 학생이 이 강의를 얼만큼 들었는가 (%)
 }
 
-
-
-
-
-
-
-
 export interface Chapter {
     chapterId: number;
     title: string;
@@ -127,7 +118,6 @@ export interface LectureProgress {
 
 export type ChapterProgress = Chapter;
 
-// 🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑
 export interface Review {
     id: number;
     lectureId: number;
@@ -140,25 +130,12 @@ export interface Review {
 }
 
 
-// // 강의의 총 진척도 필요없으면 지우셈 필요없으면 지우셈 필요없으면 지우셈 필요없으면 지우셈 필요없으면 지우셈 
-// export interface LectureProgress {
-//     totalProgress: number;
-//     completedCount: number;
-//     totalChapterCount: number;
-// }
-
-
-
-// 🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑
 export interface LectureListResponse {
     content: Lecture[];
     page: number;
     size: number;
     totalElements: number;
     totalPages: number;
-
-    // 🍑🍑🍑카테고리별 total progress 추가🍑🍑🍑🍑🍑🍑
-    // 🍑🍑🍑마지막으로 본 강의 정보 추가🍑🍑🍑🍑🍑🍑
 }
 
 
@@ -182,26 +159,6 @@ export type StatusApiUrl = LectureStatus;
 export interface UpdateVideoProgressRequest {
     playbackSeconds: number;
 }
-
-
-
-//🍑🍑🍑🍑🍑🍑🍑🍑🍑
-//🍑🍑🍑 export interface StatusRequest {
-//     lectureStatus: LectureStatus;
-// }
-
-// 영상 시청 시간 관련 request 타입 정의
-
-// export interface UpdateVideoProgressRequest {
-//     playbackSeconds: number;
-// }
-
-
-
-
-
-
-// 홍근티비가 상의 후 변경할수도있음!!!!!!!
 
 export interface UpdateVideoProgressByExitRequest {
     playbackSeconds: number;
@@ -252,76 +209,4 @@ export interface EnrollLectureResponse {
     code: string;
     message: string;
     data?: LectureEnrollResponse | null;
-}
-
-
-
-
-
-
-
-
-// 🍑🍑🍑🍑메타 데이터 타입 정의🍑🍑🍑🍑
-
-// export interface ChapterMeta {
-//     chapterId: number;
-//     title: string;
-//     orderNo: number;
-//     durationSec: number;
-//     progressRate: number;
-//     isCompleted: boolean;
-//     isAccessible: boolean;
-// }
-
-// export interface LectureMetaResponse {
-//     lectureId: number;
-//     lectureTitle: string;
-//     thumbnailUrl: string | null;
-
-//     totalChapterCount: number;
-
-//     currentChapterId: number;
-//     currentChapterNo: number;
-//     currentChapterTitle: string;
-
-//     chapters: ChapterMeta[];
-// }
-
-
-
-
-
-
-
-
-
-// 🍑🍑🍑🍑이건 없애는 방향으로 추진🍑🍑🍑🍑
-// 🍑🍑🍑🍑수강 신청 response 타입 정의🍑🍑🍑🍑
-
-// export interface LectureEnrollResponse {
-//     enrollmentId: number,
-//     lectureId: number,
-//     userId: number,
-//     totalProgress: number,
-//     completedCount: number,
-//     enrolledAt: string
-// }
-// export interface EnrollLectureResponse {
-//     status: number,
-//     success: boolean,
-//     message: string,
-//     data: LectureEnrollResponse
-//     errors: {}
-// }
-
-
-
-
-
-//🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑
-//등록 관련
-//🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑🍑
-
-export interface 다시정의하세요 {
-
 }

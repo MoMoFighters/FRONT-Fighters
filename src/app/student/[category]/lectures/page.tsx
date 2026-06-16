@@ -1,4 +1,4 @@
-import { BookOpen, SearchX } from "lucide-react";
+﻿import { BookOpen, SearchX } from "lucide-react";
 
 import { getLectures } from "@/app/services/lecture/service";
 import {
@@ -7,12 +7,12 @@ import {
 } from "@/features/lecture/type";
 
 import ListPagination from "@/components/common/ListPagination";
-import CategoryBuildingCard from "@/features/lecture/components/student/CategoryBuildingCard";
-import getCategoryMeta from "@/features/lecture/components/student/category";
-import LearningProgressCard from "@/features/lecture/components/student/LearningProgressCard";
-import ResumeLectureCard from "@/features/lecture/components/student/ResumeLectureCard";
-import StudentLectureList from "@/features/lecture/components/student/StudentLectureList";
-import StudentLectureListToolbar from "@/features/lecture/components/student/StudentLectureListToolbar";
+import CategoryBuildingCard from "@/features/lecture/components/student/shared/CategoryBuildingCard";
+import getCategoryMeta from "@/features/lecture/components/student/shared/category";
+import LearningProgressCard from "@/features/lecture/components/student/shared/LearningProgressCard";
+import ResumeLectureCard from "@/features/lecture/components/student/shared/ResumeLectureCard";
+import StudentLectureList from "@/features/lecture/components/student/list/StudentLectureList";
+import StudentLectureListToolbar from "@/features/lecture/components/student/list/StudentLectureListToolbar";
 import StudentPageHeader from "@/features/student/components/StudentPageHeader";
 
 interface LectureListByCategoryProps {

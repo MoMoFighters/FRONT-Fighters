@@ -1,5 +1,5 @@
-import LectureSearchbar from "@/features/lecture/components/common/LectureSearchbar";
-import StudentLectureNav from "@/features/lecture/components/student/StudentLectureNav";
+﻿import LectureSearchbar from "@/features/lecture/components/common/LectureSearchbar";
+import StudentLectureNav from "@/features/lecture/components/student/list/StudentLectureNav";
 
 interface StudentLectureListToolbarProps {
     keyword?: string;
