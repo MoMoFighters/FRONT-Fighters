@@ -20,6 +20,14 @@ export interface CategoryMeta {
     backgroundImage: StaticImageData;
 }
 
+export interface CategoryMetaByApi {
+    label: string;
+    buildingName: string;
+    description: string;
+    buildingImage: StaticImageData;
+    backgroundImage: StaticImageData;
+}
+
 // 카테고리 매핑 데이터에 대한 공용 함수 정의
 export default function getCategoryMeta(category: CategoryUrl): CategoryMeta {
     switch (category) {
@@ -64,6 +72,60 @@ export default function getCategoryMeta(category: CategoryUrl): CategoryMeta {
             };
 
         case "art":
+            return {
+                apiValue: "ART",
+                label: "예술",
+                buildingName: "아트홀",
+                description: "예술(음악, 미술 등) 카테고리 관련 강의를 수강할 수 있습니다.",
+                buildingImage: arthall,
+                backgroundImage: ART,
+            };
+    }
+}
+
+export function getCategoryMetaByApi(category: CategoryApiUrl): CategoryMeta {
+    switch (category) {
+        case "STUDY":
+            return {
+                apiValue: "STUDY",
+                label: "학습",
+                buildingName: "학교",
+                description: "학습 카테고리 관련 강의를 수강할 수 있습니다.",
+                buildingImage: school,
+                backgroundImage: STUDY,
+            };
+
+        case "FITNESS":
+            return {
+                apiValue: "FITNESS",
+                label: "운동",
+                buildingName: "피트니스센터",
+                description: "운동(헬스, 스포츠 등) 카테고리 관련 강의를 수강할 수 있습니다.",
+                buildingImage: health,
+                backgroundImage: HEALTH,
+            };
+
+        case "COOK":
+            return {
+                apiValue: "COOK",
+                label: "요리",
+                buildingName: "식당",
+                description: "요리 카테고리 관련 강의를 수강할 수 있습니다.",
+                buildingImage: cook,
+                backgroundImage: COOK,
+            };
+
+        case "BEAUTY":
+            return {
+                apiValue: "BEAUTY",
+                label: "뷰티",
+                buildingName: "백화점",
+                description: "뷰티(패션, 화장 등) 카테고리 관련 강의를 수강할 수 있습니다.",
+                buildingImage: beauty,
+                backgroundImage: BEAUTY,
+            };
+
+        case "ART":
             return {
                 apiValue: "ART",
                 label: "예술",

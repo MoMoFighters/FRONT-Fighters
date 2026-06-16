@@ -1,28 +1,19 @@
-export type LectureCategory =
-    "STUDY" | "FITNESS" | "COOK" | "BEAUTY" | "ART";
+// DB 기준 카테고리 ENUM 타입 - API 통신 간에 필요한 타입
+export type Category = "STUDY" | "FITNESS" | "COOK" | "BEAUTY" | "ART";
 
-export type CategoryApiUrl = LectureCategory;
-export type CategoryUrl =
-    "study" | "fitness" | "cook" | "beauty" | "art";
+// 실제 개발 중 사용할 카테고리 ENUM 타입 - url 표시 등등
+export type LowerCategory = "study" | "fitness" | "cook" | "beauty" | "art";
 
-export type LectureStatus =
-    "WAITING" | "ACTIVE" | "HOLD" | "DELETE";
-
-export type VideoStatus =
-    "UPLOADING" | 'ENCODING' | 'READY' | 'FAILED';
+// DB 기준 강의 상태 ENUM 타입 - API 통신 간에 필요한 타입
+export type LectureStatus = "WAITING" | "ACTIVE" | "HOLD" | "DELETE";
 
 // 실제로 화면에서 필요한 강의의 타입 정의
-
 export interface Lecture {
     lectureId: number;
-
-    teacherId?: number;
-    teacherName?: string;
-
     title: string;
     description: string;
     thumbnailUrl: string;
-    category: LectureCategory;
+    category: Category;
     lectureStatus: LectureStatus;
     averageRating: number;
     reviewCount: number;
@@ -44,7 +35,7 @@ export interface LectureDetail {
     title: string;
     description: string;
     thumbnailUrl: string;
-    category: LectureCategory;
+    category: Category;
     averageRating: number;
     reviewCount: number;
     chapters: Chapter[];
@@ -69,7 +60,7 @@ export interface LectureList {
     title: string;
     description: string;
     thumbnailUrl: string;
-    category: LectureCategory;
+    category: Category;
     averageRating: number;
     reviewCount: number;
     // 총 챕터 수
@@ -141,7 +132,7 @@ export interface LectureListResponse {
 
 // 강의 목록 조회에서 필요한 props 타입 정의 🍑request->payload로 이름변경
 export interface GetLecturesPayload {
-    category?: LectureCategory;
+    category?: Category;
     keyword?: string;
     status?: string;
     enrolled?: boolean;

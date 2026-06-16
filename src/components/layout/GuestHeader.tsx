@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import logo from '@/app/assets/img/header_logo.png'
+import logo from '@/app/assets/img/logo.png'
 import { Button } from "@/components/ui/button";
 
 export default function GuestHeader() {
@@ -11,7 +11,7 @@ export default function GuestHeader() {
                     <Image
                         src={logo}
                         alt="MOMOCITY 로고"
-                        className="mt-2 ml-6 opacity-80"
+                        className="ml-6 opacity-80"
                         width={110}
                         priority
                     />

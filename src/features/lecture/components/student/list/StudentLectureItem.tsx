@@ -1,15 +1,14 @@
-﻿import Image, { StaticImageData } from "next/image";
+﻿import Image from "next/image";
 import Link from "next/link";
 import { Star } from "lucide-react";
 
 import { Progress } from "@/components/ui/progress";
 import { Lecture } from "@/features/lecture/type";
+import { getCategoryMetaByApi } from "../shared/category";
 
 interface StudentLectureItemProps {
     lecture: Lecture;
     href: string;
-    categoryLabel: string;
-    buildingImage: StaticImageData;
     progress?: number;
     chapterCount?: number;
     reviewCount?: number;
@@ -19,13 +18,14 @@ interface StudentLectureItemProps {
 export default function StudentLectureItem({
     lecture,
     href,
-    categoryLabel,
-    buildingImage,
     progress = 0,
     chapterCount = 12,
     reviewCount = 133,
     showLearningStatus = true,
 }: StudentLectureItemProps) {
+
+    const categoryMeta = getCategoryMetaByApi(lecture.category);
+
     return (
         <Link
             href={href}
@@ -38,19 +38,19 @@ export default function StudentLectureItem({
             "
         >
             <div className="relative h-28 overflow-hidden rounded-xl bg-slate-100">
-                <Image
-                    src={lecture.thumbnailUrl || buildingImage}
+                {lecture.thumbnailUrl && <Image
+                    src={lecture.thumbnailUrl}
                     alt={lecture.title}
                     fill
                     sizes="184px"
                     className="object-cover"
-                />
+                />}
             </div>
 
             <div className="flex h-full min-w-0 flex-col">
                 <div className="mb-2 flex items-center gap-2">
                     <span className="rounded-full bg-indigo-50 px-2.5 py-1 text-xs font-bold text-indigo-500">
-                        {categoryLabel}
+                        {categoryMeta.label}
                     </span>
                 </div>
 

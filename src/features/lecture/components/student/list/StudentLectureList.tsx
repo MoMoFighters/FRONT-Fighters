@@ -1,6 +1,4 @@
-﻿import { StaticImageData } from "next/image";
-
-import { CategoryUrl, Lecture } from "@/features/lecture/type";
+﻿import { Lecture } from "@/features/lecture/type";
 import StudentLectureItem from "./StudentLectureItem";
 
 const getLectureProgress = (isEnrolled?: boolean, index = 0) => {
@@ -13,18 +11,12 @@ const getLectureProgress = (isEnrolled?: boolean, index = 0) => {
 
 interface StudentLectureListProps {
     lectures: Lecture[];
-    category: CategoryUrl;
-    categoryLabel: string;
-    buildingImage: StaticImageData;
     getHref?: (lecture: Lecture) => string;
     showLearningStatus?: boolean;
 }
 
 export default function StudentLectureList({
     lectures,
-    category,
-    categoryLabel,
-    buildingImage,
     getHref,
     showLearningStatus = true,
 }: StudentLectureListProps) {
@@ -34,9 +26,7 @@ export default function StudentLectureList({
                 <StudentLectureItem
                     key={lecture.lectureId}
                     lecture={lecture}
-                    href={getHref ? getHref(lecture) : `/student/${category}/lectures/${lecture.lectureId}`}
-                    categoryLabel={categoryLabel}
-                    buildingImage={buildingImage}
+                    href={getHref ? getHref(lecture) : `/student/${lecture.category}/lectures/${lecture.lectureId}`}
                     progress={getLectureProgress(
                         lecture.isEnrolled,
                         index

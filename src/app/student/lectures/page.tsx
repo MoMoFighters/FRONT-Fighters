@@ -2,7 +2,7 @@
 
 import { getLectures } from "@/app/services/lecture/service";
 import {
-    CategoryUrl,
+    LowerCategory,
     GetLecturesRequest,
 } from "@/features/lecture/type";
 
@@ -17,7 +17,7 @@ import StudentPageHeader from "@/features/student/components/StudentPageHeader";
 
 interface LectureListPageProps {
     searchParams: Promise<{
-        category?: CategoryUrl;
+        category?: LowerCategory;
         keyword?: string;
         page?: string;
     }>;
@@ -43,10 +43,10 @@ export default async function LectureListPage({
     };
 
     const responseData = await getLectures(payload);
+    const lectures = responseData.content;
 
     const totalPages = responseData.totalPages;
     const currentPage = Number(page) || 1;
-    const defaultCategoryMeta = getCategoryMeta("study");
 
     const createPageHref = (pageNumber: number) => {
         const params = new URLSearchParams();
@@ -103,10 +103,7 @@ export default async function LectureListPage({
                 {responseData.content.length > 0 ? (
                     <>
                         <StudentLectureList
-                            lectures={responseData.content}
-                            category={category ?? "study"}
-                            categoryLabel={categoryMeta?.label ?? "전체"}
-                            buildingImage={categoryMeta?.buildingImage ?? defaultCategoryMeta.buildingImage}
+                            lectures={lectures}
                             getHref={(lecture) => `/student/lectures/${lecture.lectureId}`}
                             showLearningStatus={false}
                         />
