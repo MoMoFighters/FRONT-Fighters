@@ -160,14 +160,8 @@ export default function Phone({
                         </div>
                     </main>
 
-                    <footer className="relative z-10 flex h-12 shrink-0 items-center justify-center border-t border-white/30 bg-white/20 backdrop-blur-sm">
-                        <button
-                            type="button"
-                            aria-label="홈"
-                            className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-300/80 bg-white/75 shadow-inner shadow-slate-300/70 backdrop-blur-md transition-all duration-200 hover:scale-105 hover:bg-white"
-                        >
-                            <span className="h-3.5 w-3.5 rounded-full border border-slate-400/80 bg-white/60" />
-                        </button>
+                    <footer className="relative z-10 flex h-12 shrink-0 items-center justify-center">
+                        <div className="h-1.5 w-24 rounded-full bg-slate-700/85 shadow-[0_1px_8px_rgba(255,255,255,0.45)]" />
                     </footer>
                 </div>
             </div>
