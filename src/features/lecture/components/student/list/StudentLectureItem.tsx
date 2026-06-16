@@ -38,13 +38,13 @@ export default function StudentLectureItem({
             "
         >
             <div className="relative h-28 overflow-hidden rounded-xl bg-slate-100">
-                <Image
+                {/* <Image
                     src={lecture.thumbnailUrl || buildingImage}
                     alt={lecture.title}
                     fill
                     sizes="184px"
                     className="object-cover"
-                />
+                /> */}
             </div>
 
             <div className="flex h-full min-w-0 flex-col">

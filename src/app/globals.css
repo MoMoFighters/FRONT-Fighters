@@ -187,6 +187,7 @@
 /* 일정 미리보기 */
 .fc-h-event .fc-event-title-container {
   text-align: center;
+  background-color: oklch(67.3% 0.182 276.935);
 }
 
 .fc-daygrid-day-frame {
