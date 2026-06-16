@@ -81,8 +81,8 @@ export default async function StudentMainPage() {
                     width={200}
                 />
             </div>
-            <Phone />
             </div> */}
+            <Phone />
             {/* {POSITIONS.map((position) => {
 
                 const building = buildings.find(
