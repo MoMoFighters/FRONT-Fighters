@@ -1,6 +1,8 @@
 'use client'
+import TeacherRegistModal from "@/features/auth/components/TeacherRegistModal";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 
 const NAV_ITEMS = [
     {
@@ -14,19 +16,21 @@ const NAV_ITEMS = [
         value: "lectures",
     },
     {
-        label: "신고 내역",
-        href: "/student/mypage/reports",
+        label: "포인트 현황",
+        href: "/student/mypage/point",
         value: "reports",
     },
 ];
 
-export default function MyPageNav() {
+export default function MyPageNav({ isPaid }: { isPaid?: boolean | undefined }) {
     const pathName = usePathname();
     const currentPage = pathName.split("/").pop() || "mypage";
 
+    const [isModal, setIsModal] = useState(false);
+
     return (
-        <div className="mb-6 border-b border-slate-200">
-            <nav className="flex gap-8">
+        <div className="mb-6 border-b border-slate-200 flex">
+            <nav className="flex gap-8 flex-1">
                 {NAV_ITEMS.map((item) => {
                     const isActive = currentPage === item.value;
 
@@ -47,6 +51,10 @@ export default function MyPageNav() {
                     );
                 })}
             </nav>
-        </div>
+            {isPaid === false && (
+                <TeacherRegistModal isModal={isModal} setIsModal={setIsModal} nickName="모모쌤" />
+            )
+            }
+        </div >
     );
 }
