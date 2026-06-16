@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { Button } from "@/components/ui/button";
 import DeleteModal from "@/features/modal/DeleteModal";
@@ -19,7 +19,6 @@ export default function DeleteLectureBtn({
 
         try {
 
-            console.log('삭제할 강의 id:', id);
 
             // await deleteLectureAction(id);
 

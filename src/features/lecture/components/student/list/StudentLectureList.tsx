@@ -1,4 +1,4 @@
-import { StaticImageData } from "next/image";
+﻿import { StaticImageData } from "next/image";
 
 import { CategoryUrl, Lecture } from "@/features/lecture/type";
 import StudentLectureItem from "./StudentLectureItem";

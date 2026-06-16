@@ -1,6 +1,6 @@
-import { Progress } from "@/components/ui/progress";
+﻿import { Progress } from "@/components/ui/progress";
 import { CategoryUrl, Chapter } from "@/features/lecture/type";
-import ChapterDetailListItem from "@/features/lecture/components/student/ChapterDetailListItem";
+import ChapterDetailListItem from "@/features/lecture/components/student/chapter-detail/ChapterDetailListItem";
 
 interface ChapterDetailListProps {
     category: CategoryUrl;

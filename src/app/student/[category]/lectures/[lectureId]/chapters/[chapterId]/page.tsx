@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+﻿import { notFound } from "next/navigation";
 
 import {
     getChapterVideo,
@@ -6,9 +6,9 @@ import {
     getResumeInfo,
 } from "@/app/services/lecture/service";
 import VideoPlayer from "@/features/lecture/components/common/VideoPlayer";
-import ChapterDetailList from "@/features/lecture/components/student/ChapterDetailList";
-import ChapterStudyInfoCard from "@/features/lecture/components/student/ChapterStudyInfoCard";
-import getCategoryMeta from "@/features/lecture/components/student/category";
+import ChapterDetailList from "@/features/lecture/components/student/chapter-detail/ChapterDetailList";
+import ChapterStudyInfoCard from "@/features/lecture/components/student/chapter-detail/ChapterStudyInfoCard";
+import getCategoryMeta from "@/features/lecture/components/student/shared/category";
 import { CategoryUrl, Chapter } from "@/features/lecture/type";
 import StudentPageHeader from "@/features/student/components/StudentPageHeader";
 

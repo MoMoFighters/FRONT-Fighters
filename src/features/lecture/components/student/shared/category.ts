@@ -1,5 +1,5 @@
-import { StaticImageData } from "next/image";
-import { CategoryApiUrl, CategoryUrl } from "../../type";
+﻿import { StaticImageData } from "next/image";
+import { CategoryApiUrl, CategoryUrl } from "../../../type";
 import STUDY from "@/app/assets/img/STUDY.png";
 import ART from "@/app/assets/img/ART.png";
 import COOK from "@/app/assets/img/COOK2.png";

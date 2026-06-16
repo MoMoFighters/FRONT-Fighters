@@ -70,7 +70,7 @@ export default function StudentLectureItem({
                             className="max-w-40"
                         />
 
-                        <span>吏꾨룄??{progress}%</span>
+                        <span>진도율 {progress}%</span>
                         <span>총 {chapterCount}강</span>
                     </div>
                 )}

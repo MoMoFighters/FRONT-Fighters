@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { Button } from "@/components/ui/button";
 
@@ -36,7 +36,6 @@ export default function UpdateUserStatusBtn({ user }: { user: UserResponse }) {
 
             setModalType(null);
 
-            console.log('변경할 상태:', status);
 
             const result = await updateTeacherStatusAction(
                 String(user.id),

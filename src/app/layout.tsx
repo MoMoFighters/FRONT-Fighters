@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { Toaster } from 'sonner';
 import '../app/globals.css'
@@ -25,7 +25,6 @@ export default function RootLayout({
                 process.env.NEXT_PUBLIC_KAKAO_CLIENT_ID
               );
 
-              console.log("Kakao init 완료");
             }
           }}
         />

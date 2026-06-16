@@ -1,4 +1,4 @@
-import { getUsers } from "@/app/services/user/service";
+﻿import { getUsers } from "@/app/services/user/service";
 import {
     Pagination,
     PaginationContent,
@@ -33,7 +33,6 @@ export default async function UserManagePage({
         keyword,
         page
     };
-    console.log(payload);
 
     const usersData = await getUsers(payload);
 
