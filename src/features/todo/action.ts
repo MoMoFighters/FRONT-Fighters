@@ -1,4 +1,4 @@
-'use server';
+﻿'use server';
 
 import { cookies } from 'next/headers';
 
@@ -48,7 +48,6 @@ export const getCalendarSchedulesAction = async ({
         const calendarData =
             result.data;
 
-        console.log(calendarData, '??')
 
         // 데이터 없음
         if (!calendarData) {

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from "react";
 
@@ -37,7 +37,6 @@ export default function UpdateLectureStatusBtn({
         useState<ModalType>(null);
 
     const handleUpdateLectureStatus = async (lectureStatus: StatusApiUrl) => {
-        console.log('handleUpdateLectureStatus');
         try {
             setModalType(null);
             await updateLectureStatusAction(

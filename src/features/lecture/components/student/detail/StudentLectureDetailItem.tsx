@@ -45,7 +45,7 @@ export default function StudentLectureDetailItem({
 
                 <div className="flex min-w-0 flex-col">
                     <span className="w-fit rounded-full bg-indigo-50 px-3 py-1 text-sm font-bold text-indigo-500">
-                        {categoryLabel} 媛뺤쓽
+                        {categoryLabel} 강의
                     </span>
 
                     <h2 className="mt-4 text-3xl font-bold tracking-tight text-slate-950">
@@ -65,7 +65,7 @@ export default function StudentLectureDetailItem({
                             </span>
                         </span>
 
-                        <span>珥?{chapterCount}媛?梨뺥꽣</span>
+                        <span>총 {chapterCount}개 챕터</span>
 
                         <span>
                             {lecture.isEnrolled ? "학습 중" : "수강 전"}
@@ -76,13 +76,13 @@ export default function StudentLectureDetailItem({
                         {lecture.isEnrolled ? (
                             <div className="flex items-center gap-5">
                                 <span className="text-sm font-bold text-indigo-500">
-                                    ?숈뒿 以?
+                                    학습 중
                                 </span>
 
                                 <Progress value={progress} className="max-w-48" />
 
                                 <span className="text-sm font-semibold text-slate-500">
-                                    吏꾨룄??{progress}%
+                                    진도율 {progress}%
                                 </span>
 
                                 {firstChapterId && (
@@ -91,7 +91,7 @@ export default function StudentLectureDetailItem({
                                         className="ml-auto flex h-11 items-center gap-2 rounded-xl bg-slate-950 px-5 text-sm font-bold text-white transition hover:bg-slate-800"
                                     >
                                         <Play className="h-4 w-4 fill-white" />
-                                        ?댁뼱蹂닿린
+                                        이어보기
                                     </Link>
                                 )}
                             </div>

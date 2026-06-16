@@ -7,12 +7,12 @@ import {
 } from "@/features/lecture/type";
 
 import ListPagination from "@/components/common/ListPagination";
-import BuildGuideCard from "@/features/lecture/components/student/BuildGuideCard";
-import CategoryPreviewCard from "@/features/lecture/components/student/CategoryPreviewCard";
-import getCategoryMeta from "@/features/lecture/components/student/category";
+import BuildGuideCard from "@/features/lecture/components/student/shared/BuildGuideCard";
+import CategoryPreviewCard from "@/features/lecture/components/student/shared/CategoryPreviewCard";
+import getCategoryMeta from "@/features/lecture/components/student/shared/category";
 import LectureFilterBtn from "@/features/lecture/components/buttons/LectureFilterBtn";
 import LectureSearchbar from "@/features/lecture/components/common/LectureSearchbar";
-import StudentLectureList from "@/features/lecture/components/student/StudentLectureList";
+import StudentLectureList from "@/features/lecture/components/student/list/StudentLectureList";
 import StudentPageHeader from "@/features/student/components/StudentPageHeader";
 
 interface LectureListPageProps {
@@ -75,10 +75,10 @@ export default async function LectureListPage({
                             href: "/student",
                         },
                         {
-                            label: "媛뺤쓽 ?섎윭蹂닿린",
+                            label: "강의 둘러보기",
                         },
                     ]}
-                    title="媛뺤쓽 ?섎윭蹂닿린"
+                    title="강의 둘러보기"
                 />
 
                 <div className="mb-4 flex items-center gap-3">
@@ -92,7 +92,7 @@ export default async function LectureListPage({
 
                 <div className="mb-4 flex items-center justify-between">
                     <p className="text-sm font-semibold text-slate-500">
-                        ?꾩껜 媛뺤쓽{" "}
+                        전체 강의{" "}
                         <span className="text-indigo-500">
                             {responseData.totalElements}
                         </span>
@@ -105,7 +105,7 @@ export default async function LectureListPage({
                         <StudentLectureList
                             lectures={responseData.content}
                             category={category ?? "study"}
-                            categoryLabel={categoryMeta?.label ?? "?꾩껜"}
+                            categoryLabel={categoryMeta?.label ?? "전체"}
                             buildingImage={categoryMeta?.buildingImage ?? defaultCategoryMeta.buildingImage}
                             getHref={(lecture) => `/student/lectures/${lecture.lectureId}`}
                             showLearningStatus={false}
@@ -126,7 +126,7 @@ export default async function LectureListPage({
                         )}
 
                         <p className="text-lg font-bold">
-                            李얠쑝?쒕뒗 媛뺤쓽媛 議댁옱?섏? ?딆뒿?덈떎.
+                            찾으시는 강의가 존재하지 않습니다.
                         </p>
                     </div>
                 )}

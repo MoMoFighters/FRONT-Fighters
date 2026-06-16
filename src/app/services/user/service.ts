@@ -1,4 +1,4 @@
-// 학생, 강사 - 마이페이지 기능
+﻿// 학생, 강사 - 마이페이지 기능
 
 import { GetUsersRequest, GetUsersResponse, UpdateTeacherStatusRequest, UpdateTeacherStatusResponse } from "@/features/user/type";
 import { fetchWithAuth } from "@/lib/api";
@@ -188,7 +188,6 @@ export const getUsers = async (
    const result =
       await response.json();
 
-   console.log(result, '회원 전체 조회');
 
    return result.data;
 }
@@ -210,6 +209,5 @@ export const updateTeacherStatus = async (userId: string, payload: UpdateTeacher
    }
 
    const result = await response.json();
-   console.log('강사 상태 변경', result);
    return result.data;
 }

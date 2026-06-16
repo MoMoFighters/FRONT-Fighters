@@ -1,10 +1,10 @@
-import Image, { StaticImageData } from "next/image";
+﻿import Image, { StaticImageData } from "next/image";
 import library from '@/app/assets/img/library.png'
 import mypage from '@/app/assets/img/mypage.png'
 import market from '@/app/assets/img/market.png'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "../ui/hover-card";
 import Link from "next/link";
-import getCategoryMeta from "@/features/lecture/components/student/category";
+import getCategoryMeta from "@/features/lecture/components/student/shared/category";
 import { CategoryUrl } from "@/features/lecture/type";
 
 interface BuildingItemProps { category: string, level?: number }

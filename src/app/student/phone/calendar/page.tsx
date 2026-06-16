@@ -1,4 +1,4 @@
-
+﻿
 import { getCalendarSchedulesAction } from '@/features/todo/action';
 import Calendar from '@/features/phone/components/todo/Calendar';
 import { redirect } from 'next/navigation';
@@ -32,7 +32,6 @@ export default async function CalendarPage({
 
     const schedules = await getCalendarSchedulesAction({ date });
 
-    console.log(schedules);
 
     return (
         <Calendar schedules={schedules} />

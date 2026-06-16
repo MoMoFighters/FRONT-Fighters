@@ -1,6 +1,6 @@
-import { CategoryApiUrl, CategoryUrl, Lecture } from "@/features/lecture/type";
-import getCategoryMeta from "@/features/lecture/components/student/category";
-import StudentLectureItem from "@/features/lecture/components/student/StudentLectureItem";
+﻿import { CategoryApiUrl, CategoryUrl, Lecture } from "@/features/lecture/type";
+import getCategoryMeta from "@/features/lecture/components/student/shared/category";
+import StudentLectureItem from "@/features/lecture/components/student/list/StudentLectureItem";
 
 const CATEGORY_URL_MAP: Record<CategoryApiUrl, CategoryUrl> = {
     STUDY: "study",

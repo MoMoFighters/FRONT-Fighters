@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -57,15 +57,12 @@ export default function UserInfoEditForm({ initialData }: UserInfoEditFormProps)
 
         try {
             const res = await checkAndRegisterNickname(nickname);
-            console.log(res, '1')
             if (res.status === 200) {
                 toast.success(res.message || "사용 가능한 닉네임입니다.");
                 setIsNicknameChecked(true);
-                console.log(res, '2')
             } else {
                 toast.error(res.message || "이미 사용 중인 닉네임입니다!!!.");
                 setIsNicknameChecked(false);
-                console.log(res, '3')
             }
         } catch (error) {
             toast("닉네임 중복확인 중 오류가 발생했습니다.");

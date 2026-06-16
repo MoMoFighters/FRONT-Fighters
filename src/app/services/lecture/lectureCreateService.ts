@@ -1,4 +1,4 @@
-// import { cookies } from 'next/headers';
+﻿// import { cookies } from 'next/headers';
 
 // /**
 // 강의 등록
@@ -28,7 +28,6 @@ const BASE_SERVER_URL = process.env.NEXT_PUBLIC_API_BASE_URL
 //     formData: FormData,
 //     accessToken: string
 // ): Promise<CreateLectureResponse> => {
-//     console.log('1');
 
 //     let token = accessToken;
 //     if (!token) {
@@ -39,7 +38,6 @@ const BASE_SERVER_URL = process.env.NEXT_PUBLIC_API_BASE_URL
 //     backendFormData.append('title', formData.get('title') as string);
 //     backendFormData.append('description', formData.get('description') as string);
 //     backendFormData.append('category', formData.get('category') as string);
-//     console.log('2')
 
 //     const thumbnailFile = formData.get('thumbnail');
 //     if (thumbnailFile) {
@@ -52,7 +50,6 @@ const BASE_SERVER_URL = process.env.NEXT_PUBLIC_API_BASE_URL
 //     }
 
 
-//     console.log('s2');
 //     const response = await fetch(`${BASE_URL}/api/v1/lectures`, {
 //         method: 'POST',
 //         headers: headers,
@@ -60,16 +57,13 @@ const BASE_SERVER_URL = process.env.NEXT_PUBLIC_API_BASE_URL
 //         cache: 'no-store',
 //     });
 
-//     console.log('sl2 - 백엔드 응답 상태코드:', response.status);
 
 //     if (!response.ok) {
 //         const errorData = await response.json();
-//         console.log('sl3 error - 백엔드 에러 리포트:', errorData);
 //         throw new Error(`${errorData.status}|${errorData.message}`);
 //     }
 
 //     const result = await response.json();
-//     console.log('sl4 - 백엔드 생성 성공 응답 데이터:', result);
 //     return result;
 // };
 
@@ -83,7 +77,6 @@ const BASE_SERVER_URL = process.env.NEXT_PUBLIC_API_BASE_URL
 //     accessToken: string
 // ): Promise<any> => {
 
-//     console.log(`sc1 - [챕터 ${chapterData.orderNo}번] 독립형 fetch 전송 준비 시작`);
 
 //     let token = accessToken;
 //     if (!token) {
@@ -98,7 +91,6 @@ const BASE_SERVER_URL = process.env.NEXT_PUBLIC_API_BASE_URL
 
 //     if (chapterData.videoFile && chapterData.videoFile.size > 0) {
 //         chapterFormData.append('video', chapterData.videoFile);
-//         console.log(`sc1.2 - 비디오 파일 첨부됨: ${chapterData.videoFile.name} (${chapterData.videoFile.size} bytes)`);
 //     } else {
 //         console.warn(`sc1.2 - [주의] 챕터 ${chapterData.orderNo}번에 첨부된 비디오 파일이 없거나 크기가 0입니다.`);
 //     }
@@ -113,7 +105,6 @@ const BASE_SERVER_URL = process.env.NEXT_PUBLIC_API_BASE_URL
 //     // 💡 [수정 내용] 주소 중간에 강사 권한용 '/t'를 정확하게 끼워 넣었습니다.
 //     const targetUrl = `${BASE_URL}/api/v1/lectures/${lectureId}/chapters`;
 
-//     console.log(`sc1.5 - 챕터 생성 요청 목적지: ${targetUrl}`);
 
 //     const response = await fetch(targetUrl, {
 //         method: 'POST',
@@ -122,17 +113,13 @@ const BASE_SERVER_URL = process.env.NEXT_PUBLIC_API_BASE_URL
 //         cache: 'no-store',
 //     });
 
-//     console.log('sc2 - 백엔드 응답 상태코드:', response.status);
 
 //     if (!response.ok) {
 //         const errorData = await response.json();
-//         console.log('sc3 error - 챕터 생성 실패 리포트:', errorData);
 //         throw new Error(`${errorData.status}|${errorData.message}`);
 //     }
 
-//     console.log(`sc4 - [챕터 ${chapterData.orderNo}번] 생성 성공`);
 //     const result = await response.json();
-//     console.log(result);
 //     return result;
 // };
 

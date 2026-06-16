@@ -1,7 +1,7 @@
-import Image from "next/image";
+﻿import Image from "next/image";
 
 import { CategoryUrl } from "@/features/lecture/type";
-import getCategoryMeta from "@/features/lecture/components/student/category";
+import getCategoryMeta from "@/features/lecture/components/student/shared/category";
 
 interface CategoryPreviewCardProps {
     category?: CategoryUrl;

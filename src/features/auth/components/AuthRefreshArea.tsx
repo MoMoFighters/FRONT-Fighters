@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { Button } from "@/components/ui/button";
 import { authRefreshAction } from "../action";
@@ -17,7 +17,6 @@ export default function AuthRefreshArea({
 
     const handleRefreshClick = async () => {
         const refreshData = await authRefreshAction();
-        console.log(refreshData);
 
         if (!refreshData.data) {
             toast.error(refreshData.message, {

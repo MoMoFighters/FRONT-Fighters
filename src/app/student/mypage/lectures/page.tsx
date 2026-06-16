@@ -3,12 +3,12 @@ import ListPagination from "@/components/common/ListPagination";
 import MyPageNav from "@/components/mypage/MyPageNav";
 import LectureFilterBtn from "@/features/lecture/components/buttons/LectureFilterBtn";
 import LectureSearchbar from "@/features/lecture/components/common/LectureSearchbar";
-import CategoryBuildingCard from "@/features/lecture/components/student/CategoryBuildingCard";
-import getCategoryMeta from "@/features/lecture/components/student/category";
-import LearningProgressCard from "@/features/lecture/components/student/LearningProgressCard";
-import MyStudentLectureList from "@/features/lecture/components/student/MyStudentLectureList";
-import MyLectureBuildingsOverviewCard from "@/features/lecture/components/student/MyLectureBuildingsOverviewCard";
-import ResumeLectureCard from "@/features/lecture/components/student/ResumeLectureCard";
+import CategoryBuildingCard from "@/features/lecture/components/student/shared/CategoryBuildingCard";
+import getCategoryMeta from "@/features/lecture/components/student/shared/category";
+import LearningProgressCard from "@/features/lecture/components/student/shared/LearningProgressCard";
+import MyStudentLectureList from "@/features/lecture/components/student/list/MyStudentLectureList";
+import MyLectureBuildingsOverviewCard from "@/features/lecture/components/student/list/MyLectureBuildingsOverviewCard";
+import ResumeLectureCard from "@/features/lecture/components/student/shared/ResumeLectureCard";
 import StudentPageHeader from "@/features/student/components/StudentPageHeader";
 import {
     CategoryApiUrl,
@@ -99,14 +99,14 @@ export default async function MyLecturesListPage({
                             href: "/student",
                         },
                         {
-                            label: "留덉씠?섏씠吏",
+                            label: "마이페이지",
                             href: "/student/mypage",
                         },
                         {
-                            label: "??媛뺤쓽",
+                            label: "내 강의",
                         },
                     ]}
-                    title="??媛뺤쓽"
+                    title="내 강의"
                 />
 
                 <MyPageNav />
@@ -122,7 +122,7 @@ export default async function MyLecturesListPage({
 
                 <div className="mb-4 flex items-center justify-between">
                     <p className="text-sm font-semibold text-slate-500">
-                        ?꾩껜 ?섍컯 媛뺤쓽{" "}
+                        전체 수강 강의{" "}
                         <span className="text-indigo-500">
                             {responseData.totalElements}
                         </span>
@@ -150,8 +150,8 @@ export default async function MyLecturesListPage({
 
                         <p className="text-lg font-bold">
                             {category
-                                ? "?대떦 移댄뀒怨좊━???섍컯 以묒씤 媛뺤쓽媛 ?놁뒿?덈떎."
-                                : "?꾩쭅 ?섍컯 以묒씤 媛뺤쓽媛 ?놁뒿?덈떎."}
+                                ? "해당 카테고리에 수강 중인 강의가 없습니다."
+                                : "아직 수강 중인 강의가 없습니다."}
                         </p>
                     </div>
                 )}

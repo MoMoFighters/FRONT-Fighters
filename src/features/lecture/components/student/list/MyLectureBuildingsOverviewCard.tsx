@@ -1,8 +1,8 @@
-import Image from "next/image";
+﻿import Image from "next/image";
 import Link from "next/link";
 
 import { CategoryUrl } from "@/features/lecture/type";
-import getCategoryMeta from "@/features/lecture/components/student/category";
+import getCategoryMeta from "@/features/lecture/components/student/shared/category";
 
 const CATEGORIES: CategoryUrl[] = [
     "study",

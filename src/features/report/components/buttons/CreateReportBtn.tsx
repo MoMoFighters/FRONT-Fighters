@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,6 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
 } from "@/components/ui/dialog";
 import {
     Field,
@@ -83,19 +82,15 @@ export default function CreateReportBtn({
     const handleCreateReport = async () => {
 
         try {
-            console.log('1');
             const payload: CreateReportRequest = {
                 targetType: "LECTURE", // 일단 모듈 3에서는 고정
                 targetId: 1, // 마찬가지
                 reason: formData.reason,
                 detail: formData.reasonDetail
             }
-            console.log('2', payload);
 
             const reportResponse = await CreateReportAction(payload);
 
-            console.log('3', reportResponse);
-            console.log('api호출 결과', reportResponse);
 
             toast.success('신고 접수 성공', {
                 duration: 1000
