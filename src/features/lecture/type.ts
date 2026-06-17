@@ -181,11 +181,3 @@ export interface EnrollLectureResponse {
 
 
 
-// 에러 방지를 위한
-export interface LectureProgress {
-    totalProgress: number;
-    completedCount: number;
-    totalChapterCount: number;
-}
-
-export type ChapterProgress = Chapter;

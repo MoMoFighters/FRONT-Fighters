@@ -1,12 +1,9 @@
 import {
-  ChapterProgress,
   EnrollLectureResponse,
   LectureListRequest,
   LectureDetailResponse,
   LectureListResponse,
   LectureMetaResponse,
-  LectureProgress,
-  ResumeResponse,
   UpdateVideoProgressByExitRequest,
   UpdateVideoProgressRequest,
   UpdateVideoProgressResponse,
@@ -132,38 +129,6 @@ export const updateLectureStatus = async (
   await handleErrorResponse(response);
 
   return response.json();
-};
-
-// 구) 강의의 총 진척도 조회 ==> 강의 전체 및 상세 조회에 담겨오기 때문에 필요 없어지는 api
-export const getLectureProgress = async (
-  id: string
-): Promise<LectureProgress> => {
-  const response = await fetchWithAuth(`/api/v1/lectures/${id}/progress`);
-
-  await handleErrorResponse(response);
-
-  const result: ApiResponse<LectureProgress> = await response.json();
-
-  return assertApiData(result);
-};
-
-// 구) 챕터별 진척도 조회 ==> 강의 상세 조회에 담겨오기 때문에 필요 없어지는 api
-export const getChaptersById = async (
-  lectureId: string
-): Promise<ChapterProgress[]> => {
-  const response = await fetchWithAuth(
-    `/api/v1/lectures/${lectureId}/chapters/progress`
-  );
-
-  await handleErrorResponse(response);
-
-  const result: ApiResponse<
-    ChapterProgress[] | { chapters: ChapterProgress[] }
-  > = await response.json();
-
-  const data = assertApiData(result);
-
-  return Array.isArray(data) ? data : data.chapters;
 };
 
 /**

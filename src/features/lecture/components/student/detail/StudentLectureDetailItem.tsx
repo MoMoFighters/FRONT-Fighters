@@ -4,18 +4,14 @@ import { Play, Star } from "lucide-react";
 
 import { Progress } from "@/components/ui/progress";
 import EnrollLectureBtn from "@/features/lecture/components/buttons/EnrollLectureBtn";
-import {
-    LectureDetailResponse,
-    LectureProgress,
-} from "@/features/lecture/type";
+import { LectureDetailResponse } from "@/features/lecture/type";
 
 interface StudentLectureDetailItemProps {
     lecture: LectureDetailResponse;
     category: string;
     categoryLabel: string;
     buildingImage: StaticImageData;
-    progressData?: LectureProgress;
-    firstChapterId?: number;
+    resumeChapterId?: number;
     chapterBaseHref?: string;
 }
 
@@ -24,14 +20,13 @@ export default function StudentLectureDetailItem({
     category,
     categoryLabel,
     buildingImage,
-    progressData,
-    firstChapterId,
+    resumeChapterId,
     chapterBaseHref,
 }: StudentLectureDetailItemProps) {
-    const progress = progressData?.totalProgress ?? lecture.lectureProgress ?? 0;
+    const progress = lecture.lectureProgress ?? 0;
     const chapterCount = lecture.chapters.length;
-    const chapterHref = firstChapterId
-        ? `${chapterBaseHref ?? `/student/${category}/lectures/${lecture.lectureId}`}/chapters/${firstChapterId}`
+    const chapterHref = resumeChapterId
+        ? `${chapterBaseHref ?? `/student/${category}/lectures/${lecture.lectureId}`}/chapters/${resumeChapterId}`
         : undefined;
 
     return (

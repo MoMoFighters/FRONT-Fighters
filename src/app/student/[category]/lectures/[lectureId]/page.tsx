@@ -114,7 +114,7 @@ export default async function LectureByCategoryDetail({
         return `?${params.toString()}`;
     };
 
-    const firstChapter = chapters[0];
+    const firstChapter = chapters.find((chapter) => chapter.orderNo === 1);
     const resumeChapter = chapters.find((chapter) => (
         chapter.isAccessible !== false &&
         !chapter.isCompleted
@@ -146,7 +146,7 @@ export default async function LectureByCategoryDetail({
                     category={category}
                     categoryLabel={categoryMeta.label}
                     buildingImage={categoryMeta.buildingImage}
-                    firstChapterId={resumeChapter?.chapterId}
+                    resumeChapterId={resumeChapter?.chapterId}
                 />
 
                 <section className="mt-8 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">

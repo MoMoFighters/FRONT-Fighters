@@ -108,7 +108,7 @@ export default async function MyLectureDetailPage({
         return `?${params.toString()}`;
     };
 
-    const firstChapter = chapters[0];
+    const firstChapter = chapters.find((chapter) => chapter.orderNo === 1);
     const resumeChapter = chapters.find((chapter) => (
         chapter.isAccessible !== false &&
         !chapter.isCompleted
@@ -145,7 +145,7 @@ export default async function MyLectureDetailPage({
                     category={category}
                     categoryLabel={categoryMeta.label}
                     buildingImage={categoryMeta.buildingImage}
-                    firstChapterId={resumeChapter?.chapterId}
+                    resumeChapterId={resumeChapter?.chapterId}
                     chapterBaseHref={chapterBaseHref}
                 />
 
