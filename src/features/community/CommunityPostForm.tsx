@@ -377,7 +377,7 @@ export default function CommunityPostForm({
 
             <button
                 type="submit"
-                className="mt-5 h-11 shrink-0 rounded-2xl bg-slate-900 text-sm font-black text-white transition hover:bg-indigo-500"
+                className="mt-5 h-11 shrink-0 rounded-2xl bg-indigo-400 text-sm font-black text-white transition hover:bg-indigo-500"
             >
                 게시글 등록
             </button>
