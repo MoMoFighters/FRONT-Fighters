@@ -1,10 +1,10 @@
-﻿import Image from "next/image";
+import Image from "next/image";
 
-import { CategoryUrl } from "@/features/lecture/type";
+import { Category } from "@/features/lecture/type";
 import getCategoryMeta from "@/features/lecture/components/student/shared/category";
 
 interface CategoryPreviewCardProps {
-    category?: CategoryUrl;
+    category?: string;
 }
 
 const CATEGORY_LABELS = [
@@ -43,7 +43,7 @@ export default function CategoryPreviewCard({
         );
     }
 
-    const categoryMeta = getCategoryMeta(category);
+    const categoryMeta = getCategoryMeta(category.toUpperCase() as Category);
 
     return (
         <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">

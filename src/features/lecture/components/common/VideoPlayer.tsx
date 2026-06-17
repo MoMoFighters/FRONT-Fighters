@@ -18,6 +18,8 @@ interface VideoPlayerProps {
     chapter: Chapter;
     lectureTitle: string;
     currentChapterNo: number;
+    presignedUrl: string;
+    lastPositionSec: number;
     nextChapterHref?: string;
 }
 
@@ -33,14 +35,16 @@ export default function VideoPlayer({
     chapter,
     lectureTitle,
     currentChapterNo,
+    presignedUrl,
+    lastPositionSec,
     nextChapterHref,
 }: VideoPlayerProps) {
     const router = useRouter();
     const videoRef = useRef<HTMLVideoElement>(null);
     const isSavingRef = useRef(false);
-    const watchedSecondsRef = useRef(chapter.watchedSeconds ?? 0);
+    const playbackSecondsRef = useRef(lastPositionSec);
     const isCompletedRef = useRef(chapter.isCompleted ?? false);
-    const currentPositionRef = useRef(chapter.watchedSeconds ?? 0);
+    const currentPositionRef = useRef(lastPositionSec);
     const [isEnded, setIsEnded] = useState(false);
 
     const handleTimeUpdate = () => {
@@ -49,9 +53,9 @@ export default function VideoPlayer({
         const currentTime = videoRef.current.currentTime;
         currentPositionRef.current = currentTime;
 
-        if (currentTime <= watchedSecondsRef.current + 2) {
-            watchedSecondsRef.current = Math.max(
-                watchedSecondsRef.current,
+        if (currentTime <= playbackSecondsRef.current + 2) {
+            playbackSecondsRef.current = Math.max(
+                playbackSecondsRef.current,
                 currentTime
             );
         }
@@ -63,7 +67,7 @@ export default function VideoPlayer({
         if (!video) return;
 
         const handleLoadedMetadata = () => {
-            video.currentTime = chapter.watchedSeconds ?? 0;
+            video.currentTime = lastPositionSec;
         };
 
         video.addEventListener(
@@ -79,7 +83,7 @@ export default function VideoPlayer({
         };
     }, [
         chapter.chapterId,
-        chapter.watchedSeconds,
+        lastPositionSec,
     ]);
 
     useEffect(() => {
@@ -98,7 +102,7 @@ export default function VideoPlayer({
                     String(chapter.chapterId),
                     {
                         playbackSeconds: Math.floor(
-                            watchedSecondsRef.current
+                            playbackSecondsRef.current
                         ),
                     }
                 );
@@ -131,7 +135,7 @@ export default function VideoPlayer({
                 String(chapter.chapterId),
                 {
                     playbackSeconds: Math.floor(
-                        watchedSecondsRef.current
+                        playbackSecondsRef.current
                     ),
                     lastPositionSec: Math.floor(
                         currentPositionRef.current
@@ -184,7 +188,7 @@ export default function VideoPlayer({
                     className="aspect-video w-full bg-black"
                 >
                     <source
-                        src={chapter.presignedUrl}
+                        src={presignedUrl}
                         type="video/mp4"
                     />
 

@@ -5,18 +5,18 @@ import { Play, Star } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import EnrollLectureBtn from "@/features/lecture/components/buttons/EnrollLectureBtn";
 import {
-    LowerCategory,
-    LectureDetail,
+    LectureDetailResponse,
     LectureProgress,
 } from "@/features/lecture/type";
 
 interface StudentLectureDetailItemProps {
-    lecture: LectureDetail;
-    category: LowerCategory;
+    lecture: LectureDetailResponse;
+    category: string;
     categoryLabel: string;
     buildingImage: StaticImageData;
     progressData?: LectureProgress;
     firstChapterId?: number;
+    chapterBaseHref?: string;
 }
 
 export default function StudentLectureDetailItem({
@@ -26,9 +26,13 @@ export default function StudentLectureDetailItem({
     buildingImage,
     progressData,
     firstChapterId,
+    chapterBaseHref,
 }: StudentLectureDetailItemProps) {
-    const progress = progressData?.totalProgress ?? 0;
+    const progress = progressData?.totalProgress ?? lecture.lectureProgress ?? 0;
     const chapterCount = lecture.chapters.length;
+    const chapterHref = firstChapterId
+        ? `${chapterBaseHref ?? `/student/${category}/lectures/${lecture.lectureId}`}/chapters/${firstChapterId}`
+        : undefined;
 
     return (
         <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -85,9 +89,9 @@ export default function StudentLectureDetailItem({
                                     진도율 {progress}%
                                 </span>
 
-                                {firstChapterId && (
+                                {chapterHref && (
                                     <Link
-                                        href={`/student/${category}/lectures/${lecture.lectureId}/chapters/${firstChapterId}`}
+                                        href={chapterHref}
                                         className="ml-auto flex h-11 items-center gap-2 rounded-xl bg-slate-950 px-5 text-sm font-bold text-white transition hover:bg-slate-800"
                                     >
                                         <Play className="h-4 w-4 fill-white" />

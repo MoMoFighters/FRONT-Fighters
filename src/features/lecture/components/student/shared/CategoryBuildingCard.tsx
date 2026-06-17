@@ -2,10 +2,8 @@ import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
 
 import { Progress } from "@/components/ui/progress";
-import { CategoryUrl } from "@/features/lecture/type";
-
 interface CategoryBuildingCardProps {
-    category: CategoryUrl;
+    category: string;
     buildingName: string;
     buildingImage: StaticImageData;
     level: number;

@@ -5,7 +5,7 @@ export interface ApiResponse<T> {
     status: number;
     code: string;
     message: string;
-    data?: T | null;
+    data?: T;
 }
 
 // fetch => 인증처리를 위한 fetch 개조

@@ -2,14 +2,13 @@
 
 import { getLectures } from "@/app/services/lecture/service";
 import {
-    LowerCategory,
+    Category,
     LectureListRequest,
 } from "@/features/lecture/type";
 
 import ListPagination from "@/components/common/ListPagination";
 import BuildGuideCard from "@/features/lecture/components/student/shared/BuildGuideCard";
 import CategoryPreviewCard from "@/features/lecture/components/student/shared/CategoryPreviewCard";
-import getCategoryMeta from "@/features/lecture/components/student/shared/category";
 import LectureFilterBtn from "@/features/lecture/components/buttons/LectureFilterBtn";
 import LectureSearchbar from "@/features/lecture/components/common/LectureSearchbar";
 import StudentLectureList from "@/features/lecture/components/student/list/StudentLectureList";
@@ -17,7 +16,7 @@ import StudentPageHeader from "@/features/student/components/StudentPageHeader";
 
 interface LectureListPageProps {
     searchParams: Promise<{
-        category?: LowerCategory;
+        category?: string;
         keyword?: string;
         page?: string;
     }>;
@@ -32,12 +31,8 @@ export default async function LectureListPage({
         page,
     } = await searchParams;
 
-    const categoryMeta = category
-        ? getCategoryMeta(category)
-        : undefined;
-
     const payload: LectureListRequest = {
-        category: categoryMeta?.apiValue,
+        category: category ? category.toUpperCase() as Category : undefined,
         keyword,
         page: Number(page) || 1,
     };

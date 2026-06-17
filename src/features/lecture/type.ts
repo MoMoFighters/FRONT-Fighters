@@ -1,14 +1,11 @@
-// DB 기준 카테고리 ENUM 타입 - API 통신 간에 필요한 타입
+// 카테고리 ENUM 타입 -> 백엔드 ENUM 값에 맞춰 대문자로 사용
 export type Category = "STUDY" | "FITNESS" | "COOK" | "BEAUTY" | "ART";
 
-// 실제 개발 중 사용할 카테고리 ENUM 타입 - url 표시 등등
-export type LowerCategory = "study" | "fitness" | "cook" | "beauty" | "art";
-
-// DB 기준 강의 상태 ENUM 타입 - API 통신 간에 필요한 타입
+// 강의 상태 ENUM 타입 
 export type LectureStatus = "WAITING" | "ACTIVE" | "HOLD" | "DELETE";
 
 // 강의 전체 조회 타입 정의
-export interface LectureList {
+export interface Lecture {
     lectureId: number;
     title: string;
     description: string;
@@ -24,7 +21,7 @@ export interface LectureList {
     //수강 중인 학생의 경우
     isEnrolled?: boolean;
     isCompleted?: boolean;
-    totalProgress?: number;
+    lectureProgress?: number;
 }
 
 export interface LectureListRequest {
@@ -36,7 +33,7 @@ export interface LectureListRequest {
 }
 
 export interface LectureListResponse {
-    content: LectureList[];
+    content: Lecture[];
     page: number;
     size: number;
     totalElements: number;
@@ -44,7 +41,7 @@ export interface LectureListResponse {
 }
 
 // 강의 상세 조회 타입 정의
-export interface LectureDetail {
+export interface LectureDetailResponse {
     lectureId: number;
     title: string;
     description: string;
@@ -60,7 +57,7 @@ export interface LectureDetail {
     //수강 중인 학생의 경우
     isEnrolled?: boolean;
     isCompleted?: boolean;
-    totalProgress?: number;
+    lectureProgress?: number;
 
     // 수강평 페이지네이션 데이터
     page: number;
@@ -79,24 +76,61 @@ export interface Chapter {
     // 수강 중인 학생의 경우
     isCompleted?: boolean;
     isAccessible?: boolean;
-    totalProgress?: number;
+    chapterProgress?: number;
 }
 
 export interface Review {
     reviewId: number;
     userId: number;
     userName: string;
-    profileImgUrl: string;
+    profileImageUrl?: string;
+    profileImgUrl?: string;
     content: string;
     rating: number;
     createdAt: string;
 }
 
+// 카테고리 별 강의 진척도 및 이어보기 데이터 조회 타입 정의 -> 강의 관련 페이지 오른쪽 사이드 카드 데이터
+export interface AsideCardInfoResponse {
+    // 내 강의 총 진척도 -> 마이페이지 내 강의 조회 시에만
+    MyTotalProgress?: number;
 
+    // 특정 카테고리 강의 목록 조회 시에만
+    // 1. 건물 정보
+    buildingLevel?: number;
+    buildingCurrentExp?: number;
+    buildingTotalExp?: number;
+    // 2. 카테고리별 총 진척도 -> 나의 학습 현황
+    progressByCategory?: number;
 
-export interface StatusRequest {
-    lectureStatus: LectureStatus;
+    // 이어보기 데이터 -> 특정 카테고리 강의 목록 조회 + 마이페이지 내 강의 조회 공통
+    lectureId: number;
+    lectureTitle: string;
+    chapterId: number;
+    chapterTitle: string;
+    chapterProgress: number;
 }
+
+// 강의 메타 데이터 조회 타입 정의 -> 챕터 상세 조회 시
+export interface LectureMetaResponse {
+    lectureId: number;
+    lectureTitle: string;
+    totalChapterCount: number;
+    currentChapterId: number;
+    currentChapterNo: number;
+    currentChapterTitle: string;
+    chapters: Chapter[];
+}
+
+// 챕터 이어보기 영상 재생 타입 정의 -> 영상 시청을 위한 url과 이어볼 재생 위치
+export interface VideoPlayerResponse {
+    presignedUrl: string;
+    expiresIn: number,
+    lastPositionSec: number;
+}
+
+/* ****************수정 필요**************** */
+
 
 export type StatusApiUrl = LectureStatus;
 
@@ -127,16 +161,6 @@ export interface ResumeResponse {
     totalProgress: number;
 }
 
-export interface LectureMetaResponse {
-    lectureId: number;
-    lectureTitle: string;
-    thumbnailUrl: string | null;
-    totalChapterCount: number;
-    currentChapterId: number;
-    currentChapterNo: number;
-    currentChapterTitle: string;
-    chapters: Chapter[];
-}
 
 export interface LectureEnrollResponse {
     enrollmentId: number;

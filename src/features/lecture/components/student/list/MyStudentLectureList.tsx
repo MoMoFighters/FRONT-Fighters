@@ -1,16 +1,11 @@
-﻿import { CategoryApiUrl, CategoryUrl, Lecture } from "@/features/lecture/type";
-import getCategoryMeta from "@/features/lecture/components/student/shared/category";
+import { Lecture } from "@/features/lecture/type";
 import StudentLectureItem from "@/features/lecture/components/student/list/StudentLectureItem";
 
-const CATEGORY_URL_MAP: Record<CategoryApiUrl, CategoryUrl> = {
-    STUDY: "study",
-    FITNESS: "fitness",
-    COOK: "cook",
-    BEAUTY: "beauty",
-    ART: "art",
-};
+const getLectureProgress = (lecture: Lecture, index = 0) => {
+    if (lecture.lectureProgress !== undefined) {
+        return lecture.lectureProgress;
+    }
 
-const getLectureProgress = (index = 0) => {
     return index % 2 === 0 ? 35 : 60;
 };
 
@@ -23,22 +18,15 @@ export default function MyStudentLectureList({
 }: MyStudentLectureListProps) {
     return (
         <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-            {lectures.map((lecture, index) => {
-                const category = CATEGORY_URL_MAP[lecture.category];
-                const categoryMeta = getCategoryMeta(category);
-
-                return (
-                    <StudentLectureItem
-                        key={lecture.lectureId}
-                        lecture={lecture}
-                        href={`/student/${category}/lectures/${lecture.lectureId}`}
-                        categoryLabel={categoryMeta.label}
-                        buildingImage={categoryMeta.buildingImage}
-                        progress={getLectureProgress(index)}
-                        showLearningStatus
-                    />
-                );
-            })}
+            {lectures.map((lecture, index) => (
+                <StudentLectureItem
+                    key={lecture.lectureId}
+                    lecture={lecture}
+                    href={`/student/mypage/lectures/${lecture.lectureId}`}
+                    progress={getLectureProgress(lecture, index)}
+                    showLearningStatus
+                />
+            ))}
         </div>
     );
 }
