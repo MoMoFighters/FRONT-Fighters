@@ -18,7 +18,7 @@ const NAV_ITEMS = [
     {
         label: "포인트 현황",
         href: "/student/mypage/point",
-        value: "reports",
+        value: "point",
     },
 ];
 
@@ -51,7 +51,7 @@ export default function MyPageNav({ isPaid }: { isPaid?: boolean | undefined }) 
                     );
                 })}
             </nav>
-            {isPaid === false && (
+            {!isPaid && (
                 <TeacherRegistModal isModal={isModal} setIsModal={setIsModal} nickName="모모쌤" />
             )
             }

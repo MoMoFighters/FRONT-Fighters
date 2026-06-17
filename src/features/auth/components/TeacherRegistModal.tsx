@@ -217,7 +217,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName }: { 
 
                         <button
                             type="submit"
-                            className="my-4 h-12 w-full shrink-0 rounded-xl bg-mauve-500 text-base font-bold text-white shadow-sm transition-colors hover:bg-mauve-600 disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
+                            className="my-4 h-12 w-full shrink-0 rounded-xl bg-indigo-500 text-base font-bold text-white shadow-sm transition-colors hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
                         // disabled={pending || notCompleted}
                         >
                             등록 요청하기
