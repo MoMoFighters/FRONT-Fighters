@@ -3,11 +3,11 @@ import Link from "next/link";
 import { Star } from "lucide-react";
 
 import { Progress } from "@/components/ui/progress";
-import { Lecture } from "@/features/lecture/type";
+import { LectureList } from "@/features/lecture/type";
 import { getCategoryMetaByApi } from "../shared/category";
 
 interface StudentLectureItemProps {
-    lecture: Lecture;
+    lecture: LectureList;
     href: string;
     progress?: number;
     chapterCount?: number;

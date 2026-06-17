@@ -5,14 +5,14 @@ import { Play, Star } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import EnrollLectureBtn from "@/features/lecture/components/buttons/EnrollLectureBtn";
 import {
-    CategoryUrl,
+    LowerCategory,
     LectureDetail,
     LectureProgress,
 } from "@/features/lecture/type";
 
 interface StudentLectureDetailItemProps {
     lecture: LectureDetail;
-    category: CategoryUrl;
+    category: LowerCategory;
     categoryLabel: string;
     buildingImage: StaticImageData;
     progressData?: LectureProgress;

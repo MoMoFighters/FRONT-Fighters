@@ -8,17 +8,13 @@ import {
 import ListPagination from "@/components/common/ListPagination";
 import BuildGuideCard from "@/features/lecture/components/student/shared/BuildGuideCard";
 import CategoryPreviewCard from "@/features/lecture/components/student/shared/CategoryPreviewCard";
-import getCategoryMeta from "@/features/lecture/components/student/shared/category";
+import { getCategoryMetaByApi } from "@/features/lecture/components/student/shared/category";
 import StudentChapterList from "@/features/lecture/components/student/detail/StudentChapterList";
 import StudentLectureDetailItem from "@/features/lecture/components/student/detail/StudentLectureDetailItem";
 import StudentLectureDetailTabs from "@/features/lecture/components/student/detail/StudentLectureDetailTabs";
 import StudentReviewList, {
     StudentReview,
 } from "@/features/lecture/components/student/detail/StudentReviewList";
-import {
-    CategoryApiUrl,
-    CategoryUrl,
-} from "@/features/lecture/type";
 import StudentPageHeader from "@/features/student/components/StudentPageHeader";
 
 interface LectureDetailPageProps {
@@ -30,14 +26,6 @@ interface LectureDetailPageProps {
         tab?: string;
     }>;
 }
-
-const CATEGORY_URL_MAP: Record<CategoryApiUrl, CategoryUrl> = {
-    STUDY: "study",
-    FITNESS: "fitness",
-    COOK: "cook",
-    BEAUTY: "beauty",
-    ART: "art",
-};
 
 const DUMMY_REVIEWS: StudentReview[] = [
     {
@@ -97,8 +85,7 @@ export default async function LectureDetailPage({
         notFound();
     }
 
-    const category = CATEGORY_URL_MAP[lecture.category];
-    const categoryMeta = getCategoryMeta(category);
+    const categoryMetaByApi = getCategoryMetaByApi(lecture.category);
 
     const progressData = lecture.isEnrolled
         ? await getLectureProgress(lectureId)
@@ -177,9 +164,9 @@ export default async function LectureDetailPage({
 
                 <StudentLectureDetailItem
                     lecture={lecture}
-                    category={category}
-                    categoryLabel={categoryMeta.label}
-                    buildingImage={categoryMeta.buildingImage}
+                    category={categoryMetaByApi.urlValue}
+                    categoryLabel={categoryMetaByApi.label}
+                    buildingImage={categoryMetaByApi.buildingImage}
                     progressData={progressData}
                     firstChapterId={resumeChapter?.chapterId}
                 />
@@ -193,7 +180,7 @@ export default async function LectureDetailPage({
 
                     {currentTab === "chapters" ? (
                         <StudentChapterList
-                            category={category}
+                            category={categoryMetaByApi.urlValue}
                             lectureId={lectureId}
                             chapters={chapters}
                             isEnrolled={lecture.isEnrolled}

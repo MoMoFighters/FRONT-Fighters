@@ -1,7 +1,7 @@
 import {
   ChapterProgress,
   EnrollLectureResponse,
-  GetLecturesRequest,
+  LectureListRequest,
   LectureDetail,
   LectureListResponse,
   LectureMetaResponse,
@@ -38,7 +38,7 @@ const handleErrorResponse = async (response: Response) => {
 };
 
 export const getLectures = async (
-  payload: GetLecturesRequest
+  payload: LectureListRequest
 ): Promise<LectureListResponse> => {
   const queryString =
     new URLSearchParams(

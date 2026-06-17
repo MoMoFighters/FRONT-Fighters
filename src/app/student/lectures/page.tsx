@@ -3,7 +3,7 @@
 import { getLectures } from "@/app/services/lecture/service";
 import {
     LowerCategory,
-    GetLecturesRequest,
+    LectureListRequest,
 } from "@/features/lecture/type";
 
 import ListPagination from "@/components/common/ListPagination";
@@ -36,7 +36,7 @@ export default async function LectureListPage({
         ? getCategoryMeta(category)
         : undefined;
 
-    const payload: GetLecturesRequest = {
+    const payload: LectureListRequest = {
         category: categoryMeta?.apiValue,
         keyword,
         page: Number(page) || 1,

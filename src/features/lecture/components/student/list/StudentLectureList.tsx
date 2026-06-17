@@ -1,4 +1,4 @@
-﻿import { Lecture } from "@/features/lecture/type";
+﻿import { LectureList } from "@/features/lecture/type";
 import StudentLectureItem from "./StudentLectureItem";
 
 const getLectureProgress = (isEnrolled?: boolean, index = 0) => {
@@ -10,8 +10,8 @@ const getLectureProgress = (isEnrolled?: boolean, index = 0) => {
 };
 
 interface StudentLectureListProps {
-    lectures: Lecture[];
-    getHref?: (lecture: Lecture) => string;
+    lectures: LectureList[];
+    getHref?: (lecture: LectureList) => string;
     showLearningStatus?: boolean;
 }
 
