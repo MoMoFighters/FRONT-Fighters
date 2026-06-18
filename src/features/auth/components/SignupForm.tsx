@@ -228,7 +228,7 @@ export default function SignupForm() {
 
                     {emailError && (
                         <p
-                            className={`text-sm font-medium pl-1 mt-0.5 ${emailValidationClicked &&
+                            className={`text-xs font-medium pl-1 mt-0.5 ${emailValidationClicked &&
                                 !emailError.includes("실패") &&
                                 !emailError.includes("형식")
                                 ? "text-green-600"
@@ -270,7 +270,7 @@ export default function SignupForm() {
                             </Button>
                         </div>
 
-                        <p className={`text-sm text-right pr-2 ${emailValidated ? "text-green-600" : "text-red-500"}`}>
+                        <p className={`text-xs text-right pr-2 ${emailValidated ? "text-green-600" : "text-red-500"}`}>
                             {emailValidated
                                 ? "이메일 인증이 완료되었습니다."
                                 : timeLeft > 0
