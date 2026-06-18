@@ -44,9 +44,10 @@ export interface GetMyInfoResponse {
       profileImageUrl: string;
       email: string | null;
       name: string;
-      nickname: string | null;
+      nickname: string;
       birth: string | null;
       isTempPwd: boolean;
+      createdAt: string;
    };
 }
 

@@ -7,13 +7,30 @@ import { UserRound } from "lucide-react";
 interface ResidentCardProps {
     data: {
         name: string;
-        nickname: string | null;
+        nickname: string;
         createdAt: string;
-        profileImageUrl: string | null;
+        profileImageUrl: string;
     }
 }
 
+const formatResidentCreatedAt = (createdAt: string) => {
+    const digits = createdAt.replace(/\D/g, "");
+
+    if (digits.length >= 8) {
+        return digits.slice(2, 8);
+    }
+
+    if (digits.length >= 6) {
+        return digits.slice(0, 6);
+    }
+
+    return createdAt;
+};
+
 export default function MomoResidentCard({ data }: ResidentCardProps) {
+    const residentNumberPrefix = formatResidentCreatedAt(data.createdAt);
+    const isBlobProfileImage = data.profileImageUrl.startsWith("blob:");
+
     return (
         <div className="flex flex-col w-145 h-93.5 border border-slate-300 rounded-xl bg-mauve-50 shadow-2xl">
             {/* 헤더 */}
@@ -52,7 +69,7 @@ export default function MomoResidentCard({ data }: ResidentCardProps) {
                         </div>
                         <div className="flex flex-col gap-[2.5px]">
                             <p className="text-[11px] text-slate-400">모모등록번호</p>
-                            <p className="text-[19px] text-slate-900 font-bold">{data.createdAt}-xxxxxx</p>
+                            <p className="text-[19px] text-slate-900 font-bold">{residentNumberPrefix}-xxxxxx</p>
                         </div>
                         <div className="flex flex-col gap-[2.5px]">
                             <p className="text-[11px] text-slate-400">주소</p>
@@ -73,11 +90,6 @@ export default function MomoResidentCard({ data }: ResidentCardProps) {
                         />
                     </div>
                 </div>
-            </div>
-            <div className="flex flex-row justify-end">
-                <Link href='/student/mypage/edit' className="mr-5 mb-2 text-slate-400 font-bold text-sm hover:text-slate-700 transition-colors">
-                    내 정보 수정
-                </Link>
             </div>
         </div>
     );

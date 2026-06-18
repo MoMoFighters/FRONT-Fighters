@@ -1,6 +1,6 @@
 ﻿'use client';
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff, UserRound } from "lucide-react";
@@ -10,9 +10,16 @@ import { toast } from "sonner";
 
 interface UserInfoEditFormProps {
     initialData: MomoUserInfoResponse | null;
+    onPreviewChange?: (data: Partial<{
+        nickname: string;
+        profileImageUrl: string;
+    }>) => void;
 }
 
-export default function UserInfoEditForm({ initialData }: UserInfoEditFormProps) {
+export default function UserInfoEditForm({
+    initialData,
+    onPreviewChange,
+}: UserInfoEditFormProps) {
     const router = useRouter();
     const profile = initialData?.data;
 
@@ -21,6 +28,7 @@ export default function UserInfoEditForm({ initialData }: UserInfoEditFormProps)
     const [nickname, setNickname] = useState(profile?.nickname || "");
     const [email] = useState(profile?.email || "");
     const [profileUrl, setProfileUrl] = useState(profile?.profileImageUrl || "");
+    const profileObjectUrlRef = useRef<string | null>(null);
 
     const [showCurrentPassword, setShowCurrentPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
@@ -67,6 +75,34 @@ export default function UserInfoEditForm({ initialData }: UserInfoEditFormProps)
             toast("닉네임 중복확인 중 오류가 발생했습니다.");
         }
     };
+
+    const handleProfileImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+
+        if (!file) {
+            return;
+        }
+
+        if (profileObjectUrlRef.current) {
+            URL.revokeObjectURL(profileObjectUrlRef.current);
+        }
+
+        const nextProfileUrl = URL.createObjectURL(file);
+        profileObjectUrlRef.current = nextProfileUrl;
+        setProfileUrl(nextProfileUrl);
+        onPreviewChange?.({
+            profileImageUrl: nextProfileUrl,
+        });
+    };
+
+    useEffect(() => {
+        return () => {
+            if (profileObjectUrlRef.current) {
+                URL.revokeObjectURL(profileObjectUrlRef.current);
+            }
+        };
+    }, []);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -125,7 +161,7 @@ export default function UserInfoEditForm({ initialData }: UserInfoEditFormProps)
     };
 
     return (
-        <div className="flex flex-col gap-6 max-w-2xl">
+        <div className="flex w-full flex-col gap-6">
             {/* 프로필 이미지 */}
             <div className="flex items-start gap-8 mb-4">
                 <p className="w-24 font-semibold text-slate-800 pt-1.5 text-right">
@@ -178,6 +214,9 @@ export default function UserInfoEditForm({ initialData }: UserInfoEditFormProps)
                         onChange={(e) => {
                             const inputValue = e.target.value;
                             setNickname(inputValue);
+                            onPreviewChange?.({
+                                nickname: inputValue,
+                            });
                             if (initialData?.data?.nickname === inputValue) {
                                 setIsNicknameChecked(true);
                             } else {
@@ -289,7 +328,7 @@ export default function UserInfoEditForm({ initialData }: UserInfoEditFormProps)
             </div>
 
             {/* submit */}
-            <div className="flex justify-center pl-32 mt-[-5px]">
+            <div className="mt-[-5px] flex w-[544px] justify-end">
                 <Button
                     type="button"
                     disabled={isUnchanged}

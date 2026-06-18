@@ -1,23 +1,24 @@
-import MovePageBackBtn from "@/components/common/MovePageBackBtn";
 import { getMyInfo } from "@/features/user/action";
-import UserInfoEditForm from "@/features/user/UserInfoEditForm";
-import { toast } from "sonner";
+import MyPageEditClient from "@/features/user/MyPageEditClient";
 
 export default async function MyPageEdit() {
-    let userInfo = null;
-    try {
-        userInfo = await getMyInfo();
-    } catch (error) {
-        toast.error("유저 정보 로드 실패:");
+    const userInfo = await getMyInfo();
+
+    if (!userInfo.success || !userInfo.data) {
+        throw new Error(userInfo.message || "유저 정보 로드 실패");
     }
 
+    const cardData = {
+        name: userInfo.data.name,
+        nickname: userInfo.data.nickname,
+        createdAt: userInfo.data.createdAt,
+        profileImageUrl: userInfo.data.profileImageUrl,
+    };
+
     return (
-        <div className="p-12 relative">
-            <MovePageBackBtn href="/student/mypage" />
-            <p className="mb-8 font-bold text-slate-900 text-2xl">
-                내 정보 수정
-            </p>
-            <UserInfoEditForm initialData={userInfo} />
-        </div>
+        <MyPageEditClient
+            userInfo={userInfo}
+            initialCardData={cardData}
+        />
     );
 }
