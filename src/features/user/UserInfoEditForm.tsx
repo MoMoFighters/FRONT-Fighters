@@ -1,6 +1,6 @@
 ﻿'use client';
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff } from "lucide-react";
@@ -11,9 +11,16 @@ import { toast } from "sonner";
 
 interface UserInfoEditFormProps {
     initialData: MomoUserInfoResponse | null;
+    onPreviewChange?: (data: Partial<{
+        nickname: string;
+        profileImageUrl: string;
+    }>) => void;
 }
 
-export default function UserInfoEditForm({ initialData }: UserInfoEditFormProps) {
+export default function UserInfoEditForm({
+    initialData,
+    onPreviewChange,
+}: UserInfoEditFormProps) {
     const router = useRouter();
     const profile = initialData?.data;
 
@@ -22,6 +29,7 @@ export default function UserInfoEditForm({ initialData }: UserInfoEditFormProps)
     const [nickname, setNickname] = useState(profile?.nickname || "");
     const [email] = useState(profile?.email || "");
     const [profileUrl, setProfileUrl] = useState(profile?.profileImageUrl || "");
+    const profileObjectUrlRef = useRef<string | null>(null);
 
     const [showCurrentPassword, setShowCurrentPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
@@ -68,6 +76,34 @@ export default function UserInfoEditForm({ initialData }: UserInfoEditFormProps)
             toast("닉네임 중복확인 중 오류가 발생했습니다.");
         }
     };
+
+    const handleProfileImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+
+        if (!file) {
+            return;
+        }
+
+        if (profileObjectUrlRef.current) {
+            URL.revokeObjectURL(profileObjectUrlRef.current);
+        }
+
+        const nextProfileUrl = URL.createObjectURL(file);
+        profileObjectUrlRef.current = nextProfileUrl;
+        setProfileUrl(nextProfileUrl);
+        onPreviewChange?.({
+            profileImageUrl: nextProfileUrl,
+        });
+    };
+
+    useEffect(() => {
+        return () => {
+            if (profileObjectUrlRef.current) {
+                URL.revokeObjectURL(profileObjectUrlRef.current);
+            }
+        };
+    }, []);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -126,24 +162,42 @@ export default function UserInfoEditForm({ initialData }: UserInfoEditFormProps)
     };
 
     return (
-        <div className="flex flex-col gap-6 max-w-2xl">
+        <div className="flex w-full flex-col gap-6">
             {/* 프로필 이미지 */}
             <div className="flex items-start gap-8 mb-4">
                 <p className="w-24 font-semibold text-slate-800 pt-1.5 text-right">
                     프로필
                 </p>
-                {profileUrl ? (
-                    <div className="relative w-28 h-28">
-                        <Image
-                            src={profileUrl || user}
-                            alt='프로필'
-                            fill
-                            className="object-cover rounded-md border border-slate-300"
-                        />
-                    </div>
-                ) : (
-                    <div className="w-28 h-28 border border-slate-300 bg-slate-100 rounded-md" />
-                )}
+                <label className="group cursor-pointer">
+                    {profileUrl ? (
+                        <div className="relative h-28 w-28 overflow-hidden rounded-md border border-slate-300">
+                            {profileUrl.startsWith("blob:") ? (
+                                <img
+                                    src={profileUrl}
+                                    alt="프로필"
+                                    className="h-full w-full object-cover transition group-hover:scale-105"
+                                />
+                            ) : (
+                                <Image
+                                    src={profileUrl || user}
+                                    alt='프로필'
+                                    fill
+                                    className="object-cover transition group-hover:scale-105"
+                                />
+                            )}
+                        </div>
+                    ) : (
+                        <div className="flex h-28 w-28 items-center justify-center rounded-md border border-slate-300 bg-slate-100 text-xs font-bold text-slate-400">
+                            프로필 선택
+                        </div>
+                    )}
+                    <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleProfileImageChange}
+                    />
+                </label>
             </div>
 
             {/* 이름 */}
@@ -177,6 +231,9 @@ export default function UserInfoEditForm({ initialData }: UserInfoEditFormProps)
                         onChange={(e) => {
                             const inputValue = e.target.value;
                             setNickname(inputValue);
+                            onPreviewChange?.({
+                                nickname: inputValue,
+                            });
                             if (initialData?.data?.nickname === inputValue) {
                                 setIsNicknameChecked(true);
                             } else {
@@ -288,7 +345,7 @@ export default function UserInfoEditForm({ initialData }: UserInfoEditFormProps)
             </div>
 
             {/* submit */}
-            <div className="flex justify-center pl-32 mt-[-5px]">
+            <div className="mt-[-5px] flex w-[544px] justify-end">
                 <Button
                     type="button"
                     disabled={isUnchanged}

@@ -23,9 +23,9 @@ export interface MomoUserInfo {
     profileImageUrl: string;
     email: string | null;
     name: string;
-    nickname: string | null;
+    nickname: string;
     isTempPwd: boolean;
-    createdAt?: string;
+    createdAt: string;
     points?: number;
     isPaid?: boolean;
 }
@@ -49,11 +49,12 @@ export const getMyInfo = async (): Promise<MomoUserInfoResponse> => {
             success: true,
             message: '성공',
             data: {
-                profileImageUrl: result.data?.profileImageUrl,
+                profileImageUrl: result.data.profileImageUrl,
                 email: result.data?.email || null,
                 name: result.data.name,
-                nickname: result.data?.nickname || null,
-                isTempPwd: result.data.isTempPwd
+                nickname: result.data.nickname,
+                isTempPwd: result.data.isTempPwd,
+                createdAt: result.data.createdAt,
             }
         };
     } catch (error) {
