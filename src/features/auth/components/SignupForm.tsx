@@ -8,6 +8,9 @@ import {
     studentSignupAction,
     verifyEmailAction,
 } from "../action";
+import Link from "next/link";
+import Image from "next/image";
+import logo from '@/app/assets/img/logo.png'
 
 export default function SignupForm() {
     const [name, setName] = useState("");
@@ -159,32 +162,41 @@ export default function SignupForm() {
         });
     };
 
+    const labelClassName =
+        "absolute right-[calc(100%+1rem)] top-1/2 -translate-y-1/2 whitespace-nowrap text-right font-bold text-slate-700 cursor-pointer";
+    const inputClassName =
+        "h-10 w-full border border-slate-300 px-2 py-2 text-[15px] text-slate-700 placeholder:text-slate-400 transition-colors focus:border-slate-500 focus:outline-none";
+
     return (
-        <div className="flex flex-col gap-4 w-full">
-            <h1 className="text-center text-2xl font-bold">회원가입</h1>
+        <div className="flex flex-col gap-4 mt-10">
+            <div className="flex justify-center mb-4">
+                <Image src={logo} width={160} alt="MOMOCITY 로고" priority />
+            </div>
 
             <form
                 onSubmit={handleSubmit}
-                className="grid grid-cols-[110px_minmax(0,1fr)] gap-x-4 gap-y-4 items-center w-full"
+                className="mx-auto flex w-90 flex-col gap-4"
             >
-                <label className="text-right font-bold text-slate-700" htmlFor="name">
-                    이름
-                </label>
-                <input
-                    type="text"
-                    name="name"
-                    id="name"
-                    required
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="border border-slate-300 py-2 px-2 h-10 text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-slate-500 transition-colors"
-                    placeholder="이름"
-                />
+                <div className="relative">
+                    <label className={labelClassName} htmlFor="name">
+                        이름
+                    </label>
+                    <input
+                        type="text"
+                        name="name"
+                        id="name"
+                        required
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className={inputClassName}
+                        placeholder="이름"
+                    />
+                </div>
 
-                <label className="text-right font-bold text-slate-700" htmlFor="email">
-                    이메일
-                </label>
-                <div className="flex flex-col gap-1.5 w-full min-w-0">
+                <div className="relative flex flex-col gap-1.5">
+                    <label className={labelClassName} htmlFor="email">
+                        이메일
+                    </label>
                     <div className="flex gap-2 w-full min-w-0">
                         <input
                             type="email"
@@ -201,13 +213,13 @@ export default function SignupForm() {
                                 if (emailError) setEmailError(null);
                             }}
                             readOnly={emailValidated}
-                            className="border border-slate-300 py-2 px-2 flex-1 min-w-0 h-10 text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-slate-500 transition-colors disabled:bg-slate-100"
+                            className={`${inputClassName} min-w-0 flex-1 disabled:bg-slate-100`}
                             placeholder="이메일"
                         />
                         <Button
                             type="button"
                             disabled={emailValidated || isEmailPending}
-                            className="shrink-0 bg-indigo-500 rounded-none h-10 cursor-pointer disabled:opacity-50"
+                            className="h-10 shrink-0 rounded-none bg-indigo-500 hover:bg-indigo-600 px-4 text-[15px] font-bold cursor-pointer disabled:opacity-50"
                             onClick={handleRequestCode}
                         >
                             {emailValidationClicked ? "재전송" : "인증 요청"}
@@ -229,51 +241,49 @@ export default function SignupForm() {
                 </div>
 
                 {emailValidationClicked && (
-                    <>
-                        <label className="text-right font-bold text-slate-700" htmlFor="validationCode">
+                    <div className="relative flex flex-col gap-2">
+                        <label className={labelClassName} htmlFor="validationCode">
                             인증번호
                         </label>
-                        <div className="flex flex-col gap-2 min-w-0">
-                            <div className="flex gap-2 min-w-0">
-                                <input
-                                    type="number"
-                                    name="validationCode"
-                                    id="validationCode"
-                                    required={!emailValidated}
-                                    disabled={emailValidated || timeLeft === 0}
-                                    value={validationCode}
-                                    onChange={(e) => setValidationCode(e.target.value)}
-                                    className={`border border-slate-300 py-2 px-2 flex-1 min-w-0 h-10 
+                        <div className="flex gap-2 min-w-0">
+                            <input
+                                type="number"
+                                name="validationCode"
+                                id="validationCode"
+                                required={!emailValidated}
+                                disabled={emailValidated || timeLeft === 0}
+                                value={validationCode}
+                                onChange={(e) => setValidationCode(e.target.value)}
+                                className={`${inputClassName} min-w-0 flex-1
                                         ${emailValidated ? "bg-slate-200 text-slate-400" : "text-slate-700"} 
                                         [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none 
-                                        placeholder:text-slate-400 focus:outline-none focus:border-slate-500 transition-colors`}
-                                    placeholder="인증번호"
-                                />
-                                <Button
-                                    type="button"
-                                    disabled={emailValidated || isEmailPending || timeLeft === 0}
-                                    className="shrink-0 bg-indigo-500 rounded-none h-10 cursor-pointer disabled:opacity-50"
-                                    onClick={handleVerifyCode}
-                                >
-                                    인증하기
-                                </Button>
-                            </div>
-
-                            <p className={`text-sm text-right pr-2 ${emailValidated ? "text-green-600" : "text-red-500"}`}>
-                                {emailValidated
-                                    ? "이메일 인증이 완료되었습니다."
-                                    : timeLeft > 0
-                                        ? `남은 시간 : ${formatTime(timeLeft)}`
-                                        : "인증 시간이 만료되었습니다."}
-                            </p>
+                                    `}
+                                placeholder="인증번호"
+                            />
+                            <Button
+                                type="button"
+                                disabled={emailValidated || isEmailPending || timeLeft === 0}
+                                className="h-10 shrink-0 rounded-none bg-indigo-500 px-4 text-[15px] font-bold cursor-pointer disabled:opacity-50"
+                                onClick={handleVerifyCode}
+                            >
+                                인증하기
+                            </Button>
                         </div>
-                    </>
+
+                        <p className={`text-sm text-right pr-2 ${emailValidated ? "text-green-600" : "text-red-500"}`}>
+                            {emailValidated
+                                ? "이메일 인증이 완료되었습니다."
+                                : timeLeft > 0
+                                    ? `남은 시간 : ${formatTime(timeLeft)}`
+                                    : "인증 시간이 만료되었습니다."}
+                        </p>
+                    </div>
                 )}
 
-                <label className="text-right font-bold text-slate-700" htmlFor="password">
-                    PW
-                </label>
-                <div className="relative w-full">
+                <div className="relative">
+                    <label className={labelClassName} htmlFor="password">
+                        PW
+                    </label>
                     <input
                         type={showPassword ? "text" : "password"}
                         name="password"
@@ -281,7 +291,7 @@ export default function SignupForm() {
                         required
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="border border-slate-300 py-2 px-2 w-full pr-10 h-10 text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-slate-500 transition-colors"
+                        className={`${inputClassName} pr-10`}
                         placeholder="비밀번호"
                     />
                     <button
@@ -293,10 +303,10 @@ export default function SignupForm() {
                     </button>
                 </div>
 
-                <label className="text-right font-bold text-slate-700" htmlFor="passwordCheck">
-                    PW 확인
-                </label>
-                <div className="relative w-full">
+                <div className="relative">
+                    <label className={labelClassName} htmlFor="passwordCheck">
+                        PW 확인
+                    </label>
                     <input
                         type={showPasswordCheck ? "text" : "password"}
                         name="passwordCheck"
@@ -304,7 +314,7 @@ export default function SignupForm() {
                         required
                         value={passwordCheck}
                         onChange={(e) => setPasswordCheck(e.target.value)}
-                        className="border border-slate-300 py-2 px-2 w-full pr-10 h-10 text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-slate-500 transition-colors"
+                        className={`${inputClassName} pr-10`}
                         placeholder="비밀번호 확인"
                     />
                     <button
@@ -317,20 +327,30 @@ export default function SignupForm() {
                 </div>
 
                 {errorActionState && (
-                    <div className="col-span-2 text-center text-sm text-red-500 font-semibold mt-1">
+                    <div className="text-center text-sm text-red-500 font-semibold mt-1">
                         {errorActionState}
                     </div>
                 )}
 
                 <Button
                     type="submit"
-                    className="col-span-2 w-full py-6 mt-2 bg-indigo-500 rounded-none cursor-pointer"
+                    className="mt-2 w-full rounded-none bg-indigo-500 py-5 cursor-pointer"
                     disabled={!emailValidated || isPending}
                 >
-                    <p className="font-bold text-[17px]">
+                    <p className="font-bold text-[16px]">
                         {isPending ? "가입 처리 중..." : "회원가입"}
                     </p>
                 </Button>
+                <div className="flex flex-row justify-center gap-7 mb-10">
+                    <Link href='/auth/login'>
+                        <button
+                            type="button"
+                            className="cursor-pointer text-sm font-medium text-slate-400 transition-colors hover:text-slate-700"
+                        >
+                            로그인 페이지로 돌아가기
+                        </button>
+                    </Link>
+                </div>
             </form>
         </div>
     );

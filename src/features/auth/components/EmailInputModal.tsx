@@ -108,7 +108,7 @@ export default function EmailInputModal() {
                         <h1 className="mt-1 text-2xl font-bold text-slate-900">
                             비밀번호 찾기
                         </h1>
-                        <p className="mt-2 text-sm leading-6 text-slate-500">
+                        <p className="mt-1 text-sm leading-6 text-slate-500">
                             가입한 이메일로 임시 비밀번호가 발송됩니다.
                         </p>
                     </div>
@@ -121,12 +121,12 @@ export default function EmailInputModal() {
                                 </div>
                             )}
 
-                            <div className="space-y-2">
+                            <div className="flex flex-col gap-2">
                                 <label
                                     htmlFor="email"
                                     className="text-sm font-semibold text-slate-700"
                                 >
-                                    이메일
+                                    이메일로 인증하기
                                 </label>
 
                                 <input
@@ -134,13 +134,13 @@ export default function EmailInputModal() {
                                     id="email"
                                     name="email"
                                     placeholder="이메일을 입력해 주세요"
-                                    className="h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm text-slate-700 outline-none transition-colors placeholder:text-slate-400 focus:border-indigo-400 focus:bg-white focus:ring-4 focus:ring-indigo-100"
+                                    className="h-10 w-full rounded-lg border border-slate-200 bg-slate-50 px-4 text-sm text-slate-700 outline-none transition-colors placeholder:text-slate-400 focus:border-indigo-400 focus:bg-white focus:ring-4 focus:ring-indigo-100"
                                 />
                             </div>
 
                             <Button
                                 disabled={pending}
-                                className="h-12 w-full rounded-xl bg-indigo-500 text-base font-bold text-white shadow-sm transition-colors hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-60"
+                                className="h-12 w-full rounded-lg bg-indigo-500 text-base font-bold text-white shadow-sm transition-colors hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-60"
                             >
                                 {pending ? "발송 중..." : "임시 비밀번호 발송"}
                             </Button>

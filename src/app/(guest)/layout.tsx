@@ -9,7 +9,7 @@ export default function GuestLayout({
     return (
         <div className="flex min-h-screen flex-col">
             <GuestHeader />
-            <main className="bg-white h-full flex-1">
+            <main className="bg-white pt-14 h-full flex-1">
                 {children}
             </main>
             <Footer />

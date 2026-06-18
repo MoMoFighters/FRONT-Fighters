@@ -99,17 +99,11 @@ export default function LoginForm() {
 
     return (
         <>
-            <div className="flex flex-col gap-4">
-
-                <div className="grid grid-cols-2">
-
-
-
-                </div>
+            <div className="flex flex-col gap-1">
 
                 <form
                     action={handleSubmit}
-                    className="flex flex-col gap-4"
+                    className="flex flex-col gap-6"
                 >
 
                     <input
@@ -123,6 +117,7 @@ export default function LoginForm() {
                                 placeholder:text-slate-400
                                 focus:outline-none
                                 focus:border-slate-500
+                                text-[15px]
                             "
                     />
 
@@ -147,6 +142,7 @@ export default function LoginForm() {
                                         placeholder:text-slate-400
                                         focus:outline-none
                                         focus:border-slate-500
+                                        text-[15px]
                                     "
                             />
 
@@ -181,14 +177,14 @@ export default function LoginForm() {
                         disabled={isPending}
                         className="
                                 w-auto
-                                py-6
+                                py-5
                                 cursor-pointer
                                 bg-indigo-500
                                 hover:bg-indigo-600
                                 rounded-none
                             "
                     >
-                        <p className="font-bold text-[17px]">
+                        <p className="font-bold text-[16px]">
                             {
                                 isPending
                                     ? '로그인 중...'
@@ -199,7 +195,7 @@ export default function LoginForm() {
 
                 </form>
 
-                <div className="flex flex-row justify-center gap-7 mb-4">
+                <div className="flex flex-row justify-center gap-7 mb-10">
                     <EmailInputModal />
                     <Link href='/auth/signup'>
                         <button
@@ -210,7 +206,7 @@ export default function LoginForm() {
                         </button>
                     </Link>
                 </div>
-                <hr className="border-0.5 border-slate-300 mt-[-16]" />
+                <hr className="border-0.5 border-slate-300 mt-[-16] mb-4" />
 
                 <div className="flex flex-row gap-10 justify-center">
                     {/* <hr className="border-0.5 border-slate-300" /> */}
@@ -224,17 +220,17 @@ export default function LoginForm() {
                         height={36}
                         alt="카카오"
                         priority
-                        className="bg-yellow-300 rounded-full p-2 w-10 h-10 cursor-pointer"
+                        className="bg-yellow-300 rounded-full p-2 w-10 h-10 cursor-pointer hover:translate-y-0.5"
                         onClick={
                             handleKakaoLogin
                         }
                     />
                     {/* </div> */}
                     <a href={googleAuthLink}>
-                        <Image src={googleIcon} alt='구글' width={40} height={40} className="border border-slate-500 rounded-full p-2" />
+                        <Image src={googleIcon} alt='구글' width={40} height={40} className="border-2 border-slate-100 hover:border-slate-400 hover:translate-y-0.5 rounded-full p-2" />
                     </a>
                     <a href={googleAuthLink}>
-                        <Image src={naverIcon} alt='네이버' width={40} height={40} />
+                        <Image src={naverIcon} alt='네이버' width={40} height={40} className="hover:translate-y-0.5" />
                     </a>
                 </div>
 

@@ -18,26 +18,22 @@ export default async function Home() {
       <section className="relative bg-linear-to-br from-slate-50 via-slate-100/50 to-slate-100 py-24 overflow-hidden">
         <div className="max-w-7xl mx-auto px-8">
           <div className="grid grid-cols-2 gap-16 items-center">
-            {/* Left Content */}
             <div>
-              <div className="inline-block px-4 py-2 bg-slate-100 text-slate-700 rounded-full text-sm font-semibold mb-6">
-                🎓 학습이 도시를 성장시킵니다
-              </div>
               <h1 className="text-6xl font-bold text-slate-900 mb-6 leading-tight">
                 당신의 성장이
                 <br />
-                <span className="text-transparent bg-clip-text bg-slate-500 from-slate-600 to-slate-700">
+                <span className="text-transparent bg-clip-text bg-indigo-500 from-indigo-600 to-indigo-700">
                   도시가 됩니다
                 </span>
               </h1>
-              <p className="text-xl text-slate-600 mb-8 leading-relaxed">
+              <p className="text-lg text-slate-600 mb-8 leading-relaxed">
                 학습할 때마다 성장하는 나만의 도시를 만들어보세요.
                 <br />
                 모모시티에서 꿈을 현실로 만드는 특별한 경험을 시작하세요.
               </p>
               <div className="flex items-center gap-4">
                 <Link href="/auth/login">
-                  <button className="cursor-pointer px-8 py-4 bg-slate-400 hover:bg-slate-500 text-white rounded-xl font-bold text-lg transition-all shadow-lg hover:shadow-xl transform hover:scale-105">
+                  <button className="cursor-pointer px-8 py-4 bg-indigo-400 hover:bg-indigo-500 text-white rounded-xl font-bold text-lg transition-all shadow-lg hover:shadow-xl transform hover:scale-105">
                     시작하기
                   </button>
                 </Link>
@@ -60,12 +56,9 @@ export default async function Home() {
             </div>
 
             <div className="relative">
-              <div className="relative bg-white rounded-3xl shadow-2xl p-8 transform rotate-2 hover:rotate-0 transition-transform">
-                <div className="absolute -top-4 -right-4 w-24 h-24 bg-linear-to-br from-slate-400 to-slate-500 rounded-2xl flex items-center justify-center text-4xl shadow-l z-10">
-                  🏙️
-                </div>
+              <div className="relative bg-white rounded-3xl shadow-2xl p-10 transform rotate-2 hover:rotate-0 transition-transform">
                 <div
-                  className="w-full p-4 h-80 rounded-2xl bg-center relative"
+                  className="w-full h-80 rounded-2xl relative"
                 >
                   <Image
                     src={cityImage}
@@ -91,7 +84,7 @@ export default async function Home() {
           </div>
 
           <Link href="/auth/login">
-            <button className=" absolute right-8 top-0 px-6 py-3 cursor-pointer bg-slate-400 text-white rounded-xl font-semibold hover:bg-slate-500 flex items-center gap-2 transition-all shadow-lg hover:shadow-xl transform hover:scale-101">
+            <button className=" absolute right-8 top-0 px-6 py-3 cursor-pointer bg-indigo-400 text-white rounded-xl font-semibold hover:bg-indigo-500 flex items-center gap-2 transition-all shadow-lg hover:shadow-xl transform hover:scale-101">
               전체 보기
               <ChevronRight className="w-5 h-5" />
             </button>

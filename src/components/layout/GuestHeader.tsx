@@ -5,14 +5,13 @@ import { Button } from "@/components/ui/button";
 
 export default function GuestHeader() {
     return (
-        <header className="h-14 border-b border-slate-200 bg-white flxed top-0 left-0 z-40">
+        <header className="w-full h-14 border-b border-slate-200 bg-white fixed top-0 left-0 z-40">
             <div className="flex h-full w-full justify-between items-center px-2">
-                <Link href='/'>
+                <Link href='/' className="relative ml-6 w-24 h-4">
                     <Image
                         src={logo}
                         alt="MOMOCITY 로고"
-                        className="ml-6 opacity-80"
-                        width={110}
+                        fill
                         priority
                     />
                 </Link>
