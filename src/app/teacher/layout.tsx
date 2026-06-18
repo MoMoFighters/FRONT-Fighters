@@ -12,7 +12,7 @@ export default function TeacherLayout({
                 <AUthHeader role="teacher" />
             </div>
             <div className="flex pt-16 h-full">
-                <main className="ml-60 flex-1 h-full overflow-y-auto">
+                <main className="flex-1 h-full overflow-y-auto">
                     <div className="min-h-full flex flex-col">
 
                         <div className="flex-1">
