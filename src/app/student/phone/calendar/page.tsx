@@ -20,12 +20,12 @@ export default async function CalendarPage({
 
     const today = new Date();
 
-    const currentMonth =
-        `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-01`;
+    const currentDate =
+        `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
     if (!month) {
         redirect(
-            `/student/phone/calendar?month=${currentMonth}`
+            `/student/phone/calendar?month=${currentDate}`
         );
     }
 

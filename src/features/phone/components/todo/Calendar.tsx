@@ -167,6 +167,8 @@ export default function Calendar({
                 w-[320px]
                 shrink-0
                 overflow-y-auto
+                grid
+                grid-rows-[3fr_2fr]
             ">
 
                 <TodoSection
@@ -175,6 +177,9 @@ export default function Calendar({
                     }
                     todos={todos}
                 />
+                <div className='flex flex-col p-2'>
+                    <h2>오늘 들은 강의</h2>
+                </div>
 
             </div>
 
