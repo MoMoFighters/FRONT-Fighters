@@ -8,14 +8,13 @@ import DeleteLectureBtn from "@/features/lecture/components/buttons/DeleteLectur
 import EnrollLectureBtn from "@/features/lecture/components/buttons/EnrollLectureBtn";
 import RejectLectureBtn from "@/features/lecture/components/buttons/RejectLectureBtn";
 import UpdateLectureStatusBtn from "@/features/lecture/components/buttons/UpdateLectureStatusBtn";
-import { Lecture, LectureDetail, LectureProgress } from "@/features/lecture/type";
+import { Lecture, LectureDetailResponse } from "@/features/lecture/type";
 
 interface LectureItemProps {
-    lecture: Lecture | LectureDetail;
+    lecture: Lecture | LectureDetailResponse;
     role: string;
     mode: string;
     href?: string;
-    progressData?: LectureProgress;
 }
 
 const categoryColors: Record<string, string> = {
@@ -39,7 +38,6 @@ export default function LectureItem({
     role,
     mode,
     href,
-    progressData,
 }: LectureItemProps) {
     const lectureStatus = lecture.lectureStatus;
     const categoryLabel = categoryMap[lecture.category] ?? lecture.category;
@@ -140,8 +138,8 @@ export default function LectureItem({
 
                 {role === "student" && lecture.isEnrolled && (
                     <div className="absolute bottom-7 right-6 flex w-120 items-center gap-3 text-sm text-slate-400">
-                        <Progress value={progressData?.totalProgress ?? 0} className="flex-1" />
-                        {progressData?.completedCount ?? 0} / {progressData?.totalChapterCount ?? 0}
+                        <Progress value={lecture.lectureProgress ?? 0} className="flex-1" />
+                        {lecture.lectureProgress ?? 0}%
                     </div>
                 )}
 

@@ -1,8 +1,7 @@
 'use client'
 
-import Image from "next/image";
 import { useEffect, useState } from "react";
-import close from '@/app/assets/img/close.svg';
+import { X } from "lucide-react";
 import FriendItem from "@/components/phone/friends/FriendItem";
 import { getFriendListAction } from "@/features/friend/action";
 
@@ -61,12 +60,14 @@ export default function BlockUserListModal({
                     <div className="flex flex-row mt-2">
                         <div className="flex-1"></div>
 
-                        <Image
-                            src={close}
+                        <button
+                            type="button"
                             onClick={() => setOpen(false)}
-                            alt='닫기'
-                            className="w-7 h-7 cursor-pointer"
-                        />
+                            aria-label="닫기"
+                            className="flex h-7 w-7 cursor-pointer items-center justify-center text-slate-700 hover:text-slate-950"
+                        >
+                            <X className="h-6 w-6" aria-hidden="true" />
+                        </button>
                     </div>
 
                     <div className="mt-2">

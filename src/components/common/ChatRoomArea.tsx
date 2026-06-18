@@ -2,12 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import Image from "next/image";
 import Link from "next/link";
 
 import { usePathname, useRouter } from "next/navigation";
 
-import close from '@/app/assets/img/close.svg';
+import { X } from "lucide-react";
 
 import ChatItem from "./ChatItem";
 import MessageInputBox from "@/features/phone/components/chat/MessageInputBox";
@@ -279,12 +278,8 @@ export default function ChatRoomArea({
 
                     <div className="flex-1"></div>
 
-                    <Link href={href}>
-                        <Image
-                            src={close}
-                            alt="닫기"
-                            className="h-8 w-8 mr-1"
-                        />
+                    <Link href={href} aria-label="닫기">
+                        <X className="mr-1 h-8 w-8 text-slate-700 hover:text-slate-950" aria-hidden="true" />
                     </Link>
                 </div>
 

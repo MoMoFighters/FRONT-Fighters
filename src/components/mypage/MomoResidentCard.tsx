@@ -1,8 +1,8 @@
 import Image from "next/image";
 import momocityLogo from '@/app/assets/img/header_logo.png'
 import momo from '@/app/assets/img/momo.png'
-import userDefault from '@/app/assets/img/user.svg' // 프로필 없을 때 대체제 기본 이미지
 import Link from "next/link";
+import { UserRound } from "lucide-react";
 
 interface ResidentCardProps {
     data: {
@@ -32,12 +32,18 @@ export default function MomoResidentCard({ data }: ResidentCardProps) {
                 <div className="flex justify-center items-center">
                     {/* 💡 기존 빈 박스 자리에 실제 유저 프로필 이미지 예외처리 바인딩 */}
                     <div className="relative w-27 h-34.5 border border-slate-400 rounded-md mr-6 overflow-hidden bg-slate-200">
-                        <Image
-                            src={data.profileImageUrl || userDefault}
-                            alt="프로필 사진"
-                            fill
-                            className="object-cover"
-                        />
+                        {data.profileImageUrl ? (
+                            <Image
+                                src={data.profileImageUrl}
+                                alt="프로필 사진"
+                                fill
+                                className="object-cover"
+                            />
+                        ) : (
+                            <div className="flex h-full w-full items-center justify-center text-slate-400">
+                                <UserRound className="h-14 w-14" aria-hidden="true" />
+                            </div>
+                        )}
                     </div>
                     <div className="gap-3 flex flex-col">
                         <div className="flex flex-row gap-1 items-end">

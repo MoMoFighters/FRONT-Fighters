@@ -1,7 +1,6 @@
 'use client'
 
 import Image from "next/image";
-import user from '@/app/assets/img/user.svg'
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChatRoomListData } from "@/app/services/phone/chat/service";
