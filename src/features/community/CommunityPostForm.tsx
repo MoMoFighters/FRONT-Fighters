@@ -1,7 +1,8 @@
 "use client";
 
-import { ChangeEvent, useEffect, useRef, useState } from "react";
-import { ImagePlus, Plus, X } from "lucide-react";
+import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { ArrowLeft, ImagePlus, X } from "lucide-react";
 
 import {
     Select,
@@ -20,22 +21,18 @@ type CommunityCategory =
     | "COOK"
     | "FREE";
 
-type EditorBlock =
-    | {
-        id: string;
-        type: "TEXT";
-        value: string;
-    }
-    | {
-        id: string;
-        type: "IMAGE";
-        file: File | null;
-        previewUrl: string;
-    };
-
 interface CommunityPostFormProps {
     mode: CommunityPostFormMode;
-    data?: unknown;
+    data?: {
+        postId?: number | string;
+    };
+}
+
+interface PostContentBlock {
+    id: string;
+    file: File;
+    previewUrl: string;
+    content: string;
 }
 
 const CATEGORY_OPTIONS: {
@@ -69,159 +66,87 @@ const CATEGORY_OPTIONS: {
     ];
 
 const MAX_IMAGE_COUNT = 5;
-const MAX_BLOCK_COUNT = 11;
 
-const createTextBlock = (): EditorBlock => ({
+const createPostContentBlock = (file: File): PostContentBlock => ({
     id: crypto.randomUUID(),
-    type: "TEXT",
-    value: "",
-});
-
-const createImageBlock = (file: File): EditorBlock => ({
-    id: crypto.randomUUID(),
-    type: "IMAGE",
     file,
     previewUrl: URL.createObjectURL(file),
+    content: "",
 });
 
-const normalizeEditorBlocks = (blocks: EditorBlock[]) => {
-    return blocks.reduce<EditorBlock[]>((acc, block) => {
-        const prevBlock = acc[acc.length - 1];
-
-        if (prevBlock?.type === "TEXT" && block.type === "TEXT") {
-            const mergedText = [prevBlock.value, block.value]
-                .filter(Boolean)
-                .join("\n");
-
-            return [
-                ...acc.slice(0, -1),
-                {
-                    ...prevBlock,
-                    value: mergedText,
-                },
-            ];
-        }
-
-        return [...acc, block];
-    }, []);
+const mergeContent = (prevContent: string, nextContent: string) => {
+    return [prevContent, nextContent]
+        .map((content) => content.trim())
+        .filter(Boolean)
+        .join("\n");
 };
 
 export default function CommunityPostForm({
     mode,
     data,
 }: CommunityPostFormProps) {
-    const [blocks, setBlocks] = useState<EditorBlock[]>([createTextBlock()]);
-    const blocksRef = useRef(blocks);
-    const imageCount = blocks.filter((block) => block.type === "IMAGE").length;
+    const [mainContent, setMainContent] = useState("");
+    const [postContents, setPostContents] = useState<PostContentBlock[]>([]);
+    const mainContentRef = useRef(mainContent);
+    const postContentsRef = useRef(postContents);
+
+    const canAddImage = postContents.length < MAX_IMAGE_COUNT;
+    const backHref =
+        mode === "EDIT" && data?.postId
+            ? `/student/phone/community/${data.postId}`
+            : "/student/phone/community";
 
     useEffect(() => {
-        blocksRef.current = blocks;
-    }, [blocks]);
+        mainContentRef.current = mainContent;
+    }, [mainContent]);
+
+    useEffect(() => {
+        postContentsRef.current = postContents;
+    }, [postContents]);
 
     useEffect(() => {
         return () => {
-            blocksRef.current.forEach((block) => {
-                if (block.type === "IMAGE" && block.previewUrl) {
-                    URL.revokeObjectURL(block.previewUrl);
-                }
+            postContentsRef.current.forEach((postContent) => {
+                URL.revokeObjectURL(postContent.previewUrl);
             });
         };
     }, []);
 
-    const handleResizeHeight = (element: HTMLTextAreaElement) => {
-        element.style.height = "auto";
-        element.style.height = `${element.scrollHeight}px`;
-    };
+    const handleAddImage = (e: ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        e.target.value = "";
 
-    const canInsertTextBlock = (insertIndex: number) => {
-        const prevBlock = blocks[insertIndex - 1];
-        const nextBlock = blocks[insertIndex];
-
-        return (
-            blocks.length < MAX_BLOCK_COUNT
-            && prevBlock?.type !== "TEXT"
-            && nextBlock?.type !== "TEXT"
-        );
-    };
-
-    const canInsertImageBlock = () => {
-        return blocks.length < MAX_BLOCK_COUNT && imageCount < MAX_IMAGE_COUNT;
-    };
-
-    const addTextBlock = (insertIndex: number) => {
-        if (!canInsertTextBlock(insertIndex)) {
+        if (!file || !canAddImage) {
             return;
         }
 
-        setBlocks((prevBlocks) => {
-            const nextBlocks = [...prevBlocks];
-            nextBlocks.splice(
-                insertIndex,
-                0,
-                createTextBlock()
-            );
-
-            return normalizeEditorBlocks(nextBlocks).slice(0, MAX_BLOCK_COUNT);
-        });
+        setPostContents((prev) => [
+            ...prev,
+            createPostContentBlock(file),
+        ]);
     };
 
-    const addImageBlock = (
-        insertIndex: number,
+    const handleChangeImage = (
+        id: string,
         e: ChangeEvent<HTMLInputElement>
     ) => {
         const file = e.target.files?.[0];
         e.target.value = "";
 
-        if (!file || imageCount >= MAX_IMAGE_COUNT || blocks.length >= MAX_BLOCK_COUNT) {
-            return;
-        }
-
-        setBlocks((prevBlocks) => {
-            const nextBlocks = [...prevBlocks];
-            nextBlocks.splice(insertIndex, 0, createImageBlock(file));
-
-            return normalizeEditorBlocks(nextBlocks).slice(0, MAX_BLOCK_COUNT);
-        });
-    };
-
-    const updateTextBlock = (
-        blockId: string,
-        value: string
-    ) => {
-        setBlocks((prevBlocks) =>
-            prevBlocks.map((block) =>
-                block.id === blockId && block.type === "TEXT"
-                    ? {
-                        ...block,
-                        value,
-                    }
-                    : block
-            )
-        );
-    };
-
-    const updateImageBlock = (
-        blockId: string,
-        e: ChangeEvent<HTMLInputElement>
-    ) => {
-        const file = e.target.files?.[0];
-
         if (!file) {
             return;
         }
 
-        setBlocks((prevBlocks) =>
-            prevBlocks.map((block) => {
-                if (block.id !== blockId || block.type !== "IMAGE") {
-                    return block;
+        setPostContents((prev) =>
+            prev.map((postContent) => {
+                if (postContent.id !== id) {
+                    return postContent;
                 }
 
-                if (block.previewUrl) {
-                    URL.revokeObjectURL(block.previewUrl);
-                }
+                URL.revokeObjectURL(postContent.previewUrl);
 
                 return {
-                    ...block,
+                    ...postContent,
                     file,
                     previewUrl: URL.createObjectURL(file),
                 };
@@ -229,46 +154,73 @@ export default function CommunityPostForm({
         );
     };
 
-    const removeImageBlock = (blockId: string) => {
-        setBlocks((prevBlocks) => {
-            const removeIndex = prevBlocks.findIndex((block) => block.id === blockId);
-            const removeTarget = prevBlocks[removeIndex];
+    const handleChangePostContent = (id: string, content: string) => {
+        setPostContents((prev) =>
+            prev.map((postContent) =>
+                postContent.id === id
+                    ? {
+                        ...postContent,
+                        content,
+                    }
+                    : postContent
+            )
+        );
+    };
 
-            if (!removeTarget || removeTarget.type !== "IMAGE") {
-                return prevBlocks;
-            }
+    const handleRemoveImage = (id: string) => {
+        const currentMainContent = mainContentRef.current;
+        const currentPostContents = postContentsRef.current;
+        const removeIndex = currentPostContents.findIndex((postContent) => postContent.id === id);
+        const removeTarget = currentPostContents[removeIndex];
 
-            if (removeTarget.previewUrl) {
-                URL.revokeObjectURL(removeTarget.previewUrl);
-            }
+        if (!removeTarget) {
+            return;
+        }
 
-            const prevBlock = prevBlocks[removeIndex - 1];
-            const nextBlock = prevBlocks[removeIndex + 1];
+        URL.revokeObjectURL(removeTarget.previewUrl);
 
-            if (prevBlock?.type === "TEXT" && nextBlock?.type === "TEXT") {
-                const mergedText = [prevBlock.value, nextBlock.value]
-                    .filter(Boolean)
-                    .join("\n");
+        if (removeIndex === 0) {
+            const nextMainContent = mergeContent(currentMainContent, removeTarget.content);
+            const nextPostContents = currentPostContents.filter((postContent) => postContent.id !== id);
 
-                return normalizeEditorBlocks([
-                    ...prevBlocks.slice(0, removeIndex - 1),
-                    {
-                        ...prevBlock,
-                        value: mergedText,
-                    },
-                    ...prevBlocks.slice(removeIndex + 2),
-                ]);
-            }
+            mainContentRef.current = nextMainContent;
+            postContentsRef.current = nextPostContents;
+            setMainContent(nextMainContent);
+            setPostContents(nextPostContents);
+            return;
+        }
 
-            return normalizeEditorBlocks(
-                prevBlocks.filter((block) => block.id !== blockId)
-            );
-        });
+        const nextPostContents = currentPostContents
+            .filter((postContent) => postContent.id !== id)
+            .map((postContent, index) => {
+                if (index !== removeIndex - 1) {
+                    return postContent;
+                }
+
+                return {
+                    ...postContent,
+                    content: mergeContent(postContent.content, removeTarget.content),
+                };
+            });
+
+        postContentsRef.current = nextPostContents;
+        setPostContents(nextPostContents);
+    };
+
+    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+        const hasImage = postContents.length > 0;
+        const hasMainContent = mainContent.trim().length > 0;
+
+        if (!hasImage && !hasMainContent) {
+            e.preventDefault();
+            alert("이미지가 없는 게시글은 본문을 입력해야 합니다.");
+        }
     };
 
     return (
         <form
             action=""
+            onSubmit={handleSubmit}
             className="flex h-full min-h-0 flex-col rounded-3xl bg-white/85 p-5 shadow-sm ring-1 ring-slate-200/80 backdrop-blur"
         >
             <input
@@ -277,7 +229,15 @@ export default function CommunityPostForm({
                 value={mode}
             />
 
-            <div className="grid shrink-0 grid-cols-[minmax(0,1fr)_180px] gap-3 ">
+            <Link
+                href={backHref}
+                className="-ml-1 mb-2 inline-flex h-7 w-7 shrink-0 items-center justify-center text-slate-400 transition hover:text-indigo-500"
+                aria-label="뒤로가기"
+            >
+                <ArrowLeft className="h-5 w-5" />
+            </Link>
+
+            <div className="grid shrink-0 grid-cols-[minmax(0,1fr)_180px] gap-3">
                 <input
                     name="title"
                     placeholder="제목"
@@ -305,129 +265,197 @@ export default function CommunityPostForm({
                 </Select>
             </div>
 
-            <div className="rounded-2xl border border-slate-200 mt-5 min-h-0 flex-1 overflow-y-auto pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                {blocks.map((block, index) => (
-                    <div key={block.id}>
-                        <InsertBlockButtons
-                            canAddText={canInsertTextBlock(index)}
-                            canAddImage={canInsertImageBlock()}
-                            onAddText={() => addTextBlock(index)}
-                            onAddImage={(e) => addImageBlock(index, e)}
-                        />
-
-                        {block.type === "TEXT" ? (
-                            <textarea
-                                name="contents"
-                                value={block.value}
-                                onChange={(e) => {
-                                    updateTextBlock(block.id, e.target.value);
-                                    handleResizeHeight(e.target);
-                                }}
-                                onInput={(e) => handleResizeHeight(e.currentTarget)}
-                                className="min-h-36 w-full bg-transparent px-3 py-2 text-sm font-medium leading-7 text-slate-700 outline-none transition placeholder:text-slate-400"
-                                style={{
-                                    resize: "none",
-                                    overflow: "hidden",
-                                }}
-                                placeholder="내용 입력..."
-                            />
-                        ) : (
-                            <div className="py-3">
-                                <div className="mx-[30%] w-[40%]">
-                                    <div className="relative overflow-hidden rounded-2xl bg-slate-50 shadow-sm ring-1 ring-slate-100">
-                                        <img
-                                            src={block.previewUrl}
-                                            alt="게시글 첨부 이미지 미리보기"
-                                            className="aspect-[4/3] w-full object-cover"
-                                        />
-
-                                        <label className="absolute left-2 top-2 cursor-pointer rounded-full bg-white/90 px-3 py-1.5 text-xs font-black text-slate-500 shadow-sm transition hover:bg-indigo-500 hover:text-white">
-                                            사진 변경
-                                            <input
-                                                type="file"
-                                                name="images"
-                                                accept="image/*"
-                                                className="hidden"
-                                                onChange={(e) => updateImageBlock(block.id, e)}
-                                            />
-                                        </label>
-
-                                        <button
-                                            type="button"
-                                            onClick={() => removeImageBlock(block.id)}
-                                            className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-slate-500 shadow-sm transition hover:bg-rose-500 hover:text-white"
-                                            aria-label="이미지 삭제"
-                                        >
-                                            <X className="h-4 w-4" />
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
+            <section className="mt-4 flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white">
+                <div className="sticky top-0 z-10 flex h-11 shrink-0 items-center justify-between border-b border-slate-100 bg-white/95 px-4 backdrop-blur">
+                    <div className="leading-none">
+                        <p className="text-xs font-black text-slate-900">
+                            본문 영역
+                        </p>
+                        <p className="mt-0.5 text-[11px] font-bold text-slate-400">
+                            사진은 최대 {MAX_IMAGE_COUNT}개까지 추가할 수 있습니다.
+                        </p>
                     </div>
-                ))}
 
-                <InsertBlockButtons
-                    canAddText={canInsertTextBlock(blocks.length)}
-                    canAddImage={canInsertImageBlock()}
-                    onAddText={() => addTextBlock(blocks.length)}
-                    onAddImage={(e) => addImageBlock(blocks.length, e)}
-                />
-            </div>
+                    {canAddImage && (
+                        <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-indigo-500 px-3 py-1 text-xs font-black text-white transition hover:bg-indigo-600">
+                            <ImagePlus className="h-3.5 w-3.5" />
+                            사진 추가
+                            <input
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={handleAddImage}
+                            />
+                        </label>
+                    )}
+                </div>
+
+                <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                    <AutoResizeTextarea
+                        name="content"
+                        value={mainContent}
+                        onChange={setMainContent}
+                        className="w-full bg-transparent px-2 py-2 text-sm font-medium leading-7 text-slate-700 outline-none transition placeholder:text-slate-400"
+                        placeholder="내용 입력..."
+                    />
+
+                    {postContents.map((postContent, index) => (
+                        <PostContentFieldset
+                            key={postContent.id}
+                            postContent={postContent}
+                            orderNo={index + 1}
+                            onChangeImage={handleChangeImage}
+                            onChangeContent={handleChangePostContent}
+                            onRemove={handleRemoveImage}
+                        />
+                    ))}
+                </div>
+            </section>
 
             <button
                 type="submit"
                 className="mt-5 h-11 shrink-0 rounded-2xl bg-indigo-400 text-sm font-black text-white transition hover:bg-indigo-500"
             >
-                게시글 등록
+                {mode === "CREATE" ? "게시글 등록" : "게시글 수정"}
             </button>
         </form>
     );
 }
 
-function InsertBlockButtons({
-    canAddText,
-    canAddImage,
-    onAddText,
-    onAddImage,
+function PostContentFieldset({
+    postContent,
+    orderNo,
+    onChangeImage,
+    onChangeContent,
+    onRemove,
 }: {
-    canAddText: boolean;
-    canAddImage: boolean;
-    onAddText: () => void;
-    onAddImage: (e: ChangeEvent<HTMLInputElement>) => void;
+    postContent: PostContentBlock;
+    orderNo: number;
+    onChangeImage: (id: string, e: ChangeEvent<HTMLInputElement>) => void;
+    onChangeContent: (id: string, content: string) => void;
+    onRemove: (id: string) => void;
 }) {
-    if (!canAddText && !canAddImage) {
-        return null;
-    }
+    return (
+        <fieldset className="py-4">
+            <input
+                type="hidden"
+                name={`postContentOrderNo_${orderNo}`}
+                value={orderNo}
+            />
+            <PostContentFileInput
+                name={`postContentImage_${orderNo}`}
+                file={postContent.file}
+            />
+
+            <div className="mx-[30%] w-[40%]">
+                <div className="relative overflow-hidden rounded-2xl bg-slate-50 shadow-sm ring-1 ring-slate-100">
+                    <img
+                        src={postContent.previewUrl}
+                        alt={`게시글 첨부 이미지 ${orderNo}`}
+                        className="aspect-[4/3] w-full object-cover"
+                    />
+
+                    <label className="absolute left-2 top-2 cursor-pointer rounded-full bg-white/90 px-3 py-1.5 text-xs font-black text-slate-500 shadow-sm transition hover:bg-indigo-500 hover:text-white">
+                        사진 변경
+                        <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => onChangeImage(postContent.id, e)}
+                        />
+                    </label>
+
+                    <button
+                        type="button"
+                        onClick={() => onRemove(postContent.id)}
+                        className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-slate-500 shadow-sm transition hover:bg-rose-500 hover:text-white"
+                        aria-label="이미지 삭제"
+                    >
+                        <X className="h-4 w-4" />
+                    </button>
+                </div>
+            </div>
+
+            <AutoResizeTextarea
+                name={`postContentContent_${orderNo}`}
+                value={postContent.content}
+                onChange={(content) => onChangeContent(postContent.id, content)}
+                className="mt-3 w-full bg-transparent px-2 py-2 text-sm font-medium leading-7 text-slate-700 outline-none transition placeholder:text-slate-400"
+                placeholder="이미지 아래에 이어질 내용을 입력하세요..."
+            />
+        </fieldset>
+    );
+}
+
+function AutoResizeTextarea({
+    name,
+    value,
+    onChange,
+    className,
+    placeholder,
+}: {
+    name: string;
+    value: string;
+    onChange: (value: string) => void;
+    className: string;
+    placeholder: string;
+}) {
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const rows = value.split("\n").length + 1;
+
+    useEffect(() => {
+        if (!textareaRef.current) {
+            return;
+        }
+
+        const lineHeight = 28;
+        textareaRef.current.style.height = `${rows * lineHeight}px`;
+    }, [rows]);
 
     return (
-        <div className="flex justify-center gap-2 py-3">
-            {canAddText && (
-                <button
-                    type="button"
-                    onClick={onAddText}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-black text-slate-500 transition hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-500"
-                >
-                    <Plus className="h-3.5 w-3.5" />
-                    글 추가
-                </button>
-            )}
+        <textarea
+            ref={textareaRef}
+            name={name}
+            value={value}
+            rows={rows}
+            onChange={(e) => onChange(e.target.value)}
+            className={className}
+            style={{
+                resize: "none",
+                overflow: "hidden",
+            }}
+            placeholder={placeholder}
+        />
+    );
+}
 
-            {canAddImage && (
-                <label
-                    className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-black text-slate-500 transition hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-500"
-                >
-                    <ImagePlus className="h-3.5 w-3.5" />
-                    사진 추가
-                    <input
-                        type="file"
-                        name="images"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={onAddImage}
-                    />
-                </label>
-            )}
-        </div>
+function PostContentFileInput({
+    name,
+    file,
+}: {
+    name: string;
+    file: File;
+}) {
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        if (!inputRef.current) {
+            return;
+        }
+
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        inputRef.current.files = dataTransfer.files;
+    }, [file]);
+
+    return (
+        <input
+            ref={inputRef}
+            type="file"
+            name={name}
+            className="hidden"
+            tabIndex={-1}
+            readOnly
+        />
     );
 }

@@ -51,7 +51,7 @@ export default function MyPageNav({ isPaid }: { isPaid?: boolean | undefined }) 
                     );
                 })}
             </nav>
-            {!isPaid && (
+            {isPaid === false && (
                 <TeacherRegistModal isModal={isModal} setIsModal={setIsModal} nickName="모모쌤" />
             )
             }
