@@ -163,7 +163,7 @@ export default function Phone({
                         </div>
                     </main>
 
-                    <footer className="relative z-10 flex h-12 shrink-0 items-center justify-center">
+                    <footer className="pt-4 relative z-10 flex h-12 shrink-0 items-center justify-center">
                         <div className="h-1.5 w-24 rounded-full bg-slate-700/85 shadow-[0_1px_8px_rgba(255,255,255,0.45)]" />
                     </footer>
                 </div>
