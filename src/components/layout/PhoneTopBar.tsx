@@ -7,7 +7,7 @@ export default function PhoneTopBar() {
                 09:41
             </p>
 
-            <div className="absolute left-1/2 top-2.5 h-4 w-28 -translate-x-1/2 rounded-full bg-slate-950" />
+            {/* <div className="absolute left-1/2 top-2.5 h-4 w-28 -translate-x-1/2 rounded-full bg-slate-950" /> */}
 
             <div className="flex items-center gap-1.5 text-slate-700">
                 <Wifi size={14} strokeWidth={2.3} />

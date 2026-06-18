@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Heart, ImageIcon, Search } from "lucide-react";
+import { Heart, ImageIcon, Plus, Search } from "lucide-react";
 
 import {
     Select,
@@ -16,6 +16,7 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "@/components/ui/pagination";
+import { Button } from "@/components/ui/button";
 
 type CommunityCategory =
     | "STUDY"
@@ -88,7 +89,7 @@ const COMMUNITY_POSTS: CommunityPost[] = [
         title: "오늘 요리 수업 후기",
         category: "COOK",
         content:
-            "처음 듣는 수업이라 긴장했는데 재료 설명부터 차근차근 알려줘서 좋았어요.",
+            "김김김",
         thumbnailUrl:
             "https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=360&q=80",
         likeCount: 24,
@@ -266,17 +267,22 @@ export default async function CommunityPage({
             <header className="shrink-0">
                 <div className="flex items-end justify-between gap-4">
                     <div>
-                        <p className="text-xs font-black uppercase tracking-[0.18em] text-indigo-400">
-                            Momocity
-                        </p>
                         <h1 className="mt-1 text-2xl font-black tracking-tight text-slate-900">
                             커뮤니티
                         </h1>
                     </div>
-
-                    <p className="text-xs font-bold text-slate-400">
-                        게시글 {filteredPosts.length}개
-                    </p>
+                    <div className="flex flex-col gap-0.5">
+                        <Link
+                            href='/student/phone/community/create'
+                            className="cursor-pointer flex flex-row gap-1 items-center rounded-lg"
+                        >
+                            <Plus className="h-4" />
+                            <p className="text-[16px]">게시글 등록</p>
+                        </Link>
+                        <p className="text-xs font-bold text-slate-400 text-right">
+                            게시글 {filteredPosts.length}개
+                        </p>
+                    </div>
                 </div>
 
                 <form
@@ -323,7 +329,7 @@ export default async function CommunityPage({
 
             <div className="mt-4 min-h-0 flex-1 overflow-y-auto pr-1">
                 {posts.length > 0 ? (
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="grid grid-cols-4 gap-8">
                         {/* ==================== COMMUNITY_POST_ITEM_COMPONENT_START ==================== */}
                         {/* TODO: 아래 게시글 아이템은 추후 별도 컴포넌트로 분리 예정 */}
                         {posts.map((post) => (
@@ -382,7 +388,7 @@ export default async function CommunityPage({
             </div>
 
             {totalPages > 1 && (
-                <Pagination className="mt-4 shrink-0">
+                <Pagination className="">
                     <PaginationContent>
                         {currentPage > 1 && (
                             <PaginationItem>
