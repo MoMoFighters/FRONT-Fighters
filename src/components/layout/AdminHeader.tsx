@@ -19,7 +19,7 @@ export default async function AdminHeader() {
     return (
         <header className="h-14 border-b border-slate-100 bg-white">
             <div className="flex h-full w-full items-center justify-between pl-4 pr-8">
-                <Link href='/' className="relative ml-6 w-24 h-4">
+                <Link href='/admin' className="relative ml-6 w-24 h-4">
                     <Image
                         src={logo}
                         alt="MOMOCITY 로고"
