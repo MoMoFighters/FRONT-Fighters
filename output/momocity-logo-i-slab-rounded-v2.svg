@@ -1,0 +1,12 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="455" height="104" viewBox="0 0 455 104">
+  <style>
+    .word { font-family: 'Noto Sans Grantha', 'Noto Sans', Arial, sans-serif; font-size: 82px; font-weight: 800; letter-spacing: -5px; dominant-baseline: middle; }
+  </style>
+  <text x="0" y="54" class="word" fill="#0F172A">MoMoC</text>
+  <g fill="#818CF8">
+    <rect x="278" y="18" width="48" height="16" rx="8" />
+    <rect x="294" y="25" width="16" height="58" rx="3.5" />
+    <rect x="278" y="72" width="48" height="16" rx="8" />
+  </g>
+  <text x="321" y="54" class="word" fill="#818CF8">TY</text>
+</svg>

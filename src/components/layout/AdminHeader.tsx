@@ -19,11 +19,12 @@ export default async function AdminHeader() {
     return (
         <header className="h-14 border-b border-slate-100 bg-white">
             <div className="flex h-full w-full items-center justify-between pl-4 pr-8">
-                <Link href="/admin" className="flex items-center">
+                <Link href='/' className="relative ml-6 w-30 h-5">
                     <Image
                         src={logo}
                         alt="MOMOCITY 로고"
-                        width={100}
+                        fill
+                        priority
                     />
                 </Link>
                 <div className="flex items-center justify-end">

@@ -31,11 +31,12 @@ export default async function AuthHeader({ role }: { role: string }) {
     return (
         <header className="z-50 h-14 border-b border-slate-200 bg-white">
             <div className="flex h-full w-full justify-between items-center px-2">
-                <Link href={`/${role}`} className="flex items-center">
+                <Link href='/' className="relative ml-6 w-30 h-5">
                     <Image
                         src={logo}
-                        alt="로고"
-                        width={100}
+                        alt="MOMOCITY 로고"
+                        fill
+                        priority
                     />
                 </Link>
                 <div className="flex justify-end mr-4 items-center">
