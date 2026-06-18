@@ -1,12 +1,9 @@
 import Image from "next/image";
 import city from '@/app/assets/img/cityImg.png'
-import CreateBuildingBtn from "@/components/city/CreateBuildingBtn";
-import BuildingItem from "@/components/city/BuildingItem";
 import { getMyInfo } from "@/features/user/action";
 import NicknameInputModal from "@/features/auth/components/NicknameInputModal";
-import arthall from '@/app/assets/img/arthall.png'
 import Phone from "@/components/city/Phone";
-import school from '@/app/assets/img/school.png'
+import MonthlyStreakGarden from "@/components/city/MonthlyStreakGarden";
 
 interface Building {
     position: string;
@@ -74,50 +71,8 @@ export default async function StudentMainPage() {
                 priority
                 className="object-cover"
             />
-            {/* <div className="absolute top-40 left-80">
-                <Image
-                    src={school}
-                    alt="예술 건물"
-                    width={200}
-                />
-            </div>
-            </div> */}
             <Phone />
-            {/* {POSITIONS.map((position) => {
-
-                const building = buildings.find(
-                    (building) => building.position === position
-                );
-
-                return (
-                    <div
-                        key={position}
-                        className={`
-                            absolute
-                            ${POSITION_STYLE[position]}
-                        `}
-                    >
-                        {building?.position ? (
-
-                            <BuildingItem
-                                category={building.category}
-                                level={building.level}
-                            />
-                        ) : (
-                            <CreateBuildingBtn />
-                        )}
-                    </div>
-                );
-            })} */}
-            {/* <div className="absolute top-[10%] right-[12%]">
-                <BuildingItem category="community" />
-            </div>
-            <div className="absolute top-[35%] right-[12%]">
-                <BuildingItem category="mypage" />
-            </div>
-            <div className="absolute top-[60%] right-[12%]">
-                <BuildingItem category="payments" />
-            </div> */}
+            <MonthlyStreakGarden />
         </div>
     );
 }

@@ -1,19 +1,36 @@
 import Image from "next/image";
 import momocityLogo from '@/app/assets/img/header_logo.png'
 import momo from '@/app/assets/img/momo.png'
-import userDefault from '@/app/assets/img/user.svg' // 프로필 없을 때 대체제 기본 이미지
 import Link from "next/link";
+import { UserRound } from "lucide-react";
 
 interface ResidentCardProps {
     data: {
         name: string;
-        nickname: string | null;
+        nickname: string;
         createdAt: string;
-        profileImageUrl: string | null;
+        profileImageUrl: string;
     }
 }
 
+const formatResidentCreatedAt = (createdAt: string) => {
+    const digits = createdAt.replace(/\D/g, "");
+
+    if (digits.length >= 8) {
+        return digits.slice(2, 8);
+    }
+
+    if (digits.length >= 6) {
+        return digits.slice(0, 6);
+    }
+
+    return createdAt;
+};
+
 export default function MomoResidentCard({ data }: ResidentCardProps) {
+    const residentNumberPrefix = formatResidentCreatedAt(data.createdAt);
+    const isBlobProfileImage = data.profileImageUrl.startsWith("blob:");
+
     return (
         <div className="flex flex-col w-145 h-93.5 border border-slate-300 rounded-xl bg-mauve-50 shadow-2xl">
             {/* 헤더 */}
@@ -32,12 +49,18 @@ export default function MomoResidentCard({ data }: ResidentCardProps) {
                 <div className="flex justify-center items-center">
                     {/* 💡 기존 빈 박스 자리에 실제 유저 프로필 이미지 예외처리 바인딩 */}
                     <div className="relative w-27 h-34.5 border border-slate-400 rounded-md mr-6 overflow-hidden bg-slate-200">
-                        <Image
-                            src={data.profileImageUrl || userDefault}
-                            alt="프로필 사진"
-                            fill
-                            className="object-cover"
-                        />
+                        {data.profileImageUrl ? (
+                            <Image
+                                src={data.profileImageUrl}
+                                alt="프로필 사진"
+                                fill
+                                className="object-cover"
+                            />
+                        ) : (
+                            <div className="flex h-full w-full items-center justify-center text-slate-400">
+                                <UserRound className="h-14 w-14" aria-hidden="true" />
+                            </div>
+                        )}
                     </div>
                     <div className="gap-3 flex flex-col">
                         <div className="flex flex-row gap-1 items-end">
@@ -46,7 +69,7 @@ export default function MomoResidentCard({ data }: ResidentCardProps) {
                         </div>
                         <div className="flex flex-col gap-[2.5px]">
                             <p className="text-[11px] text-slate-400">모모등록번호</p>
-                            <p className="text-[19px] text-slate-900 font-bold">{data.createdAt}-xxxxxx</p>
+                            <p className="text-[19px] text-slate-900 font-bold">{residentNumberPrefix}-xxxxxx</p>
                         </div>
                         <div className="flex flex-col gap-[2.5px]">
                             <p className="text-[11px] text-slate-400">주소</p>
@@ -67,11 +90,6 @@ export default function MomoResidentCard({ data }: ResidentCardProps) {
                         />
                     </div>
                 </div>
-            </div>
-            <div className="flex flex-row justify-end">
-                <Link href='/student/mypage/edit' className="mr-5 mb-2 text-slate-400 font-bold text-sm hover:text-slate-700 transition-colors">
-                    내 정보 수정
-                </Link>
             </div>
         </div>
     );

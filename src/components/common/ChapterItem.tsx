@@ -1,6 +1,6 @@
 'use client'
 
-import { CategoryUrl, Chapter } from "@/features/lecture/type";
+import { Chapter } from "@/features/lecture/type";
 import { useParams, useRouter } from "next/navigation";
 import { Progress } from "../ui/progress";
 import { toast } from "sonner";
@@ -23,7 +23,7 @@ export default function ChapterItem({
         category,
         lectureId
     } = useParams<{
-        category: CategoryUrl;
+        category?: string;
         lectureId: string;
     }>();
 
@@ -94,15 +94,15 @@ export default function ChapterItem({
                 </p>
             </div>
 
-            {chapter.progressRate !== undefined && (
+            {chapter.chapterProgress !== undefined && (
                 <div className="w-60 flex gap-1">
                     <Progress
-                        value={chapter.progressRate}
+                        value={chapter.chapterProgress}
                         className="mt-2"
                     />
 
                     <p className="text-xs text-slate-400 mt-1">
-                        {chapter.progressRate}%
+                        {chapter.chapterProgress}%
                     </p>
                 </div>
             )}

@@ -1,10 +1,8 @@
 'use client'
 
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import { useActionState, useEffect, useState } from "react";
-
-import close from '@/app/assets/img/close.svg';
+import { X } from "lucide-react";
 
 import { tempPwAction, } from "../action";
 
@@ -94,11 +92,7 @@ export default function EmailInputModal() {
                         onClick={() => setIsModal(false)}
                         aria-label="닫기"
                     >
-                        <Image
-                            src={close}
-                            alt="닫기"
-                            className="h-4 w-4 opacity-70"
-                        />
+                        <X className="h-4 w-4 opacity-70" aria-hidden="true" />
                     </button>
 
                     <div className="mb-6 pr-10">
