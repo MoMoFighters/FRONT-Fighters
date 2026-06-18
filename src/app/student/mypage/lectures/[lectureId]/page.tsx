@@ -1,12 +1,11 @@
-﻿import { notFound } from "next/navigation";
+import { notFound } from "next/navigation";
 
-import {
-    getLectureById,
-} from "@/app/services/lecture/service";
+import { getLectureById } from "@/app/services/lecture/service";
 import ListPagination from "@/components/common/ListPagination";
-import BuildGuideCard from "@/features/lecture/components/student/shared/BuildGuideCard";
-import CategoryPreviewCard from "@/features/lecture/components/student/shared/CategoryPreviewCard";
+import CategoryBuildingCard from "@/features/lecture/components/student/shared/CategoryBuildingCard";
 import getCategoryMeta from "@/features/lecture/components/student/shared/category";
+import LearningProgressCard from "@/features/lecture/components/student/shared/LearningProgressCard";
+import ResumeLectureCard from "@/features/lecture/components/student/shared/ResumeLectureCard";
 import StudentChapterList from "@/features/lecture/components/student/detail/StudentChapterList";
 import StudentLectureDetailItem from "@/features/lecture/components/student/detail/StudentLectureDetailItem";
 import StudentLectureDetailTabs from "@/features/lecture/components/student/detail/StudentLectureDetailTabs";
@@ -15,13 +14,13 @@ import StudentReviewList, {
 } from "@/features/lecture/components/student/detail/StudentReviewList";
 import StudentPageHeader from "@/features/student/components/StudentPageHeader";
 
-interface LectureDetailPageProps {
+interface MyLectureDetailPageProps {
     params: Promise<{
         lectureId: string;
     }>;
     searchParams: Promise<{
-        page?: string;
         tab?: string;
+        page?: string;
     }>;
 }
 
@@ -70,10 +69,10 @@ const DUMMY_REVIEWS: StudentReview[] = [
     },
 ];
 
-export default async function LectureDetailPage({
+export default async function MyLectureDetailPage({
     params,
     searchParams,
-}: LectureDetailPageProps) {
+}: MyLectureDetailPageProps) {
     const { lectureId } = await params;
     const { tab, page } = await searchParams;
 
@@ -85,12 +84,11 @@ export default async function LectureDetailPage({
 
     const categoryMeta = getCategoryMeta(lecture.category);
     const category = lecture.category.toLowerCase();
-
     const chapters = lecture.chapters;
-
     const currentTab = tab === "reviews"
         ? "reviews"
         : "chapters";
+
     const currentPage = Number(page) || 1;
     const reviewsPerPage = 5;
     const totalReviewPages = Math.ceil(
@@ -115,20 +113,25 @@ export default async function LectureDetailPage({
         chapter.isAccessible !== false &&
         !chapter.isCompleted
     )) ?? firstChapter;
+    const chapterBaseHref = `/student/mypage/lectures/${lectureId}`;
 
     return (
         <main className="mx-auto grid w-full max-w-360 grid-cols-[minmax(0,1fr)_320px] gap-8 px-12 py-12">
             <section className="min-w-0">
                 <StudentPageHeader
-                    backHref="/student/lectures"
+                    backHref="/student/mypage/lectures"
                     breadcrumbs={[
                         {
                             label: "홈",
                             href: "/student",
                         },
                         {
-                            label: "강의 둘러보기",
-                            href: "/student/lectures",
+                            label: "마이페이지",
+                            href: "/student/mypage",
+                        },
+                        {
+                            label: "내 강의",
+                            href: "/student/mypage/lectures",
                         },
                         {
                             label: lecture.title,
@@ -143,11 +146,12 @@ export default async function LectureDetailPage({
                     categoryLabel={categoryMeta.label}
                     buildingImage={categoryMeta.buildingImage}
                     resumeChapterId={resumeChapter?.chapterId}
+                    chapterBaseHref={chapterBaseHref}
                 />
 
                 <section className="mt-8 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
                     <StudentLectureDetailTabs
-                        href={`/student/lectures/${lectureId}`}
+                        href={`/student/mypage/lectures/${lectureId}`}
                         currentTab={currentTab}
                         reviewCount={DUMMY_REVIEWS.length}
                     />
@@ -158,6 +162,7 @@ export default async function LectureDetailPage({
                             lectureId={lectureId}
                             chapters={chapters}
                             isEnrolled={lecture.isEnrolled}
+                            chapterBaseHref={chapterBaseHref}
                         />
                     ) : (
                         <>
@@ -175,9 +180,30 @@ export default async function LectureDetailPage({
                 </section>
             </section>
 
-            <aside className="sticky mt-4 top-10 self-start space-y-5">
-                <BuildGuideCard />
-                <CategoryPreviewCard />
+            <aside className="sticky top-10 self-start space-y-5">
+                <CategoryBuildingCard
+                    category={category}
+                    buildingName={categoryMeta.buildingName}
+                    buildingImage={categoryMeta.buildingImage}
+                    level={3}
+                    currentExp={320}
+                    maxExp={600}
+                />
+
+                <LearningProgressCard
+                    categoryLabel={categoryMeta.label}
+                    progress={lecture.lectureProgress ?? 0}
+                />
+
+                {lecture.isEnrolled && resumeChapter && (
+                    <ResumeLectureCard
+                        href={`${chapterBaseHref}/chapters/${resumeChapter.chapterId}`}
+                        thumbnail={categoryMeta.buildingImage}
+                        title={lecture.title}
+                        description={resumeChapter.title}
+                        progress={lecture.lectureProgress ?? 0}
+                    />
+                )}
             </aside>
         </main>
     );

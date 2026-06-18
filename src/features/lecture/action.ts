@@ -1,14 +1,13 @@
 'use server'
 
 import { enrollLectureById, updateLectureStatus, updateVideoProgress, updateVideoProgressByExit } from "@/app/services/lecture/service";
-import { StatusApiUrl, StatusRequest, UpdateVideoProgressByExitRequest, UpdateVideoProgressRequest } from "./type";
+import { LectureStatus, UpdateVideoProgressByExitRequest, UpdateVideoProgressRequest } from "./type";
 import { revalidatePath } from "next/cache";
 
 
 // 강의 상태 업데이트 액션함수
-export const updateLectureStatusAction = async (id: string, status: StatusApiUrl) => {
-    const payload: StatusRequest = { lectureStatus: status };
-    await updateLectureStatus(id, payload);
+export const updateLectureStatusAction = async (id: string, status: LectureStatus) => {
+    await updateLectureStatus(id, status);
     revalidatePath('/admin/lectures');
 }
 

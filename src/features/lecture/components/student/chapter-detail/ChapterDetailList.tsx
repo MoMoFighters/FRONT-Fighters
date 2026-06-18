@@ -1,14 +1,15 @@
-﻿import { Progress } from "@/components/ui/progress";
-import { CategoryUrl, Chapter } from "@/features/lecture/type";
+import { Progress } from "@/components/ui/progress";
+import { Chapter } from "@/features/lecture/type";
 import ChapterDetailListItem from "@/features/lecture/components/student/chapter-detail/ChapterDetailListItem";
 
 interface ChapterDetailListProps {
-    category: CategoryUrl;
+    category: string;
     lectureId: string;
     currentChapterId: number;
     chapters: Chapter[];
     completedCount: number;
     totalChapterCount: number;
+    chapterBaseHref?: string;
 }
 
 export default function ChapterDetailList({
@@ -18,6 +19,7 @@ export default function ChapterDetailList({
     chapters,
     completedCount,
     totalChapterCount,
+    chapterBaseHref,
 }: ChapterDetailListProps) {
     const progress = totalChapterCount > 0
         ? Math.round((completedCount / totalChapterCount) * 100)
@@ -51,6 +53,7 @@ export default function ChapterDetailList({
                         lectureId={lectureId}
                         chapter={chapter}
                         isActive={chapter.chapterId === currentChapterId}
+                        href={chapterBaseHref ? `${chapterBaseHref}/chapters/${chapter.chapterId}` : undefined}
                     />
                 ))}
             </div>

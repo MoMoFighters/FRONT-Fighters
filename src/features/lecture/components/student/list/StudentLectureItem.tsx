@@ -1,15 +1,14 @@
-﻿import Image, { StaticImageData } from "next/image";
+﻿import Image from "next/image";
 import Link from "next/link";
 import { Star } from "lucide-react";
 
 import { Progress } from "@/components/ui/progress";
 import { Lecture } from "@/features/lecture/type";
+import getCategoryMeta from "../shared/category";
 
 interface StudentLectureItemProps {
     lecture: Lecture;
     href: string;
-    categoryLabel: string;
-    buildingImage: StaticImageData;
     progress?: number;
     chapterCount?: number;
     reviewCount?: number;
@@ -19,13 +18,17 @@ interface StudentLectureItemProps {
 export default function StudentLectureItem({
     lecture,
     href,
-    categoryLabel,
-    buildingImage,
-    progress = 0,
-    chapterCount = 12,
-    reviewCount = 133,
+    progress,
+    chapterCount,
+    reviewCount,
     showLearningStatus = true,
 }: StudentLectureItemProps) {
+
+    const categoryMeta = getCategoryMeta(lecture.category);
+    const progressValue = progress ?? lecture.lectureProgress ?? 0;
+    const chapterCountValue = chapterCount ?? lecture.chapterCount;
+    const reviewCountValue = reviewCount ?? lecture.reviewCount;
+
     return (
         <Link
             href={href}
@@ -38,19 +41,19 @@ export default function StudentLectureItem({
             "
         >
             <div className="relative h-28 overflow-hidden rounded-xl bg-slate-100">
-                <Image
-                    src={lecture.thumbnailUrl || buildingImage}
+                {lecture.thumbnailUrl && <Image
+                    src={lecture.thumbnailUrl}
                     alt={lecture.title}
                     fill
                     sizes="184px"
                     className="object-cover"
-                />
+                />}
             </div>
 
             <div className="flex h-full min-w-0 flex-col">
                 <div className="mb-2 flex items-center gap-2">
                     <span className="rounded-full bg-indigo-50 px-2.5 py-1 text-xs font-bold text-indigo-500">
-                        {categoryLabel}
+                        {categoryMeta.label}
                     </span>
                 </div>
 
@@ -65,13 +68,13 @@ export default function StudentLectureItem({
                 {showLearningStatus && (
                     <div className="mt-auto flex items-center gap-3 text-xs font-semibold text-slate-400">
                         <Progress
-                            value={progress}
+                            value={progressValue}
                             id={`lecture-progress-${lecture.lectureId}`}
                             className="max-w-40"
                         />
 
-                        <span>진도율 {progress}%</span>
-                        <span>총 {chapterCount}강</span>
+                        <span>진도율 {progressValue}%</span>
+                        <span>총 {chapterCountValue}강</span>
                     </div>
                 )}
             </div>
@@ -83,7 +86,7 @@ export default function StudentLectureItem({
                     <span className="font-medium text-slate-400">
                         / 5.0
                     </span>
-                    ({reviewCount})
+                    ({reviewCountValue})
                 </div>
 
                 {showLearningStatus && (

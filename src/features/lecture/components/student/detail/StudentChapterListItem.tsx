@@ -2,13 +2,14 @@ import Link from "next/link";
 import { CheckCircle2, LockKeyhole, PlayCircle } from "lucide-react";
 
 import { Progress } from "@/components/ui/progress";
-import { CategoryUrl, Chapter } from "@/features/lecture/type";
+import { Chapter } from "@/features/lecture/type";
 
 interface StudentChapterListItemProps {
-    category: CategoryUrl;
+    category: string;
     lectureId: string;
     chapter: Chapter;
     isEnrolled?: boolean;
+    href?: string;
 }
 
 const formatDuration = (durationSec: number) => {
@@ -23,12 +24,13 @@ export default function StudentChapterListItem({
     lectureId,
     chapter,
     isEnrolled,
+    href,
 }: StudentChapterListItemProps) {
     const isLocked =
         !isEnrolled ||
         chapter.isAccessible === false;
-    const progress = chapter.progressRate ?? 0;
-    const href = `/student/${category}/lectures/${lectureId}/chapters/${chapter.chapterId}`;
+    const progress = chapter.chapterProgress ?? 0;
+    const chapterHref = href ?? `/student/${category}/lectures/${lectureId}/chapters/${chapter.chapterId}`;
 
     const content = (
         <>
@@ -83,7 +85,7 @@ export default function StudentChapterListItem({
 
     return (
         <Link
-            href={href}
+            href={chapterHref}
             className="flex items-center gap-4 p-5 transition hover:bg-slate-50"
         >
             {content}

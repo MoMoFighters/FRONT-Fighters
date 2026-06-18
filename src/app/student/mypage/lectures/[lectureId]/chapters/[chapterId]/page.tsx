@@ -7,28 +7,23 @@ import {
 import VideoPlayer from "@/features/lecture/components/common/VideoPlayer";
 import ChapterDetailList from "@/features/lecture/components/student/chapter-detail/ChapterDetailList";
 import ChapterStudyInfoCard from "@/features/lecture/components/student/chapter-detail/ChapterStudyInfoCard";
-import getCategoryMeta from "@/features/lecture/components/student/shared/category";
-import { Category } from "@/features/lecture/type";
 import StudentPageHeader from "@/features/student/components/StudentPageHeader";
 
-interface ChapterViewPageProps {
+interface MyChapterViewPageProps {
     params: Promise<{
-        category: string;
         chapterId: string;
         lectureId: string;
     }>;
 }
 
-export default async function ChapterViewPage({
+export default async function MyChapterViewPage({
     params,
-}: ChapterViewPageProps) {
+}: MyChapterViewPageProps) {
     const {
-        category,
         chapterId,
         lectureId,
     } = await params;
 
-    const categoryMeta = getCategoryMeta(category.toUpperCase() as Category);
     const metaData = await getLectureMeta(lectureId);
     const playerData = await getVideoPlayer(lectureId, chapterId);
 
@@ -52,27 +47,32 @@ export default async function ChapterViewPage({
         (chapter) => chapter.chapterId === Number(chapterId)
     );
     const nextChapter = metaData.chapters[currentChapterIndex + 1];
+    const chapterBaseHref = `/student/mypage/lectures/${lectureId}`;
     const nextChapterHref = nextChapter && nextChapter.isAccessible !== false
-        ? `/student/${category}/lectures/${lectureId}/chapters/${nextChapter.chapterId}`
+        ? `${chapterBaseHref}/chapters/${nextChapter.chapterId}`
         : undefined;
 
     return (
         <main className="mx-auto grid w-full max-w-360 grid-cols-[minmax(0,1fr)_360px] gap-8 px-12 py-12">
             <section className="min-w-0">
                 <StudentPageHeader
-                    backHref={`/student/${category}/lectures/${lectureId}`}
+                    backHref={`/student/mypage/lectures/${lectureId}`}
                     breadcrumbs={[
                         {
                             label: "홈",
                             href: "/student",
                         },
                         {
-                            label: `${categoryMeta.label} 강의`,
-                            href: `/student/${category}/lectures`,
+                            label: "마이페이지",
+                            href: "/student/mypage",
+                        },
+                        {
+                            label: "내 강의",
+                            href: "/student/mypage/lectures",
                         },
                         {
                             label: metaData.lectureTitle,
-                            href: `/student/${category}/lectures/${lectureId}`,
+                            href: `/student/mypage/lectures/${lectureId}`,
                         },
                         {
                             label: `Chapter ${currentChapter.orderNo}.`,
@@ -96,12 +96,13 @@ export default async function ChapterViewPage({
 
             <aside className="sticky mt-4 top-5 self-start">
                 <ChapterDetailList
-                    category={category}
+                    category=""
                     lectureId={lectureId}
                     currentChapterId={Number(chapterId)}
                     chapters={metaData.chapters}
                     completedCount={completedCount}
                     totalChapterCount={metaData.totalChapterCount}
+                    chapterBaseHref={chapterBaseHref}
                 />
             </aside>
         </main>

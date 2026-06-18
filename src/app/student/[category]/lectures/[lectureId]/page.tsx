@@ -1,9 +1,7 @@
 ﻿import { notFound } from "next/navigation";
 
 import {
-    getChaptersById,
     getLectureById,
-    getLectureProgress,
 } from "@/app/services/lecture/service";
 import ListPagination from "@/components/common/ListPagination";
 import CategoryBuildingCard from "@/features/lecture/components/student/shared/CategoryBuildingCard";
@@ -16,13 +14,13 @@ import StudentLectureDetailTabs from "@/features/lecture/components/student/deta
 import StudentReviewList, {
     StudentReview,
 } from "@/features/lecture/components/student/detail/StudentReviewList";
-import { CategoryUrl } from "@/features/lecture/type";
+import { Category } from "@/features/lecture/type";
 import StudentPageHeader from "@/features/student/components/StudentPageHeader";
 
 interface LectureByCategoryDetailProps {
     params: Promise<{
         lectureId: string;
-        category: CategoryUrl;
+        category: string;
     }>;
     searchParams: Promise<{
         tab?: string;
@@ -82,38 +80,15 @@ export default async function LectureByCategoryDetail({
     const { category, lectureId } = await params;
     const { tab, page } = await searchParams;
 
-    const categoryMeta = getCategoryMeta(category);
+    const categoryApiValue = category.toUpperCase() as Category;
+    const categoryMeta = getCategoryMeta(categoryApiValue);
     const lecture = await getLectureById(lectureId);
 
     if (!lecture) {
         notFound();
     }
 
-    const progressData = lecture.isEnrolled
-        ? await getLectureProgress(lectureId)
-        : undefined;
-
-    const chaptersData = lecture.isEnrolled
-        ? await getChaptersById(lectureId)
-        : [];
-
-    const chapters = lecture.isEnrolled
-        ? lecture.chapters.map((chapter) => {
-            const progress = chaptersData.find(
-                (item) => item.chapterId === chapter.chapterId
-            );
-
-            return {
-                ...chapter,
-                videoUrl:
-                    "https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4",
-                progressRate: progress?.progressRate ?? 0,
-                watchedSeconds: progress?.watchedSeconds ?? 0,
-                isCompleted: progress?.isCompleted ?? false,
-                isAccessible: progress?.isAccessible ?? false,
-            };
-        })
-        : lecture.chapters;
+    const chapters = lecture.chapters;
 
     const currentTab = tab === "reviews"
         ? "reviews"
@@ -139,7 +114,7 @@ export default async function LectureByCategoryDetail({
         return `?${params.toString()}`;
     };
 
-    const firstChapter = chapters[0];
+    const firstChapter = chapters.find((chapter) => chapter.orderNo === 1);
     const resumeChapter = chapters.find((chapter) => (
         chapter.isAccessible !== false &&
         !chapter.isCompleted
@@ -171,8 +146,7 @@ export default async function LectureByCategoryDetail({
                     category={category}
                     categoryLabel={categoryMeta.label}
                     buildingImage={categoryMeta.buildingImage}
-                    progressData={progressData}
-                    firstChapterId={resumeChapter?.chapterId}
+                    resumeChapterId={resumeChapter?.chapterId}
                 />
 
                 <section className="mt-8 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
@@ -217,7 +191,7 @@ export default async function LectureByCategoryDetail({
 
                 <LearningProgressCard
                     categoryLabel={categoryMeta.label}
-                    progress={progressData?.totalProgress ?? 0}
+                    progress={lecture.lectureProgress ?? 0}
                 />
 
                 {lecture.isEnrolled && resumeChapter && (
@@ -226,7 +200,7 @@ export default async function LectureByCategoryDetail({
                         thumbnail={categoryMeta.buildingImage}
                         title={lecture.title}
                         description={resumeChapter.title}
-                        progress={progressData?.totalProgress ?? 0}
+                        progress={lecture.lectureProgress ?? 0}
                     />
                 )}
             </aside>

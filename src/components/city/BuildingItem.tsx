@@ -5,7 +5,7 @@ import market from '@/app/assets/img/market.png'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "../ui/hover-card";
 import Link from "next/link";
 import getCategoryMeta from "@/features/lecture/components/student/shared/category";
-import { CategoryUrl } from "@/features/lecture/type";
+import { Category } from "@/features/lecture/type";
 
 interface BuildingItemProps { category: string, level?: number }
 
@@ -22,7 +22,7 @@ export default function BuildingItem({ category, level }: BuildingItemProps) {
         case 'cook':
         case 'fitness':
         case 'beauty':
-            const categoryMeta = getCategoryMeta(category as CategoryUrl);
+            const categoryMeta = getCategoryMeta(category.toUpperCase() as Category);
             image = categoryMeta.buildingImage;
             label = categoryMeta.label;
             building = categoryMeta.buildingName;
@@ -51,7 +51,7 @@ export default function BuildingItem({ category, level }: BuildingItemProps) {
             break;
 
         default:
-            const defaultCategoryMeta = getCategoryMeta("study");
+            const defaultCategoryMeta = getCategoryMeta("STUDY");
             image = defaultCategoryMeta.buildingImage;
             label = '';
             building = '';

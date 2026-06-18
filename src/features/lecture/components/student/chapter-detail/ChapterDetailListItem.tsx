@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { CheckCircle2, LockKeyhole, PlayCircle } from "lucide-react";
 
-import { CategoryUrl, Chapter } from "@/features/lecture/type";
+import { Chapter } from "@/features/lecture/type";
 
 interface ChapterDetailListItemProps {
-    category: CategoryUrl;
+    category: string;
     lectureId: string;
     chapter: Chapter;
     isActive: boolean;
+    href?: string;
 }
 
 const formatDuration = (durationSec: number) => {
@@ -22,9 +23,10 @@ export default function ChapterDetailListItem({
     lectureId,
     chapter,
     isActive,
+    href,
 }: ChapterDetailListItemProps) {
     const isLocked = chapter.isAccessible === false;
-    const href = `/student/${category}/lectures/${lectureId}/chapters/${chapter.chapterId}`;
+    const chapterHref = href ?? `/student/${category}/lectures/${lectureId}/chapters/${chapter.chapterId}`;
 
     const content = (
         <>
@@ -87,7 +89,7 @@ export default function ChapterDetailListItem({
 
     return (
         <Link
-            href={href}
+            href={chapterHref}
             className={`
                 flex items-center gap-3 rounded-xl border p-4 transition
                 ${isActive

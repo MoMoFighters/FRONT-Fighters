@@ -2,8 +2,8 @@
 
 import { getLectures } from "@/app/services/lecture/service";
 import {
-    CategoryUrl,
-    GetLecturesRequest,
+    Category,
+    LectureListRequest,
 } from "@/features/lecture/type";
 
 import ListPagination from "@/components/common/ListPagination";
@@ -23,7 +23,7 @@ interface LectureListByCategoryProps {
     }>;
 
     params: Promise<{
-        category: CategoryUrl;
+        category: string;
     }>;
 }
 
@@ -34,10 +34,11 @@ export default async function LectureListByCategory({
     const { category } = await params;
     const { keyword, filter, page } = await searchParams;
 
-    const categoryMeta = getCategoryMeta(category);
+    const categoryApiValue = category.toUpperCase() as Category;
+    const categoryMeta = getCategoryMeta(categoryApiValue);
 
-    const payload: GetLecturesRequest = {
-        category: categoryMeta.apiValue,
+    const payload: LectureListRequest = {
+        category: categoryApiValue,
         keyword,
         enrolled: filter === "my" ? true : undefined,
         page: Number(page) || 1,
@@ -101,9 +102,7 @@ export default async function LectureListByCategory({
                     <>
                         <StudentLectureList
                             lectures={responseData.content}
-                            category={category}
-                            categoryLabel={categoryLabel}
-                            buildingImage={buildingImage}
+                            getHref={(lecture) => `/student/${category}/lectures/${lecture.lectureId}`}
                             showLearningStatus={filter === "my"}
                         />
 

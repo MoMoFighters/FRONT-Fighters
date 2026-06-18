@@ -1,134 +1,36 @@
-export type LectureCategory =
-    "STUDY" | "FITNESS" | "COOK" | "BEAUTY" | "ART";
+// 카테고리 ENUM 타입 -> 백엔드 ENUM 값에 맞춰 대문자로 사용
+export type Category = "STUDY" | "FITNESS" | "COOK" | "BEAUTY" | "ART";
 
-export type CategoryApiUrl = LectureCategory;
-export type CategoryUrl =
-    "study" | "fitness" | "cook" | "beauty" | "art";
+// 강의 상태 ENUM 타입 
+export type LectureStatus = "WAITING" | "ACTIVE" | "HOLD" | "DELETE";
 
-export type LectureStatus =
-    "WAITING" | "ACTIVE" | "HOLD" | "DELETE";
-
-export type VideoStatus =
-    "UPLOADING" | 'ENCODING' | 'READY' | 'FAILED';
-
-// 실제로 화면에서 필요한 강의의 타입 정의
-
+// 강의 전체 조회 타입 정의
 export interface Lecture {
     lectureId: number;
-
-    teacherId?: number;
-    teacherName?: string;
-
     title: string;
     description: string;
     thumbnailUrl: string;
-    category: LectureCategory;
+    category: Category;
     lectureStatus: LectureStatus;
     averageRating: number;
     reviewCount: number;
-    chapters: Chapter[];
+    chapterCount: number;
     createdAt: string;
     updatedAt: string;
 
     //수강 중인 학생의 경우
-    isEnrolled?: boolean; //신청여부
-    totalProgress?: number; //해당 학생이 이 강의를 얼만큼 들었는가 (%)
-}
-
-export interface LectureDetail {
-    lectureId: number;
-
-    teacherId?: number;
-    teacherName?: string;
-
-    title: string;
-    description: string;
-    thumbnailUrl: string;
-    category: LectureCategory;
-    averageRating: number;
-    reviewCount: number;
-    chapters: Chapter[];
-    createdAt: string;
-    updatedAt: string;
-
-    // 관리자, 강사의 경우
-    lectureStatus?: LectureStatus;
-
-    //수강 중인 학생의 경우
-    isEnrolled?: boolean; //신청여부
-    totalProgress?: number; //해당 학생이 이 강의를 얼만큼 들었는가 (%)
-}
-
-
-export interface LectureList {
-    lectureId: number;
-
-    teacherId?: number;
-    teacherName?: string;
-
-    title: string;
-    description: string;
-    thumbnailUrl: string;
-    category: LectureCategory;
-    averageRating: number;
-    reviewCount: number;
-    // 총 챕터 수
-    createdAt: string;
-    updatedAt: string;
-
-    // 관리자, 강사의 경우
-    lectureStatus?: LectureStatus;
-
-    //수강 중인 학생의 경우
-    isEnrolled?: boolean; //신청여부
-    totalProgress?: number; //해당 학생이 이 강의를 얼만큼 들었는가 (%)
-}
-
-export interface Chapter {
-    chapterId: number;
-    title: string;
-    orderNo: number;
-    durationSec: number;
-
-    // 챕터 영상 시청 시 임시발급 url
-    presignedUrl?: string;
-
-    // videoStatus?: VideoStatus;
-    // videoSizeBytes: number;
-    // thumbnailUrl : string;
-
-
-    // 수강 중인 학생의 경우
+    isEnrolled?: boolean;
     isCompleted?: boolean;
-    isAccessible?: boolean;
-
-    // 영상을 볼때
-    watchedSeconds?: number;
-    lastPositionSec?: number;
-    /*     아래 둘중 하나 날리셈     */
-    totalProgress?: number;
-    progressRate?: number;
+    lectureProgress?: number;
 }
 
-export interface LectureProgress {
-    totalProgress: number;
-    completedCount: number;
-    totalChapterCount: number;
+export interface LectureListRequest {
+    category?: Category;
+    keyword?: string;
+    status?: string;
+    enrolled?: boolean;
+    page?: number;
 }
-
-export type ChapterProgress = Chapter;
-
-export interface Review {
-    id: number;
-    lectureId: number;
-    lectureTitle: string;
-    authorId: number;
-    authorName: string;
-    rating: number;
-    description: string;
-    createdAt: string;
-}
-
 
 export interface LectureListResponse {
     content: Lecture[];
@@ -138,21 +40,97 @@ export interface LectureListResponse {
     totalPages: number;
 }
 
-
-// 강의 목록 조회에서 필요한 props 타입 정의 🍑request->payload로 이름변경
-export interface GetLecturesPayload {
-    category?: LectureCategory;
-    keyword?: string;
-    status?: string;
-    enrolled?: boolean;
-    page?: number;
-}
-
-export type GetLecturesRequest = GetLecturesPayload;
-
-export interface StatusRequest {
+// 강의 상세 조회 타입 정의
+export interface LectureDetailResponse {
+    lectureId: number;
+    title: string;
+    description: string;
+    thumbnailUrl: string;
+    category: Category;
     lectureStatus: LectureStatus;
+    averageRating: number;
+    chapters: Chapter[];
+    reviews: Review[];
+    createdAt: string;
+    updatedAt: string;
+
+    //수강 중인 학생의 경우
+    isEnrolled?: boolean;
+    isCompleted?: boolean;
+    lectureProgress?: number;
+
+    // 수강평 페이지네이션 데이터
+    page: number;
+    size: number;
+    totalElements: number;
+    totalPages: number;
 }
+
+export interface Chapter {
+    chapterId: number;
+    orderNo: number;
+    title: string;
+    durationSec: number;
+    thumbnailUrl: string;
+
+    // 수강 중인 학생의 경우
+    isCompleted?: boolean;
+    isAccessible?: boolean;
+    chapterProgress?: number;
+}
+
+export interface Review {
+    reviewId: number;
+    userId: number;
+    userName: string;
+    profileImageUrl?: string;
+    profileImgUrl?: string;
+    content: string;
+    rating: number;
+    createdAt: string;
+}
+
+// 카테고리 별 강의 진척도 및 이어보기 데이터 조회 타입 정의 -> 강의 관련 페이지 오른쪽 사이드 카드 데이터
+export interface AsideCardInfoResponse {
+    // 내 강의 총 진척도 -> 마이페이지 내 강의 조회 시에만
+    MyTotalProgress?: number;
+
+    // 특정 카테고리 강의 목록 조회 시에만
+    // 1. 건물 정보
+    buildingLevel?: number;
+    buildingCurrentExp?: number;
+    buildingTotalExp?: number;
+    // 2. 카테고리별 총 진척도 -> 나의 학습 현황
+    progressByCategory?: number;
+
+    // 이어보기 데이터 -> 특정 카테고리 강의 목록 조회 + 마이페이지 내 강의 조회 공통
+    lectureId: number;
+    lectureTitle: string;
+    chapterId: number;
+    chapterTitle: string;
+    chapterProgress: number;
+}
+
+// 강의 메타 데이터 조회 타입 정의 -> 챕터 상세 조회 시
+export interface LectureMetaResponse {
+    lectureId: number;
+    lectureTitle: string;
+    totalChapterCount: number;
+    currentChapterId: number;
+    currentChapterNo: number;
+    currentChapterTitle: string;
+    chapters: Chapter[];
+}
+
+// 챕터 이어보기 영상 재생 타입 정의 -> 영상 시청을 위한 url과 이어볼 재생 위치
+export interface VideoPlayerResponse {
+    presignedUrl: string;
+    expiresIn: number,
+    lastPositionSec: number;
+}
+
+/* ****************수정 필요**************** */
+
 
 export type StatusApiUrl = LectureStatus;
 
@@ -183,16 +161,6 @@ export interface ResumeResponse {
     totalProgress: number;
 }
 
-export interface LectureMetaResponse {
-    lectureId: number;
-    lectureTitle: string;
-    thumbnailUrl: string | null;
-    totalChapterCount: number;
-    currentChapterId: number;
-    currentChapterNo: number;
-    currentChapterTitle: string;
-    chapters: Chapter[];
-}
 
 export interface LectureEnrollResponse {
     enrollmentId: number;
@@ -210,3 +178,6 @@ export interface EnrollLectureResponse {
     message: string;
     data?: LectureEnrollResponse | null;
 }
+
+
+

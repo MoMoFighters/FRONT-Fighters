@@ -1,11 +1,12 @@
-﻿import { CategoryUrl, Chapter } from "@/features/lecture/type";
+import { Chapter } from "@/features/lecture/type";
 import StudentChapterListItem from "@/features/lecture/components/student/detail/StudentChapterListItem";
 
 interface StudentChapterListProps {
-    category: CategoryUrl;
+    category: string;
     lectureId: string;
     chapters: Chapter[];
     isEnrolled?: boolean;
+    chapterBaseHref?: string;
 }
 
 export default function StudentChapterList({
@@ -13,6 +14,7 @@ export default function StudentChapterList({
     lectureId,
     chapters,
     isEnrolled,
+    chapterBaseHref,
 }: StudentChapterListProps) {
     return (
         <div className="divide-y divide-slate-100">
@@ -23,6 +25,7 @@ export default function StudentChapterList({
                     lectureId={lectureId}
                     chapter={chapter}
                     isEnrolled={isEnrolled}
+                    href={chapterBaseHref ? `${chapterBaseHref}/chapters/${chapter.chapterId}` : undefined}
                 />
             ))}
         </div>

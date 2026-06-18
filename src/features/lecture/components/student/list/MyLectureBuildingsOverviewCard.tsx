@@ -1,15 +1,15 @@
-﻿import Image from "next/image";
+import Image from "next/image";
 import Link from "next/link";
 
-import { CategoryUrl } from "@/features/lecture/type";
+import { Category } from "@/features/lecture/type";
 import getCategoryMeta from "@/features/lecture/components/student/shared/category";
 
-const CATEGORIES: CategoryUrl[] = [
-    "study",
-    "fitness",
-    "cook",
-    "beauty",
-    "art",
+const CATEGORIES: Category[] = [
+    "STUDY",
+    "FITNESS",
+    "COOK",
+    "BEAUTY",
+    "ART",
 ];
 
 export default function MyLectureBuildingsOverviewCard() {
@@ -27,11 +27,12 @@ export default function MyLectureBuildingsOverviewCard() {
             <div className="mt-5 space-y-3">
                 {CATEGORIES.map((category) => {
                     const categoryMeta = getCategoryMeta(category);
+                    const categorySlug = category.toLowerCase();
 
                     return (
                         <Link
                             key={category}
-                            href={`/student/mypage/lectures?category=${category}`}
+                            href={`/student/mypage/lectures?category=${categorySlug}`}
                             className="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50 p-3 transition hover:border-indigo-200 hover:bg-indigo-50"
                         >
                             <div className="relative h-12 w-12 shrink-0">

@@ -1,4 +1,4 @@
-﻿import { getLectures } from "@/app/services/lecture/service";
+import { getLecturesWithAuth } from "@/app/services/lecture/service";
 import ListPagination from "@/components/common/ListPagination";
 import MyPageNav from "@/components/mypage/MyPageNav";
 import LectureFilterBtn from "@/features/lecture/components/buttons/LectureFilterBtn";
@@ -10,28 +10,28 @@ import MyStudentLectureList from "@/features/lecture/components/student/list/MyS
 import MyLectureBuildingsOverviewCard from "@/features/lecture/components/student/list/MyLectureBuildingsOverviewCard";
 import ResumeLectureCard from "@/features/lecture/components/student/shared/ResumeLectureCard";
 import StudentPageHeader from "@/features/student/components/StudentPageHeader";
-import {
-    CategoryApiUrl,
-    CategoryUrl,
-    GetLecturesRequest,
-} from "@/features/lecture/type";
+import { Category, LectureListRequest } from "@/features/lecture/type";
 import { BookOpen, SearchX } from "lucide-react";
-
-const CATEGORY_URL_MAP: Record<CategoryApiUrl, CategoryUrl> = {
-    STUDY: "study",
-    FITNESS: "fitness",
-    COOK: "cook",
-    BEAUTY: "beauty",
-    ART: "art",
-};
 
 interface MyLecturesListPageProps {
     searchParams: Promise<{
-        category?: CategoryUrl;
+        category?: string;
         keyword?: string;
         page?: string;
     }>;
 }
+
+const getAverageProgress = (lectures: { lectureProgress?: number }[]) => {
+    if (lectures.length === 0) {
+        return 0;
+    }
+
+    const total = lectures.reduce((sum, lecture) => (
+        sum + (lecture.lectureProgress ?? 0)
+    ), 0);
+
+    return Math.round(total / lectures.length);
+};
 
 export default async function MyLecturesListPage({
     searchParams,
@@ -42,24 +42,29 @@ export default async function MyLecturesListPage({
         page,
     } = await searchParams;
 
-    const categoryMeta = category
-        ? getCategoryMeta(category)
+    const categoryApiValue = category
+        ? category.toUpperCase() as Category
+        : undefined;
+    const categoryMeta = categoryApiValue
+        ? getCategoryMeta(categoryApiValue)
         : undefined;
 
-    const payload: GetLecturesRequest = {
-        category: categoryMeta?.apiValue,
+    const payload: LectureListRequest = {
+        category: categoryApiValue,
         keyword,
         enrolled: true,
         page: Number(page) || 1,
     };
 
-    const responseData = await getLectures(payload);
+    const responseData = await getLecturesWithAuth(payload);
 
     const totalPages = responseData.totalPages;
     const currentPage = Number(page) || 1;
+    const lectures = responseData.content;
 
-    // 하드코딩 - 추후 실제 데이터로 교체 필요
-    const categoryProgress = 42;
+    const progress = getAverageProgress(lectures);
+
+    // 하드코딩 - 추후 실제 건물 성장 데이터로 교체 필요
     const buildingLevel = 3;
     const currentExp = 320;
     const maxExp = 600;
@@ -78,15 +83,12 @@ export default async function MyLecturesListPage({
         params.set("page", String(pageNumber));
 
         return `?${params.toString()}`;
-    }
+    };
 
-    // 하드코딩 - 추후 실제 데이터로 교체 필요
-    const resumeLecture = responseData.content[0];
-    const resumeCategory = resumeLecture
-        ? CATEGORY_URL_MAP[resumeLecture.category]
+    const resumeLecture = lectures[0];
+    const resumeCategoryMeta = resumeLecture
+        ? getCategoryMeta(resumeLecture.category)
         : undefined;
-    const resumeCategoryMeta = categoryMeta
-        ?? (resumeCategory ? getCategoryMeta(resumeCategory) : undefined);
 
     return (
         <main className="mx-auto grid w-full max-w-360 grid-cols-[minmax(0,1fr)_320px] gap-8 px-12 py-12">
@@ -122,7 +124,7 @@ export default async function MyLecturesListPage({
 
                 <div className="mb-4 flex items-center justify-between">
                     <p className="text-sm font-semibold text-slate-500">
-                        전체 수강 강의{" "}
+                        전체 강의{" "}
                         <span className="text-indigo-500">
                             {responseData.totalElements}
                         </span>
@@ -130,9 +132,9 @@ export default async function MyLecturesListPage({
                     </p>
                 </div>
 
-                {responseData.content.length > 0 ? (
+                {lectures.length > 0 ? (
                     <>
-                        <MyStudentLectureList lectures={responseData.content} />
+                        <MyStudentLectureList lectures={lectures} />
 
                         <ListPagination
                             currentPage={currentPage}
@@ -171,16 +173,16 @@ export default async function MyLecturesListPage({
 
                         <LearningProgressCard
                             categoryLabel={categoryMeta.label}
-                            progress={categoryProgress}
+                            progress={progress}
                         />
 
-                        {resumeLecture && resumeCategoryMeta && resumeCategory && (
+                        {resumeLecture && resumeCategoryMeta && (
                             <ResumeLectureCard
-                                href={`/student/${resumeCategory}/lectures/${resumeLecture.lectureId}`}
+                                href={`/student/mypage/lectures/${resumeLecture.lectureId}`}
                                 thumbnail={resumeCategoryMeta.buildingImage}
                                 title={resumeLecture.title}
                                 description={resumeLecture.description}
-                                progress={35}
+                                progress={resumeLecture.lectureProgress ?? 0}
                             />
                         )}
                     </>
@@ -188,13 +190,18 @@ export default async function MyLecturesListPage({
                     <>
                         <MyLectureBuildingsOverviewCard />
 
-                        {resumeLecture && resumeCategoryMeta && resumeCategory && (
+                        <LearningProgressCard
+                            categoryLabel="전체 강의"
+                            progress={progress}
+                        />
+
+                        {resumeLecture && resumeCategoryMeta && (
                             <ResumeLectureCard
-                                href={`/student/${resumeCategory}/lectures/${resumeLecture.lectureId}`}
+                                href={`/student/mypage/lectures/${resumeLecture.lectureId}`}
                                 thumbnail={resumeCategoryMeta.buildingImage}
                                 title={resumeLecture.title}
                                 description={resumeLecture.description}
-                                progress={35}
+                                progress={resumeLecture.lectureProgress ?? 0}
                             />
                         )}
                     </>
