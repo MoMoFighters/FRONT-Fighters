@@ -3,8 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { useActionState, useState } from "react";
 import LectureFormChapterItem from "./LectureFormChapterItem";
-import Image from "next/image";
-import upload from '@/app/assets/img/fileUpload.svg'
+import { UploadCloud } from "lucide-react";
 import Link from "next/link";
 import { createLectureWithChaptersAction } from "@/app/services/lecture/lectureCreateAction";
 
@@ -103,7 +102,7 @@ export default function LectureForm({ mode }: LectureFormProps) {
                                 />
                             ) : (
                                 <>
-                                    <Image src={upload} alt="업로드" width={40} height={40} className="mb-2 opacity-70" />
+                                    <UploadCloud className="mb-2 h-10 w-10 text-slate-400" aria-hidden="true" />
                                     <p className="text-sm font-black text-slate-500">이미지 업로드</p>
                                     <p className="mt-1 text-xs font-semibold text-slate-400">최대 5MB</p>
                                 </>

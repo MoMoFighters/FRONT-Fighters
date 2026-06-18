@@ -3,10 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, UserRound } from "lucide-react";
 import Image from "next/image";
 import { MomoUserInfoResponse, editMyInfo, checkAndRegisterNickname } from "@/features/user/action";
-import user from "@/app/assets/img/user.svg";
 import { toast } from "sonner";
 
 interface UserInfoEditFormProps {
@@ -168,36 +167,20 @@ export default function UserInfoEditForm({
                 <p className="w-24 font-semibold text-slate-800 pt-1.5 text-right">
                     프로필
                 </p>
-                <label className="group cursor-pointer">
-                    {profileUrl ? (
-                        <div className="relative h-28 w-28 overflow-hidden rounded-md border border-slate-300">
-                            {profileUrl.startsWith("blob:") ? (
-                                <img
-                                    src={profileUrl}
-                                    alt="프로필"
-                                    className="h-full w-full object-cover transition group-hover:scale-105"
-                                />
-                            ) : (
-                                <Image
-                                    src={profileUrl || user}
-                                    alt='프로필'
-                                    fill
-                                    className="object-cover transition group-hover:scale-105"
-                                />
-                            )}
-                        </div>
-                    ) : (
-                        <div className="flex h-28 w-28 items-center justify-center rounded-md border border-slate-300 bg-slate-100 text-xs font-bold text-slate-400">
-                            프로필 선택
-                        </div>
-                    )}
-                    <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={handleProfileImageChange}
-                    />
-                </label>
+                {profileUrl ? (
+                    <div className="relative w-28 h-28">
+                        <Image
+                            src={profileUrl}
+                            alt='프로필'
+                            fill
+                            className="object-cover rounded-md border border-slate-300"
+                        />
+                    </div>
+                ) : (
+                    <div className="flex h-28 w-28 items-center justify-center rounded-md border border-slate-300 bg-slate-100 text-slate-400">
+                        <UserRound className="h-12 w-12" aria-hidden="true" />
+                    </div>
+                )}
             </div>
 
             {/* 이름 */}

@@ -1,21 +1,27 @@
-'use client'
-import Image from "next/image";
+"use client";
+
+import { MessageCircle, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import friend from '@/app/assets/img/users.svg'
-import chat from '@/app/assets/img/message-circle.svg'
 
 export default function PhoneBottomNav() {
-
     const pathname = usePathname();
 
     return (
-        <div className="w-full h-10 grid grid-cols-2">
-            <Link href='/student/phone/friends' className={pathname === '/student/phone/friends/chat' ? "bg-slate-100" : "bg-slate-200"}>
-                <Image src={friend} alt="친구" className="w-5 h-5 mx-auto my-2"></Image>
+        <div className="grid h-10 w-full grid-cols-2">
+            <Link
+                href="/student/phone/friends"
+                className={pathname === "/student/phone/friends/chat" ? "bg-slate-100" : "bg-slate-200"}
+                aria-label="친구"
+            >
+                <Users className="mx-auto my-2 h-5 w-5 text-slate-700" />
             </Link>
-            <Link href='/student/phone/friends/chat' className={pathname !== '/student/phone/friends/chat' ? "bg-slate-100" : "bg-slate-200"}>
-                <Image src={chat} alt="채팅" className="w-5 h-5 mx-auto my-2"></Image>
+            <Link
+                href="/student/phone/friends/chat"
+                className={pathname !== "/student/phone/friends/chat" ? "bg-slate-100" : "bg-slate-200"}
+                aria-label="채팅"
+            >
+                <MessageCircle className="mx-auto my-2 h-5 w-5 text-slate-700" />
             </Link>
         </div>
     );

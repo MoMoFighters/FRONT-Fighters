@@ -1,11 +1,8 @@
 'use client'
 
-import Image from "next/image";
 import { useEffect, useState } from "react";
-import close from '@/app/assets/img/close.svg';
-import search from "@/app/assets/img/user-plus.svg";
 import FriendItem from "@/components/phone/friends/FriendItem";
-import { MessageCirclePlus } from "lucide-react";
+import { MessageCirclePlus, UserPlus, X } from "lucide-react";
 import { getFriendListAction } from "@/features/friend/action";
 import { Button } from "@/components/ui/button";
 
@@ -56,11 +53,7 @@ export default function MyFriendListModal() {
             <div
                 className="pr-2 py-auto flex justify-center cursor-pointer"
             >
-                <Image
-                    src={search}
-                    alt='친구추가'
-                    className="w-5 h-5"
-                />
+                <UserPlus className="h-5 w-5 text-slate-700" aria-label="친구 추가" />
             </div>
 
             <div
@@ -74,12 +67,14 @@ export default function MyFriendListModal() {
                     <div className="flex flex-row mt-2">
                         <div className="flex-1"></div>
 
-                        <Image
-                            src={close}
+                        <button
+                            type="button"
                             onClick={() => setIsModal(false)}
-                            alt='닫기'
-                            className="w-7 h-7 cursor-pointer"
-                        />
+                            aria-label="닫기"
+                            className="flex h-7 w-7 cursor-pointer items-center justify-center text-slate-700 hover:text-slate-950"
+                        >
+                            <X className="h-6 w-6" aria-hidden="true" />
+                        </button>
                     </div>
 
                     <div className="mt-2">

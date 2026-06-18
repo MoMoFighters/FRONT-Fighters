@@ -4,7 +4,6 @@ import CreateBuildingBtn from "@/components/city/CreateBuildingBtn";
 import BuildingItem from "@/components/city/BuildingItem";
 import { getMyInfo } from "@/features/user/action";
 import NicknameInputModal from "@/features/auth/components/NicknameInputModal";
-import arthall from '@/app/assets/img/arthall.png'
 import Phone from "@/components/city/Phone";
 import school from '@/app/assets/img/school.png'
 

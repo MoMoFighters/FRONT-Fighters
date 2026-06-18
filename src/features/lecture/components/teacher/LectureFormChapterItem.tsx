@@ -1,8 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
-import upload from "@/app/assets/img/fileUpload.svg";
+import { UploadCloud } from "lucide-react";
 
 type Chapter = {
     id: number;
@@ -116,7 +115,7 @@ export default function LectureFormChapterItem({ chapter, mode, onDelete }: Lect
                         />
                     ) : (
                         <div className="flex flex-col items-center">
-                            <Image src={upload} alt="업로드" width={34} height={34} className="mb-2 opacity-70" />
+                            <UploadCloud className="mb-2 h-9 w-9 text-slate-400" aria-hidden="true" />
                             <p className="text-sm font-black text-slate-500">챕터 썸네일 업로드</p>
                             <p className="mt-1 text-xs font-semibold text-slate-400">선택 사항</p>
                         </div>
@@ -156,7 +155,7 @@ export default function LectureFormChapterItem({ chapter, mode, onDelete }: Lect
                         </div>
                     ) : (
                         <div className="flex flex-col items-center">
-                            <Image src={upload} alt="업로드" width={40} height={40} className="mb-2" />
+                            <UploadCloud className="mb-2 h-10 w-10 text-slate-400" aria-hidden="true" />
                             <p className="text-sm font-black text-slate-500">동영상 업로드</p>
                         </div>
                     )}
