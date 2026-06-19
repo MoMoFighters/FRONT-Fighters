@@ -23,21 +23,17 @@ export default function TodoSection({
     )
 
     return (
-        <div className="p-4 flex flex-col gap-3">
+        <div className="p-4 flex flex-col gap-3 border-b border-slate-400 ml-3 h-[295px]">
 
             {/* 날짜 */}
             <div>
-                <p className="text-2xl text-slate-900 text-center font-extrabold">
-                    Todo
-                </p>
-
-                <h2 className="text-lg font-semibold text-right mr-1 text-slate-500">
-                    {selectedDate}
+                <h2 className="text-xl text-slate-900 text-center font-extrabold">
+                    할 일
                 </h2>
             </div>
 
             {/* TODO LIST */}
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 h-full  scrollbar-none overflow-auto">
                 {filteredTodos.map((todo) => (
                     <TodoItem
                         key={todo.calendarId}
@@ -45,13 +41,13 @@ export default function TodoSection({
                     />
                 ))}
             </div>
-
-
             {/* 추가 영역 */}
             <AddTodoArea
                 selectedDate={selectedDate}
                 noTodo={filteredTodos.length === 0 ? true : false}
             />
+
+
 
         </div>
     )

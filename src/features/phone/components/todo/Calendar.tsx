@@ -13,6 +13,7 @@ import interactionPlugin from '@fullcalendar/interaction'
 
 import TodoSection from './TodoSection'
 import { ScheduleItem } from '../../../todo/type'
+import TodayLectureSection from '../../../../components/phone/calendar/TodayLectureSection'
 
 
 
@@ -162,13 +163,14 @@ export default function Calendar({
             </div>
 
 
-            {/* TODO */}
+            {/* TODO 및 오늘 들은 강의 (우측 섹션)*/}
             <div className="
                 w-[320px]
                 shrink-0
-                overflow-y-auto
                 grid
                 grid-rows-[3fr_2fr]
+                h-full
+                overflow-hidden
             ">
 
                 <TodoSection
@@ -177,9 +179,7 @@ export default function Calendar({
                     }
                     todos={todos}
                 />
-                <div className='flex flex-col p-2'>
-                    <h2>오늘 들은 강의</h2>
-                </div>
+                <TodayLectureSection />
 
             </div>
 

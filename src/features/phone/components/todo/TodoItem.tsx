@@ -69,7 +69,7 @@ export default function TodoItem({
 
     return (
         <div
-            className={`border-b border-slate-700 p-2 flex items-center gap-3 ${isEditing ? 'bg-slate-100' : ''}`}
+            className={`w-full border-b border-slate-700 p-2 flex items-center gap-3 ${isEditing ? 'bg-slate-100' : ''}`}
         >
             <input
                 type="checkbox"
