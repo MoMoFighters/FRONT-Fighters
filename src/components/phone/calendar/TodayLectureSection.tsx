@@ -2,7 +2,7 @@ import TodayLectureItem from "@/features/phone/components/todo/TodayLectureItem"
 // props : {lectureId , (chapterId) , lectureTitle , chapterTitle , watchedSecond} []
 export default function TodayLectureSection() {
     return (
-        <div className='p-4 flex flex-col gap-3 h-[196px]'>
+        <div className='p-4 flex flex-col gap-3 h-49'>
             <h2 className="text-xl text-slate-900 text-center font-extrabold">
                 수강 이력
             </h2>

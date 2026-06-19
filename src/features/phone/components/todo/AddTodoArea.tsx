@@ -50,6 +50,8 @@ export default function AddTodoArea({ selectedDate, }: Props) {
         formData.append('title', title)
         formData.append('start', selectedDate)
         startTransition(() => { formAction(formData) })
+        setTitle("");
+        setIsAdding(false);
     }
 
     const handleBlur = (e: React.FocusEvent<HTMLDivElement>) => {
@@ -85,7 +87,7 @@ export default function AddTodoArea({ selectedDate, }: Props) {
 
     return (
         <div
-            className="border rounded-xl h-10 p-3 flex w-full items-center"
+            className="border rounded-lg h-10 p-3 flex w-full items-center"
             onBlur={handleBlur}
         >
             <input

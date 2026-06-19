@@ -1,9 +1,6 @@
-﻿
-import { getCalendarSchedulesAction } from '@/features/todo/action';
+﻿import { getCalendarSchedulesAction } from '@/features/todo/action';
 import Calendar from '@/features/phone/components/todo/Calendar';
 import { redirect } from 'next/navigation';
-
-
 
 interface CalendarPageProps {
     searchParams: Promise<{
@@ -29,9 +26,7 @@ export default async function CalendarPage({
         );
     }
 
-
     const schedules = await getCalendarSchedulesAction({ date });
-
 
     return (
         <Calendar schedules={schedules} />
