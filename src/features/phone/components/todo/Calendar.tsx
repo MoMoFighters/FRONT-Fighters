@@ -140,7 +140,7 @@ export default function Calendar({
 
                         events={events}
 
-                        dayMaxEvents={2}
+                        dayMaxEvents={1}
 
                         // 나중에 이거는 해당 이벤트를 상세조회하는 함수 정의해서 연결하기
                         eventClick={(e) => console.log(e)}
