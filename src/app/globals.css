@@ -187,7 +187,27 @@
 /* 일정 미리보기 */
 .fc-h-event .fc-event-title-container {
   text-align: center;
-  background-color: oklch(67.3% 0.182 276.935);
+  background-color: #c7d2fe;
+  color: #334155;
+  font-weight: 700;
+  border-radius: 3px;
+}
+
+.fc-h-event:hover .fc-event-title-container:hover {
+  background-color: #a5b4fc;
+  cursor: pointer;
+}
+
+.fc .fc-h-event,
+.fc .fc-daygrid-event,
+.fc .fc-event {
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.fc .fc-h-event .fc-event-main,
+.fc .fc-h-event .fc-event-title-container {
+  border: 0 !important;
 }
 
 .fc-daygrid-day-frame {

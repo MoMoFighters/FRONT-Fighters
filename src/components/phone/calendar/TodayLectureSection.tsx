@@ -7,7 +7,7 @@ export default function TodayLectureSection() {
                 수강 이력
             </h2>
 
-            <div className='grid grid-cols-1 gap-2 h-full scrollbar-none overflow-auto'>
+            <div className='grid grid-cols-1 gap-2 h-full scrollbar-none overflow-auto pt-0.5'>
                 {/* map으로 해당 날짜의 수강 이력 목록 뿌리기 */}
                 <TodayLectureItem />
                 <TodayLectureItem />

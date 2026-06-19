@@ -33,19 +33,24 @@ export default function TodoSection({
             </div>
 
             {/* TODO LIST */}
-            <div className="flex flex-col gap-2 h-full  scrollbar-none overflow-auto">
-                {filteredTodos.map((todo) => (
+            <div className="flex flex-col gap-2 h-full scrollbar-none overflow-auto w-full">
+                {filteredTodos[0] ? (filteredTodos.map((todo) => (
                     <TodoItem
                         key={todo.calendarId}
                         todo={todo}
                     />
-                ))}
+                ))) : (<div className="text-center h-full items-center flex justify-center">
+                    <p className="font-bold text-slate-700">
+                        등록된 일정이 없습니다.
+                    </p>
+                </div>)}
+                <div className='w-69 h-14'>
+                    <AddTodoArea
+                        selectedDate={selectedDate}
+                    />
+                </div>
             </div>
             {/* 추가 영역 */}
-            <AddTodoArea
-                selectedDate={selectedDate}
-                noTodo={filteredTodos.length === 0 ? true : false}
-            />
 
 
 

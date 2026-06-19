@@ -12,10 +12,9 @@ import { createTodoAction } from '../../../todo/action'
 
 interface Props {
     selectedDate: string
-    noTodo: boolean
 }
 
-export default function AddTodoArea({ selectedDate, noTodo, }: Props) {
+export default function AddTodoArea({ selectedDate, }: Props) {
 
     const [isAdding, setIsAdding] =
         useState(false)
@@ -64,14 +63,7 @@ export default function AddTodoArea({ selectedDate, noTodo, }: Props) {
 
     if (!isAdding) {
         return (
-            <>
-                {noTodo && (
-                    <div className="text-center">
-                        <p className="font-bold text-slate-700">
-                            등록된 일정이 없습니다.
-                        </p>
-                    </div>
-                )}
+            <div className='flex items-center justify-center'>
 
                 <button
                     className="
@@ -87,17 +79,17 @@ export default function AddTodoArea({ selectedDate, noTodo, }: Props) {
                 >
                     + 일정 추가하기
                 </button>
-            </>
+            </div>
         )
     }
 
     return (
         <div
-            className="border rounded-xl p-3 flex items-center gap-3"
+            className="border rounded-xl h-10 p-3 flex w-full items-center"
             onBlur={handleBlur}
         >
             <input
-                className="flex-1 outline-none font-bold"
+                className="flex-1 outline-none font-bold text-sm"
                 placeholder="일정을 입력하세요"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
