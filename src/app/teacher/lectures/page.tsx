@@ -1,13 +1,13 @@
 ﻿import Link from "next/link";
 import { SearchX } from "lucide-react";
 
-import { getLectures } from "@/app/services/lecture/service";
+import { getLecturesWithAuth } from "@/app/services/lecture/service";
 import LectureItem from "@/components/common/LectureItem";
 import { Button } from "@/components/ui/button";
 import { Lecture } from "@/features/lecture/type";
 
 export default async function TeacherLectureList() {
-    const responseData = await getLectures({});
+    const responseData = await getLecturesWithAuth({});
     const lectures = responseData.content;
 
     const activeLectures: Lecture[] = lectures.filter(

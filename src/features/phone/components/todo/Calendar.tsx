@@ -80,14 +80,18 @@ export default function Calendar({
 
 
     return (
-        <div className="
+        <>
+            {isMemoModalOpen && (
+                <AddMemoModal setIsMemoModalOpen={setIsMemoModalOpen} />
+            )}
+            <div className="
             h-full
             flex
             overflow-hidden
         ">
 
-            {/* 캘린더 */}
-            <div className="
+                {/* 캘린더 */}
+                <div className="
                 flex-1
                 min-w-0
                 p-4
@@ -96,97 +100,95 @@ export default function Calendar({
                 scrollbar-none
             ">
 
-                <FullCalendar
-                    plugins={[
-                        dayGridPlugin,
-                        interactionPlugin,
-                    ]}
+                    <FullCalendar
+                        plugins={[
+                            dayGridPlugin,
+                            interactionPlugin,
+                        ]}
 
-                    initialView="dayGridMonth"
+                        initialView="dayGridMonth"
 
-                    height="auto"
+                        height="auto"
 
-                    timeZone="local"
+                        timeZone="local"
 
-                    dateClick={(info) => {
+                        dateClick={(info) => {
 
-                        const clickedDate =
-                            info.dateStr
+                            const clickedDate =
+                                info.dateStr
 
-                        // state 변경
-                        setSelectedDate(
-                            clickedDate
-                        )
-
-                        // query parameter 변경
-                        const params =
-                            new URLSearchParams(
-                                searchParams.toString()
+                            // state 변경
+                            setSelectedDate(
+                                clickedDate
                             )
 
-                        params.set(
-                            'month',
-                            clickedDate
-                        )
-
-                        router.push(
-                            `?${params.toString()}`
-                        )
-                    }}
-
-                    events={events}
-
-                    dayMaxEvents={2}
-
-                    // 나중에 이거는 해당 이벤트를 상세조회하는 함수 정의해서 연결하기
-                    eventClick={(e) => console.log(e)}
-
-                    dayCellClassNames={(arg) => {
-
-                        const cellDate =
-                            arg.date
-                                .toLocaleDateString(
-                                    'sv-SE'
+                            // query parameter 변경
+                            const params =
+                                new URLSearchParams(
+                                    searchParams.toString()
                                 )
 
-                        if (
-                            cellDate ===
-                            selectedDate
-                        ) {
+                            params.set(
+                                'month',
+                                clickedDate
+                            )
 
-                            return [
-                                'selected-date-cell'
-                            ]
-                        }
+                            router.push(
+                                `?${params.toString()}`
+                            )
+                        }}
 
-                        return []
-                    }}
+                        events={events}
+
+                        dayMaxEvents={2}
+
+                        // 나중에 이거는 해당 이벤트를 상세조회하는 함수 정의해서 연결하기
+                        eventClick={(e) => console.log(e)}
+
+                        dayCellClassNames={(arg) => {
+
+                            const cellDate =
+                                arg.date
+                                    .toLocaleDateString(
+                                        'sv-SE'
+                                    )
+
+                            if (
+                                cellDate ===
+                                selectedDate
+                            ) {
+
+                                return [
+                                    'selected-date-cell'
+                                ]
+                            }
+
+                            return []
+                        }}
 
 
-                    headerToolbar={{
-                        left: "title",
-                        center: "",
-                        right: "addMemoButton today prev,next",
-                    }}
+                        headerToolbar={{
+                            left: "title",
+                            center: "",
+                            right: "addMemoButton today prev,next",
+                        }}
 
-                    customButtons={{
-                        addMemoButton: {
-                            text: "메모 추가",
-                            click: () => {
-                                setIsMemoModalOpen(true);
+                        customButtons={{
+                            addMemoButton: {
+                                text: "메모 추가",
+                                click: () => {
+                                    setIsMemoModalOpen(true);
+                                },
                             },
-                        },
-                    }}
-                />
-                {isMemoModalOpen && (
-                    <AddMemoModal setIsMemoModalOpen={setIsMemoModalOpen} />
-                )}
+                        }}
+                    />
 
-            </div>
+                </div>
 
 
-            {/* TODO 및 오늘 들은 강의 (우측 섹션)*/}
-            <div className="
+
+                {/* TODO 및 오늘 들은 강의 (우측 섹션)*/}
+                <div className="
                 w-[320px]
                 shrink-0
                 grid
@@ -195,16 +197,17 @@ export default function Calendar({
                 overflow-hidden
             ">
 
-                <TodoSection
-                    selectedDate={
-                        selectedDate
-                    }
-                    todos={todos}
-                />
-                <TodayLectureSection />
+                    <TodoSection
+                        selectedDate={
+                            selectedDate
+                        }
+                        todos={todos}
+                    />
+                    <TodayLectureSection />
+
+                </div>
 
             </div>
-
-        </div>
+        </>
     )
 }
