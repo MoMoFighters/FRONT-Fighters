@@ -13,6 +13,8 @@ import interactionPlugin from '@fullcalendar/interaction'
 
 import TodoSection from './TodoSection'
 import { ScheduleItem } from '../../../todo/type'
+import TodayLectureSection from '../../../../components/phone/calendar/TodayLectureSection'
+import AddMemoModal from './AddMemoModal'
 
 
 
@@ -41,10 +43,9 @@ export default function Calendar({
             .split('T')[0]
 
 
-    const [
-        selectedDate,
-        setSelectedDate,
-    ] = useState(initialDate)
+    const [selectedDate, setSelectedDate,] = useState(initialDate)
+
+    const [isMemoModalOpen, setIsMemoModalOpen] = useState(false);
 
 
     const todos = useMemo(() => {
@@ -135,7 +136,10 @@ export default function Calendar({
 
                     events={events}
 
-                    dayMaxEvents={1}
+                    dayMaxEvents={2}
+
+                    // 나중에 이거는 해당 이벤트를 상세조회하는 함수 정의해서 연결하기
+                    eventClick={(e) => console.log(e)}
 
                     dayCellClassNames={(arg) => {
 
@@ -157,16 +161,38 @@ export default function Calendar({
 
                         return []
                     }}
+
+
+                    headerToolbar={{
+                        left: "title",
+                        center: "",
+                        right: "addMemoButton today prev,next",
+                    }}
+
+                    customButtons={{
+                        addMemoButton: {
+                            text: "메모 추가",
+                            click: () => {
+                                setIsMemoModalOpen(true);
+                            },
+                        },
+                    }}
                 />
+                {isMemoModalOpen && (
+                    <AddMemoModal setIsMemoModalOpen={setIsMemoModalOpen} />
+                )}
 
             </div>
 
 
-            {/* TODO */}
+            {/* TODO 및 오늘 들은 강의 (우측 섹션)*/}
             <div className="
                 w-[320px]
                 shrink-0
-                overflow-y-auto
+                grid
+                grid-rows-[3fr_2fr]
+                h-full
+                overflow-hidden
             ">
 
                 <TodoSection
@@ -175,6 +201,7 @@ export default function Calendar({
                     }
                     todos={todos}
                 />
+                <TodayLectureSection />
 
             </div>
 

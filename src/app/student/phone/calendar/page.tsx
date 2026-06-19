@@ -1,9 +1,6 @@
-﻿
-import { getCalendarSchedulesAction } from '@/features/todo/action';
+﻿import { getCalendarSchedulesAction } from '@/features/todo/action';
 import Calendar from '@/features/phone/components/todo/Calendar';
 import { redirect } from 'next/navigation';
-
-
 
 interface CalendarPageProps {
     searchParams: Promise<{
@@ -20,18 +17,16 @@ export default async function CalendarPage({
 
     const today = new Date();
 
-    const currentMonth =
-        `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-01`;
+    const currentDate =
+        `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
     if (!month) {
         redirect(
-            `/student/phone/calendar?month=${currentMonth}`
+            `/student/phone/calendar?month=${currentDate}`
         );
     }
 
-
     const schedules = await getCalendarSchedulesAction({ date });
-
 
     return (
         <Calendar schedules={schedules} />

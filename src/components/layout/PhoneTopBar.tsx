@@ -2,7 +2,7 @@ import { BatteryFull, Wifi } from "lucide-react";
 
 export default function PhoneTopBar() {
     return (
-        <header className="relative z-20 flex h-11 shrink-0 items-center justify-between border-b border-white/70 bg-white/75 px-8 backdrop-blur-md">
+        <header className="relative z-20 flex h-11 shrink-0 items-center justify-between border-b border-slate-100 bg-white px-8 backdrop-blur-md">
             <p className="text-[13px] font-bold tracking-tight text-slate-800">
                 09:41
             </p>
