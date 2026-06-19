@@ -13,6 +13,8 @@ export default function AddMemoModal({ setIsMemoModalOpen }: { setIsMemoModalOpe
     const [endSelected, setEndSelected] = useState(false);
     const [date, setDate] = useState<string>("");
     const [dateRange, setDateRange] = useState<{ start: string; end: string; }>({ start: "", end: "", });
+    const [memo, setMemo] = useState("");
+
     useEffect(() => {
         console.log(date);
         console.log(dateRange)
@@ -96,6 +98,8 @@ export default function AddMemoModal({ setIsMemoModalOpen }: { setIsMemoModalOpe
                 <textarea
                     className="mt-4 h-32 w-full resize-none rounded-xl border border-slate-200 p-3 text-sm outline-none focus:border-indigo-300"
                     placeholder="메모를 입력하세요"
+                    value={memo}
+                    onChange={(e) => setMemo(e.target.value)}
                 />
 
 
@@ -103,15 +107,15 @@ export default function AddMemoModal({ setIsMemoModalOpen }: { setIsMemoModalOpe
                     <button
                         type="button"
                         onClick={() => setIsMemoModalOpen(false)}
-                        className="rounded-xl px-4 py-2 text-sm font-bold text-slate-500"
+                        className="rounded-xl px-4 py-2 text-sm font-bold text-slate-500 cursor-pointer"
                     >
                         취소
                     </button>
 
                     <button
                         type="button"
-                        className="rounded-xl bg-indigo-500 px-4 py-2 text-sm font-bold text-white"
-                    // disabled={date !== "" || dateRange !== { start: "", end: "" }}
+                        className="rounded-xl bg-indigo-500 px-4 py-2 text-sm font-bold text-white disabled:bg-indigo-300 cursor-pointer disabled:cursor-auto"
+                        disabled={endSelected ? memo === "" || (dateRange.start === "" || dateRange.end === "") : memo === "" || (date === "")}
                     >
                         추가하기
                     </button>
