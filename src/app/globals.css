@@ -251,3 +251,7 @@
   border: 0 !important;
 
 }
+
+.fc .fc-daygrid-day.fc-day-today {
+  background-color: #cdd5e180;
+}

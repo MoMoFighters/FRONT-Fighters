@@ -13,10 +13,10 @@ import {
 
 import LectureItem from "@/components/common/LectureItem";
 import { Lecture } from "@/features/lecture/type";
-import { getLectures } from "../services/lecture/service";
+import { getLecturesWithAuth } from "../services/lecture/service";
 
 export default async function TeacherMainPage() {
-    const lectures = await getLectures({});
+    const lectures = await getLecturesWithAuth({});
     const teacherLectures = lectures.content as Lecture[];
     const activeLectures = teacherLectures.filter(
         (item) => item.lectureStatus === "ACTIVE"
@@ -139,15 +139,14 @@ export default async function TeacherMainPage() {
                             </div>
 
                             <div
-                                className={`flex h-11 w-11 items-center justify-center rounded-2xl ${
-                                    metric.tone === "indigo"
+                                className={`flex h-11 w-11 items-center justify-center rounded-2xl ${metric.tone === "indigo"
                                         ? "bg-indigo-50 text-indigo-500"
                                         : metric.tone === "amber"
                                             ? "bg-amber-50 text-amber-500"
                                             : metric.tone === "emerald"
                                                 ? "bg-emerald-50 text-emerald-500"
                                                 : "bg-rose-50 text-rose-500"
-                                }`}
+                                    }`}
                             >
                                 <metric.icon className="h-5 w-5" />
                             </div>
@@ -232,11 +231,10 @@ export default async function TeacherMainPage() {
                                 >
                                     <div className="flex items-center justify-between gap-3">
                                         <span
-                                            className={`rounded-full px-2 py-0.5 text-[11px] font-black ${
-                                                question.status === "대기"
+                                            className={`rounded-full px-2 py-0.5 text-[11px] font-black ${question.status === "대기"
                                                     ? "bg-amber-50 text-amber-600"
                                                     : "bg-emerald-50 text-emerald-600"
-                                            }`}
+                                                }`}
                                         >
                                             {question.status}
                                         </span>
