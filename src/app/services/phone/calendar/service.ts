@@ -1,6 +1,7 @@
 // Todo 관련
 
-import { CheckTodoRequest, CheckTodoResponse, CreateTodoProps, CreateTodoResponse, DeleteTodoRequest, DeleteTodoResponse, EditTodoRequest, EditTodoResponse, GetTodoListRequest, GetTodoListResponse, ScheduleItem } from "@/features/todo/type";
+import type { ApiResponse } from "@/lib/api";
+import { CheckTodoRequest, CreateTodoProps, DeleteTodoRequest, EditTodoRequest, GetTodoListData, GetTodoListRequest, ScheduleItem } from "@/features/calendar/type";
 
 /*
  - Todo 목록 월별 조회(byUserId)
@@ -19,12 +20,38 @@ import { CheckTodoRequest, CheckTodoResponse, CreateTodoProps, CreateTodoRespons
 const BASE_SERVER_URL =
     process.env.NEXT_PUBLIC_API_BASE_URL;
 
+interface CreateTodoData {
+    calendarId: number;
+    title: string;
+    category: 'TODO';
+    start: string;
+    isCompleted: boolean;
+}
+
+interface AddDateMemoRequest {
+    title: string;
+    start: string;
+    accessToken: string;
+}
+
+interface AddDateRangeMemoRequest extends AddDateMemoRequest {
+    end: string;
+}
+
+interface AddMemoData {
+    calendarId: number;
+    title: string;
+    category: 'MEMO';
+    start: string;
+    end?: string;
+}
+
 
 
 export const getTodoList = async ({
     date,
     accessToken,
-}: GetTodoListRequest): Promise<GetTodoListResponse> => {
+}: GetTodoListRequest): Promise<ApiResponse<GetTodoListData>> => {
 
     try {
 
@@ -42,7 +69,7 @@ export const getTodoList = async ({
 
 
         const result:
-            GetTodoListResponse =
+            ApiResponse<GetTodoListData> =
             await response.json();
 
 
@@ -99,7 +126,7 @@ export const createTodoService = async ({
     start,
     accessToken,
 }: CreateTodoProps)
-    : Promise<CreateTodoResponse> => {
+    : Promise<ApiResponse<CreateTodoData>> => {
 
     try {
 
@@ -125,7 +152,7 @@ export const createTodoService = async ({
 
 
         const result:
-            CreateTodoResponse =
+            ApiResponse<CreateTodoData> =
             await response.json();
 
 
@@ -184,7 +211,7 @@ export const createTodoService = async ({
 export const deleteTodoService = async ({
     calendarId,
     accessToken
-}: DeleteTodoRequest): Promise<DeleteTodoResponse> => {
+}: DeleteTodoRequest): Promise<ApiResponse<unknown>> => {
     try {
         const response = await fetch(
             `${BASE_SERVER_URL}/api/v1/calendar/todo/${calendarId}`,
@@ -199,10 +226,15 @@ export const deleteTodoService = async ({
         );
 
 
-        const result =
+        const result: ApiResponse<unknown> =
             response.status !== 204
                 ? await response.json()
-                : null;
+                : {
+                    timestamp: '',
+                    status: 204,
+                    code: 'NO_CONTENT',
+                    message: 'Todo deleted successfully.',
+                };
 
 
         // 성공
@@ -263,7 +295,7 @@ export const editTodoService = async ({
     accessToken,
     title,
     start
-}: EditTodoRequest): Promise<EditTodoResponse> => {
+}: EditTodoRequest): Promise<ApiResponse<ScheduleItem>> => {
     try {
         const response = await fetch(
             `${BASE_SERVER_URL}/api/v1/calendar/todo/${calendarId}`,
@@ -285,7 +317,7 @@ export const editTodoService = async ({
 
 
         const result:
-            EditTodoResponse =
+            ApiResponse<ScheduleItem> =
             await response.json();
 
 
@@ -342,7 +374,7 @@ export const checkTodoService = async ({
     calendarId,
     accessToken,
     isCompleted,
-}: CheckTodoRequest): Promise<CheckTodoResponse> => {
+}: CheckTodoRequest): Promise<ApiResponse<ScheduleItem>> => {
 
     try {
 
@@ -368,7 +400,7 @@ export const checkTodoService = async ({
 
 
         const result:
-            CheckTodoResponse =
+            ApiResponse<ScheduleItem> =
             await response.json();
 
 
@@ -422,6 +454,160 @@ export const checkTodoService = async ({
         throw new Error(
             result.message ||
             'Todo 체크 상태 변경에 실패했습니다.'
+        );
+
+    } catch (error) {
+
+        if (error instanceof Error) {
+
+            throw error;
+        }
+
+        throw new Error(
+            '알 수 없는 오류가 발생했습니다.'
+        );
+    }
+};
+
+export const addDateMemoService = async ({
+    title,
+    start,
+    accessToken,
+}: AddDateMemoRequest): Promise<ApiResponse<AddMemoData>> => {
+
+    try {
+
+        const response = await fetch(
+            `${BASE_SERVER_URL}/api/v1/calendar/memo`,
+            {
+                method: 'POST',
+
+                headers: {
+                    'Content-Type':
+                        'application/json',
+
+                    Authorization:
+                        `Bearer ${accessToken}`,
+                },
+
+                body: JSON.stringify({
+                    title,
+                    start,
+                }),
+            }
+        );
+
+
+        const result:
+            ApiResponse<AddMemoData> =
+            await response.json();
+
+
+        if (response.ok) {
+
+            return result;
+        }
+
+
+        if (response.status === 400) {
+
+            throw new Error(
+                result.message ||
+                '메모 제목과 날짜는 필수 항목입니다.'
+            );
+        }
+
+
+        if (response.status === 401) {
+
+            throw new Error(
+                result.message ||
+                '로그인이 필요합니다.'
+            );
+        }
+
+
+        throw new Error(
+            result.message ||
+            '메모 등록에 실패했습니다.'
+        );
+
+    } catch (error) {
+
+        if (error instanceof Error) {
+
+            throw error;
+        }
+
+        throw new Error(
+            '알 수 없는 오류가 발생했습니다.'
+        );
+    }
+};
+
+export const addDateRangeMemoService = async ({
+    title,
+    start,
+    end,
+    accessToken,
+}: AddDateRangeMemoRequest): Promise<ApiResponse<AddMemoData>> => {
+
+    try {
+
+        const response = await fetch(
+            `${BASE_SERVER_URL}/api/v1/calendar/memo`,
+            {
+                method: 'POST',
+
+                headers: {
+                    'Content-Type':
+                        'application/json',
+
+                    Authorization:
+                        `Bearer ${accessToken}`,
+                },
+
+                body: JSON.stringify({
+                    title,
+                    start,
+                    end,
+                }),
+            }
+        );
+
+
+        const result:
+            ApiResponse<AddMemoData> =
+            await response.json();
+
+
+        if (response.ok) {
+
+            return result;
+        }
+
+
+        if (response.status === 400) {
+
+            throw new Error(
+                result.message ||
+                '메모 제목, 시작일, 종료일은 필수 항목입니다.'
+            );
+        }
+
+
+        if (response.status === 401) {
+
+            throw new Error(
+                result.message ||
+                '로그인이 필요합니다.'
+            );
+        }
+
+
+        throw new Error(
+            result.message ||
+            '기간 메모 등록에 실패했습니다.'
         );
 
     } catch (error) {

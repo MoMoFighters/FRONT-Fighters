@@ -8,7 +8,8 @@ import {
     useState,
 } from 'react'
 
-import { createTodoAction } from '../../../todo/action'
+import { createTodoAction } from '../../../calendar/action'
+import { toast } from 'sonner'
 
 interface Props {
     selectedDate: string
@@ -22,44 +23,23 @@ export default function AddTodoArea({ selectedDate, }: Props) {
     const [title, setTitle] =
         useState('')
 
-    const [
-        state,
-        formAction,
-        pending,
-    ] = useActionState(
-        createTodoAction,
-        {
-            success: false, message: '',
-        }
-    )
+    const [sending, isSending] = useState(false);
 
-    // 성공 시 닫기 + 초기화
-    useEffect(() => {
-        if (state.success) {
-            setTitle('')
-            setIsAdding(false)
-        }
 
-    }, [state.success])
-
-    const handleAddTodo = () => {
+    const handleAddTodo = async () => {
+        isSending(true)
         if (!title.trim()) {
             return
         }
-        const formData = new FormData()
-        formData.append('title', title)
-        formData.append('start', selectedDate)
-        startTransition(() => { formAction(formData) })
+        const result = await createTodoAction({ title: title, start: selectedDate })
+        if (result.status !== 201) {
+            toast.error(result.message)
+        } else { toast.success(result.message) }
         setTitle("");
         setIsAdding(false);
+        isSending(false)
     }
 
-    const handleBlur = (e: React.FocusEvent<HTMLDivElement>) => {
-        if (pending) { return }
-        if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-            setIsAdding(false)
-        }
-    }
 
 
 
@@ -88,7 +68,6 @@ export default function AddTodoArea({ selectedDate, }: Props) {
     return (
         <div
             className="border rounded-lg h-10 p-3 flex w-full items-center"
-            onBlur={handleBlur}
         >
             <input
                 className="flex-1 outline-none font-bold text-sm"
@@ -109,7 +88,7 @@ export default function AddTodoArea({ selectedDate, }: Props) {
             <button
                 type="button"
                 onClick={handleAddTodo}
-                disabled={pending || !title.trim()}
+                disabled={!title.trim() || sending}
                 className="
                     text-sky-500
                     cursor-pointer

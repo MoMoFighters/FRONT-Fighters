@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, XCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
 
 import { loginSuccessAction } from '../action';
 
@@ -23,14 +24,23 @@ export default function LoginResultModal({
     state,
 }: LoginResultModalProps) {
     const router = useRouter();
+    const [isConfirming, setIsConfirming] =
+        useState(false);
 
     const isSuccess =
         state.status === 200 || state.status === 201;
 
-    const handleConfirm = async () => {
+    const handleConfirm = useCallback(async () => {
+        if (isConfirming) {
+            return;
+        }
+
+        setIsConfirming(true);
+
         if (!isSuccess) {
             setIsModal(false);
-            router.push('/auth/login')
+            router.push('/auth/login');
+            return;
         }
 
         try {
@@ -69,8 +79,28 @@ export default function LoginResultModal({
             setIsModal(false);
         } catch {
             setIsModal(false);
+        } finally {
+            setIsConfirming(false);
         }
-    };
+    }, [isConfirming, isSuccess, router, setIsModal]);
+
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key !== 'Enter') {
+                return;
+            }
+
+            e.preventDefault();
+            e.stopPropagation();
+            void handleConfirm();
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [handleConfirm]);
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
@@ -94,7 +124,9 @@ export default function LoginResultModal({
                 </div>
 
                 <Button
+                    type="button"
                     onClick={handleConfirm}
+                    disabled={isConfirming}
                     className="mt-2 h-11 w-full bg-slate-900 hover:bg-slate-800"
                 >
                     확인
