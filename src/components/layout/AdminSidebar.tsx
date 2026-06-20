@@ -3,8 +3,7 @@
 import Link from "next/link";
 import {
     Bell,
-    CircleDollarSign,
-    ClipboardCheck,
+    MessageSquareText,
     FileText,
     FolderOpen,
     LayoutDashboard,
@@ -27,19 +26,14 @@ const ADMIN_NAV_ITEMS = [
         icon: Users,
     },
     {
-        label: "승인 관리",
-        href: "/admin/approvals",
-        icon: ClipboardCheck,
-    },
-    {
         label: "강의 관리",
         href: "/admin/lectures",
         icon: FolderOpen,
     },
     {
-        label: "신고 관리",
-        href: "/admin/reports",
-        icon: ShieldAlert,
+        label: "커뮤니티 관리",
+        href: "/admin/community",
+        icon: MessageSquareText,
     },
     {
         label: "공지사항",
@@ -47,14 +41,14 @@ const ADMIN_NAV_ITEMS = [
         icon: Bell,
     },
     {
+        label: "신고 관리",
+        href: "/admin/reports",
+        icon: ShieldAlert,
+    },
+    {
         label: "접근 로그",
         href: "/admin/access-logs",
         icon: FileText,
-    },
-    {
-        label: "매출 관리",
-        href: "/admin/sales",
-        icon: CircleDollarSign,
     },
 ];
 

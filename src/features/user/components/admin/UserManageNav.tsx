@@ -1,99 +1,54 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-import { Button } from "@/components/ui/button";
+const TABS = [
+    { label: "전체", value: "all" },
+    { label: "승인 대기", value: "pending" },
+    { label: "탈퇴 회원", value: "deleted" },
+] as const;
 
 export default function UserManageNav() {
-
+    const pathname = usePathname();
     const router = useRouter();
     const searchParams = useSearchParams();
+    const activeView = searchParams.get("status") === "pending"
+        ? "pending"
+        : searchParams.get("status") === "deleted"
+            ? "deleted"
+            : "all";
 
-    const searchRole = searchParams.get("role");
-    const searchStatus = searchParams.get("status");
+    const moveTo = (view: (typeof TABS)[number]["value"]) => {
+        const params = new URLSearchParams();
 
-    const handleClickFilter = (filter?: string) => {
-
-        if (!filter) {
-            router.push("/admin/users");
-            return;
+        if (view === "pending") {
+            params.set("status", "pending");
         }
 
-        if (filter === 'deleted') {
-            router.push(`/admin/users?status=${filter}`);
-            return;
+        if (view === "deleted") {
+            params.set("status", "deleted");
         }
 
-        router.push(`/admin/users?role=${filter}`);
+        router.push(params.size ? `${pathname}?${params.toString()}` : pathname);
     };
 
     return (
-        <div className="flex items-center gap-2 mb-4">
+        <nav className="mb-6 flex items-center gap-6 border-b border-slate-200" aria-label="회원 관리 구분">
+            {TABS.map((tab) => {
+                const isActive = activeView === tab.value;
 
-            <Button
-                variant="ghost"
-                onClick={() => handleClickFilter()}
-                className={`
-                    text-lg
-                    font-semibold
-
-                    ${!searchRole
-                        ? "text-slate-900"
-                        : "text-slate-500"
-                    }
-                `}
-            >
-                전체
-            </Button>
-
-            <Button
-                variant="ghost"
-                onClick={() => handleClickFilter("teacher")}
-                className={`
-                    text-lg
-                    font-semibold
-
-                    ${searchRole === "teacher"
-                        ? "text-slate-900"
-                        : "text-slate-500"
-                    }
-                `}
-            >
-                강사
-            </Button>
-
-            <Button
-                variant="ghost"
-                onClick={() => handleClickFilter("student")}
-                className={`
-                    text-lg
-                    font-semibold
-
-                    ${searchRole === "student"
-                        ? "text-slate-900"
-                        : "text-slate-500"
-                    }
-                `}
-            >
-                수강생
-            </Button>
-
-            <Button
-                variant="ghost"
-                onClick={() => handleClickFilter("deleted")}
-                className={`
-                    text-lg
-                    font-semibold
-
-                    ${searchStatus === "deleted"
-                        ? "text-slate-900"
-                        : "text-slate-500"
-                    }
-                `}
-            >
-                탈퇴 회원
-            </Button>
-
-        </div>
+                return (
+                    <button
+                        key={tab.value}
+                        type="button"
+                        onClick={() => moveTo(tab.value)}
+                        className={`relative pb-3 text-sm font-bold transition ${isActive ? "text-indigo-600" : "text-slate-500 hover:text-slate-900"}`}
+                    >
+                        {tab.label}
+                        {isActive && <span className="absolute inset-x-0 -bottom-px h-0.5 bg-indigo-500" />}
+                    </button>
+                );
+            })}
+        </nav>
     );
 }

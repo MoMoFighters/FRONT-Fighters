@@ -135,10 +135,16 @@ export const checkAndRegisterNickname = async (
 
 // 강사 승인 액션 함수
 
-export const updateTeacherStatusAction = async (id: string, status: string): Promise<UpdateTeacherStatusResponse> => {
+export const updateTeacherStatusAction = async (
+    id: string,
+    status: string,
+    reason?: string,
+): Promise<UpdateTeacherStatusResponse> => {
     const payload = {
         action: status,
-        reason: status === "APPROVED" ? '증빙서류 인정되어 강사님의 승인이 완료되었습니다.' : "부적절한 증빙서류로 승인이 거절되었습니다. 다시 제출해주세요."
+        reason: reason ?? ((status === "APPROVE" || status === "APPROVED")
+            ? "증빙서류가 확인되어 강사 승인이 완료되었습니다."
+            : "증빙서류 확인 결과 승인이 거절되었습니다. 다시 제출해주세요."),
     }
     const result = await updateTeacherStatus(id, payload);
 
