@@ -83,7 +83,7 @@ export default function LoginResultModal({
 
                 <p className="text-2xl font-bold text-slate-900">
                     {isSuccess
-                        ? '도시 입장 완료 🏙️'
+                        ? '로그인 성공'
                         : '로그인 실패'}
                 </p>
 
