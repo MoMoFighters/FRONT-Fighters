@@ -3,9 +3,11 @@
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { addDateMemoAction, addDateRangeMemoAction } from "@/features/calendar/action";
 import { format } from "date-fns";
 import { CalendarIcon, Check } from "lucide-react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 
 export default function AddMemoModal({ setIsMemoModalOpen }: { setIsMemoModalOpen: (a: boolean) => void }) {
@@ -13,12 +15,29 @@ export default function AddMemoModal({ setIsMemoModalOpen }: { setIsMemoModalOpe
     const [endSelected, setEndSelected] = useState(false);
     const [date, setDate] = useState<string>("");
     const [dateRange, setDateRange] = useState<{ start: string; end: string; }>({ start: "", end: "", });
-    const [memo, setMemo] = useState("");
+    const [title, setTitle] = useState("");
+    const [isSending, setIsSending] = useState(false);
 
-    useEffect(() => {
-        console.log(date);
-        console.log(dateRange)
-    }, [date, dateRange])
+    const submitDateRangeMemo = async () => {
+        setIsSending(true);
+        const result = await addDateRangeMemoAction({ title, start: dateRange.start, end: dateRange.end })
+        if (result.status !== 201) {
+            toast.error(result.message)
+        } else { toast.success(result.message) }
+        setIsMemoModalOpen(false)
+        setIsSending(false);
+    }
+
+    const submitDateMemo = async () => {
+        setIsSending(true);
+        const result = await addDateMemoAction({ title, start: date })
+        if (result.status !== 201) {
+            toast.error(result.message)
+        } else { toast.success(result.message) }
+        setIsMemoModalOpen(false)
+        setIsSending(false);
+    }
+
 
     return (
         <div
@@ -98,8 +117,8 @@ export default function AddMemoModal({ setIsMemoModalOpen }: { setIsMemoModalOpe
                 <textarea
                     className="mt-4 h-32 w-full resize-none rounded-xl border border-slate-200 p-3 text-sm outline-none focus:border-indigo-300"
                     placeholder="메모를 입력하세요"
-                    value={memo}
-                    onChange={(e) => setMemo(e.target.value)}
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
                 />
 
 
@@ -115,7 +134,8 @@ export default function AddMemoModal({ setIsMemoModalOpen }: { setIsMemoModalOpe
                     <button
                         type="button"
                         className="rounded-xl bg-indigo-500 px-4 py-2 text-sm font-bold text-white disabled:bg-indigo-300 cursor-pointer disabled:cursor-auto"
-                        disabled={endSelected ? memo === "" || (dateRange.start === "" || dateRange.end === "") : memo === "" || (date === "")}
+                        disabled={endSelected ? title === "" || (dateRange.start === "" || dateRange.end === "") : title === "" || (date === "")}
+                        onClick={endSelected ? submitDateRangeMemo : submitDateMemo}
                     >
                         추가하기
                     </button>

@@ -5,8 +5,9 @@ import { useState } from 'react'
 import clsx from 'clsx'
 import { Edit, Trash2 } from 'lucide-react'
 import DeleteModal from '@/features/modal/DeleteModal'
-import { ScheduleItem } from '../../../todo/type'
-import { checkTodoAction, deleteTodoAction, editTodoAction } from '../../../todo/action'
+import { ScheduleItem } from '../../../calendar/type'
+import { checkTodoAction, deleteTodoAction, editTodoAction } from '../../../calendar/action'
+import { toast } from 'sonner'
 
 
 
@@ -25,45 +26,28 @@ export default function TodoItem({
     const [isEditing, setIsEditing] = useState(false)
 
     const handleDelete = async () => {
-        await deleteTodoAction(todo.calendarId)
+        const result = await deleteTodoAction(todo.calendarId)
+        if (result.status !== 201) {
+            toast.error(result.message)
+        } else { toast.success(result.message) }
     }
 
     const handleToggle = async () => {
-
-        const nextChecked =
-            !checked;
-
-        setChecked(nextChecked);
-
-        const result =
-            await checkTodoAction({
-                calendarId:
-                    todo.calendarId,
-
-                isCompleted:
-                    nextChecked,
-            });
-
-
-        // 실패 시 롤백
-        if (!result.success) {
-
-            setChecked(!nextChecked);
-
-            alert(result.message);
+        const result = await checkTodoAction({ calendarId: todo.calendarId, isCompleted: !checked, });
+        if (result.status !== 200) {
+            toast.error(result.message)
+        } else {
+            setChecked(!checked)
         }
     };
 
     const handleEdit = async () => {
-        await editTodoAction({
-            calendarId:
-                todo.calendarId,
-
-            title: title,
-
-            start:
-                todo.start,
-        })
+        const result = await editTodoAction({ calendarId: todo.calendarId, title: title, start: todo.start, })
+        if (result.status !== 200) {
+            toast.error(result.message)
+        } else {
+            toast.success(result.message)
+        }
         setIsEditing(false)
     }
 

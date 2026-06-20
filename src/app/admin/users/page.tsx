@@ -101,7 +101,15 @@ export default async function UserManagePage({
 
     const totalPages =
         usersData.totalPages;
-    const shouldShowPagination = totalPages > 1;
+    const currentViewUsers = currentView === "pending"
+        ? pendingUsers
+        : currentView === "deleted"
+            ? deletedUsers
+            : displayedUsers;
+    const shouldShowPagination = totalPages > 1 && (
+        currentPage > 1 ||
+        currentViewUsers.length >= usersData.size
+    );
 
     const createPageHref = (
         pageNumber: number

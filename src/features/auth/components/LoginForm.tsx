@@ -77,23 +77,29 @@ export default function LoginForm() {
     const handleSubmit = async (
         formData: FormData
     ) => {
+        if (isPending || isModal) {
+            return;
+        }
 
         setIsPending(true);
+        (document.activeElement as HTMLElement | null)?.blur();
 
-        const email = formData.get('email') as string;
-        const password = formData.get('password') as string;
+        try {
+            const email = formData.get('email') as string;
+            const password = formData.get('password') as string;
 
-        const result =
-            await loginAction(
-                email,
-                password
-            );
+            const result =
+                await loginAction(
+                    email,
+                    password
+                );
 
-        setState(result);
+            setState(result);
+            setIsModal(true);
+        } finally {
+            setIsPending(false);
+        }
 
-        setIsModal(true);
-
-        setIsPending(false);
     };
 
 
@@ -104,6 +110,12 @@ export default function LoginForm() {
                 <form
                     action={handleSubmit}
                     className="flex flex-col gap-6"
+                    onKeyDown={(e) => {
+                        if (isModal && e.key === 'Enter') {
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }
+                    }}
                 >
 
                     <input
@@ -209,11 +221,6 @@ export default function LoginForm() {
                 <hr className="border-0.5 border-slate-300 mt-[-16] mb-4" />
 
                 <div className="flex flex-row gap-10 justify-center">
-                    {/* <hr className="border-0.5 border-slate-300" /> */}
-
-                    {/* <div
-                        className="bg-yellow-300 border border-yellow-300 text-slate-900 font-bold text-center py-2 cursor-pointer flex items-center justify-center gap-1.5 rounded-none h-12.5"
-                    > */}
                     <Image
                         src={kakao}
                         width={36}
@@ -225,7 +232,6 @@ export default function LoginForm() {
                             handleKakaoLogin
                         }
                     />
-                    {/* </div> */}
                     <a href={googleAuthLink}>
                         <Image src={googleIcon} alt='구글' width={40} height={40} className="border-2 border-slate-100 hover:border-slate-400 hover:translate-y-0.5 rounded-full p-2" />
                     </a>
