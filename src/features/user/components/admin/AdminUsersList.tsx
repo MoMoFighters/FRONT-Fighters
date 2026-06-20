@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { SearchX } from "lucide-react";
 
 import { UserResponse } from "@/features/user/type";
@@ -45,11 +46,14 @@ export default function AdminUsersList({ users, view }: AdminUsersListProps) {
             ) : (
                 <div className="divide-y divide-slate-100">
                     {users.map((user) => (
-                        <div
+                        <Link
                             key={user.id}
+                            href={isDeletedView
+                                ? `/admin/users/${user.id}?status=deleted`
+                                : `/admin/users/${user.id}`}
                             className={`group grid min-w-[900px] ${isDeletedView ? "grid-cols-[1.1fr_.8fr_1.8fr_.9fr_.8fr]" : "grid-cols-[1.05fr_.75fr_1.8fr_.85fr_.75fr_.85fr_1.15fr]"} items-center px-6 py-4 text-sm text-slate-600 transition hover:bg-slate-50`}
                         >
-                            <span className="w-fit font-bold text-slate-900">
+                            <span className="w-fit font-bold text-slate-900 transition group-hover:text-indigo-600">
                                 {user.name}
                             </span>
                             <span>{getRoleLabel(user.role)}</span>
@@ -72,7 +76,7 @@ export default function AdminUsersList({ users, view }: AdminUsersListProps) {
                                     {getMockSuspensionPeriod(user)}
                                 </span>
                             )}
-                        </div>
+                        </Link>
                     ))}
                 </div>
             )}

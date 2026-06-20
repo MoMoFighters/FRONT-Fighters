@@ -1,6 +1,7 @@
 "use client";
 
-import { Check, X } from "lucide-react";
+import Link from "next/link";
+import { Check, FileText, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -103,9 +104,9 @@ export default function PendingTeacherTable({ users }: PendingTeacherTableProps)
                                 onChange={() => toggleUser(user.id)}
                                 className="size-4 rounded border-slate-300 accent-indigo-600"
                             />
-                            <span className="w-fit font-bold text-slate-900">
+                            <Link href={`/admin/users/${user.id}?status=pending`} className="w-fit font-bold text-slate-900 hover:text-indigo-600">
                                 {user.name}
-                            </span>
+                            </Link>
                             <span className="truncate pr-4">{user.email ?? "이메일 정보 없음"}</span>
                             <span>{user.createdAt?.split("T")[0] ?? "-"}</span>
                             <div className="flex justify-start gap-2">
@@ -127,6 +128,9 @@ export default function PendingTeacherTable({ users }: PendingTeacherTableProps)
                                 >
                                     승인
                                 </Button>
+                                <Link href={`/admin/users/${user.id}?status=pending`} aria-label={`${user.name} 증빙 서류 보기`} className="inline-flex size-8 items-center justify-center rounded-md border border-slate-200 text-slate-500 hover:bg-slate-100">
+                                    <FileText className="size-4" />
+                                </Link>
                             </div>
                         </div>
                     ))}
