@@ -69,7 +69,7 @@ export default function NotificationItem({
                 </div>
                 <div onClick={(e) => { e.stopPropagation(); e.preventDefault(); }}>
                     <DeleteModal
-                        title={`${title} 삭제`}
+                        title={'알림 삭제'}
                         description="지워진 알림은 다시 볼 수 없습니다."
                         onDelete={handleDelete}
                         trigger={

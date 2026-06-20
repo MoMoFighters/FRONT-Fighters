@@ -15,7 +15,7 @@ export default function NotificationList({
                 className="fixed bg-white/70 w-70 min-h-30 max-h-106 top-15 right-44 rounded-xl flex flex-col border border-slate-300 shadow-xl shadow-slate-900/10 backdrop-blur-md"
                 onClick={(e) => e.stopPropagation()}
             >
-                <div className="py-1.5 pl-3 border-b border-slate-500/30 rounded-t-xl">
+                <div className="py-1.5 pl-7.5 border-b border-slate-500/30 rounded-t-xl">
                     <h3 className="text-slate-800 font-bold">알림 목록</h3>
                 </div>
                 {/* <div className="h-full flex-1 justify-center items-center flex">
