@@ -6,7 +6,7 @@ const BASE_SERVER_URL =
 
 /*
   1-1. 학생 회원가입
-  1-2. 강사 회원가입
+  1-2. 강사 회원가입 -> 강사 전환
   1-n-1. 이메일 인증코드 발송
   1-n-2. 이메일 인증하기
   2-1. 로그인
@@ -64,7 +64,7 @@ export const studentSignupService = async (
 
 
 // ==========================================
-// 1-2. 강사 회원가입
+// 1-2. 강사 전환
 // POST /api/v1/auth/signup/teacher
 // ==========================================
 
@@ -539,6 +539,43 @@ export const googleLoginService = async (
 
     if (!response.ok) {
         throw new Error(result.message || "구글 로그인에 실패하였습니다.");
+    }
+
+    return result;
+};
+
+// ==========================================
+// 8-3. 구글 로그인
+// POST /api/v1/auth/naverlogin
+// ==========================================
+
+export interface NaverLoginTokenData {
+    accessToken: string;
+    refreshToken: string;
+    status: string;
+    expiresIn: number;
+}
+
+export type NaverLoginData = ApiResponse<NaverLoginTokenData>;
+
+export const naverLoginService = async (
+    code: string
+): Promise<NaverLoginData> => {
+    const response = await fetch(
+        `${BASE_SERVER_URL}/api/v1/auth/naverlogin`,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ code }),
+        }
+    );
+
+    const result: NaverLoginData = await response.json();
+
+    if (!response.ok) {
+        throw new Error(result.message || "네이버 로그인에 실패하였습니다.");
     }
 
     return result;

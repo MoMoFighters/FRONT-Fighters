@@ -31,7 +31,6 @@ const createErrorResponse = <T>(
         error instanceof Error
             ? error.message
             : fallbackMessage,
-    data: null,
 });
 
 const createUnauthorizedResponse = <T>(): ApiResponse<T> => ({
@@ -39,7 +38,6 @@ const createUnauthorizedResponse = <T>(): ApiResponse<T> => ({
     status: 401,
     code: "UNAUTHORIZED",
     message: "로그인이 필요합니다.",
-    data: null,
 });
 
 
@@ -418,7 +416,6 @@ export const nicknameRegistAction = async (
                 status: 401,
                 code: "UNAUTHORIZED",
                 message: "로그인이 필요합니다.",
-                data: null,
             };
         }
 
@@ -435,7 +432,6 @@ export const nicknameRegistAction = async (
                 error instanceof Error
                     ? error.message
                     : "닉네임 등록에 실패하였습니다.",
-            data: null,
         };
     }
 };
@@ -487,6 +483,22 @@ export const handleKakaoLoginCallback = async (
 };
 
 export const googleLoginAction = async (
+    code: string
+): Promise<ApiResponse<OAuthLoginData>> => {
+    if (!code) {
+        throw new Error("구글 인가 코드가 없습니다.");
+    }
+
+    const result = await googleLoginService(code);
+
+    if (result.data) {
+        await setOAuthCookies(result.data);
+    }
+
+    return result;
+};
+
+export const naverLoginAction = async (
     code: string
 ): Promise<ApiResponse<OAuthLoginData>> => {
     if (!code) {
