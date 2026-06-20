@@ -2,10 +2,11 @@
 
 import { cookies } from 'next/headers';
 
-import { checkTodoService, deleteTodoService, editTodoService, getTodoList }
-    from '@/app/services/phone/todo/service';
+import type { ApiResponse } from '@/lib/api';
+import { addDateMemoService, addDateRangeMemoService, checkTodoService, createTodoService, deleteTodoService, editTodoService, getTodoList }
+    from '@/app/services/phone/calendar/service';
 
-import { CreateTodoActionState, GetCalendarSchedulesActionProps, ScheduleItem }
+import { GetCalendarSchedulesActionProps, ScheduleItem }
     from './type';
 
 
@@ -97,18 +98,42 @@ export const getCalendarSchedulesAction = async ({
 import { revalidatePath }
     from 'next/cache';
 
-import {
-    createTodoService,
-} from '@/app/services/phone/todo/service';
+interface CreateTodoActionRequest {
+    title: string;
+    start: string;
+}
+
+interface AddDateMemoActionRequest {
+    title: string;
+    start: string;
+}
+
+interface AddDateRangeMemoActionRequest extends AddDateMemoActionRequest {
+    end: string;
+}
+
+const createCalendarActionErrorResponse = <T = ScheduleItem>(
+    status: number,
+    code: string,
+    message: string
+): ApiResponse<T> => ({
+    timestamp: new Date().toISOString(),
+    status,
+    code,
+    message,
+});
+
 
 
 
 
 
 export const createTodoAction = async (
-    prevState: CreateTodoActionState,
-    formData: FormData
-): Promise<CreateTodoActionState> => {
+    {
+        title,
+        start,
+    }: CreateTodoActionRequest
+): Promise<ApiResponse<ScheduleItem>> => {
 
     try {
 
@@ -125,17 +150,12 @@ export const createTodoAction = async (
         // 토큰 없음
         if (!accessToken) {
 
-            return {
-                success: false,
-                message:
-                    '로그인이 필요합니다.',
-            };
+            return createCalendarActionErrorResponse(
+                401,
+                'UNAUTHORIZED',
+                '로그인이 필요합니다.'
+            );
         }
-
-
-        // form data
-        const title = formData.get('title') as string;
-        const start = formData.get('start') as string;
 
 
         // todo 생성
@@ -151,30 +171,26 @@ export const createTodoAction = async (
         revalidatePath('/phone/calendar');
 
 
-        return {
-            success: true,
-
-            message:
-                result.message,
-        };
+        return result;
 
     } catch (error) {
 
-        return {
-            success: false,
-
-            message:
-                error instanceof Error
-                    ? error.message
-                    : 'Todo 등록에 실패하였습니다.',
-        };
+        return createCalendarActionErrorResponse(
+            500,
+            'CALENDAR_TODO_CREATE_FAILED',
+            error instanceof Error
+                ? error.message
+                : 'Todo 등록에 실패하였습니다.'
+        );
     }
 };
 
-
-export const deleteTodoAction = async (
-    calendarId: number
-) => {
+export const addDateMemoAction = async (
+    {
+        title,
+        start,
+    }: AddDateMemoActionRequest
+): Promise<ApiResponse<ScheduleItem>> => {
 
     try {
 
@@ -191,22 +207,136 @@ export const deleteTodoAction = async (
         // 토큰 없음
         if (!accessToken) {
 
-            return {
-                success: false,
-                message:
-                    '로그인이 필요합니다.',
-            };
+            return createCalendarActionErrorResponse(
+                401,
+                'UNAUTHORIZED',
+                '로그인이 필요합니다.'
+            );
+        }
+
+
+        // 하루 메모 생성
+        const result =
+            await addDateMemoService({
+                title,
+                start,
+                accessToken,
+            });
+
+
+        // 캐시 갱신
+        revalidatePath('/phone/calendar');
+
+
+        return result;
+
+    } catch (error) {
+
+        return createCalendarActionErrorResponse(
+            500,
+            'CALENDAR_MEMO_CREATE_FAILED',
+            error instanceof Error
+                ? error.message
+                : '메모 등록에 실패하였습니다.'
+        );
+    }
+};
+
+export const addDateRangeMemoAction = async (
+    {
+        title,
+        start,
+        end,
+    }: AddDateRangeMemoActionRequest
+): Promise<ApiResponse<ScheduleItem>> => {
+
+    try {
+
+        // 쿠키 가져오기
+        const cookieStore =
+            await cookies();
+
+        const accessToken =
+            cookieStore
+                .get('accessToken')
+                ?.value;
+
+
+        // 토큰 없음
+        if (!accessToken) {
+
+            return createCalendarActionErrorResponse(
+                401,
+                'UNAUTHORIZED',
+                '로그인이 필요합니다.'
+            );
+        }
+
+
+        // 기간 메모 생성
+        const result =
+            await addDateRangeMemoService({
+                title,
+                start,
+                end,
+                accessToken,
+            });
+
+
+        // 캐시 갱신
+        revalidatePath('/phone/calendar');
+
+
+        return result;
+
+    } catch (error) {
+
+        return createCalendarActionErrorResponse(
+            500,
+            'CALENDAR_RANGE_MEMO_CREATE_FAILED',
+            error instanceof Error
+                ? error.message
+                : '기간 메모 등록에 실패하였습니다.'
+        );
+    }
+};
+
+
+export const deleteTodoAction = async (
+    calendarId: number
+): Promise<ApiResponse<unknown>> => {
+
+    try {
+
+        // 쿠키 가져오기
+        const cookieStore =
+            await cookies();
+
+        const accessToken =
+            cookieStore
+                .get('accessToken')
+                ?.value;
+
+
+        // 토큰 없음
+        if (!accessToken) {
+
+            return createCalendarActionErrorResponse<unknown>(
+                401,
+                'UNAUTHORIZED',
+                '로그인이 필요합니다.'
+            );
         }
 
 
         // calendarId 검증
         if (!calendarId) {
 
-            return {
-                success: false,
-                message:
-                    '잘못된 요청입니다.',
-            };
+            return createCalendarActionErrorResponse<unknown>(
+                400,
+                'INVALID_CALENDAR_ID',
+                '잘못된 요청입니다.'
+            );
         }
 
 
@@ -226,32 +356,17 @@ export const deleteTodoAction = async (
         // redirect('/calendar');
 
 
-        // 성공 반환
-        return {
-            success: true,
-            message:
-                result.message,
-        };
+        return result;
 
     } catch (error) {
 
-        // 에러 객체
-        if (error instanceof Error) {
-
-            return {
-                success: false,
-                message:
-                    error.message,
-            };
-        }
-
-
-        // 알 수 없는 에러
-        return {
-            success: false,
-            message:
-                '알 수 없는 오류가 발생했습니다.',
-        };
+        return createCalendarActionErrorResponse<unknown>(
+            500,
+            'CALENDAR_TODO_DELETE_FAILED',
+            error instanceof Error
+                ? error.message
+                : '알 수 없는 오류가 발생했습니다.'
+        );
     }
 };
 
@@ -266,7 +381,7 @@ export const editTodoAction = async ({
     calendarId,
     title,
     start
-}: EditTodoActionRequest) => {
+}: EditTodoActionRequest): Promise<ApiResponse<ScheduleItem>> => {
 
     try {
 
@@ -283,33 +398,33 @@ export const editTodoAction = async ({
         // 토큰 없음
         if (!accessToken) {
 
-            return {
-                success: false,
-                message:
-                    '로그인이 필요합니다.',
-            };
+            return createCalendarActionErrorResponse(
+                401,
+                'UNAUTHORIZED',
+                '로그인이 필요합니다.'
+            );
         }
 
 
         // calendarId 검증
         if (!calendarId) {
 
-            return {
-                success: false,
-                message:
-                    '잘못된 요청입니다.',
-            };
+            return createCalendarActionErrorResponse(
+                400,
+                'INVALID_CALENDAR_ID',
+                '잘못된 요청입니다.'
+            );
         }
 
 
         // 제목 검증
         if (!title.trim()) {
 
-            return {
-                success: false,
-                message:
-                    'Todo 제목을 입력해주세요.',
-            };
+            return createCalendarActionErrorResponse(
+                400,
+                'INVALID_TODO_TITLE',
+                'Todo 제목을 입력해주세요.'
+            );
         }
 
 
@@ -331,32 +446,17 @@ export const editTodoAction = async ({
         revalidatePath('/calendar');
 
 
-        // 성공 반환
-        return {
-            success: true,
-            message:
-                result.message,
-        };
+        return result;
 
     } catch (error) {
 
-        // Error 객체
-        if (error instanceof Error) {
-
-            return {
-                success: false,
-                message:
-                    error.message,
-            };
-        }
-
-
-        // 알 수 없는 에러
-        return {
-            success: false,
-            message:
-                '알 수 없는 오류가 발생했습니다.',
-        };
+        return createCalendarActionErrorResponse(
+            500,
+            'CALENDAR_TODO_EDIT_FAILED',
+            error instanceof Error
+                ? error.message
+                : '알 수 없는 오류가 발생했습니다.'
+        );
     }
 };
 
@@ -371,7 +471,7 @@ export interface CheckTodoActionRequest {
 export const checkTodoAction = async ({
     calendarId,
     isCompleted,
-}: CheckTodoActionRequest) => {
+}: CheckTodoActionRequest): Promise<ApiResponse<ScheduleItem>> => {
 
     try {
 
@@ -388,22 +488,22 @@ export const checkTodoAction = async ({
         // 토큰 없음
         if (!accessToken) {
 
-            return {
-                success: false,
-                message:
-                    '로그인이 필요합니다.',
-            };
+            return createCalendarActionErrorResponse(
+                401,
+                'UNAUTHORIZED',
+                '로그인이 필요합니다.'
+            );
         }
 
 
         // calendarId 검증
         if (!calendarId) {
 
-            return {
-                success: false,
-                message:
-                    '잘못된 요청입니다.',
-            };
+            return createCalendarActionErrorResponse(
+                400,
+                'INVALID_CALENDAR_ID',
+                '잘못된 요청입니다.'
+            );
         }
 
 
@@ -422,34 +522,17 @@ export const checkTodoAction = async ({
         revalidatePath('/calendar');
 
 
-        // 성공 반환
-        return {
-            success: true,
-            message:
-                result.message,
-
-            data:
-                result.data,
-        };
+        return result;
 
     } catch (error) {
 
-        // Error 객체
-        if (error instanceof Error) {
-
-            return {
-                success: false,
-                message:
-                    error.message,
-            };
-        }
-
-
-        // 알 수 없는 에러
-        return {
-            success: false,
-            message:
-                '알 수 없는 오류가 발생했습니다.',
-        };
+        return createCalendarActionErrorResponse(
+            500,
+            'CALENDAR_TODO_CHECK_FAILED',
+            error instanceof Error
+                ? error.message
+                : '알 수 없는 오류가 발생했습니다.'
+        );
     }
 };
+
