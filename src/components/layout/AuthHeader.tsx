@@ -7,6 +7,7 @@ import Image from "next/image";
 import logo from '@/app/assets/img/logo.png'
 import { getMyInfo } from "@/features/user/action";
 import HeaderProfileCard from "./HeaderProfileCard";
+import HeaderNotificationZone from "@/features/user/components/notification/HeaderNotificationZone";
 
 
 export default async function AuthHeader({ role }: { role: string }) {
@@ -41,6 +42,7 @@ export default async function AuthHeader({ role }: { role: string }) {
                 </Link>
                 <div className="flex justify-end mr-4 items-center">
                     <AuthRefreshArea initialTime={initialTime} />
+                    <HeaderNotificationZone />
                     <HeaderProfileCard
                         role={role}
                         profileImageUrl={myInfo.data?.profileImageUrl}
