@@ -12,7 +12,7 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
 
 import TodoSection from './TodoSection'
-import { ScheduleItem } from '../../../todo/type'
+import { ScheduleItem } from '../../../calendar/type'
 import TodayLectureSection from '../../../../components/phone/calendar/TodayLectureSection'
 import AddMemoModal from './AddMemoModal'
 

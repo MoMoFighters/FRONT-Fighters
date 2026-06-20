@@ -5,8 +5,8 @@ import { useState } from 'react'
 import clsx from 'clsx'
 import { Edit, Trash2 } from 'lucide-react'
 import DeleteModal from '@/features/modal/DeleteModal'
-import { ScheduleItem } from '../../../todo/type'
-import { checkTodoAction, deleteTodoAction, editTodoAction } from '../../../todo/action'
+import { ScheduleItem } from '../../../calendar/type'
+import { checkTodoAction, deleteTodoAction, editTodoAction } from '../../../calendar/action'
 
 
 

@@ -15,6 +15,13 @@ export default function AddMemoModal({ setIsMemoModalOpen }: { setIsMemoModalOpe
     const [dateRange, setDateRange] = useState<{ start: string; end: string; }>({ start: "", end: "", });
     const [memo, setMemo] = useState("");
 
+    const submitDateRangeMemo = async () => {
+    }
+
+    const submitDateMemo = async () => {
+    }
+
+
     useEffect(() => {
         console.log(date);
         console.log(dateRange)
@@ -116,6 +123,7 @@ export default function AddMemoModal({ setIsMemoModalOpen }: { setIsMemoModalOpe
                         type="button"
                         className="rounded-xl bg-indigo-500 px-4 py-2 text-sm font-bold text-white disabled:bg-indigo-300 cursor-pointer disabled:cursor-auto"
                         disabled={endSelected ? memo === "" || (dateRange.start === "" || dateRange.end === "") : memo === "" || (date === "")}
+                        onClick={endSelected ? submitDateRangeMemo : submitDateMemo}
                     >
                         추가하기
                     </button>
