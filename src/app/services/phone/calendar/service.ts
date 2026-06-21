@@ -38,6 +38,22 @@ interface AddDateRangeMemoRequest extends AddDateMemoRequest {
     end: string;
 }
 
+interface EditDateMemoRequest {
+    calendarId: number;
+    title: string;
+    start: string;
+    accessToken: string;
+}
+
+interface EditDateRangeMemoRequest extends EditDateMemoRequest {
+    end: string;
+}
+
+interface DeleteMemoRequest {
+    calendarId: number;
+    accessToken: string;
+}
+
 interface AddMemoData {
     calendarId: number;
     title: string;
@@ -608,6 +624,274 @@ export const addDateRangeMemoService = async ({
         throw new Error(
             result.message ||
             '기간 메모 등록에 실패했습니다.'
+        );
+
+    } catch (error) {
+
+        if (error instanceof Error) {
+
+            throw error;
+        }
+
+        throw new Error(
+            '알 수 없는 오류가 발생했습니다.'
+        );
+    }
+};
+
+export const editDateMemoService = async ({
+    calendarId,
+    title,
+    start,
+    accessToken,
+}: EditDateMemoRequest): Promise<ApiResponse<AddMemoData>> => {
+
+    try {
+
+        const response = await fetch(
+            `${BASE_SERVER_URL}/api/v1/calendar/memo/${calendarId}`,
+            {
+                method: 'PATCH',
+
+                headers: {
+                    'Content-Type':
+                        'application/json',
+
+                    Authorization:
+                        `Bearer ${accessToken}`,
+                },
+
+                body: JSON.stringify({
+                    title,
+                    start,
+                }),
+            }
+        );
+
+
+        const result:
+            ApiResponse<AddMemoData> =
+            await response.json();
+
+
+        if (response.ok) {
+
+            return result;
+        }
+
+
+        if (response.status === 400) {
+
+            throw new Error(
+                result.message ||
+                '수정할 메모 정보가 올바르지 않습니다.'
+            );
+        }
+
+
+        if (response.status === 401) {
+
+            throw new Error(
+                result.message ||
+                'Authentication required.'
+            );
+        }
+
+
+        if (response.status === 403) {
+
+            throw new Error(
+                result.message ||
+                '본인의 메모만 수정할 수 있습니다.'
+            );
+        }
+
+
+        if (response.status === 404) {
+
+            throw new Error(
+                result.message ||
+                '메모를 찾을 수 없습니다.'
+            );
+        }
+
+
+        throw new Error(
+            result.message ||
+            '메모 수정에 실패했습니다.'
+        );
+
+    } catch (error) {
+
+        if (error instanceof Error) {
+
+            throw error;
+        }
+
+        throw new Error(
+            '알 수 없는 오류가 발생했습니다.'
+        );
+    }
+};
+
+export const editDateRangeMemoService = async ({
+    calendarId,
+    title,
+    start,
+    end,
+    accessToken,
+}: EditDateRangeMemoRequest): Promise<ApiResponse<AddMemoData>> => {
+
+    try {
+
+        const response = await fetch(
+            `${BASE_SERVER_URL}/api/v1/calendar/memo/${calendarId}`,
+            {
+                method: 'PATCH',
+
+                headers: {
+                    'Content-Type':
+                        'application/json',
+
+                    Authorization:
+                        `Bearer ${accessToken}`,
+                },
+
+                body: JSON.stringify({
+                    title,
+                    start,
+                    end,
+                }),
+            }
+        );
+
+
+        const result:
+            ApiResponse<AddMemoData> =
+            await response.json();
+
+
+        if (response.ok) {
+
+            return result;
+        }
+
+
+        if (response.status === 400) {
+
+            throw new Error(
+                result.message ||
+                '수정할 메모 정보가 올바르지 않습니다.'
+            );
+        }
+
+
+        if (response.status === 401) {
+
+            throw new Error(
+                result.message ||
+                'Authentication required.'
+            );
+        }
+
+
+        if (response.status === 403) {
+
+            throw new Error(
+                result.message ||
+                '본인의 메모만 수정할 수 있습니다.'
+            );
+        }
+
+
+        if (response.status === 404) {
+
+            throw new Error(
+                result.message ||
+                '메모를 찾을 수 없습니다.'
+            );
+        }
+
+
+        throw new Error(
+            result.message ||
+            '메모 수정에 실패했습니다.'
+        );
+
+    } catch (error) {
+
+        if (error instanceof Error) {
+
+            throw error;
+        }
+
+        throw new Error(
+            '알 수 없는 오류가 발생했습니다.'
+        );
+    }
+};
+
+export const deleteMemoService = async ({
+    calendarId,
+    accessToken,
+}: DeleteMemoRequest): Promise<ApiResponse<null>> => {
+
+    try {
+
+        const response = await fetch(
+            `${BASE_SERVER_URL}/api/v1/calendar/memo/${calendarId}`,
+            {
+                method: 'DELETE',
+
+                headers: {
+                    Authorization:
+                        `Bearer ${accessToken}`,
+                },
+            }
+        );
+
+
+        const result:
+            ApiResponse<null> =
+            await response.json();
+
+
+        if (response.ok) {
+
+            return result;
+        }
+
+
+        if (response.status === 401) {
+
+            throw new Error(
+                result.message ||
+                'Authentication required.'
+            );
+        }
+
+
+        if (response.status === 403) {
+
+            throw new Error(
+                result.message ||
+                '본인의 메모만 삭제할 수 있습니다.'
+            );
+        }
+
+
+        if (response.status === 404) {
+
+            throw new Error(
+                result.message ||
+                '메모를 찾을 수 없습니다.'
+            );
+        }
+
+
+        throw new Error(
+            result.message ||
+            '메모 삭제에 실패했습니다.'
         );
 
     } catch (error) {
