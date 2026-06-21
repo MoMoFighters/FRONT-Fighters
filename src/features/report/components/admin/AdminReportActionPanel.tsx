@@ -80,26 +80,40 @@ export default function AdminReportActionPanel({
 
             <div className="mt-4 space-y-2">
                 {isPageReport ? (
-                    report.adminTargetPath ? (
-                        <Button
-                            type="button"
-                            onClick={() => setPendingAction("OPEN_PAGE")}
-                            className="h-9 w-full rounded-md bg-indigo-600 px-3 text-sm font-bold text-white hover:bg-indigo-700"
-                        >
-                            <ExternalLink className="size-4" />
-                            관리자 화면 열기
-                        </Button>
-                    ) : (
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => setPendingAction("DISMISS")}
-                            className="h-9 w-full rounded-md border-slate-200 px-3 text-sm font-bold text-slate-700 hover:bg-slate-50"
-                        >
-                            <XCircle className="size-4" />
-                            제재하지 않음
-                        </Button>
-                    )
+                    <>
+                        {report.adminTargetPath && (
+                            <Button
+                                type="button"
+                                onClick={() => setPendingAction("OPEN_PAGE")}
+                                className="h-9 w-full rounded-md bg-indigo-600 px-3 text-sm font-bold text-white hover:bg-indigo-700"
+                            >
+                                <ExternalLink className="size-4" />
+                                관리자 화면 열기
+                            </Button>
+                        )}
+                        {report.originalPath && (
+                            <a
+                                href={report.originalPath}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="flex h-9 w-full items-center justify-center gap-1.5 rounded-md border border-slate-200 px-3 text-sm font-bold text-slate-700 transition-colors hover:bg-slate-50"
+                            >
+                                <ExternalLink className="size-4" />
+                                원본 사용자 화면 열기
+                            </a>
+                        )}
+                        {!report.adminTargetPath && (
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setPendingAction("DISMISS")}
+                                className="h-9 w-full rounded-md border-slate-200 px-3 text-sm font-bold text-slate-700 hover:bg-slate-50"
+                            >
+                                <XCircle className="size-4" />
+                                제재하지 않음
+                            </Button>
+                        )}
+                    </>
                 ) : (
                     <>
                         {!isDeleted && (
@@ -149,15 +163,16 @@ export default function AdminReportActionPanel({
                             {action?.description}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter className="mt-6 border-t border-slate-100 bg-slate-50 px-6 py-4">
+                    <AlertDialogFooter className="!mx-0 !mb-0 mt-6 !flex !flex-row !justify-end gap-2 !border-0 !bg-transparent !px-6 !pb-6 !pt-0">
                         <AlertDialogCancel className="h-9 rounded-md border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-100">
                             취소
                         </AlertDialogCancel>
                         <AlertDialogAction
+                            variant="outline"
                             onClick={confirmAction}
                             className={action?.tone === "rose"
-                                ? "h-9 rounded-md border-rose-600 bg-rose-600 px-4 text-sm font-bold text-white hover:bg-rose-700 hover:text-white"
-                                : "h-9 rounded-md border-indigo-600 bg-indigo-600 px-4 text-sm font-bold text-white hover:bg-indigo-700 hover:text-white"}
+                                ? "h-9 rounded-md !border-rose-600 !bg-rose-600 px-4 text-sm font-bold !text-white hover:!bg-rose-700 hover:!text-white"
+                                : "h-9 rounded-md !border-indigo-600 !bg-indigo-600 px-4 text-sm font-bold !text-white hover:!bg-indigo-700 hover:!text-white"}
                         >
                             {action?.label}
                         </AlertDialogAction>

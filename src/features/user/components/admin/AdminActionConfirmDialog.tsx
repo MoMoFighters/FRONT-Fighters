@@ -51,15 +51,15 @@ export default function AdminActionConfirmDialog({
                     <AlertDialogDescription className="whitespace-pre-line text-slate-500">{description}</AlertDialogDescription>
                     {children}
                 </AlertDialogHeader>
-                <AlertDialogFooter className="mt-6 border-t border-slate-100 bg-slate-50 px-6 py-4">
+                <AlertDialogFooter className="!mx-0 !mb-0 mt-6 !flex !flex-row !justify-end gap-2 !border-0 !bg-transparent !px-6 !pb-6 !pt-0">
                     <AlertDialogCancel className="h-9 cursor-pointer rounded-md border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-100">취소</AlertDialogCancel>
                     <AlertDialogAction
                         variant="outline"
                         disabled={confirmDisabled}
                         onClick={onConfirm}
                         className={isRose
-                            ? "h-9 cursor-pointer rounded-md border-rose-600 bg-rose-600 px-4 text-sm font-bold text-white hover:bg-rose-700 hover:text-white disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-200 disabled:text-slate-400"
-                            : "h-9 cursor-pointer rounded-md border-indigo-600 bg-indigo-600 px-4 text-sm font-bold text-white hover:bg-indigo-700 hover:text-white disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-200 disabled:text-slate-400"}
+                            ? "h-9 cursor-pointer rounded-md !border-rose-600 !bg-rose-600 px-4 text-sm font-bold !text-white hover:!bg-rose-700 hover:!text-white disabled:cursor-not-allowed disabled:!border-slate-200 disabled:!bg-slate-200 disabled:!text-slate-400"
+                            : "h-9 cursor-pointer rounded-md !border-indigo-600 !bg-indigo-600 px-4 text-sm font-bold !text-white hover:!bg-indigo-700 hover:!text-white disabled:cursor-not-allowed disabled:!border-slate-200 disabled:!bg-slate-200 disabled:!text-slate-400"}
                     >
                         {confirmLabel}
                     </AlertDialogAction>

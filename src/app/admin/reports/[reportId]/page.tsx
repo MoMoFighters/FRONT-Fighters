@@ -36,6 +36,7 @@ const createDummyReport = (id: number): AdminReportDetail => {
             resolvedAt: base.isResolved ? "2026-06-20 14:22" : undefined,
             targetType: "PAGE",
             adminTargetPath: "/admin/lectures",
+            originalPath: "/student/study/lectures/6",
         };
     }
 
@@ -46,6 +47,7 @@ const createDummyReport = (id: number): AdminReportDetail => {
             detail: "마이페이지에서 불편한 동작을 확인했습니다.",
             resolvedAt: base.isResolved ? "2026-06-20 14:22" : undefined,
             targetType: "PAGE",
+            originalPath: "/student/mypage",
         };
     }
 

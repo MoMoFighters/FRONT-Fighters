@@ -1,24 +1,23 @@
-﻿import LectureItem from "@/components/common/LectureItem";
-import { getLectures } from "@/app/services/lecture/service";
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
-import LectureManageNav from "@/features/lecture/components/admin/LectureManageNav";
-import LectureFilterBtn from "@/features/lecture/components/buttons/LectureFilterBtn";
-import LectureSearchbar from "@/features/lecture/components/common/LectureSearchbar";
-import { CategoryApiUrl, CategoryUrl, GetLecturesRequest } from "@/features/lecture/type";
-import { SearchX } from "lucide-react";
+import { BookOpen, SearchX } from "lucide-react";
 
-const CATEGORY_MAP: Record<CategoryUrl, CategoryApiUrl> = {
-    study: "STUDY",
-    fitness: "FITNESS",
-    cook: "COOK",
-    beauty: "BEAUTY",
-    art: "ART",
-};
+import { getLecturesWithAuth } from "@/app/services/lecture/service";
+import {
+    Pagination,
+    PaginationContent,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from "@/components/ui/pagination";
+import AdminLectureList from "@/features/lecture/components/admin/AdminLectureList";
+import LectureManageNav from "@/features/lecture/components/admin/LectureManageNav";
+import AdminLectureSearchbar from "@/features/lecture/components/admin/AdminLectureSearchbar";
+import { Category, LectureListRequest } from "@/features/lecture/type";
 
 interface AdminLectureListPageProps {
     searchParams: Promise<{
         status?: string;
-        category?: CategoryUrl;
+        category?: string;
         keyword?: string;
         page?: string;
     }>;
@@ -28,115 +27,99 @@ export default async function AdminLectureListPage({
     searchParams,
 }: AdminLectureListPageProps) {
     const { status, keyword, category, page } = await searchParams;
-
-    const payload: GetLecturesRequest = {
-        category: category ? CATEGORY_MAP[category] : undefined,
+    const currentPage = Number(page) || 1;
+    const payload: LectureListRequest = {
+        category: category?.toUpperCase() as Category | undefined,
         keyword,
         status,
-        page: Number(page) || 1,
+        page: currentPage,
     };
-
-    const responseData = await getLectures(payload);
+    const responseData = await getLecturesWithAuth(payload);
     const totalPages = responseData.totalPages;
-    const currentPage = Number(page) || 1;
 
     const createPageHref = (pageNumber: number) => {
         const params = new URLSearchParams();
 
-        if (status) {
-            params.set("status", status);
-        }
-
-        if (category) {
-            params.set("category", category);
-        }
-
-        if (keyword) {
-            params.set("keyword", keyword);
-        }
-
+        if (status) params.set("status", status);
+        if (category) params.set("category", category);
+        if (keyword) params.set("keyword", keyword);
         params.set("page", String(pageNumber));
 
         return `?${params.toString()}`;
     };
 
     return (
-        <div>
-            <div className="mb-10 flex items-center gap-3">
-                <div className="h-7 w-2 rounded-full bg-slate-500" />
-                <h2 className="text-2xl font-bold text-slate-900">
-                    강의 관리
-                </h2>
+        <div className="mx-auto w-full max-w-360 pb-10">
+            <div className="mb-8">
+                <div className="flex items-center gap-3">
+                    <div className="h-7 w-1.5 rounded-full bg-indigo-500" />
+                    <h1 className="text-2xl font-bold text-slate-950">강의 관리</h1>
+                </div>
+                <p className="mt-3 text-sm font-medium text-slate-500">
+                    등록된 강의, 챕터 영상, 수강평을 조회하고 필요한 콘텐츠를 삭제합니다.
+                </p>
             </div>
 
             <LectureManageNav />
 
-            <div className="mb-4 flex items-center gap-3">
-                <LectureSearchbar
-                    status={status}
-                    keyword={keyword}
-                    category={category}
-                />
-                <LectureFilterBtn />
-            </div>
+            <AdminLectureSearchbar
+                status={status}
+                keyword={keyword}
+                category={category}
+            />
 
-            <div className="mb-4 border-t border-slate-400" />
+            <p className="mb-4 text-sm font-semibold text-slate-500">
+                전체 강의 <span className="text-indigo-500">{responseData.totalElements}</span>개
+            </p>
 
             {responseData.content.length > 0 ? (
                 <>
-                    <div className="space-y-3">
-                        {responseData.content.map((lecture) => (
-                            <LectureItem
-                                key={lecture.lectureId}
-                                lecture={lecture}
-                                role="admin"
-                                mode="list"
-                                href={`/admin/lectures/${lecture.lectureId}`}
-                            />
-                        ))}
-                    </div>
+                    <AdminLectureList
+                        lectures={responseData.content}
+                        isPendingView={status === "waiting"}
+                    />
 
                     {totalPages > 1 && (
                         <Pagination className="mt-10">
-                            <PaginationContent>
-                                {currentPage > 1 && (
-                                    <PaginationItem>
+                            <div className="relative">
+                                <div className="relative mx-auto w-fit">
+                                    {currentPage > 1 && (
                                         <PaginationPrevious
                                             href={createPageHref(currentPage - 1)}
+                                            className="absolute right-full top-0 mr-1 w-fit"
                                         />
-                                    </PaginationItem>
-                                )}
+                                    )}
+                                    <PaginationContent>
+                                        {Array.from({ length: totalPages }, (_, index) => {
+                                            const pageNumber = index + 1;
 
-                                {Array.from({ length: totalPages }, (_, index) => {
-                                    const pageNumber = index + 1;
-
-                                    return (
-                                        <PaginationItem key={pageNumber}>
-                                            <PaginationLink
-                                                href={createPageHref(pageNumber)}
-                                                isActive={currentPage === pageNumber}
-                                            >
-                                                {pageNumber}
-                                            </PaginationLink>
-                                        </PaginationItem>
-                                    );
-                                })}
-
-                                {currentPage < totalPages && (
-                                    <PaginationItem>
+                                            return (
+                                                <PaginationItem key={pageNumber}>
+                                                    <PaginationLink
+                                                        href={createPageHref(pageNumber)}
+                                                        isActive={currentPage === pageNumber}
+                                                    >
+                                                        {pageNumber}
+                                                    </PaginationLink>
+                                                </PaginationItem>
+                                            );
+                                        })}
+                                    </PaginationContent>
+                                    {currentPage < totalPages && (
                                         <PaginationNext
                                             href={createPageHref(currentPage + 1)}
+                                            className="absolute left-full top-0 ml-1 w-fit"
                                         />
-                                    </PaginationItem>
-                                )}
-                            </PaginationContent>
+                                    )}
+                                </div>
+                            </div>
                         </Pagination>
                     )}
                 </>
             ) : (
-                <div className="flex h-60 flex-col items-center justify-center gap-5 text-2xl font-bold text-slate-300">
-                    <SearchX className="h-12 w-12 text-slate-300" />
-                    <span>찾으시는 강의가 존재하지 않습니다.</span>
+                <div className="flex h-72 flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-slate-200 bg-white text-slate-400">
+                    {category ? <BookOpen className="size-12" /> : <SearchX className="size-12" />}
+                    <p className="text-lg font-bold">찾으시는 강의가 존재하지 않습니다.</p>
                 </div>
             )}
         </div>
