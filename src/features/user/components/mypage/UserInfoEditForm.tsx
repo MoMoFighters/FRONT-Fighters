@@ -7,6 +7,7 @@ import { Eye, EyeOff, UserRound } from "lucide-react";
 import Image from "next/image";
 import { MomoUserInfoResponse, editMyInfo, checkAndRegisterNickname } from "@/features/user/action";
 import { toast } from "sonner";
+import UserProfileChoice from "./UserProfileChoice";
 
 interface UserInfoEditFormProps {
     initialData: MomoUserInfoResponse | null;
@@ -30,29 +31,37 @@ export default function UserInfoEditForm({
     const [profileUrl, setProfileUrl] = useState(profile?.profileImageUrl || "");
     const profileObjectUrlRef = useRef<string | null>(null);
 
+    // 비번 보이게하기
     const [showCurrentPassword, setShowCurrentPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
 
+    // 프사 변경 모달 관련
+    const [profileChangeOpen, setProfileChangeOpen] = useState(false);
+
+    // 비번 관련 입력값 상태관리
     const [currentPassword, setCurrentPassword] = useState("");
     const [password, setPassword] = useState("");
     const [passwordConfirm, setPasswordConfirm] = useState("");
 
+    // 제출 막는것 관련
     const [isNicknameChecked, setIsNicknameChecked] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
-
     const passwordSame = passwordConfirm === "" ? true : password === passwordConfirm;
     const passwordInvalid = (currentPassword === "" && password !== "") || (currentPassword !== "" && password === "");
 
+    // 제출 막기 상태
     const isUnchanged =
         nickname === (profile?.nickname || "") &&
         currentPassword === "" &&
         password === "" &&
         passwordConfirm === "";
 
+    // input 스타일
     const inputStyle =
         "border border-slate-300 py-2 px-3 text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-slate-500 transition-colors w-80 h-10";
 
+    // 닉네임 중복검사 액션
     const handleNicknameCheck = async () => {
         if (!nickname || nickname.trim().length === 0) {
             toast("닉네임을 입력해주세요.");
@@ -76,6 +85,7 @@ export default function UserInfoEditForm({
         }
     };
 
+    // 프사 변경 액션
     const handleProfileImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
 
@@ -95,6 +105,7 @@ export default function UserInfoEditForm({
         });
     };
 
+    // 나중에 필요없어질듯
     useEffect(() => {
         return () => {
             if (profileObjectUrlRef.current) {
@@ -103,6 +114,7 @@ export default function UserInfoEditForm({
         };
     }, []);
 
+    // 정보 수정 눌렀을때
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -160,6 +172,7 @@ export default function UserInfoEditForm({
         }
     };
 
+
     return (
         <div className="flex w-full flex-col gap-6">
             {/* 프로필 이미지 */}
@@ -167,20 +180,16 @@ export default function UserInfoEditForm({
                 <p className="w-24 font-semibold text-slate-800 pt-1.5 text-right">
                     프로필
                 </p>
-                {profileUrl ? (
-                    <div className="relative w-28 h-28">
-                        <Image
-                            src={profileUrl}
-                            alt='프로필'
-                            fill
-                            className="object-cover rounded-md border border-slate-300"
-                        />
-                    </div>
-                ) : (
-                    <div className="flex h-28 w-28 items-center justify-center rounded-md border border-slate-300 bg-slate-100 text-slate-400">
-                        <UserRound className="h-12 w-12" aria-hidden="true" />
-                    </div>
-                )}
+                <div className="relative w-28 h-28">
+                    <Image
+                        src={profileUrl}
+                        alt='프로필'
+                        fill
+                        className="object-cover rounded-md border border-slate-300"
+                        onClick={!profileChangeOpen ? () => setProfileChangeOpen(true) : () => { }}
+                    />
+                    <UserProfileChoice profileChangeOpen={profileChangeOpen} setProfileChangeOpen={setProfileChangeOpen} />
+                </div>
             </div>
 
             {/* 이름 */}
