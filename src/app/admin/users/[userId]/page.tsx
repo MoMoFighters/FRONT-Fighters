@@ -59,7 +59,7 @@ export default async function AdminUserDetailPage({ params, searchParams }: Admi
             ) : (
                 <>
                     <div className="mt-6"><AdminUserReportLog reports={DUMMY_REPORTS} /></div>
-                    {!isDeletedUser && <section className="mt-6 rounded-lg border border-slate-200 bg-white p-6 shadow-sm"><div className="flex items-center justify-between gap-6"><div><h2 className="text-base font-bold text-slate-950">신고 횟수 조정</h2><p className="mt-1 text-sm font-medium text-slate-500">미처리 신고를 검토한 뒤 신고 점수를 조정합니다.</p></div><AdminUserReportCount initialCount={1} /></div></section>}
+                    {!isDeletedUser && <section className="mt-6 rounded-lg border border-slate-200 bg-white p-6 shadow-sm"><div className="flex items-center justify-between gap-6"><div><h2 className="text-base font-bold text-slate-950">제재 누적 횟수 조정</h2><p className="mt-1 text-sm font-medium text-slate-500">미처리 신고를 검토한 뒤 제재 누적 횟수를 조정합니다.</p></div><AdminUserReportCount initialCount={1} /></div></section>}
                 </>
             )}
         </div>
