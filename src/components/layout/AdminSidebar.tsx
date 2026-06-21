@@ -21,6 +21,11 @@ const ADMIN_NAV_ITEMS = [
         exact: true,
     },
     {
+        label: "공지사항",
+        href: "/admin/notices",
+        icon: Bell,
+    },
+    {
         label: "회원 관리",
         href: "/admin/users",
         icon: Users,
@@ -34,11 +39,6 @@ const ADMIN_NAV_ITEMS = [
         label: "커뮤니티 관리",
         href: "/admin/community",
         icon: MessageSquareText,
-    },
-    {
-        label: "공지사항",
-        href: "/admin/notices",
-        icon: Bell,
     },
     {
         label: "신고 관리",
