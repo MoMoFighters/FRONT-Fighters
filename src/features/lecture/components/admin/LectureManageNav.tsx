@@ -2,8 +2,6 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 
-import { Button } from "@/components/ui/button";
-
 export default function LectureManageNav() {
 
     const router = useRouter();
@@ -21,40 +19,38 @@ export default function LectureManageNav() {
     };
 
     return (
-        <div className="flex items-center gap-2 mb-4">
+        <nav className="mb-6 flex items-center gap-6 border-b border-slate-200" aria-label="강의 관리 구분">
 
-            <Button
-                variant="ghost"
+            <button
+                type="button"
                 onClick={() => handleClickFilter()}
                 className={`
-                    text-lg
-                    font-semibold
-
+                    relative pb-3 text-sm font-bold transition
                     ${!searchStatus
-                        ? "text-slate-900"
-                        : "text-slate-500"
+                        ? "text-indigo-600"
+                        : "text-slate-500 hover:text-slate-900"
                     }
                 `}
             >
                 전체
-            </Button>
+                {!searchStatus && <span className="absolute inset-x-0 -bottom-px h-0.5 bg-indigo-500" />}
+            </button>
 
-            <Button
-                variant="ghost"
+            <button
+                type="button"
                 onClick={() => handleClickFilter("waiting")}
                 className={`
-                    text-lg
-                    font-semibold
-
+                    relative pb-3 text-sm font-bold transition
                     ${searchStatus === "waiting"
-                        ? "text-slate-900"
-                        : "text-slate-500"
+                        ? "text-indigo-600"
+                        : "text-slate-500 hover:text-slate-900"
                     }
                 `}
             >
                 승인 대기
-            </Button>
+                {searchStatus === "waiting" && <span className="absolute inset-x-0 -bottom-px h-0.5 bg-indigo-500" />}
+            </button>
 
-        </div>
+        </nav>
     );
 }

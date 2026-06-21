@@ -1,108 +1,86 @@
-import LectureItem from "@/components/common/LectureItem";
-import MovePageBackBtn from "@/components/common/MovePageBackBtn";
-import LectureDetailNav from "@/features/lecture/components/common/LectureDetailNav";
-import LectureDetailList from "@/features/lecture/components/common/LectureDetailList";
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
-import { getLectureById } from "@/app/services/lecture/service";
 import { notFound } from "next/navigation";
 
-export interface Review {
-    id: number;
-    name: string;
-    rating: number;
-    content: string;
-    createdAt: string;
+import { getLectureById } from "@/app/services/lecture/service";
+import ListPagination from "@/components/common/ListPagination";
+import AdminChapterList from "@/features/lecture/components/admin/AdminChapterList";
+import AdminLectureDetailHero from "@/features/lecture/components/admin/AdminLectureDetailHero";
+import AdminReviewList from "@/features/lecture/components/admin/AdminReviewList";
+import StudentLectureDetailTabs from "@/features/lecture/components/student/detail/StudentLectureDetailTabs";
+import StudentPageHeader from "@/features/student/components/StudentPageHeader";
+import { Review } from "@/features/lecture/type";
+
+interface AdminLectureDetailPageProps {
+    params: Promise<{ lectureId: string }>;
+    searchParams: Promise<{ tab?: string; page?: string }>;
 }
 
-interface LectureDetailPageProps {
-    params: Promise<{ lectureId: string; }>;
-    searchParams: Promise<{
-        tab?: string;
-        page?: string
-    }>
-}
+const DUMMY_ADMIN_REVIEWS: Review[] = [
+    // TODO: 관리자 강의 상세 API에 수강평 목록이 포함되면 해당 응답으로 교체한다.
+    { reviewId: 1, userId: 101, userName: "모모시티러버", rating: 5, content: "설명이 자세하고 따라가기 쉬웠어요. 꾸준히 듣기 좋은 강의입니다.", createdAt: "2026.06.10" },
+    { reviewId: 2, userId: 102, userName: "학습러", rating: 4, content: "챕터 구성이 깔끔해서 흐름을 놓치지 않고 볼 수 있었습니다.", createdAt: "2026.06.09" },
+    { reviewId: 3, userId: 103, userName: "민수", rating: 5, content: "초보자도 부담 없이 시작할 수 있는 난이도라 만족합니다.", createdAt: "2026.06.08" },
+    { reviewId: 4, userId: 104, userName: "성장중", rating: 4, content: "실습 예시가 조금 더 많으면 더 좋을 것 같아요.", createdAt: "2026.06.07" },
+    { reviewId: 5, userId: 105, userName: "도시건설자", rating: 5, content: "짧은 챕터 단위라 매일 듣기 편합니다.", createdAt: "2026.06.06" },
+    { reviewId: 6, userId: 106, userName: "꾸준함", rating: 4, content: "기초부터 차근차근 설명해서 이해하기 좋았습니다.", createdAt: "2026.06.05" },
+];
 
-export default async function LectureDetailPage({ params, searchParams }: LectureDetailPageProps) {
-
+export default async function AdminLectureDetailPage({
+    params,
+    searchParams,
+}: AdminLectureDetailPageProps) {
     const { lectureId } = await params;
     const { tab, page } = await searchParams;
-
-    const dummyReviews: Review[] = [
-        { id: 1, name: '홍길동', rating: 5, content: '정말 유익한 강의였습니다! 매일 아침 따라하고 있어요.', createdAt: '2024.05.15' },
-        { id: 2, name: '김철수', rating: 4, content: '설명이 쉽고 자세해서 좋았습니다. 추천합니다!', createdAt: '2024.05.14' },
-        { id: 3, name: '이영희', rating: 5, content: '운동 초보자도 쉽게 따라할 수 있어요.', createdAt: '2024.05.13' },
-        { id: 4, name: '박민수', rating: 4, content: '체계적인 커리큘럼이 마음에 듭니다.', createdAt: '2024.05.12' },
-        { id: 5, name: '최수진', rating: 5, content: '강사님이 친절하고 설명이 명확해요.', createdAt: '2024.05.11' },
-        { id: 6, name: '정대호', rating: 3, content: '괜찮은 강의입니다. 다만 난이도가 조금 낮은 편.', createdAt: '2024.05.10' },
-    ];
-
     const lecture = await getLectureById(lectureId);
 
-    const currentPage = Number(page ?? 1);
+    if (!lecture) notFound();
 
-    const REVIEWS_PER_PAGE = 5;
-
-    const totalPages = Math.ceil(
-        dummyReviews.length / REVIEWS_PER_PAGE
+    const currentTab = tab === "reviews" ? "reviews" : "chapters";
+    const currentPage = Number(page) || 1;
+    const reviewsPerPage = 5;
+    const reviews = lecture.reviews?.length ? lecture.reviews : DUMMY_ADMIN_REVIEWS;
+    const reviewTotalPages = Math.ceil(reviews.length / reviewsPerPage);
+    const visibleReviews = reviews.slice(
+        (currentPage - 1) * reviewsPerPage,
+        currentPage * reviewsPerPage,
     );
-
-    const paginatedReviews = dummyReviews.slice(
-        (currentPage - 1) * REVIEWS_PER_PAGE,
-        currentPage * REVIEWS_PER_PAGE
-    );
-
-    if (!lecture) {
-        notFound();
-    }
+    const createReviewPageHref = (pageNumber: number) => `?tab=reviews&page=${pageNumber}`;
 
     return (
-        <div>
-            <MovePageBackBtn href="/admin/lectures" />
-            <LectureItem lecture={lecture} role="admin" mode="detail" />
-            <div className="mt-10 bg-white flex flex-col border rounded-lg border-slate-200 p-6 relative">
-                <LectureDetailNav href={`/admin/lectures/${lectureId}`} />
-                <div className="border-t border-slate-400 mb-4" />
-                <LectureDetailList role="admin" chapters={lecture.chapters} reviews={paginatedReviews} />
-            </div>
-            {tab === "reviews" && (
-                <Pagination className="mt-8">
-                    <PaginationContent>
+        <main className="mx-auto w-full max-w-360 pb-10">
+            <StudentPageHeader
+                backHref="/admin/lectures"
+                breadcrumbs={[
+                    { label: "관리자", href: "/admin" },
+                    { label: "강의 관리", href: "/admin/lectures" },
+                    { label: lecture.title },
+                ]}
+                title={lecture.title}
+            />
 
-                        {currentPage > 1 && (
-                            <PaginationItem>
-                                <PaginationPrevious
-                                    href={`?tab=reviews&page=${currentPage - 1}`}
-                                />
-                            </PaginationItem>
-                        )}
+            <AdminLectureDetailHero lecture={lecture} reviewCount={reviews.length} />
 
-                        {Array.from(
-                            { length: totalPages },
-                            (_, i) => i + 1
-                        ).map((pageNumber) => (
+            <section className="mt-8 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                <StudentLectureDetailTabs
+                    href={`/admin/lectures/${lectureId}`}
+                    currentTab={currentTab}
+                    reviewCount={reviews.length}
+                />
 
-                            <PaginationItem key={pageNumber}>
-                                <PaginationLink
-                                    href={`?tab=reviews&page=${pageNumber}`}
-                                    isActive={currentPage === pageNumber}
-                                >
-                                    {pageNumber}
-                                </PaginationLink>
-                            </PaginationItem>
-
-                        ))}
-
-                        {currentPage < totalPages && (
-                            <PaginationItem>
-                                <PaginationNext
-                                    href={`?tab=reviews&page=${currentPage + 1}`}
-                                />
-                            </PaginationItem>
-                        )}
-
-                    </PaginationContent>
-                </Pagination>
-            )}
-        </div>
+                {currentTab === "chapters" ? (
+                    <AdminChapterList lectureId={lectureId} chapters={lecture.chapters} />
+                ) : (
+                    <>
+                        <AdminReviewList reviews={visibleReviews} />
+                        <div className="border-t border-slate-100 px-5 pb-5">
+                            <ListPagination
+                                currentPage={currentPage}
+                                totalPages={reviewTotalPages}
+                                createHref={createReviewPageHref}
+                            />
+                        </div>
+                    </>
+                )}
+            </section>
+        </main>
     );
 }

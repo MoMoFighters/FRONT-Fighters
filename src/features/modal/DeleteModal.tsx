@@ -35,8 +35,8 @@ export default function DeleteModal({
             <AlertDialogTrigger asChild>
                 {trigger}
             </AlertDialogTrigger>
-            <AlertDialogContent size="sm">
-                <AlertDialogHeader>
+            <AlertDialogContent size="sm" className="overflow-hidden rounded-lg border border-slate-200 bg-white p-0 shadow-xl">
+                <AlertDialogHeader className="gap-3 px-6 pt-6">
                     <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
                         <Trash2Icon />
                     </AlertDialogMedia>
@@ -45,9 +45,9 @@ export default function DeleteModal({
                         {description}
                     </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogFooter>
-                    <AlertDialogCancel variant="outline">취소</AlertDialogCancel>
-                    <AlertDialogAction variant="destructive" onClick={onDelete}>삭제</AlertDialogAction>
+                <AlertDialogFooter className="!mx-0 !mb-0 mt-6 !flex !flex-row !justify-end gap-2 !border-0 !bg-transparent !px-6 !pb-6 !pt-0">
+                    <AlertDialogCancel variant="outline" className="h-9 rounded-md border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-100">취소</AlertDialogCancel>
+                    <AlertDialogAction variant="outline" onClick={onDelete} className="h-9 rounded-md !border-rose-600 !bg-rose-600 px-4 text-sm font-bold !text-white hover:!bg-rose-700 hover:!text-white">삭제</AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>

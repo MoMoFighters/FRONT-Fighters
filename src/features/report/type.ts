@@ -47,4 +47,5 @@ export interface AdminReportDetail extends AdminReportListItem {
     targetDeleted?: boolean;
     targetDeletedAt?: string;
     adminTargetPath?: string;
+    originalPath?: string;
 }
