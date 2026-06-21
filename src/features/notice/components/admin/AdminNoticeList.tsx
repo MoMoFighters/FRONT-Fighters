@@ -1,6 +1,7 @@
 "use client";
 
 import { Trash2 } from "lucide-react";
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
@@ -99,7 +100,12 @@ export default function AdminNoticeList({ notices: initialNotices }: AdminNotice
                                 className="size-4 rounded border-slate-300 text-indigo-500 focus:ring-indigo-200"
                             />
                             <span className="font-medium text-slate-500">{notice.noticeId}</span>
-                            <p className="truncate font-semibold text-slate-700">{notice.title}</p>
+                            <Link
+                                href={`/admin/notices/${notice.noticeId}`}
+                                className="truncate font-semibold text-slate-700 hover:text-indigo-600"
+                            >
+                                {notice.title}
+                            </Link>
                             <time className="text-slate-500">{notice.createdAt}</time>
                             <span className="text-right font-medium text-slate-500">{notice.viewCount.toLocaleString()}</span>
                         </article>
