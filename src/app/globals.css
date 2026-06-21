@@ -260,3 +260,11 @@
 .fc .fc-daygrid-day.fc-day-today {
   background-color: #cdd5e180;
 }
+
+.fc-event-main .fc-event-main-frame .fc-event-title {
+  font-size: 12px;
+}
+
+.fc-toolbar-chunk .fc-toolbar-title {
+  font-weight: 700;
+}

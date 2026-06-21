@@ -27,7 +27,7 @@ export default function TodoSection({
 
             {/* 날짜 */}
             <div>
-                <h2 className="text-xl text-slate-900 text-center font-extrabold">
+                <h2 className="text-xl text-slate-900 text-center font-bold">
                     할 일
                 </h2>
             </div>

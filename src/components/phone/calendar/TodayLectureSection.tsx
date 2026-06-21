@@ -3,7 +3,7 @@ import TodayLectureItem from "@/features/phone/components/todo/TodayLectureItem"
 export default function TodayLectureSection() {
     return (
         <div className='p-4 flex flex-col gap-3 h-49'>
-            <h2 className="text-xl text-slate-900 text-center font-extrabold">
+            <h2 className="text-xl text-slate-900 text-center font-bold">
                 수강 이력
             </h2>
 
