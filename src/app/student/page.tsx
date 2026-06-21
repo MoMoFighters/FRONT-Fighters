@@ -4,6 +4,8 @@ import { getMyInfo } from "@/features/user/action";
 import NicknameInputModal from "@/features/auth/components/NicknameInputModal";
 import Phone from "@/components/city/Phone";
 import MonthlyStreakGarden from "@/components/city/MonthlyStreakGarden";
+import BusStation from "@/components/city/BusStation";
+import PostBoard from "@/components/city/PostBoard";
 
 interface Building {
     position: string;
@@ -71,6 +73,8 @@ export default async function StudentMainPage() {
                 priority
                 className="object-cover"
             />
+            <BusStation mode='MY' />
+            <PostBoard mode="MY" />
             <Phone />
             <MonthlyStreakGarden />
         </div>
