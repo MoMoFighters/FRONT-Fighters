@@ -24,8 +24,9 @@ const DUMMY_REPORTS: AdminReportListItem[] = [
     { id: 1, reason: "부적절한 내용", detail: "수강생을 비하하는 댓글이 반복해서 작성되었습니다.", reporterName: "김하늘", createdAt: "2026-06-20 16:42", isResolved: false },
     { id: 2, reason: "홍보성", detail: "외부 서비스 가입을 유도하는 링크가 포함되어 있습니다.", reporterName: "이민지", createdAt: "2026-06-20 15:18", isResolved: false },
     { id: 3, reason: "도배성", detail: "동일한 메시지가 채팅방에 여러 번 전송되었습니다.", reporterName: "박서준", createdAt: "2026-06-20 14:03", isResolved: true },
-    { id: 4, reason: "기타", detail: "마이페이지 화면의 접근성 개선을 요청하는 신고입니다.", reporterName: "최유진", createdAt: "2026-06-20 11:36", isResolved: true },
-    { id: 5, reason: "부적절한 내용", detail: "수강평에 욕설과 비방 표현이 포함되어 있습니다.", reporterName: "정민우", createdAt: "2026-06-19 19:24", isResolved: false },
+    { id: 4, reason: "기타", detail: "강의 소개 화면의 안내 문구가 실제 내용과 다릅니다.", reporterName: "최유진", createdAt: "2026-06-20 11:36", isResolved: true },
+    // TODO: 페이지 신고 목록 응답에 관리자 확인 가능 여부가 포함되면 adminTargetPath 유무로 화면 분기를 대체한다.
+    { id: 5, reason: "기타", detail: "마이페이지에서 불편한 동작을 확인했습니다.", reporterName: "정민우", createdAt: "2026-06-19 19:24", isResolved: false },
     { id: 6, reason: "홍보성", detail: "커뮤니티 게시글에 반복적인 광고 문구가 있습니다.", reporterName: "한지수", createdAt: "2026-06-19 17:50", isResolved: true },
     { id: 7, reason: "도배성", detail: "의미 없는 짧은 댓글을 연속으로 남기고 있습니다.", reporterName: "윤준호", createdAt: "2026-06-19 16:08", isResolved: false },
     { id: 8, reason: "부적절한 내용", detail: "강의 자료 공유 게시판에 부적절한 표현이 있습니다.", reporterName: "오민석", createdAt: "2026-06-19 13:27", isResolved: true },

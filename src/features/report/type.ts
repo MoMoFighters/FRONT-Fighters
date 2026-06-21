@@ -34,3 +34,17 @@ export interface AdminReportListItem {
     createdAt: string;
     isResolved: boolean;
 }
+
+export type ReportTargetType = "COMMENT" | "REVIEW" | "CHAT" | "PAGE";
+
+// TODO: 신고 상세 조회 API 명세가 확정되면 이 타입을 실제 응답 구조에 맞춰 조정한다.
+export interface AdminReportDetail extends AdminReportListItem {
+    resolvedAt?: string;
+    targetType: ReportTargetType;
+    targetId?: number;
+    targetAuthorName?: string;
+    targetContent?: string;
+    targetDeleted?: boolean;
+    targetDeletedAt?: string;
+    adminTargetPath?: string;
+}
