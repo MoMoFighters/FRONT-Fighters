@@ -197,16 +197,20 @@ export default function AddMemoModal({ setIsMemoModalOpen, createMemo, data }:
                             )}
                         </PopoverContent>
                     </Popover>
-                    <DeleteModal
-                        title={`${title} 삭제`}
-                        description="삭제하면 복구할 수 없습니다."
-                        onDelete={deleteMemo}
-                        trigger={
-                            <button className="text-sm text-red-500 mr-1">
-                                <Trash2 className="w-5 h-5 cursor-pointer" />
-                            </button>
-                        }
-                    />
+                    {createMemo ? (
+                        <div className="w-5 h-5 ml-1" />
+                    ) : (
+                        <DeleteModal
+                            title={`${title} 삭제`}
+                            description="삭제하면 복구할 수 없습니다."
+                            onDelete={deleteMemo}
+                            trigger={
+                                <button className="text-sm text-red-500 mr-1">
+                                    <Trash2 className="w-5 h-5 cursor-pointer" />
+                                </button>
+                            }
+                        />
+                    )}
                 </div>
                 <textarea
                     className="mt-4 h-32 w-full resize-none rounded-xl border border-slate-200 p-3 text-sm outline-none focus:border-indigo-300"
