@@ -24,3 +24,13 @@ export interface CreateReportApiResponse {
     code: string,
     message: string,
 }
+
+// TODO: 신고 목록 조회 API 명세가 확정되면 이 목록 전용 응답 타입으로 교체한다.
+export interface AdminReportListItem {
+    id: number;
+    reason: string;
+    detail: string;
+    reporterName: string;
+    createdAt: string;
+    isResolved: boolean;
+}
