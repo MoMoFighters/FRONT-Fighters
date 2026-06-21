@@ -3,20 +3,47 @@
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { addDateMemoAction, addDateRangeMemoAction } from "@/features/calendar/action";
+import { addDateMemoAction, addDateRangeMemoAction, deleteMemoAction, editDateMemoAction, editDateRangeMemoAction } from "@/features/calendar/action";
+import DeleteModal from "@/features/modal/DeleteModal";
 import { format } from "date-fns";
-import { CalendarIcon, Check } from "lucide-react";
+import { CalendarIcon, Check, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 
-export default function AddMemoModal({ setIsMemoModalOpen }: { setIsMemoModalOpen: (a: boolean) => void }) {
+export default function AddMemoModal({ setIsMemoModalOpen, createMemo, data }:
+    {
+        setIsMemoModalOpen: (a: boolean) => void,
+        createMemo: boolean
+        data?: {
+            id: number;
+            title: string;
+            start: string;
+            end?: string | undefined;
+        }
+    }
+) {
 
-    const [endSelected, setEndSelected] = useState(false);
-    const [date, setDate] = useState<string>("");
-    const [dateRange, setDateRange] = useState<{ start: string; end: string; }>({ start: "", end: "", });
-    const [title, setTitle] = useState("");
+    const [endSelected, setEndSelected] = useState(!createMemo && data?.end && true || false);
+    const [date, setDate] = useState<string>(data?.start || "");
+    const [dateRange, setDateRange] =
+        useState<{ start: string; end: string; }>({ start: data?.start || "", end: data?.end || "", });
+    const [title, setTitle] = useState(createMemo ? "" : data?.title || "");
     const [isSending, setIsSending] = useState(false);
+
+    const disabled =
+        title.trim() === "" ||
+        (endSelected
+            ? (
+                dateRange.start === "" ||
+                dateRange.end === "" ||
+                dateRange.start === dateRange.end
+            )
+            : date === "") ||
+        (!createMemo &&
+            title.trim() === (data?.title ?? "") &&
+            (endSelected ? dateRange.start : date) === (data?.start ?? "") &&
+            (endSelected ? dateRange.end : "") === (data?.end ?? ""));
 
     const submitDateRangeMemo = async () => {
         setIsSending(true);
@@ -38,20 +65,76 @@ export default function AddMemoModal({ setIsMemoModalOpen }: { setIsMemoModalOpe
         setIsSending(false);
     }
 
+    const editDateRangeMemo = async () => {
+        if (!data?.id) {
+            toast.error("수정할 메모를 찾을 수 없습니다.")
+            return;
+        }
+
+        setIsSending(true);
+        const result = await editDateRangeMemoAction({
+            calendarId: data.id,
+            title,
+            start: dateRange.start,
+            end: dateRange.end,
+        })
+        if (result.status !== 200) {
+            toast.error(result.message)
+        } else { toast.success(result.message) }
+        setIsMemoModalOpen(false)
+        setIsSending(false);
+    }
+
+    const editDateMemo = async () => {
+        if (!data?.id) {
+            toast.error("수정할 메모를 찾을 수 없습니다.")
+            return;
+        }
+
+        setIsSending(true);
+        const result = await editDateMemoAction({
+            calendarId: data.id,
+            title,
+            start: date,
+        })
+        if (result.status !== 200) {
+            toast.error(result.message)
+        } else { toast.success(result.message) }
+        setIsMemoModalOpen(false)
+        setIsSending(false);
+    }
+
+    const deleteMemo = async () => {
+        if (!data?.id) {
+            toast.error("삭제할 메모를 찾을 수 없습니다.")
+            return;
+        }
+
+        setIsSending(true);
+        const result = await deleteMemoAction({
+            calendarId: data.id,
+        })
+        if (result.status !== 200) {
+            toast.error(result.message)
+        } else { toast.success(result.message) }
+        setIsMemoModalOpen(false)
+        setIsSending(false);
+    }
+
 
     return (
         <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+            className="fixed inset-0 z-999999 flex items-center justify-center bg-black/40"
             onClick={() => setIsMemoModalOpen(false)}
         >
             <div
-                className="w-90 rounded-2xl bg-white p-5 shadow-xl"
+                className="w-90 rounded-lg bg-white p-5 shadow-xl"
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="flex flex-row justify-between items-center mb-2">
 
                     <h2 className="text-lg font-bold text-slate-900">
-                        메모 추가하기
+                        {createMemo ? "메모 추가하기" : "메모 수정하기"}
                     </h2>
                     <div
                         className="flex flex-row items-center gap-1 cursor-pointer"
@@ -65,7 +148,8 @@ export default function AddMemoModal({ setIsMemoModalOpen }: { setIsMemoModalOpe
                         </div>
                     </div>
                 </div>
-                <div className="flex flex-row justify-center">
+                <div className="flex flex-row justify-between">
+                    <div className="w-5 h-5 ml-1" />
                     <Popover>
                         <PopoverTrigger asChild>
                             <Button variant="outline">
@@ -113,6 +197,16 @@ export default function AddMemoModal({ setIsMemoModalOpen }: { setIsMemoModalOpe
                             )}
                         </PopoverContent>
                     </Popover>
+                    <DeleteModal
+                        title={`${title} 삭제`}
+                        description="삭제하면 복구할 수 없습니다."
+                        onDelete={deleteMemo}
+                        trigger={
+                            <button className="text-sm text-red-500 mr-1">
+                                <Trash2 className="w-5 h-5 cursor-pointer" />
+                            </button>
+                        }
+                    />
                 </div>
                 <textarea
                     className="mt-4 h-32 w-full resize-none rounded-xl border border-slate-200 p-3 text-sm outline-none focus:border-indigo-300"
@@ -134,10 +228,10 @@ export default function AddMemoModal({ setIsMemoModalOpen }: { setIsMemoModalOpe
                     <button
                         type="button"
                         className="rounded-xl bg-indigo-500 px-4 py-2 text-sm font-bold text-white disabled:bg-indigo-300 cursor-pointer disabled:cursor-auto"
-                        disabled={endSelected ? title === "" || (dateRange.start === "" || dateRange.end === "") : title === "" || (date === "")}
-                        onClick={endSelected ? submitDateRangeMemo : submitDateMemo}
+                        disabled={disabled || isSending}
+                        onClick={createMemo ? (endSelected ? submitDateRangeMemo : submitDateMemo) : (endSelected ? editDateRangeMemo : editDateMemo)}
                     >
-                        추가하기
+                        {createMemo ? (isSending ? "추가 중..." : "추가하기") : (isSending ? "수정 중..." : "수정하기")}
                     </button>
                 </div>
             </div>

@@ -177,6 +177,7 @@
   border-radius: 4px;
   padding: 1px 4px;
   font-size: 11px;
+  margin-bottom: 3px;
 }
 
 .fc-direction-ltr .fc-daygrid-more-link {
@@ -210,6 +211,10 @@
 .fc .fc-h-event .fc-event-main,
 .fc .fc-h-event .fc-event-title-container {
   border: 0 !important;
+}
+
+.fc-event-main {
+  margin-bottom: 5px !important;
 }
 
 .fc-daygrid-day-frame {

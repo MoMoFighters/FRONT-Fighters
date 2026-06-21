@@ -3,7 +3,7 @@
 import { cookies } from 'next/headers';
 
 import type { ApiResponse } from '@/lib/api';
-import { addDateMemoService, addDateRangeMemoService, checkTodoService, createTodoService, deleteTodoService, editTodoService, getTodoList }
+import { addDateMemoService, addDateRangeMemoService, checkTodoService, createTodoService, deleteMemoService, deleteTodoService, editDateMemoService, editDateRangeMemoService, editTodoService, getTodoList }
     from '@/app/services/phone/calendar/service';
 
 import { GetCalendarSchedulesActionProps, ScheduleItem }
@@ -110,6 +110,18 @@ interface AddDateMemoActionRequest {
 
 interface AddDateRangeMemoActionRequest extends AddDateMemoActionRequest {
     end: string;
+}
+
+interface EditDateMemoActionRequest extends AddDateMemoActionRequest {
+    calendarId: number;
+}
+
+interface EditDateRangeMemoActionRequest extends EditDateMemoActionRequest {
+    end: string;
+}
+
+interface DeleteMemoActionRequest {
+    calendarId: number;
 }
 
 const createCalendarActionErrorResponse = <T = ScheduleItem>(
@@ -297,6 +309,219 @@ export const addDateRangeMemoAction = async (
             error instanceof Error
                 ? error.message
                 : '기간 메모 등록에 실패하였습니다.'
+        );
+    }
+};
+
+export const editDateMemoAction = async (
+    {
+        calendarId,
+        title,
+        start,
+    }: EditDateMemoActionRequest
+): Promise<ApiResponse<ScheduleItem>> => {
+
+    try {
+
+        const cookieStore =
+            await cookies();
+
+        const accessToken =
+            cookieStore
+                .get('accessToken')
+                ?.value;
+
+
+        if (!accessToken) {
+
+            return createCalendarActionErrorResponse(
+                401,
+                'UNAUTHORIZED',
+                '로그인이 필요합니다.'
+            );
+        }
+
+
+        if (!calendarId) {
+
+            return createCalendarActionErrorResponse(
+                400,
+                'INVALID_CALENDAR_ID',
+                '잘못된 요청입니다.'
+            );
+        }
+
+
+        if (!title.trim()) {
+
+            return createCalendarActionErrorResponse(
+                400,
+                'INVALID_MEMO_TITLE',
+                '수정할 제목은 필수 항목입니다.'
+            );
+        }
+
+
+        const result =
+            await editDateMemoService({
+                calendarId,
+                title,
+                start,
+                accessToken,
+            });
+
+
+        revalidatePath('/phone/calendar');
+
+
+        return result;
+
+    } catch (error) {
+
+        return createCalendarActionErrorResponse(
+            500,
+            'CALENDAR_MEMO_EDIT_FAILED',
+            error instanceof Error
+                ? error.message
+                : '메모 수정에 실패하였습니다.'
+        );
+    }
+};
+
+export const editDateRangeMemoAction = async (
+    {
+        calendarId,
+        title,
+        start,
+        end,
+    }: EditDateRangeMemoActionRequest
+): Promise<ApiResponse<ScheduleItem>> => {
+
+    try {
+
+        const cookieStore =
+            await cookies();
+
+        const accessToken =
+            cookieStore
+                .get('accessToken')
+                ?.value;
+
+
+        if (!accessToken) {
+
+            return createCalendarActionErrorResponse(
+                401,
+                'UNAUTHORIZED',
+                '로그인이 필요합니다.'
+            );
+        }
+
+
+        if (!calendarId) {
+
+            return createCalendarActionErrorResponse(
+                400,
+                'INVALID_CALENDAR_ID',
+                '잘못된 요청입니다.'
+            );
+        }
+
+
+        if (!title.trim()) {
+
+            return createCalendarActionErrorResponse(
+                400,
+                'INVALID_MEMO_TITLE',
+                '수정할 제목은 필수 항목입니다.'
+            );
+        }
+
+
+        const result =
+            await editDateRangeMemoService({
+                calendarId,
+                title,
+                start,
+                end,
+                accessToken,
+            });
+
+
+        revalidatePath('/phone/calendar');
+
+
+        return result;
+
+    } catch (error) {
+
+        return createCalendarActionErrorResponse(
+            500,
+            'CALENDAR_RANGE_MEMO_EDIT_FAILED',
+            error instanceof Error
+                ? error.message
+                : '기간 메모 수정에 실패하였습니다.'
+        );
+    }
+};
+
+export const deleteMemoAction = async (
+    {
+        calendarId,
+    }: DeleteMemoActionRequest
+): Promise<ApiResponse<null>> => {
+
+    try {
+
+        const cookieStore =
+            await cookies();
+
+        const accessToken =
+            cookieStore
+                .get('accessToken')
+                ?.value;
+
+
+        if (!accessToken) {
+
+            return createCalendarActionErrorResponse<null>(
+                401,
+                'UNAUTHORIZED',
+                '로그인이 필요합니다.'
+            );
+        }
+
+
+        if (!calendarId) {
+
+            return createCalendarActionErrorResponse<null>(
+                400,
+                'INVALID_CALENDAR_ID',
+                '잘못된 요청입니다.'
+            );
+        }
+
+
+        const result =
+            await deleteMemoService({
+                calendarId,
+                accessToken,
+            });
+
+
+        revalidatePath('/phone/calendar');
+
+
+        return result;
+
+    } catch (error) {
+
+        return createCalendarActionErrorResponse<null>(
+            500,
+            'CALENDAR_MEMO_DELETE_FAILED',
+            error instanceof Error
+                ? error.message
+                : '메모 삭제에 실패하였습니다.'
         );
     }
 };
