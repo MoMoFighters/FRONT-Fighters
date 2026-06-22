@@ -29,7 +29,7 @@ const POSITIONS = [
     "fifth",
 ] as const;
 
-export default async function StudentMainPage() {
+export default async function FriendMainPage() {
 
     const myInfo = await getMyInfo();
 

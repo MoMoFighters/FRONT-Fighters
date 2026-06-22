@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 
 const IMAGE_BACKGROUND_PATHS = [
     "/student",
@@ -22,11 +22,12 @@ export default function StudentLayoutShell({
     children: React.ReactNode;
 }>) {
     const pathname = usePathname();
+    const userId = useParams();
 
     const isImageBackgroundPage =
         IMAGE_BACKGROUND_PATHS.includes(pathname);
 
-    if (isImageBackgroundPage) {
+    if (isImageBackgroundPage || userId) {
         return (
             <div className="flex h-screen flex-col overflow-hidden bg-white">
                 {header}

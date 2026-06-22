@@ -7,7 +7,12 @@ import postBoard from "@/app/assets/img/GuestBook.png"
 import { Button } from "../ui/button";
 import { Plus, Search, X } from "lucide-react";
 
-export default function PostBoard({ mode }: { mode: "MY" | "FRIEND" }) {
+interface PostBoardProps {
+    mode: "MY" | "FRIEND";
+    responsive?: boolean;
+}
+
+export default function PostBoard({ mode, responsive = false }: PostBoardProps) {
 
     const [isModal, setIsModal] = useState(false);
     const [detail, setDetail] = useState(false);
@@ -19,15 +24,28 @@ export default function PostBoard({ mode }: { mode: "MY" | "FRIEND" }) {
                 closeDelay={50}
             >
                 <HoverCardTrigger asChild>
-                    <Image
-                        src={postBoard}
-                        alt={'방명록'}
-                        quality={80}
-                        width={80}
-                        height={80}
-                        className="bottom-16 left-160 fixed cursor-pointer"
-                        onClick={() => setIsModal(true)}
-                    />
+                    {responsive ? (
+                        <div className="absolute bottom-[15%] left-[51%] aspect-square w-[6.25%] cursor-pointer">
+                            <Image
+                                src={postBoard}
+                                alt="방명록"
+                                fill
+                                quality={80}
+                                sizes="7vw"
+                                onClick={() => setIsModal(true)}
+                            />
+                        </div>
+                    ) : (
+                        <Image
+                            src={postBoard}
+                            alt="방명록"
+                            quality={80}
+                            width={80}
+                            height={80}
+                            className="bottom-16 left-160 fixed cursor-pointer"
+                            onClick={() => setIsModal(true)}
+                        />
+                    )}
                 </HoverCardTrigger>
                 <HoverCardContent
                     side="top"

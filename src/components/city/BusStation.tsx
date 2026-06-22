@@ -9,7 +9,12 @@ import { Button } from '../ui/button';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '../ui/hover-card';
 import Link from 'next/link';
 
-export default function BusStation({ mode }: { mode: 'MY' | "FRIEND" }) {
+interface BusStationProps {
+    mode: 'MY' | "FRIEND";
+    responsive?: boolean;
+}
+
+export default function BusStation({ mode, responsive = false }: BusStationProps) {
 
     const [isModal, setIsModal] = useState(false);
 
@@ -21,25 +26,9 @@ export default function BusStation({ mode }: { mode: 'MY' | "FRIEND" }) {
             >
                 <HoverCardTrigger asChild>
                     {mode === 'FRIEND' ? (<Link href='/student'>
-                        <Image
-                            src={busStaion}
-                            alt="버스정류장"
-                            quality={80}
-                            width={120}
-                            height={120}
-                            className="top-47 left-63.5 fixed cursor-pointer"
-                            onClick={() => setIsModal(true)}
-                        />
+                        <CityBusStationImage responsive={responsive} onClick={() => setIsModal(true)} />
                     </Link>) : (
-                        <Image
-                            src={busStaion}
-                            alt="버스정류장"
-                            quality={80}
-                            width={120}
-                            height={120}
-                            className="top-47 left-63.5 fixed cursor-pointer"
-                            onClick={() => setIsModal(true)}
-                        />
+                        <CityBusStationImage responsive={responsive} onClick={() => setIsModal(true)} />
                     )}
                 </HoverCardTrigger>
                 <HoverCardContent
@@ -128,5 +117,40 @@ export default function BusStation({ mode }: { mode: 'MY' | "FRIEND" }) {
                 </div>
             )}
         </>
+    );
+}
+
+function CityBusStationImage({
+    responsive,
+    onClick,
+}: {
+    responsive: boolean;
+    onClick: () => void;
+}) {
+    if (responsive) {
+        return (
+            <div className="absolute left-[20%] top-[20%] aspect-square w-[9.375%] cursor-pointer">
+                <Image
+                    src={busStaion}
+                    alt="버스정류장"
+                    fill
+                    quality={80}
+                    sizes="10vw"
+                    onClick={onClick}
+                />
+            </div>
+        );
+    }
+
+    return (
+        <Image
+            src={busStaion}
+            alt="버스정류장"
+            quality={80}
+            width={120}
+            height={120}
+            className="top-47 left-63.5 fixed cursor-pointer"
+            onClick={onClick}
+        />
     );
 }

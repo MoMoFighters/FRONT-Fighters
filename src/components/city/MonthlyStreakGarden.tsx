@@ -48,7 +48,7 @@ const createDummyStreakData = (year: number, month: number): MonthlyStreakRespon
   };
 };
 
-export default function MonthlyStreakGarden() {
+export default function MonthlyStreakGarden({ responsive = false }: { responsive?: boolean }) {
   const today = new Date();
   const [selectedMonth, setSelectedMonth] = useState(
     () => new Date(today.getFullYear(), today.getMonth(), 1),
@@ -73,12 +73,17 @@ export default function MonthlyStreakGarden() {
 
   return (
     <>
-      <div className="fixed bottom-11 left-20 h-40 w-50 -rotate-4">
+      <div className={responsive
+        ? "absolute bottom-[12%] left-[7%] h-[13.3cqw] w-[12cqw] -rotate-4"
+        : "fixed bottom-11 left-20 h-40 w-50 -rotate-4"}
+      >
         <Image src={streakDate} alt="잔디 전광판" fill className="object-contain" />
 
         <div className="absolute left-[52%] top-[41%] -translate-x-1/2 -translate-y-1/2">
           <div
-            className="flex items-center justify-center text-[14px] font-black text-slate-950"
+            className={responsive
+              ? "flex items-center justify-center text-[1.1cqw] font-black text-slate-950"
+              : "flex items-center justify-center text-[14px] font-black text-slate-950"}
             style={{
               transform: "rotate(-17deg) skewX(-5deg) scaleY(0.92)",
               transformOrigin: "center",
@@ -89,10 +94,10 @@ export default function MonthlyStreakGarden() {
               onClick={() => moveMonth(-1)}
               aria-label="이전 달"
             >
-              <ChevronLeft className="size-5 text-slate-900 hover:scale-110 cursor-pointer" />
+              <ChevronLeft className={responsive ? "size-[1.55cqw] cursor-pointer text-slate-900 hover:scale-110" : "size-5 cursor-pointer text-slate-900 hover:scale-110"} />
             </button>
 
-            <span className="min-w-14 text-center tracking-wide">
+            <span className={responsive ? "min-w-[4.4cqw] text-center tracking-wide" : "min-w-14 text-center tracking-wide"}>
               {year}-{pad(month)}
             </span>
 
@@ -102,14 +107,16 @@ export default function MonthlyStreakGarden() {
               disabled={isCurrentMonth}
               aria-label="다음 달"
             >
-              <ChevronRight className="size-5 text-slate-900 hover:scale-110 cursor-pointer" />
+              <ChevronRight className={responsive ? "size-[1.55cqw] cursor-pointer text-slate-900 hover:scale-110" : "size-5 cursor-pointer text-slate-900 hover:scale-110"} />
             </button>
           </div>
         </div>
       </div >
 
       <div
-        className="fixed -bottom-1.5 left-46.5 grid grid-cols-7 grid-rows-5 gap-x-0.5 gap-y-1 rounded-sm bg-yellow-800/50 px-0.5 py-2"
+        className={responsive
+          ? "absolute bottom-[1.5%] left-[15.5%] grid grid-cols-7 grid-rows-5 gap-x-[0.04cqw] gap-y-[0.08cqw] rounded-sm bg-yellow-800/50 px-[0.04cqw] py-[0.6cqw]"
+          : "fixed -bottom-1.5 left-46.5 grid grid-cols-7 grid-rows-5 gap-x-0.5 gap-y-1 rounded-sm bg-yellow-800/50 px-0.5 py-2"}
         style={{
           transform: "rotate(-30deg) skewX(28deg) scaleY(0.72)",
           transformOrigin: "center",
@@ -119,7 +126,9 @@ export default function MonthlyStreakGarden() {
           <HoverCard key={date} openDelay={80} closeDelay={80}>
             <HoverCardTrigger asChild>
               <div
-                className={`flex h-4 w-3 cursor-pointer items-center justify-center rounded-xs ${levelStyle[level]}`}
+                className={responsive
+                  ? `flex h-[1.25cqw] w-[0.94cqw] cursor-pointer items-center justify-center rounded-xs ${levelStyle[level]}`
+                  : `flex h-4 w-3 cursor-pointer items-center justify-center rounded-xs ${levelStyle[level]}`}
               />
             </HoverCardTrigger>
             <HoverCardContent side="top" className="w-auto rounded-md px-2.5 py-1.5 text-xs">

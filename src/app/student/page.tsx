@@ -63,20 +63,24 @@ export default async function StudentMainPage() {
     ]
 
     return (
-        <div className="w-full h-full relative overflow-hidden">
+        <div className="relative h-full w-full overflow-hidden [container-type:size]">
             <NicknameInputModal nickIsNull={myInfo.data?.nickname === null ? true : false} />
-            <Image
-                src={city}
-                alt="도시배경"
-                fill
-                quality={80}
-                priority
-                className="object-cover"
-            />
-            <BusStation mode='MY' />
-            <PostBoard mode="MY" />
-            <Phone />
-            <MonthlyStreakGarden />
+            <div
+                className="absolute left-1/2 top-1/2 aspect-video w-[max(100cqw,177.777cqh)] -translate-x-1/2 -translate-y-1/2 [container-type:inline-size]"
+            >
+                <Image
+                    src={city}
+                    alt="도시배경"
+                    fill
+                    quality={80}
+                    priority
+                    className="object-cover"
+                />
+                <BusStation mode='MY' responsive />
+                <PostBoard mode="MY" responsive />
+                <Phone responsive />
+                <MonthlyStreakGarden responsive />
+            </div>
         </div>
     );
 }

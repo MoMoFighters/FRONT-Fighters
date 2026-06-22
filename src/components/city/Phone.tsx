@@ -18,10 +18,12 @@ import community from "@/app/assets/img/phone-community.png";
 
 interface PhoneProps {
     hasNotification?: boolean;
+    responsive?: boolean;
 }
 
 export default function Phone({
     hasNotification = false,
+    responsive = false,
 }: PhoneProps) {
     const [notificationEnabled, setNotificationEnabled] = useState(true);
 
@@ -29,7 +31,14 @@ export default function Phone({
         notificationEnabled && hasNotification;
 
     return (
-        <div className="group absolute -bottom-[400px] right-[8%] z-30 h-[440px] w-[230px] transition-[bottom] duration-500 ease-out hover:bottom-2 focus-within:bottom-4">
+        <div className={responsive
+            ? "group absolute -bottom-[26.875cqw] right-[8%] z-30 aspect-[23/44] w-[18cqw] [container-type:inline-size] transition-[bottom] duration-500 ease-out hover:bottom-[0.2cqw] focus-within:bottom-[0.3cqw]"
+            : "group absolute -bottom-[400px] right-[8%] z-30 h-[440px] w-[230px] transition-[bottom] duration-500 ease-out hover:bottom-2 focus-within:bottom-4"}
+        >
+            <div className={responsive
+                ? "absolute bottom-0 right-0 h-[440px] w-[230px] origin-bottom-right [transform:scale(calc(100cqw/230px))]"
+                : "h-full w-full"}
+            >
             {notificationActive && (
                 <>
                     <div className="pointer-events-none absolute -inset-2 rounded-[42px] bg-indigo-400/40 blur-xl animate-pulse" />
@@ -167,6 +176,7 @@ export default function Phone({
                         <div className="h-1.5 w-24 rounded-full bg-slate-700/85 shadow-[0_1px_8px_rgba(255,255,255,0.45)]" />
                     </footer>
                 </div>
+            </div>
             </div>
         </div>
     );
