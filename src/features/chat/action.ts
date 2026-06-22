@@ -3,10 +3,18 @@
 import { cookies } from "next/headers";
 import type { ApiResponse } from "@/lib/api";
 import {
-    sendMessageService,
     createChatRoomService,
-    readMessageService,
+    getChatHistoryService,
+    getChatRoomsService,
     leaveChatroomService,
+    readMessageService,
+    sendMessageService,
+    type ChatHistoryData,
+    type ChatRoomListData,
+    type CreateChatRoomData,
+    type LeaveChatRoomData,
+    type ReadMessageData,
+    type SendMessageData,
 } from "@/app/services/phone/chat/service";
 
 const getAccessToken = async () => {
@@ -22,16 +30,55 @@ const createErrorResponse = <T>(
     status: 500,
     code: "INTERNAL_SERVER_ERROR",
     message: error instanceof Error ? error.message : message,
-    data: null,
 });
 
-interface SendMessageData {
-    roomId: number;
-    userId: number;
-    nickname: string;
-    content: string;
-    createdAt: string;
-}
+const createUnauthorizedResponse = <T>(): ApiResponse<T> => ({
+    timestamp: new Date().toISOString(),
+    status: 401,
+    code: "UNAUTHORIZED",
+    message: "로그인이 필요합니다.",
+});
+
+export const getChatRoomsAction = async (): Promise<ApiResponse<ChatRoomListData[]>> => {
+    try {
+        const accessToken = await getAccessToken();
+
+        if (!accessToken) {
+            return createUnauthorizedResponse<ChatRoomListData[]>();
+        }
+
+        return await getChatRoomsService(accessToken);
+    } catch (error) {
+        return createErrorResponse<ChatRoomListData[]>(
+            error,
+            "채팅방 목록 조회에 실패했습니다."
+        );
+    }
+};
+
+export const getChatHistoryAction = async (
+    roomId: number,
+    lastMessageId?: number
+): Promise<ApiResponse<ChatHistoryData>> => {
+    try {
+        const accessToken = await getAccessToken();
+
+        if (!accessToken) {
+            return createUnauthorizedResponse<ChatHistoryData>();
+        }
+
+        return await getChatHistoryService(
+            accessToken,
+            roomId,
+            lastMessageId
+        );
+    } catch (error) {
+        return createErrorResponse<ChatHistoryData>(
+            error,
+            "채팅 내역 조회에 실패했습니다."
+        );
+    }
+};
 
 export const sendMessageAction = async (
     roomId: number,
@@ -41,13 +88,7 @@ export const sendMessageAction = async (
         const accessToken = await getAccessToken();
 
         if (!accessToken) {
-            return {
-                timestamp: new Date().toISOString(),
-                status: 401,
-                code: "UNAUTHORIZED",
-                message: "로그인이 필요합니다.",
-                data: null,
-            };
+            return createUnauthorizedResponse<SendMessageData>();
         }
 
         return await sendMessageService(
@@ -63,28 +104,14 @@ export const sendMessageAction = async (
     }
 };
 
-interface ChatRoomData {
-    roomId: number;
-    userId: number;
-    nickname: string;
-    role: string;
-    status: string;
-}
-
 export const createChatRoomAction = async (
     userId: number
-): Promise<ApiResponse<ChatRoomData>> => {
+): Promise<ApiResponse<CreateChatRoomData>> => {
     try {
         const accessToken = await getAccessToken();
 
         if (!accessToken) {
-            return {
-                timestamp: new Date().toISOString(),
-                status: 401,
-                code: "UNAUTHORIZED",
-                message: "로그인이 필요합니다.",
-                data: null,
-            };
+            return createUnauthorizedResponse<CreateChatRoomData>();
         }
 
         return await createChatRoomService(
@@ -92,7 +119,7 @@ export const createChatRoomAction = async (
             accessToken
         );
     } catch (error) {
-        return createErrorResponse<ChatRoomData>(
+        return createErrorResponse<CreateChatRoomData>(
             error,
             "채팅방 조회에 실패했습니다."
         );
@@ -101,18 +128,12 @@ export const createChatRoomAction = async (
 
 export const readMessageAction = async (
     roomId: number
-): Promise<ApiResponse<unknown>> => {
+): Promise<ApiResponse<ReadMessageData>> => {
     try {
         const accessToken = await getAccessToken();
 
         if (!accessToken) {
-            return {
-                timestamp: new Date().toISOString(),
-                status: 401,
-                code: "UNAUTHORIZED",
-                message: "로그인이 필요합니다.",
-                data: null,
-            };
+            return createUnauthorizedResponse<ReadMessageData>();
         }
 
         return await readMessageService(
@@ -120,7 +141,7 @@ export const readMessageAction = async (
             accessToken
         );
     } catch (error) {
-        return createErrorResponse(
+        return createErrorResponse<ReadMessageData>(
             error,
             "읽음 처리에 실패했습니다."
         );
@@ -129,18 +150,12 @@ export const readMessageAction = async (
 
 export const leaveChatroomAction = async (
     roomId: number
-): Promise<ApiResponse<unknown>> => {
+): Promise<ApiResponse<LeaveChatRoomData>> => {
     try {
         const accessToken = await getAccessToken();
 
         if (!accessToken) {
-            return {
-                timestamp: new Date().toISOString(),
-                status: 401,
-                code: "UNAUTHORIZED",
-                message: "로그인이 필요합니다.",
-                data: null,
-            };
+            return createUnauthorizedResponse<LeaveChatRoomData>();
         }
 
         return await leaveChatroomService(
@@ -148,7 +163,7 @@ export const leaveChatroomAction = async (
             accessToken
         );
     } catch (error) {
-        return createErrorResponse(
+        return createErrorResponse<LeaveChatRoomData>(
             error,
             "채팅방 나가기에 실패했습니다."
         );

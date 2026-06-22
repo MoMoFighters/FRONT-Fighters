@@ -40,7 +40,6 @@ export default function FriendModal({ isOpen, onClose }: FriendModalProps) {
         status: 0,
         code: "",
         message: "",
-        data: null,
     });
 
     // 액션 수행 결과 감지 후 리다이렉트 처리

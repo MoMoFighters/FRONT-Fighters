@@ -106,7 +106,7 @@ export default async function TeacherAskPage({
                         chatRoomData?.map(
                             (data) => (
                                 <ChatRoomItem
-                                    key={data.roomInfo.roomId}
+                                    key={data.roomId}
                                     data={data}
                                 />
                             )
