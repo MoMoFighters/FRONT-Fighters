@@ -10,6 +10,8 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import momo from "@/app/assets/img/momo.png"
+import CreateReportBtn from "@/features/report/components/buttons/CreateReportBtn";
+import PostLikeBtn from "@/features/post/PostLikeBtn";
 
 interface CommunityPostDetailPageProps {
     params: Promise<{
@@ -285,25 +287,21 @@ export default async function CommunityPostDetailPage({
                                 {post.authorNickname}
                             </p>
                         </div>
+                        <CreateReportBtn triggerClassName="text-xs text-slate-500 font-bold py-1.5 px-3 rounded-md border border-slate-300 hover:bg-slate-100 cursor-pointer" />
 
-                        <button
-                            type="button"
-                            className="flex shrink-0 items-center gap-1.5 rounded-full bg-rose-50 px-3 py-2 text-sm font-black text-rose-500 transition hover:bg-rose-100"
-                        >
-                            <Heart className="h-4 w-4 fill-current" />
-                            {post.likeCount}
-                        </button>
+
                     </div>
 
-                    <div className="mt-4 flex items-center gap-4 text-xs font-bold text-slate-400">
+                    <div className="mt-4 flex items-center justify-between gap-4 text-xs font-bold text-slate-400">
                         <span className="flex items-center gap-1">
                             <Eye className="h-4 w-4" />
-                            조회 {post.viewCount}
+                            조회수 {post.viewCount}
                         </span>
-                        c
+                        <PostLikeBtn postId={post.id} postLikeCount={post.likeCount} />
                     </div>
                 </header>
 
+                {/* 게시글 콘텐츠 영역 */}
                 <div className="min-h-0 flex-1 overflow-y-auto pr-1">
                     <div className="py-5 flex flex-col">
                         <p className="whitespace-pre-wrap text-4 font-medium leading-7 text-slate-700">
