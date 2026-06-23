@@ -18,35 +18,29 @@ import community from "@/app/assets/img/phone-community.png";
 
 interface PhoneProps {
     hasNotification?: boolean;
-    responsive?: boolean;
 }
 
 export default function Phone({
     hasNotification = false,
-    responsive = false,
 }: PhoneProps) {
-
-    // donotdisturb 정보 fetch 받아서 연결
+    // TODO: do-not-disturb API response와 연결
     const [notificationEnabled, setNotificationEnabled] = useState(true);
     const [isHovered, setIsHovered] = useState(false);
     const [isInteractionLocked, setIsInteractionLocked] = useState(false);
-    const [vibrationOffset, setVibrationOffset] = useState({
-        x: 0,
-        y: 0,
-    });
+    const [vibrationOffset, setVibrationOffset] = useState({ x: 0, y: 0 });
     const hoverReleaseTimerRef = useRef<number | null>(null);
     const interactionLockTimerRef = useRef<number | null>(null);
 
-    // notification 개수를 받아와서 각각 상태관리
-    const [notification, setNotification] = useState({
-        totalMsgFriendCount: 11, //메시지, 친구 관련 총 알림 개수
-        calendaerCount: 44, // 캘린더 알림 총 개수
-        communityCount: 101 // 커뮤니티 알림 총 개수
+    // TODO: notification API response와 연결
+    const [notification] = useState({
+        totalMsgFriendCount: 11,
+        calendaerCount: 44,
+        communityCount: 101,
     });
 
-    const notificationActive = notificationEnabled && hasNotification;
-    const hasNotificationValue =
-        Object.values(notification).some(count => count > 0);
+    const notificationActive =
+        notificationEnabled && hasNotification;
+    const hasNotificationValue = Object.values(notification).some(count => count > 0);
     const shouldVibrate =
         !isHovered &&
         !isInteractionLocked &&
@@ -87,10 +81,7 @@ export default function Phone({
 
     useEffect(() => {
         if (!shouldVibrate) {
-            setVibrationOffset({
-                x: 0,
-                y: 0,
-            });
+            setVibrationOffset({ x: 0, y: 0 });
             return;
         }
 
@@ -103,10 +94,9 @@ export default function Phone({
         ];
 
         const intervalId = window.setInterval(() => {
-            const randomPosition =
-                vibrationPositions[
+            const randomPosition = vibrationPositions[
                 Math.floor(Math.random() * vibrationPositions.length)
-                ];
+            ];
 
             setVibrationOffset(randomPosition);
         }, 80);
@@ -129,9 +119,8 @@ export default function Phone({
     }, []);
 
     return (
-        <div className={responsive
-            ? "group absolute -bottom-[26.875cqw] right-[8%] z-30 aspect-[23/44] w-[18cqw] [container-type:inline-size] transition-[bottom] duration-500 ease-out hover:bottom-[0.2cqw] focus-within:bottom-[0.3cqw]"
-            : "group absolute -bottom-[400px] right-[8%] z-30 h-[440px] w-[230px] transition-[bottom] duration-500 ease-out hover:bottom-2 focus-within:bottom-4"}
+        <div
+            className="group fixed -bottom-[320px] right-[8%] z-30 h-[440px] w-[230px] transition-[bottom] duration-500 ease-out hover:bottom-2 focus-within:bottom-4"
             onMouseEnter={keepPhoneStable}
             onMouseLeave={releasePhoneStable}
             onFocusCapture={keepPhoneStable}
@@ -140,11 +129,7 @@ export default function Phone({
                 transform: `translate(${vibrationOffset.x}px, ${vibrationOffset.y}px)`,
             }}
         >
-            <div className={responsive
-                ? "absolute bottom-0 right-0 h-[440px] w-[230px] origin-bottom-right [transform:scale(calc(100cqw/230px))]"
-                : "h-full w-full"}
-            >
-                {notificationActive && (
+            {notificationActive && (
                     <>
                         <div className="pointer-events-none absolute -inset-2 rounded-[42px] bg-indigo-400/40 blur-xl animate-pulse" />
                         <div className="pointer-events-none absolute -inset-1 rounded-[40px] border-2 border-indigo-300 animate-pulse" />
@@ -158,7 +143,7 @@ export default function Phone({
                         <div className="absolute inset-0 bg-white" />
 
                         <header className="relative z-10 flex h-[76px] shrink-0 items-center justify-end px-5 pt-3">
-                            <HoverCard openDelay={100} closeDelay={100} >
+                            <HoverCard openDelay={100} closeDelay={100}>
                                 <HoverCardTrigger asChild>
                                     <button
                                         type="button"
@@ -217,7 +202,7 @@ export default function Phone({
                                                     alt="메신저"
                                                     fill
                                                 />
-                                                <div className="ml-auto w-4 h-4 text-xs relative text-center items-center z-5 rounded-full bg-red-500 text-white">
+                                                <div className="relative z-5 ml-auto h-4 w-4 items-center rounded-full bg-red-500 text-center text-xs text-white">
                                                     {notification.totalMsgFriendCount > 99 ? "99+" : notification.totalMsgFriendCount}
                                                 </div>
                                             </>
@@ -241,7 +226,7 @@ export default function Phone({
                                                 alt="캘린더"
                                                 fill
                                             />
-                                            <div className="ml-auto w-4 h-4 text-xs relative text-center items-center z-5 rounded-full bg-red-500 text-white">
+                                            <div className="relative z-5 ml-auto h-4 w-4 items-center rounded-full bg-red-500 text-center text-xs text-white">
                                                 {notification.calendaerCount > 99 ? "99+" : notification.calendaerCount}
                                             </div>
                                         </Link>
@@ -284,7 +269,7 @@ export default function Phone({
                                                 alt="커뮤니티"
                                                 fill
                                             />
-                                            <div className="ml-auto w-4 h-4 text-xs relative text-center items-center z-5 rounded-full bg-red-500 text-white">
+                                            <div className="relative z-5 ml-auto h-4 w-4 items-center rounded-full bg-red-500 text-center text-xs text-white">
                                                 {notification.communityCount > 99 ? "99+" : notification.communityCount}
                                             </div>
                                         </Link>
@@ -302,7 +287,6 @@ export default function Phone({
                         </footer>
                     </div>
                 </div>
-            </div>
-        </div >
+        </div>
     );
 }

@@ -1,7 +1,7 @@
 'use client'
 
-import busStaion from '@/app/assets/img/BusStation.png'
-import { MapPin, Search, X } from 'lucide-react'
+import busStaion from '@/app/assets/img/busStation.png'
+import { Search, X } from 'lucide-react'
 import Image from "next/image";
 import { useState } from 'react';
 
@@ -11,10 +11,9 @@ import Link from 'next/link';
 
 interface BusStationProps {
     mode: 'MY' | "FRIEND";
-    responsive?: boolean;
 }
 
-export default function BusStation({ mode, responsive = false }: BusStationProps) {
+export default function BusStation({ mode }: BusStationProps) {
 
     const [isModal, setIsModal] = useState(false);
 
@@ -25,10 +24,29 @@ export default function BusStation({ mode, responsive = false }: BusStationProps
                 closeDelay={50}
             >
                 <HoverCardTrigger asChild>
-                    {mode === 'FRIEND' ? (<Link href='/student'>
-                        <CityBusStationImage responsive={responsive} onClick={() => setIsModal(true)} />
-                    </Link>) : (
-                        <CityBusStationImage responsive={responsive} onClick={() => setIsModal(true)} />
+                    {mode === 'FRIEND' ? (
+                        <Link
+                            href='/student'
+                            className="absolute left-[22.5%] top-[18.5%] z-10 aspect-square w-[9.375%] cursor-pointer"
+                            style={{
+                                transform: "rotate(-8deg) skewX(-5deg) scaleY(0.92)",
+                                transformOrigin: "center",
+                            }}
+                        >
+                            <BusStationVisual />
+                        </Link>
+                    ) : (
+                        <button
+                            type="button"
+                            onClick={() => setIsModal(true)}
+                            className="absolute left-[22.5%] top-[18.5%] z-10 aspect-square w-[9.375%] cursor-pointer border-0 bg-transparent p-0"
+                            style={{
+                                transform: "rotate(-8deg) skewX(-5deg) scaleY(0.92)",
+                                transformOrigin: "center",
+                            }}
+                        >
+                            <BusStationVisual />
+                        </button>
                     )}
                 </HoverCardTrigger>
                 <HoverCardContent
@@ -36,7 +54,7 @@ export default function BusStation({ mode, responsive = false }: BusStationProps
                     align="center"
                     sideOffset={8}
                 >
-                    <div className="space-y-1 -top-20">
+                    <div className="space-y-1 -top-20 z-40">
                         <p className="text-sm font-bold text-slate-900">
                             버스정류장
                         </p>
@@ -120,37 +138,18 @@ export default function BusStation({ mode, responsive = false }: BusStationProps
     );
 }
 
-function CityBusStationImage({
-    responsive,
-    onClick,
-}: {
-    responsive: boolean;
-    onClick: () => void;
-}) {
-    if (responsive) {
-        return (
-            <div className="absolute left-[20%] top-[20%] aspect-square w-[9.375%] cursor-pointer">
-                <Image
-                    src={busStaion}
-                    alt="버스정류장"
-                    fill
-                    quality={80}
-                    sizes="10vw"
-                    onClick={onClick}
-                />
-            </div>
-        );
-    }
-
+function BusStationVisual() {
     return (
-        <Image
-            src={busStaion}
-            alt="버스정류장"
-            quality={80}
-            width={120}
-            height={120}
-            className="top-47 left-63.5 fixed cursor-pointer"
-            onClick={onClick}
-        />
+        <div
+            className="relative h-full w-full transition-transform duration-200 hover:scale-110"
+        >
+            <Image
+                src={busStaion}
+                alt="버스정류장"
+                fill
+                quality={80}
+                sizes="10vw"
+            />
+        </div>
     );
 }

@@ -3,16 +3,15 @@
 import Image from "next/image";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "../ui/hover-card";
 import { useState } from "react";
-import postBoard from "@/app/assets/img/GuestBook.png"
+import postBoard from "@/app/assets/img/guestBook.png"
 import { Button } from "../ui/button";
 import { Plus, Search, X } from "lucide-react";
 
 interface PostBoardProps {
     mode: "MY" | "FRIEND";
-    responsive?: boolean;
 }
 
-export default function PostBoard({ mode, responsive = false }: PostBoardProps) {
+export default function PostBoard({ mode }: PostBoardProps) {
 
     const [isModal, setIsModal] = useState(false);
     const [detail, setDetail] = useState(false);
@@ -24,28 +23,24 @@ export default function PostBoard({ mode, responsive = false }: PostBoardProps) 
                 closeDelay={50}
             >
                 <HoverCardTrigger asChild>
-                    {responsive ? (
-                        <div className="absolute bottom-[15%] left-[51%] aspect-square w-[6.25%] cursor-pointer">
+                    <div
+                        className="absolute bottom-[11%] left-[44%] z-10 aspect-square w-[7%] cursor-pointer"
+                        style={{
+                            transform: "rotate(-17deg) skewX(-15deg) scaleY(0.92)",
+                            transformOrigin: "center",
+                        }}
+                        onClick={() => setIsModal(true)}
+                    >
+                        <div className="relative h-full w-full transition-transform duration-200 hover:scale-110">
                             <Image
                                 src={postBoard}
                                 alt="방명록"
                                 fill
                                 quality={80}
                                 sizes="7vw"
-                                onClick={() => setIsModal(true)}
                             />
                         </div>
-                    ) : (
-                        <Image
-                            src={postBoard}
-                            alt="방명록"
-                            quality={80}
-                            width={80}
-                            height={80}
-                            className="bottom-16 left-160 fixed cursor-pointer"
-                            onClick={() => setIsModal(true)}
-                        />
-                    )}
+                    </div>
                 </HoverCardTrigger>
                 <HoverCardContent
                     side="top"
