@@ -54,7 +54,7 @@ export default function ChatItem({
                     {isHover && (
                         <button
                             type="button"
-                            className="p-1 rounded-sm bg-rose-400/50 select-none mt-auto text-xs font-semibold text-rose-400 transition-colors hover:text-rose-500"
+                            className="p-0.5 rounded-sm select-none mt-auto text-xs font-semibold text-rose-400 transition-colors hover:text-rose-500 cursor-pointer"
                             onClick={() => {
                                 setIsModal(true);
                                 setIsHover(false);
