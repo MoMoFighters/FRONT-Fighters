@@ -1,7 +1,8 @@
-"use client"
+"use client";
 
-import ChatReportBtn from "@/features/chat/ChatReportBtn";
 import { useState } from "react";
+import ChatReportModal from "@/features/chat/ChatReportModal";
+import { TriangleAlertIcon } from "lucide-react";
 
 interface MessageData {
     id: number;
@@ -16,74 +17,69 @@ export default function ChatItem({
     time,
     id,
 }: MessageData) {
-
     const [isHover, setIsHover] = useState(false);
+    const [isModal, setIsModal] = useState(false);
 
     if (isMine === null) {
         return (
-            <div className="justify-center w-full h-3">
-                <div className="max-w-fit min-w-10 rounded-md bg-indigo-500/50 py-1 px-2">
-                    <p className="text-center text-sm text-slate-100">
+            <div className="flex h-8 w-full justify-center select-none">
+                <div className="min-w-10 max-w-fit rounded-full bg-slate-200/70 px-4 py-1">
+                    <p className="text-center text-sm text-slate-900">
                         {message}
                     </p>
                 </div>
             </div>
-        )
+        );
     }
 
     return (
         <div
-            className={`w-full flex gap-2 ${isMine === true ? "justify-end" : "justify-start"
-                }`}
+            className={`flex w-full gap-2 ${isMine ? "justify-end" : "justify-start"}`}
             key={id}
             onMouseEnter={() => setIsHover(true)}
             onMouseLeave={() => setIsHover(false)}
         >
-            {isMine === false ? (
+            {!isMine ? (
                 <>
-                    <div
-                        className="
-                    max-w-[300px]
-                    w-fit
-                    bg-white
-                    px-4
-                    py-2
-                    rounded-[20px]
-                    rounded-bl-md
-                    shadow-sm
-                "
-                    >
-                        <p className="text-slate-800 break-words whitespace-pre-wrap">
+                    <div className="w-fit max-w-[300px] rounded-[20px] rounded-bl-md bg-white px-4 py-2 shadow-sm">
+                        <p className="whitespace-pre-wrap break-words text-slate-800">
                             {message}
                         </p>
                     </div>
 
-                    <p className="mt-auto text-xs text-slate-400 shrink-0">
-                        {time}
-                    </p>
-                    {isHover ? (
-                        <ChatReportBtn />
-                    ) : ""}
-                </>
-            ) : (
-                <>
-                    <p className="mt-auto text-xs text-slate-400 shrink-0">
+                    <p className="mt-auto shrink-0 text-xs text-slate-400">
                         {time}
                     </p>
 
-                    <div
-                        className="
-                    max-w-[300px]
-                    w-fit
-                    bg-indigo-500
-                    px-4
-                    py-2
-                    rounded-[20px]
-                    rounded-br-md
-                    shadow-sm
-                "
-                    >
-                        <p className="text-white break-words whitespace-pre-wrap">
+                    {isHover && (
+                        <button
+                            type="button"
+                            className="p-0.5 rounded-sm select-none mt-auto text-xs font-semibold text-rose-400 transition-colors hover:text-rose-500 cursor-pointer"
+                            onClick={() => {
+                                setIsModal(true);
+                                setIsHover(false);
+                            }}
+                        >
+                            <TriangleAlertIcon className="w-3 h-3" />
+                        </button>
+                    )}
+
+                    {isModal && (
+                        <ChatReportModal
+                            id={id}
+                            message={message}
+                            setIsModal={setIsModal}
+                        />
+                    )}
+                </>
+            ) : (
+                <>
+                    <p className="mt-auto shrink-0 text-xs text-slate-400">
+                        {time}
+                    </p>
+
+                    <div className="w-fit max-w-[300px] rounded-[20px] rounded-br-md bg-indigo-500 px-4 py-2 shadow-sm">
+                        <p className="whitespace-pre-wrap break-words text-white">
                             {message}
                         </p>
                     </div>
