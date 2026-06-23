@@ -4,22 +4,10 @@ import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, ImagePlus, X } from "lucide-react";
 
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select";
 
 type CommunityPostFormMode = "CREATE" | "EDIT";
-type CommunityCategory =
-    | "STUDY"
-    | "FASHION"
-    | "BEAUTY"
-    | "FITNESS"
-    | "COOK"
-    | "FREE";
+type CommunityCategory = "STUDY" | "FASHION" | "BEAUTY" | "FITNESS" | "COOK" | "FREE";
 
 interface CommunityPostFormProps {
     mode: CommunityPostFormMode;
@@ -35,35 +23,14 @@ interface PostContentBlock {
     content: string;
 }
 
-const CATEGORY_OPTIONS: {
-    value: CommunityCategory;
-    label: string;
-}[] = [
-        {
-            value: "STUDY",
-            label: "학습",
-        },
-        {
-            value: "FASHION",
-            label: "패션",
-        },
-        {
-            value: "BEAUTY",
-            label: "뷰티",
-        },
-        {
-            value: "FITNESS",
-            label: "피트니스",
-        },
-        {
-            value: "COOK",
-            label: "요리",
-        },
-        {
-            value: "FREE",
-            label: "자유",
-        },
-    ];
+const CATEGORY_OPTIONS: { value: CommunityCategory; label: string; }[] = [
+    { value: "STUDY", label: "학습", },
+    { value: "FASHION", label: "패션", },
+    { value: "BEAUTY", label: "뷰티", },
+    { value: "FITNESS", label: "피트니스", },
+    { value: "COOK", label: "요리", },
+    { value: "FREE", label: "자유", },
+];
 
 const MAX_IMAGE_COUNT = 5;
 
@@ -81,16 +48,20 @@ const mergeContent = (prevContent: string, nextContent: string) => {
         .join("\n");
 };
 
-export default function CommunityPostForm({
-    mode,
-    data,
-}: CommunityPostFormProps) {
+export default function CommunityPostForm({ mode, data, }: CommunityPostFormProps) {
     const [mainContent, setMainContent] = useState("");
     const [postContents, setPostContents] = useState<PostContentBlock[]>([]);
+    const [thumbnailId, setThumbnailId] = useState<string | null>(null);
     const mainContentRef = useRef(mainContent);
     const postContentsRef = useRef(postContents);
 
     const canAddImage = postContents.length < MAX_IMAGE_COUNT;
+    const hasImage = postContents.length > 0;
+    const thumbnailOrderNo =
+        thumbnailId
+            ? postContents.findIndex((postContent) => postContent.id === thumbnailId) + 1
+            : 0;
+    const isSubmitDisabled = hasImage && thumbnailId === null;
     const backHref =
         mode === "EDIT" && data?.postId
             ? `/student/phone/community/${data.postId}`
@@ -179,6 +150,10 @@ export default function CommunityPostForm({
 
         URL.revokeObjectURL(removeTarget.previewUrl);
 
+        if (thumbnailId === id) {
+            setThumbnailId(null);
+        }
+
         if (removeIndex === 0) {
             const nextMainContent = mergeContent(currentMainContent, removeTarget.content);
             const nextPostContents = currentPostContents.filter((postContent) => postContent.id !== id);
@@ -211,6 +186,12 @@ export default function CommunityPostForm({
         const hasImage = postContents.length > 0;
         const hasMainContent = mainContent.trim().length > 0;
 
+        if (hasImage && !thumbnailId) {
+            e.preventDefault();
+            alert("이미지가 있는 게시글은 썸네일을 하나 지정해야 합니다.");
+            return;
+        }
+
         if (!hasImage && !hasMainContent) {
             e.preventDefault();
             alert("이미지가 없는 게시글은 본문을 입력해야 합니다.");
@@ -227,6 +208,11 @@ export default function CommunityPostForm({
                 type="hidden"
                 name="mode"
                 value={mode}
+            />
+            <input
+                type="hidden"
+                name="thumbnailOrderNo"
+                value={thumbnailOrderNo}
             />
 
             <Link
@@ -304,6 +290,8 @@ export default function CommunityPostForm({
                             key={postContent.id}
                             postContent={postContent}
                             orderNo={index + 1}
+                            isThumbnail={thumbnailId === postContent.id}
+                            onSelectThumbnail={setThumbnailId}
                             onChangeImage={handleChangeImage}
                             onChangeContent={handleChangePostContent}
                             onRemove={handleRemoveImage}
@@ -314,7 +302,8 @@ export default function CommunityPostForm({
 
             <button
                 type="submit"
-                className="mt-5 h-11 shrink-0 rounded-2xl bg-indigo-400 text-sm font-black text-white transition hover:bg-indigo-500"
+                disabled={isSubmitDisabled}
+                className="mt-5 h-11 shrink-0 rounded-2xl bg-indigo-400 text-sm font-black text-white transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:bg-slate-300"
             >
                 {mode === "CREATE" ? "게시글 등록" : "게시글 수정"}
             </button>
@@ -325,12 +314,16 @@ export default function CommunityPostForm({
 function PostContentFieldset({
     postContent,
     orderNo,
+    isThumbnail,
+    onSelectThumbnail,
     onChangeImage,
     onChangeContent,
     onRemove,
 }: {
     postContent: PostContentBlock;
     orderNo: number;
+    isThumbnail: boolean;
+    onSelectThumbnail: (id: string) => void;
     onChangeImage: (id: string, e: ChangeEvent<HTMLInputElement>) => void;
     onChangeContent: (id: string, content: string) => void;
     onRemove: (id: string) => void;
@@ -341,6 +334,11 @@ function PostContentFieldset({
                 type="hidden"
                 name={`postContentOrderNo_${orderNo}`}
                 value={orderNo}
+            />
+            <input
+                type="hidden"
+                name={`postContentIsThumbnail_${orderNo}`}
+                value={String(isThumbnail)}
             />
             <PostContentFileInput
                 name={`postContentImage_${orderNo}`}
@@ -372,6 +370,17 @@ function PostContentFieldset({
                         aria-label="이미지 삭제"
                     >
                         <X className="h-4 w-4" />
+                    </button>
+
+                    <button
+                        type="button"
+                        onClick={() => onSelectThumbnail(postContent.id)}
+                        className={`absolute bottom-2 left-1/2 -translate-x-1/2 rounded-full px-3 py-1.5 text-xs font-black shadow-sm transition ${isThumbnail
+                            ? "bg-indigo-500 text-white"
+                            : "bg-white/90 text-slate-500 hover:bg-indigo-500 hover:text-white"
+                            }`}
+                    >
+                        {isThumbnail ? "썸네일 지정됨" : "썸네일로 지정"}
                     </button>
                 </div>
             </div>
