@@ -73,7 +73,7 @@ export default function MonthlyStreakGarden() {
 
   return (
     <>
-      <div className="absolute bottom-[11%] left-[5.5%] h-[13.3cqw] w-[15cqw] -rotate-4">
+      <div className="absolute bottom-[11%] left-[5.5%] z-10 h-[13.3cqw] w-[15cqw] -rotate-4">
         <Image src={streakDate} alt="잔디 전광판" fill className="object-contain" />
 
         <div className="absolute left-[52%] top-[42%] -translate-x-1/2 -translate-y-1/2">
@@ -109,7 +109,7 @@ export default function MonthlyStreakGarden() {
       </div >
 
       <div
-        className="absolute bottom-[8%] left-[13%] grid grid-cols-7 grid-rows-5 gap-x-[0.04cqw] gap-y-[0.08cqw] rounded-sm bg-yellow-800/50 px-[0.04cqw] py-[0.6cqw]"
+        className="absolute bottom-[8%] left-[13%] z-10 grid grid-cols-7 grid-rows-5 gap-x-[0.04cqw] gap-y-[0.08cqw] rounded-sm bg-yellow-800/50 px-[0.04cqw] py-[0.6cqw]"
         style={{
           transform: "rotate(-30deg) skewX(28deg) scaleY(0.72)",
           transformOrigin: "center",

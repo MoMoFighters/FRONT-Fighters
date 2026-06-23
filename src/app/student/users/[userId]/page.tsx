@@ -1,11 +1,10 @@
-import Image from "next/image";
-import city from '@/app/assets/img/cityImg.png'
 import { getMyInfo } from "@/features/user/action";
 import NicknameInputModal from "@/features/auth/components/NicknameInputModal";
 import Phone from "@/components/city/Phone";
 import MonthlyStreakGarden from "@/components/city/MonthlyStreakGarden";
 import BusStation from "@/components/city/BusStation";
 import PostBoard from "@/components/city/PostBoard";
+import CityCanvas from "@/components/city/CityCanvas";
 
 interface Building {
     position: string;
@@ -29,7 +28,7 @@ const POSITIONS = [
     "fifth",
 ] as const;
 
-export default async function FriendMainPage() {
+export default async function StudentMainPage() {
 
     const myInfo = await getMyInfo();
 
@@ -63,20 +62,12 @@ export default async function FriendMainPage() {
     ]
 
     return (
-        <div className="w-full h-full relative overflow-hidden">
+        <CityCanvas>
             <NicknameInputModal nickIsNull={myInfo.data?.nickname === null ? true : false} />
-            <Image
-                src={city}
-                alt="도시배경"
-                fill
-                quality={80}
-                priority
-                className="object-cover"
-            />
             <BusStation mode='FRIEND' />
-            <PostBoard mode='FRIEND' />
+            <PostBoard mode="FRIEND" />
             <Phone />
             <MonthlyStreakGarden />
-        </div>
+        </CityCanvas>
     );
 }

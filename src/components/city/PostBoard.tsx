@@ -24,20 +24,22 @@ export default function PostBoard({ mode }: PostBoardProps) {
             >
                 <HoverCardTrigger asChild>
                     <div
-                        className="absolute bottom-[11%] left-[44%] aspect-square w-[7%] cursor-pointer"
+                        className="absolute bottom-[11%] left-[44%] z-10 aspect-square w-[7%] cursor-pointer"
                         style={{
                             transform: "rotate(-17deg) skewX(-15deg) scaleY(0.92)",
                             transformOrigin: "center",
                         }}
+                        onClick={() => setIsModal(true)}
                     >
-                        <Image
-                            src={postBoard}
-                            alt="방명록"
-                            fill
-                            quality={80}
-                            sizes="7vw"
-                            onClick={() => setIsModal(true)}
-                        />
+                        <div className="relative h-full w-full transition-transform duration-200 hover:scale-110">
+                            <Image
+                                src={postBoard}
+                                alt="방명록"
+                                fill
+                                quality={80}
+                                sizes="7vw"
+                            />
+                        </div>
                     </div>
                 </HoverCardTrigger>
                 <HoverCardContent

@@ -1,11 +1,10 @@
-import Image from "next/image";
-import city from '@/app/assets/img/cityImg.png'
 import { getMyInfo } from "@/features/user/action";
 import NicknameInputModal from "@/features/auth/components/NicknameInputModal";
 import Phone from "@/components/city/Phone";
 import MonthlyStreakGarden from "@/components/city/MonthlyStreakGarden";
 import BusStation from "@/components/city/BusStation";
 import PostBoard from "@/components/city/PostBoard";
+import CityCanvas from "@/components/city/CityCanvas";
 
 interface Building {
     position: string;
@@ -63,24 +62,12 @@ export default async function StudentMainPage() {
     ]
 
     return (
-        <div className="relative h-full w-full overflow-hidden [container-type:size]">
+        <CityCanvas>
             <NicknameInputModal nickIsNull={myInfo.data?.nickname === null ? true : false} />
-            <div
-                className="absolute left-1/2 top-1/2 aspect-video w-[max(100cqw,177.777cqh)] -translate-x-1/2 -translate-y-1/2 [container-type:inline-size]"
-            >
-                <Image
-                    src={city}
-                    alt="도시배경"
-                    fill
-                    quality={80}
-                    priority
-                    className="object-cover"
-                />
-                <BusStation mode='MY' />
-                <PostBoard mode="MY" />
-                <Phone />
-                <MonthlyStreakGarden />
-            </div>
-        </div>
+            <BusStation mode='MY' />
+            <PostBoard mode="MY" />
+            <Phone />
+            <MonthlyStreakGarden />
+        </CityCanvas>
     );
 }
