@@ -50,7 +50,6 @@ const createErrorResponse = <T>(
     status: 500,
     code: "INTERNAL_SERVER_ERROR",
     message: error instanceof Error ? error.message : message,
-    data: null,
 });
 
 export const searchUserAction = async (
@@ -65,7 +64,6 @@ export const searchUserAction = async (
                 status: 401,
                 code: "UNAUTHORIZED",
                 message: "로그인이 필요합니다.",
-                data: null,
             };
         }
 
@@ -93,7 +91,6 @@ export const getFriendListAction = async (
                 status: 401,
                 code: "UNAUTHORIZED",
                 message: "로그인이 필요합니다.",
-                data: null,
             };
         }
 
@@ -121,7 +118,6 @@ export const updateFriendStatus = async (
                 status: 401,
                 code: "UNAUTHORIZED",
                 message: "로그인이 필요합니다.",
-                data: null,
             };
         }
 

@@ -16,6 +16,7 @@ interface BusStationProps {
 export default function BusStation({ mode }: BusStationProps) {
 
     const [isModal, setIsModal] = useState(false);
+    const [searchedValue, setSearchedValue] = useState("");
 
     return (
         <>
@@ -99,6 +100,8 @@ export default function BusStation({ mode }: BusStationProps) {
                             <input
                                 type="text"
                                 placeholder="친구 닉네임으로 검색해보세요"
+                                value={searchedValue}
+                                onChange={(e) => setSearchedValue(e.target.value)}
                                 className="h-11 flex-1 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-bold text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-300 focus:bg-white focus:ring-4 focus:ring-indigo-100"
                             />
 
