@@ -1,55 +1,316 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import {
-    Flag,
-    Heart,
-    List,
-    MessageCircle,
-    Reply,
-} from "lucide-react";
+import { useEffect, useState } from "react";
+import { List, MessageCircle } from "lucide-react";
+import PostCommentsPanel from "./PostCommentsPanel";
+import PostRecommandPanel from "./PostRecommandPanel";
 
-interface CommunityPostSideInfo {
-    id: number;
-    commentCount: number;
-}
+export type SideMode = "posts" | "comment";
 
-interface CommunitySidePost {
-    id: number;
-    title: string;
-    authorNickname: string;
-    commentCount: number;
-    likeCount: number;
-}
+export type CommunityPostCategory =
+    | "STUDY"
+    | "FASHION"
+    | "BEAUTY"
+    | "FITNESS"
+    | "COOK"
+    | "FREE";
 
-interface CommunityComment {
-    id: number;
-    lectureId: number;
+export type CommunityAuthorRole = "STUDENT" | "TEACHER" | "ADMIN";
+
+export interface RecommendedPost {
     postId: number;
-    parentId: number | null;
-    authorNickname: string;
-    content: string;
+    title: string;
+    category: CommunityPostCategory;
+    viewCount: number;
+    likeCount: number;
+    commentCount: number;
+    thumbnailUrl: string | null;
+    authorName: string;
+    authorProfileImageUrl: string;
+    authorRole: CommunityAuthorRole;
     createdAt: string;
 }
 
-interface PostDetailSideProps {
-    post: CommunityPostSideInfo;
-    sidePosts: CommunitySidePost[];
+export interface CommunityComment {
+    commentId: number;
+    content: string;
+    authorName: string;
+    authorProfileImageUrl: string;
+    authorRole: CommunityAuthorRole;
+    authorId: number;
+    parentId: number | null;
+    createdAt: string;
+    isMine: boolean;
+    isWriter: boolean;
+}
+
+export interface CommentPageState {
+    totalElements: number;
+    totalPages: number;
+    currentPage: number;
+}
+
+export interface CommentPageResponse extends CommentPageState {
     comments: CommunityComment[];
 }
 
-type SideMode = "posts" | "comments";
+export interface PostRecommentItemProps {
+    postId: number;
+    thumbnailUrl: string | null;
+    category: CommunityPostCategory;
+    createdAt: string;
+    title: string;
+    authorName: string;
+    viewCount: number;
+    likeCount: number;
+    commentCount: number;
+    isActive?: boolean;
+}
+
+export interface PostRecommandPanelProps {
+    currentPostId: number;
+    posts: RecommendedPost[];
+}
+
+export interface CommentInputBoxProps {
+    postId: number;
+    parentId?: number;
+}
+
+export interface CommentItemProps {
+    postId: number;
+    commentId: number;
+    content: string;
+    authorProfileImageUrl: string;
+    authorName: string;
+    authorId: number;
+    isMine: boolean;
+    isWriter: boolean;
+    createdAt: string;
+    parentId: number | null;
+}
+
+export interface PostCommentsPanelProps {
+    postId: number;
+    commentTotalCount: number;
+    comments: CommunityComment[];
+    hasNextCommentPage: boolean;
+    onLoadMoreComments: () => void;
+}
+
+interface PostDetailSideProps {
+    postId: number;
+    commentTotalCount?: number;
+}
+
+const DUMMY_RECOMMENDED_POSTS: RecommendedPost[] = [
+    {
+        postId: 1,
+        title: "자바 스터디 후기",
+        category: "STUDY",
+        viewCount: 10,
+        likeCount: 5,
+        commentCount: 3,
+        thumbnailUrl: null,
+        authorName: "홍길동",
+        authorProfileImageUrl: "https://placehold.co/80x80/e0e7ff/4f46e5?text=홍",
+        authorRole: "STUDENT",
+        createdAt: "2026-06-18T13:00:00.000000Z",
+    },
+    {
+        postId: 2,
+        title: "첫 운동 루틴 기록",
+        category: "FITNESS",
+        viewCount: 32,
+        likeCount: 11,
+        commentCount: 4,
+        thumbnailUrl: "https://placehold.co/360x240/dbeafe/2563eb?text=운동",
+        authorName: "모모러너",
+        authorProfileImageUrl: "https://placehold.co/80x80/dbeafe/2563eb?text=러",
+        authorRole: "STUDENT",
+        createdAt: "2026-06-17T09:24:00.000000Z",
+    },
+    {
+        postId: 3,
+        title: "요리 수업에서 배운 작은 팁",
+        category: "COOK",
+        viewCount: 28,
+        likeCount: 9,
+        commentCount: 2,
+        thumbnailUrl: "https://placehold.co/360x240/fef3c7/d97706?text=요리",
+        authorName: "복숭아식탁",
+        authorProfileImageUrl: "https://placehold.co/80x80/fef3c7/d97706?text=요",
+        authorRole: "STUDENT",
+        createdAt: "2026-06-16T18:10:00.000000Z",
+    },
+    {
+        postId: 4,
+        title: "오늘의 짧은 기록",
+        category: "FREE",
+        viewCount: 14,
+        likeCount: 7,
+        commentCount: 5,
+        thumbnailUrl: null,
+        authorName: "도시산책",
+        authorProfileImageUrl: "https://placehold.co/80x80/e2e8f0/475569?text=산",
+        authorRole: "STUDENT",
+        createdAt: "2026-06-15T20:00:00.000000Z",
+    },
+];
+
+const DUMMY_COMMENT_PAGES: CommentPageResponse[] = [
+    {
+        totalElements: 7,
+        totalPages: 2,
+        currentPage: 0,
+        comments: [
+            {
+                commentId: 1,
+                content: "도움 되는 글 감사합니다.",
+                authorName: "홍길동",
+                authorProfileImageUrl: "https://placehold.co/80x80/e0e7ff/4f46e5?text=홍",
+                authorRole: "STUDENT",
+                authorId: 1,
+                parentId: null,
+                createdAt: "2026-06-18T13:20:00.000000Z",
+                isMine: false,
+                isWriter: false,
+            },
+            {
+                commentId: 2,
+                content: "저도 자바 공부 중이라서 정말 유용했어요.",
+                authorName: "코드피치",
+                authorProfileImageUrl: "https://placehold.co/80x80/fce7f3/be185d?text=피",
+                authorRole: "STUDENT",
+                authorId: 2,
+                parentId: null,
+                createdAt: "2026-06-18T13:30:00.000000Z",
+                isMine: false,
+                isWriter: false,
+            },
+            {
+                commentId: 3,
+                content: "감사합니다. 다음에는 예제 코드도 같이 정리해볼게요.",
+                authorName: "홍길동",
+                authorProfileImageUrl: "https://placehold.co/80x80/e0e7ff/4f46e5?text=홍",
+                authorRole: "STUDENT",
+                authorId: 3,
+                parentId: 2,
+                createdAt: "2026-06-18T13:35:00.000000Z",
+                isMine: true,
+                isWriter: true,
+            },
+            {
+                commentId: 4,
+                content: "저는 클래스랑 객체 부분이 제일 어렵더라구요.",
+                authorName: "스터디메이트",
+                authorProfileImageUrl: "https://placehold.co/80x80/dcfce7/16a34a?text=스",
+                authorRole: "STUDENT",
+                authorId: 4,
+                parentId: null,
+                createdAt: "2026-06-18T14:00:00.000000Z",
+                isMine: false,
+                isWriter: false,
+            },
+        ],
+    },
+    {
+        totalElements: 7,
+        totalPages: 2,
+        currentPage: 1,
+        comments: [
+            {
+                commentId: 5,
+                content: "이 글 보고 기본기부터 다시 복습하고 싶어졌어요.",
+                authorName: "모모학생",
+                authorProfileImageUrl: "https://placehold.co/80x80/fae8ff/a21caf?text=모",
+                authorRole: "STUDENT",
+                authorId: 5,
+                parentId: null,
+                createdAt: "2026-06-18T14:20:00.000000Z",
+                isMine: false,
+                isWriter: false,
+            },
+            {
+                commentId: 6,
+                content: "예제는 직접 따라 쳐보는 게 확실히 도움이 많이 됩니다.",
+                authorName: "홍길동",
+                authorProfileImageUrl: "https://placehold.co/80x80/e0e7ff/4f46e5?text=홍",
+                authorRole: "STUDENT",
+                authorId: 6,
+                parentId: 5,
+                createdAt: "2026-06-18T14:25:00.000000Z",
+                isMine: true,
+                isWriter: true,
+            },
+            {
+                commentId: 7,
+                content: "다음 후기글도 기다리고 있을게요.",
+                authorName: "새싹개발자",
+                authorProfileImageUrl: "https://placehold.co/80x80/dcfce7/15803d?text=새",
+                authorRole: "STUDENT",
+                authorId: 7,
+                parentId: null,
+                createdAt: "2026-06-18T15:00:00.000000Z",
+                isMine: false,
+                isWriter: false,
+            },
+        ],
+    },
+];
 
 export default function PostDetailSide({
-    post,
-    sidePosts,
-    comments,
+    postId,
+    commentTotalCount,
 }: PostDetailSideProps) {
     const [mode, setMode] = useState<SideMode>("posts");
-    const parentComments = comments.filter((comment) => comment.parentId === null);
-    const getReplies = (commentId: number) =>
-        comments.filter((comment) => comment.parentId === commentId);
+    const [recommendedPosts, setRecommendedPosts] = useState<RecommendedPost[] | null>(null);
+    const [comments, setComments] = useState<CommunityComment[]>([]);
+    const [commentPage, setCommentPage] = useState<CommentPageState | null>(null);
+
+    useEffect(() => {
+        if (mode === "posts" && recommendedPosts === null) {
+            fetchRecommendedPosts();
+        }
+
+        if (mode === "comment" && commentPage === null) {
+            fetchComments(0);
+        }
+    }, [mode, recommendedPosts, commentPage]);
+
+    const fetchRecommendedPosts = async () => {
+        // TODO: Connect recommended post API.
+        setRecommendedPosts(DUMMY_RECOMMENDED_POSTS);
+    };
+
+    const fetchComments = async (page: number) => {
+        // TODO: Connect comment list API.
+        const response = DUMMY_COMMENT_PAGES[page];
+
+        if (!response) {
+            return;
+        }
+
+        setComments((prev) => [...prev, ...response.comments]);
+        setCommentPage({
+            totalElements: response.totalElements,
+            totalPages: response.totalPages,
+            currentPage: response.currentPage,
+        });
+    };
+
+    const handleLoadMoreComments = () => {
+        if (!commentPage) {
+            return;
+        }
+
+        fetchComments(commentPage.currentPage + 1);
+    };
+
+    const displayCommentTotalCount = commentPage?.totalElements ?? commentTotalCount ?? 0;
+    const hasNextCommentPage = commentPage
+        ? commentPage.currentPage + 1 < commentPage.totalPages
+        : false;
 
     return (
         <aside className="flex min-h-0 flex-col rounded-3xl bg-white/90 p-4 shadow-sm ring-1 ring-slate-100">
@@ -64,216 +325,37 @@ export default function PostDetailSide({
                             }`}
                     >
                         <List className="h-3.5 w-3.5" />
-                        게시글
+                        추천 게시물
                     </button>
+
                     <button
                         type="button"
-                        onClick={() => setMode("comments")}
-                        className={`flex h-9 items-center justify-center gap-1.5 rounded-xl text-xs font-black transition ${mode === "comments"
+                        onClick={() => setMode("comment")}
+                        className={`flex h-9 items-center justify-center gap-1.5 rounded-xl text-xs font-black transition ${mode === "comment"
                             ? "bg-white text-indigo-500 shadow-sm"
                             : "text-slate-400 hover:bg-white/70 hover:text-slate-700"
                             }`}
                     >
                         <MessageCircle className="h-3.5 w-3.5" />
-                        댓글 {post.commentCount}
+                        댓글 {displayCommentTotalCount}
                     </button>
                 </div>
             </div>
 
-            {mode === "comments" ? (
-                <CommentsPanel
-                    commentCount={post.commentCount}
-                    parentComments={parentComments}
-                    getReplies={getReplies}
+            {mode === "comment" ? (
+                <PostCommentsPanel
+                    postId={postId}
+                    commentTotalCount={displayCommentTotalCount}
+                    comments={comments}
+                    hasNextCommentPage={hasNextCommentPage}
+                    onLoadMoreComments={handleLoadMoreComments}
                 />
             ) : (
-                <PostListPanel
-                    currentPostId={post.id}
-                    sidePosts={sidePosts}
-                    onOpenComments={() => setMode("comments")}
+                <PostRecommandPanel
+                    currentPostId={postId}
+                    posts={recommendedPosts ?? []}
                 />
             )}
         </aside>
-    );
-}
-
-function PostListPanel({
-    currentPostId,
-    sidePosts,
-    onOpenComments,
-}: {
-    currentPostId: number;
-    sidePosts: CommunitySidePost[];
-    onOpenComments: () => void;
-}) {
-    return (
-        <>
-            <button
-                type="button"
-                onClick={onOpenComments}
-                className="mb-3 flex h-10 shrink-0 items-center justify-center gap-2 rounded-2xl bg-indigo-500 text-xs font-black text-white shadow-sm shadow-indigo-200 transition hover:bg-indigo-600"
-            >
-                <MessageCircle className="h-4 w-4" />
-                댓글 보기
-            </button>
-
-            <div className="mb-3 flex shrink-0 items-center justify-between">
-                <h2 className="text-base font-black text-slate-900">
-                    게시글 목록
-                </h2>
-                <Link
-                    href="/student/phone/community"
-                    className="text-xs font-black text-indigo-500 transition hover:text-indigo-600"
-                >
-                    전체보기
-                </Link>
-            </div>
-
-            <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                {/* ==================== COMMUNITY_SIDE_POST_COMPONENT_START ==================== */}
-                {/* TODO: 아래 사이드 게시글 아이템은 추후 별도 컴포넌트로 분리 예정 */}
-                {sidePosts.map((sidePost) => (
-                    <Link
-                        key={sidePost.id}
-                        href={`/student/phone/community/${sidePost.id}`}
-                        className={`block rounded-2xl border p-3 transition hover:border-indigo-100 hover:bg-indigo-50/50 ${sidePost.id === currentPostId
-                            ? "border-indigo-200 bg-indigo-50"
-                            : "border-slate-100 bg-white"
-                            }`}
-                    >
-                        <p className="line-clamp-2 text-sm font-black text-slate-900">
-                            {sidePost.title}
-                        </p>
-                        <p className="mt-1 text-xs font-bold text-slate-400">
-                            {sidePost.authorNickname}
-                        </p>
-                        <div className="mt-2 flex items-center gap-3 text-[11px] font-bold text-slate-400">
-                            <span className="flex items-center gap-1">
-                                <Heart className="h-3 w-3" />
-                                {sidePost.likeCount}
-                            </span>
-                            <span className="flex items-center gap-1">
-                                <MessageCircle className="h-3 w-3" />
-                                {sidePost.commentCount}
-                            </span>
-                        </div>
-                    </Link>
-                ))}
-                {/* TODO: 위 사이드 게시글 아이템은 추후 별도 컴포넌트로 분리 예정 */}
-                {/* ===================== COMMUNITY_SIDE_POST_COMPONENT_END ===================== */}
-            </div>
-        </>
-    );
-}
-
-function CommentsPanel({
-    commentCount,
-    parentComments,
-    getReplies,
-}: {
-    commentCount: number;
-    parentComments: CommunityComment[];
-    getReplies: (commentId: number) => CommunityComment[];
-}) {
-    return (
-        <>
-            <div className="mb-3 flex shrink-0 items-center justify-between">
-                <h2 className="text-base font-black text-slate-900">
-                    댓글 {commentCount}
-                </h2>
-                <button
-                    type="button"
-                    className="rounded-full bg-slate-900 px-4 py-2 text-xs font-black text-white transition hover:bg-indigo-500"
-                >
-                    댓글 작성
-                </button>
-            </div>
-
-            <div className="min-h-0 flex-1 space-y-3 overflow-y-auto pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                {/* ==================== COMMUNITY_COMMENT_COMPONENT_START ==================== */}
-                {/* TODO: 아래 댓글 아이템은 추후 별도 컴포넌트로 분리 예정 */}
-                {parentComments.map((comment) => (
-                    <CommentItem
-                        key={comment.id}
-                        comment={comment}
-                        replies={getReplies(comment.id)}
-                    />
-                ))}
-                {/* TODO: 위 댓글 아이템은 추후 별도 컴포넌트로 분리 예정 */}
-                {/* ===================== COMMUNITY_COMMENT_COMPONENT_END ===================== */}
-            </div>
-        </>
-    );
-}
-
-function CommentItem({
-    comment,
-    replies,
-}: {
-    comment: CommunityComment;
-    replies: CommunityComment[];
-}) {
-    return (
-        <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
-            <CommentHeader comment={comment} />
-
-            <p className="mt-3 text-sm font-medium leading-6 text-slate-600">
-                {comment.content}
-            </p>
-
-            <button
-                type="button"
-                className="mt-3 flex items-center gap-1 text-xs font-black text-indigo-500 transition hover:text-indigo-600"
-            >
-                <Reply className="h-3.5 w-3.5" />
-                답글 달기
-            </button>
-
-            {replies.length > 0 && (
-                <div className="mt-3 space-y-2 border-l-2 border-indigo-100 pl-3">
-                    {replies.map((reply) => (
-                        <div
-                            key={reply.id}
-                            className="rounded-xl bg-slate-50 p-3"
-                        >
-                            <CommentHeader comment={reply} small />
-
-                            <p className="mt-2 text-xs font-medium leading-5 text-slate-600">
-                                {reply.content}
-                            </p>
-                        </div>
-                    ))}
-                </div>
-            )}
-        </div>
-    );
-}
-
-function CommentHeader({
-    comment,
-    small = false,
-}: {
-    comment: CommunityComment;
-    small?: boolean;
-}) {
-    return (
-        <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-                <p className={`${small ? "text-xs" : "text-sm"} font-black text-slate-900`}>
-                    {comment.authorNickname}
-                </p>
-                <p className="mt-0.5 text-[11px] font-bold text-slate-400">
-                    {comment.createdAt}
-                </p>
-            </div>
-
-            <button
-                type="button"
-                className={`${small ? "text-[11px]" : "text-xs"} flex shrink-0 items-center gap-1 font-bold text-slate-400 transition hover:text-rose-500`}
-            >
-                <Flag className={small ? "h-3 w-3" : "h-3.5 w-3.5"} />
-                신고
-            </button>
-        </div>
     );
 }

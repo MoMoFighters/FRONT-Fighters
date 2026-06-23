@@ -1,10 +1,5 @@
 import Link from "next/link";
-import {
-    ChevronLeft,
-    Eye,
-} from "lucide-react";
-import Image from "next/image";
-import momo from "@/app/assets/img/momo.png"
+import { ChevronLeft, Eye } from "lucide-react";
 import CreateReportBtn from "@/features/report/components/buttons/CreateReportBtn";
 import PostLikeBtn from "@/features/post/PostLikeBtn";
 import PostDetailSide from "@/components/phone/community/PostDetailSide";
@@ -15,336 +10,197 @@ interface CommunityPostDetailPageProps {
     }>;
 }
 
+type CommunityPostCategory =
+    | "STUDY"
+    | "FASHION"
+    | "BEAUTY"
+    | "FITNESS"
+    | "COOK"
+    | "FREE";
+
+type CommunityAuthorRole = "STUDENT" | "TEACHER" | "ADMIN";
+
+type CommunityPostContent =
+    | {
+        type: "TEXT";
+        content: string;
+    }
+    | {
+        type: "IMAGE";
+        content: string;
+    };
+
 interface CommunityPostDetail {
-    id: number;
-    lectureId: number;
+    postId: number;
     title: string;
-    authorNickname: string;
-    content: string;
+    category: CommunityPostCategory;
     viewCount: number;
     likeCount: number;
     commentCount: number;
-}
-
-interface CommunityComment {
-    id: number;
-    lectureId: number;
-    postId: number;
-    parentId: number | null;
-    authorNickname: string;
-    content: string;
+    isMine: boolean;
+    authorName: string;
+    authorProfileImageUrl: string;
+    authorRole: CommunityAuthorRole;
+    authorId: number;
+    contents: CommunityPostContent[];
     createdAt: string;
 }
 
-interface CommunitySidePost {
-    id: number;
-    title: string;
-    authorNickname: string;
-    commentCount: number;
-    likeCount: number;
-}
-
 const COMMUNITY_POST: CommunityPostDetail = {
-    id: 1,
-    lectureId: 1,
-    title: "Today cooking class review",
-    authorNickname: "PeachFrappe",
-    content:
-        "It was my first cooking class, so I was a little nervous. The instructor explained the ingredients and order step by step, which made it easy to follow. I want to try another class with a friend next time.",
-    viewCount: 128,
-    likeCount: 24,
-    commentCount: 15,
+    postId: 1,
+    title: "모강사 코딩 강의 리뷰",
+    category: "STUDY",
+    viewCount: 11,
+    likeCount: 5,
+    commentCount: 5,
+    isMine: false,
+    authorName: "김태완",
+    authorProfileImageUrl: "https://placehold.co/80x80/e0e7ff/4f46e5?text=M",
+    authorRole: "STUDENT",
+    authorId: 3,
+    contents: [
+        {
+            type: "TEXT",
+            content:
+                "공부가 이렇게 재밌는거였다니,,공부가 이렇게 재밌는거였다니,,공부가 이렇게 재밌는거였다니,,공부가 이렇게 재밌는거였다니,,공부가 이렇게 재밌는거였다니,,공부가 이렇게 재밌는거였다니,,공부가 이렇게 재밌는거였다니,,공부가 이렇게 재밌는거였다니,,공부가 이렇게 재밌는거였다니,,공부가 이렇게 재밌는거였다니,,",
+        },
+        {
+            type: "IMAGE",
+            content: "https://placehold.co/900x560/e0e7ff/4f46e5?text=Community+Image",
+        },
+        {
+            type: "TEXT",
+            content:
+                "저는 공부만 하다 죽을게요. 저는 공부만 하다 죽을게요. 저는 공부만 하다 죽을게요. 저는 공부만 하다 죽을게요. 저는 공부만 하다 죽을게요. 저는 공부만 하다 죽을게요. 저는 공부만 하다 죽을게요. 저는 공부만 하다 죽을게요. 저는 공부만 하다 죽을게요. 저는 공부만 하다 죽을게요. 저는 공부만 하다 죽을게요. 저는 공부만 하다 죽을게요. 저는 공부만 하다 죽을게요. 저는 공부만 하다 죽을게요. 저는 공부만 하다 죽을게요. 저는 공부만 하다 죽을게요. ",
+        },
+    ],
+    createdAt: "2026-06-18T13:00:00.000000Z",
 };
 
-const COMMUNITY_SIDE_POSTS: CommunitySidePost[] = [
-    {
-        id: 1,
-        title: "Today cooking class review",
-        authorNickname: "PeachFrappe",
-        commentCount: 15,
-        likeCount: 24,
-    },
-    {
-        id: 2,
-        title: "Beginner fitness routine question",
-        authorNickname: "SweetSalt",
-        commentCount: 6,
-        likeCount: 18,
-    },
-    {
-        id: 3,
-        title: "Study method that helps focus",
-        authorNickname: "StudyToday",
-        commentCount: 9,
-        likeCount: 12,
-    },
-    {
-        id: 4,
-        title: "Anyone want to practice drawing together?",
-        authorNickname: "ArtKong",
-        commentCount: 4,
-        likeCount: 31,
-    },
-    {
-        id: 5,
-        title: "Sharing a small win today",
-        authorNickname: "SunnyMember",
-        commentCount: 11,
-        likeCount: 42,
-    },
-    {
-        id: 6,
-        title: "Closet cleanup notes",
-        authorNickname: "MyCity",
-        commentCount: 3,
-        likeCount: 16,
-    },
-];
-
-const COMMUNITY_COMMENTS: CommunityComment[] = [
-    {
-        id: 1,
-        lectureId: 1,
-        postId: 1,
-        parentId: null,
-        authorNickname: "MomoStudent",
-        content: "I was thinking about taking the same class. Thanks for the review.",
-        createdAt: "2026.04.04 10:12",
-    },
-    {
-        id: 2,
-        lectureId: 1,
-        postId: 1,
-        parentId: 1,
-        authorNickname: "PeachFrappe",
-        content: "It was beginner friendly, so I recommend it.",
-        createdAt: "2026.04.04 10:18",
-    },
-    {
-        id: 3,
-        lectureId: 1,
-        postId: 1,
-        parentId: null,
-        authorNickname: "ArtKong",
-        content: "Do we need to prepare ingredients separately?",
-        createdAt: "2026.04.04 10:41",
-    },
-    {
-        id: 4,
-        lectureId: 1,
-        postId: 1,
-        parentId: 3,
-        authorNickname: "PeachFrappe",
-        content: "The basic ingredient list was provided first, so it was easy.",
-        createdAt: "2026.04.04 10:45",
-    },
-    {
-        id: 5,
-        lectureId: 1,
-        postId: 1,
-        parentId: null,
-        authorNickname: "CookBeginner",
-        content: "Photos would make this even easier to follow.",
-        createdAt: "2026.04.04 11:02",
-    },
-    {
-        id: 6,
-        lectureId: 1,
-        postId: 1,
-        parentId: null,
-        authorNickname: "MintChip",
-        content: "I hope you share the final result next time.",
-        createdAt: "2026.04.04 11:28",
-    },
-    {
-        id: 7,
-        lectureId: 1,
-        postId: 1,
-        parentId: 6,
-        authorNickname: "CookieRun",
-        content: "Same. Seeing the result would be helpful.",
-        createdAt: "2026.04.04 11:35",
-    },
-    {
-        id: 8,
-        lectureId: 1,
-        postId: 1,
-        parentId: null,
-        authorNickname: "SweetSalt",
-        content: "Was the instructor's pace too fast?",
-        createdAt: "2026.04.04 12:10",
-    },
-    {
-        id: 9,
-        lectureId: 1,
-        postId: 1,
-        parentId: 8,
-        authorNickname: "PeachFrappe",
-        content: "It was fine. There was time to pause and follow along.",
-        createdAt: "2026.04.04 12:16",
-    },
-    {
-        id: 10,
-        lectureId: 1,
-        postId: 1,
-        parentId: null,
-        authorNickname: "SunnyMember",
-        content: "Your review helped me decide to take it.",
-        createdAt: "2026.04.04 13:01",
-    },
-    {
-        id: 11,
-        lectureId: 1,
-        postId: 1,
-        parentId: null,
-        authorNickname: "StudyToday",
-        content: "The cooking classes look more fun than I expected.",
-        createdAt: "2026.04.04 13:22",
-    },
-    {
-        id: 12,
-        lectureId: 1,
-        postId: 1,
-        parentId: 11,
-        authorNickname: "PeachFrappe",
-        content: "It was more enjoyable because I could follow along directly.",
-        createdAt: "2026.04.04 13:30",
-    },
-    {
-        id: 13,
-        lectureId: 1,
-        postId: 1,
-        parentId: null,
-        authorNickname: "SaltRain",
-        content: "I should try a similar class next time.",
-        createdAt: "2026.04.04 14:05",
-    },
-    {
-        id: 14,
-        lectureId: 1,
-        postId: 1,
-        parentId: null,
-        authorNickname: "MyCity",
-        content: "This made me curious too.",
-        createdAt: "2026.04.04 14:42",
-    },
-    {
-        id: 15,
-        lectureId: 1,
-        postId: 1,
-        parentId: 14,
-        authorNickname: "CookBeginner",
-        content: "It sounds good from a beginner perspective.",
-        createdAt: "2026.04.04 14:50",
-    },
-];
 export default async function CommunityPostDetailPage({
     params,
 }: CommunityPostDetailPageProps) {
     const { id } = await params;
 
-    const post = {
+    const post: CommunityPostDetail = {
         ...COMMUNITY_POST,
-        id: Number(id) || COMMUNITY_POST.id,
+        postId: Number(id) || COMMUNITY_POST.postId,
     };
 
     return (
         <section className="grid h-full min-h-0 grid-cols-[7fr_3fr] gap-4 rounded-3xl bg-white/80 p-5 shadow-sm ring-1 ring-slate-200/80 backdrop-blur">
             <article className="flex min-h-0 flex-col rounded-3xl bg-white/90 p-5 shadow-sm ring-1 ring-slate-100">
-                <header className="shrink-0 border-b border-slate-100 pb-4">
+                <header className="border-b border-slate-100 pb-4 w-full">
                     <Link
                         href="/student/phone/community"
                         className="inline-flex items-center gap-1 text-xs font-black text-slate-400 transition hover:text-indigo-500"
                     >
                         <ChevronLeft className="h-4 w-4" />
-                        ?뚣끇???딅뼒
+                        목록 보기
                     </Link>
 
-                    <div className="mt-3 flex items-start justify-between gap-4">
-                        <div className="min-w-0">
-                            <h1 className="line-clamp-2 text-2xl font-black tracking-tight text-slate-900">
-                                {post.title}
-                            </h1>
-                            <p className="mt-2 text-sm font-bold text-slate-500">
-                                {post.authorNickname}
-                            </p>
+                    <div className="mt-1 flex items-start justify-between w-full flex-col">
+                        <div className="mb-2 flex items-center gap-2 w-full">
+                            <div className="flex-1 flex gap-1 items-center">
+                                <span className="rounded-full bg-indigo-50 px-2.5 py-1 text-[11px] font-black text-indigo-500">
+                                    {post.category}
+                                </span>
+                                <span className="text-xs font-bold text-slate-400">
+                                    {post.createdAt.slice(0, 10)}
+                                </span>
+                            </div>
+                            {!post.isMine ? (
+                                <CreateReportBtn triggerClassName="cursor-pointer rounded-md border border-slate-300 px-3 py-1.5 text-xs font-bold text-slate-500 hover:bg-slate-100" />
+                            ) : (
+                                <Link
+                                    className="cursor-pointer rounded-md border border-slate-300 px-3 py-1.5 text-xs font-bold text-slate-500 hover:bg-slate-100"
+                                    href={`/student/phone/community/${id}/edit`}
+                                >
+                                    수정
+                                </Link>
+                            )}
                         </div>
-                        <CreateReportBtn triggerClassName="text-xs text-slate-500 font-bold py-1.5 px-3 rounded-md border border-slate-300 hover:bg-slate-100 cursor-pointer" />
 
+                        <h1 className="line-clamp-2 text-2xl font-black tracking-tight text-slate-900">
+                            {post.title}
+                        </h1>
 
-                    </div>
+                        <div className="mt-3 flex items-center flex-row w-full">
+                            <Link
+                                href={post.isMine ?
+                                    "/student/phone/community/mypage" :
+                                    `/student/phone/community/user/${post.authorId}`
+                                }
+                                className="flex flex-row gap-2 px-1 min-w-50 items-center"
+                            >
+                                <img
+                                    src={post.authorProfileImageUrl}
+                                    alt={`${post.authorName} profile`}
+                                    className="h-8 w-8 rounded-full object-cover ring-1 ring-indigo-100"
+                                />
+                                <div>
+                                    <p className="text-sm font-black text-slate-700">
+                                        {post.authorName}
+                                    </p>
+                                    <p className="text-[11px] font-bold text-slate-400">
+                                        {post.authorRole === "STUDENT" ? "학생" : post.authorRole === "TEACHER" ? "강사" : "관리자"}
+                                    </p>
+                                </div>
 
-                    <div className="mt-4 flex items-center justify-between gap-4 text-xs font-bold text-slate-400">
-                        <span className="flex items-center gap-1">
-                            <Eye className="h-4 w-4" />
-                            鈺곌퀬???{post.viewCount}
-                        </span>
-                        <PostLikeBtn postId={post.id} postLikeCount={post.likeCount} />
+                            </Link>
+                            <div className="flex-1" />
+                            <div className="flex items-center gap-4 text-xs font-bold text-slate-400">
+                                <span className="flex items-center gap-1">
+                                    <Eye className="h-4 w-4" />
+                                    조회수 {post.viewCount}
+                                </span>
+                                <PostLikeBtn
+                                    postId={post.postId}
+                                    postLikeCount={post.likeCount}
+                                />
+                            </div>
+                        </div>
                     </div>
                 </header>
 
-                {/* 野껊슣?녷묾? ?꾩꼹?쀯㎘??怨몃열 */}
-                <div className="min-h-0 flex-1 overflow-y-auto pr-1">
-                    <div className="py-5 flex flex-col">
-                        <p className="whitespace-pre-wrap text-4 font-medium leading-7 text-slate-700">
-                            {post.content}
-                        </p>
-                        <div className="flex justify-center">
-                            <Image src={momo} alt='' className="w-[40%]" />
-                        </div>
-                        <p className="whitespace-pre-wrap text-4 font-medium leading-7 text-slate-700">
-                            {post.content}
-                        </p>
-                        <p className="whitespace-pre-wrap text-4 font-medium leading-7 text-slate-700">
-                            {post.content}
-                        </p>
-                        <p className="whitespace-pre-wrap text-4 font-medium leading-7 text-slate-700">
-                            {post.content}
-                        </p>
-                        <p className="whitespace-pre-wrap text-4 font-medium leading-7 text-slate-700">
-                            {post.content}
-                        </p>
-                        <div className="flex justify-center">
-                            <Image src={momo} alt='' className="w-[40%]" />
-                        </div>
-                        <p className="whitespace-pre-wrap text-4 font-medium leading-7 text-slate-700">
-                            {post.content}
-                        </p>
-                        <p className="whitespace-pre-wrap text-4 font-medium leading-7 text-slate-700">
-                            {post.content}
-                        </p>
-                        <p className="whitespace-pre-wrap text-4 font-medium leading-7 text-slate-700">
-                            {post.content}
-                        </p>
-                        <p className="whitespace-pre-wrap text-4 font-medium leading-7 text-slate-700">
-                            {post.content}
-                        </p>
-                        <p className="whitespace-pre-wrap text-4 font-medium leading-7 text-slate-700">
-                            {post.content}
-                        </p>
-                        <p className="whitespace-pre-wrap text-4 font-medium leading-7 text-slate-700">
-                            {post.content}
-                        </p>
-                        <p className="whitespace-pre-wrap text-4 font-medium leading-7 text-slate-700">
-                            {post.content}
-                        </p>
-                        <p className="whitespace-pre-wrap text-4 font-medium leading-7 text-slate-700">
-                            {post.content}
-                        </p>
-                        <p className="whitespace-pre-wrap text-4 font-medium leading-7 text-slate-700">
-                            {post.content}
-                        </p>
-                        <p className="whitespace-pre-wrap text-4 font-medium leading-7 text-slate-700">
-                            {post.content}
-                        </p>
+                {/* ==================== COMMUNITY_POST_CONTENT_COMPONENT_START ==================== */}
+                {/* TODO: Extract this post content block later. */}
+                <div className="min-h-0 flex-1 overflow-y-auto pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                    <div className="flex flex-col gap-5 py-5">
+                        {post.contents.map((content, index) => {
+                            if (content.type === "IMAGE") {
+                                return (
+                                    <div
+                                        key={`${content.type}-${index}`}
+                                        className="flex justify-center"
+                                    >
+                                        <img
+                                            src={content.content}
+                                            alt=""
+                                            className="w-[40%] rounded-2xl object-cover shadow-sm ring-1 ring-slate-100"
+                                        />
+                                    </div>
+                                );
+                            }
+
+                            return (
+                                <p
+                                    key={`${content.type}-${index}`}
+                                    className="whitespace-pre-wrap text-sm font-medium leading-7 text-slate-700"
+                                >
+                                    {content.content}
+                                </p>
+                            );
+                        })}
                     </div>
                 </div>
+                {/* TODO: Extract this post content block later. */}
+                {/* ===================== COMMUNITY_POST_CONTENT_COMPONENT_END ===================== */}
             </article>
 
             <PostDetailSide
-                post={post}
-                sidePosts={COMMUNITY_SIDE_POSTS}
-                comments={COMMUNITY_COMMENTS}
+                postId={post.postId}
+                commentTotalCount={post.commentCount}
             />
         </section>
     );
