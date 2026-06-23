@@ -18,30 +18,28 @@ export default function Error({
 
     const router = useRouter();
 
-    const [rawStatus, rawMessage] = error.message.split('|');
+    const parts = error.message.split('|');
 
-    const status =
-        rawStatus === '500'
-            ? 'ERROR!'
-            : rawMessage
-                ? rawStatus
-                : 'ERROR!';
+    const isApiError =
+        parts.length === 2 &&
+        /^\d+$/.test(parts[0]);
 
-    const message = rawMessage ? rawMessage : error.message || '알 수 없는 오류가 발생했습니다.';
+    const [status, message] = parts;
 
     return (
-        <div className='relative'>
-            <Image src={errorImg} alt='error' />
-            <h3 className='absolute top-30 left-25 text-8xl font-bold text-slate-700'>{status}</h3>
-            <div className='absolute w-60 break-all top-75 left-20 text-xl text-slate-500 font-semibold'>{message}</div>
+        <div className='w-full h-full relative'>
+            <Image src={errorImg} alt='error' fill priority />
+            <h1 className='absolute top-60 left-20 text-6xl font-extrabold text-slate-700'>{isApiError ? status : "에러 발생!"}</h1>
+            <div className='absolute w-80 max-w-80 break-all top-80 left-20 text-lg text-slate-500 font-semibold'>{isApiError ? message : "알 수 없는 오류가 발생했습니다."}</div>
             <Button onClick={() => router.back()}
-                className="absolute top-95 left-15 bg-mauve-500 py-2 px-4 hover:-translate-y-0.5 hover:drop-shadow-[0_4px_6px_rgba(0,0,0,0.12)] cursor-pointer transition-all hover:bg-mauve-600">
-                <CornerDownLeft /> 모모시티로 돌아가기
+                className="absolute top-110 left-70 bg-indigo-500 py-2 px-4 hover:-translate-y-0.5 hover:drop-shadow-[0_4px_6px_rgba(0,0,0,0.12)] cursor-pointer transition-all hover:bg-indigo-600">
+                <CornerDownLeft /> 뒤로 가기
             </Button>
             <Button onClick={() => reset()}
-                className="absolute top-105 left-15 bg-slate-500 py-2 px-4 hover:-translate-y-0.5 hover:drop-shadow-[0_4px_6px_rgba(0,0,0,0.12)] cursor-pointer transition-all hover:bg-slate-600">
+                className="absolute top-120 left-70 text-slate-700 bg-slate-300 py-2 px-4 hover:-translate-y-0.5 hover:drop-shadow-[0_4px_6px_rgba(0,0,0,0.12)] cursor-pointer transition-all hover:bg-slate-400">
                 <RotateCcw /> 다시 시도
             </Button>
+            <div className='absolute top-72 left-147 w-14 h-8 bg-[#3F4550] flex justify-center items-center text-white blur-[1px]'>{isApiError ? status : ""}</div>
         </div>
     );
 }
