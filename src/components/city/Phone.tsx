@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Bell, BellOff } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
     HoverCard,
     HoverCardContent,
@@ -23,13 +23,112 @@ interface PhoneProps {
 export default function Phone({
     hasNotification = false,
 }: PhoneProps) {
+    // TODO: do-not-disturb API response와 연결
     const [notificationEnabled, setNotificationEnabled] = useState(true);
+    const [isHovered, setIsHovered] = useState(false);
+    const [isInteractionLocked, setIsInteractionLocked] = useState(false);
+    const [vibrationOffset, setVibrationOffset] = useState({ x: 0, y: 0 });
+    const hoverReleaseTimerRef = useRef<number | null>(null);
+    const interactionLockTimerRef = useRef<number | null>(null);
+
+    // TODO: notification API response와 연결
+    const [notification] = useState({
+        totalMsgFriendCount: 11,
+        calendaerCount: 44,
+        communityCount: 101,
+    });
 
     const notificationActive =
         notificationEnabled && hasNotification;
+    const hasNotificationValue = Object.values(notification).some(count => count > 0);
+    const shouldVibrate =
+        !isHovered &&
+        !isInteractionLocked &&
+        notificationEnabled &&
+        hasNotificationValue;
+
+    const clearHoverReleaseTimer = () => {
+        if (hoverReleaseTimerRef.current === null) {
+            return;
+        }
+
+        window.clearTimeout(hoverReleaseTimerRef.current);
+        hoverReleaseTimerRef.current = null;
+    };
+
+    const keepPhoneStable = () => {
+        clearHoverReleaseTimer();
+        setIsHovered(true);
+    };
+
+    const releasePhoneStable = () => {
+        clearHoverReleaseTimer();
+        hoverReleaseTimerRef.current = window.setTimeout(() => {
+            setIsHovered(false);
+        }, 450);
+    };
+
+    const lockInteraction = () => {
+        if (interactionLockTimerRef.current !== null) {
+            window.clearTimeout(interactionLockTimerRef.current);
+        }
+
+        setIsInteractionLocked(true);
+        interactionLockTimerRef.current = window.setTimeout(() => {
+            setIsInteractionLocked(false);
+        }, 700);
+    };
+
+    useEffect(() => {
+        if (!shouldVibrate) {
+            setVibrationOffset({ x: 0, y: 0 });
+            return;
+        }
+
+        const vibrationPositions = [
+            { x: -3, y: 0 },
+            { x: 3, y: 0 },
+            { x: 0, y: -3 },
+            { x: 0, y: 3 },
+            { x: 0, y: 0 },
+        ];
+
+        const intervalId = window.setInterval(() => {
+            const randomPosition = vibrationPositions[
+                Math.floor(Math.random() * vibrationPositions.length)
+            ];
+
+            setVibrationOffset(randomPosition);
+        }, 80);
+
+        return () => {
+            window.clearInterval(intervalId);
+        };
+    }, [shouldVibrate]);
+
+    useEffect(() => {
+        return () => {
+            if (hoverReleaseTimerRef.current !== null) {
+                window.clearTimeout(hoverReleaseTimerRef.current);
+            }
+
+            if (interactionLockTimerRef.current !== null) {
+                window.clearTimeout(interactionLockTimerRef.current);
+            }
+        };
+    }, []);
 
     return (
-        <div className="group fixed -bottom-[320px] right-[8%] z-30 h-[440px] w-[230px] transition-[bottom] duration-500 ease-out hover:bottom-2 focus-within:bottom-4">
+        <div
+            className="group fixed -bottom-[320px] right-[8%] z-30 h-[440px] w-[230px] transition-[bottom] duration-500 ease-out hover:bottom-2 focus-within:bottom-4"
+            onMouseEnter={keepPhoneStable}
+            onMouseLeave={releasePhoneStable}
+            onFocusCapture={keepPhoneStable}
+            onBlurCapture={releasePhoneStable}
+            style={{
+                transform: `translate(${vibrationOffset.x}px, ${vibrationOffset.y}px)`,
+            }}
+        >
             {notificationActive && (
                     <>
                         <div className="pointer-events-none absolute -inset-2 rounded-[42px] bg-indigo-400/40 blur-xl animate-pulse" />
@@ -44,13 +143,17 @@ export default function Phone({
                         <div className="absolute inset-0 bg-white" />
 
                         <header className="relative z-10 flex h-[76px] shrink-0 items-center justify-end px-5 pt-3">
-                            <HoverCard openDelay={200} closeDelay={100}>
+                            <HoverCard openDelay={100} closeDelay={100}>
                                 <HoverCardTrigger asChild>
                                     <button
                                         type="button"
                                         aria-pressed={notificationEnabled}
                                         aria-label={notificationEnabled ? "알림 끄기" : "알림 켜기"}
-                                        onClick={() => setNotificationEnabled(previous => !previous)}
+                                        onClick={() => {
+                                            keepPhoneStable();
+                                            lockInteraction();
+                                            setNotificationEnabled(previous => !previous);
+                                        }}
                                         className="relative flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-full border border-white/0 bg-white/0 text-slate-50 shadow-sm backdrop-blur-md transition-colors hover:bg-white hover:text-slate-900"
                                     >
                                         {notificationEnabled ? (
@@ -65,7 +168,12 @@ export default function Phone({
                                     </button>
                                 </HoverCardTrigger>
 
-                                <HoverCardContent side="left" className="w-auto px-3 py-2">
+                                <HoverCardContent
+                                    side="left"
+                                    className="w-auto px-3 py-2"
+                                    onMouseEnter={keepPhoneStable}
+                                    onMouseLeave={releasePhoneStable}
+                                >
                                     {notificationEnabled ? "알림 끄기" : "알림 켜기"}
                                 </HoverCardContent>
                             </HoverCard>
@@ -88,11 +196,16 @@ export default function Phone({
                                             aria-label="메신저"
                                             className="h-14 w-14 rounded-2xl shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md relative"
                                         >
-                                            <Image
-                                                src={message}
-                                                alt="메신저"
-                                                fill
-                                            />
+                                            <>
+                                                <Image
+                                                    src={message}
+                                                    alt="메신저"
+                                                    fill
+                                                />
+                                                <div className="relative z-5 ml-auto h-4 w-4 items-center rounded-full bg-red-500 text-center text-xs text-white">
+                                                    {notification.totalMsgFriendCount > 99 ? "99+" : notification.totalMsgFriendCount}
+                                                </div>
+                                            </>
                                         </Link>
                                     </HoverCardTrigger>
 
@@ -113,6 +226,9 @@ export default function Phone({
                                                 alt="캘린더"
                                                 fill
                                             />
+                                            <div className="relative z-5 ml-auto h-4 w-4 items-center rounded-full bg-red-500 text-center text-xs text-white">
+                                                {notification.calendaerCount > 99 ? "99+" : notification.calendaerCount}
+                                            </div>
                                         </Link>
                                     </HoverCardTrigger>
 
@@ -153,6 +269,9 @@ export default function Phone({
                                                 alt="커뮤니티"
                                                 fill
                                             />
+                                            <div className="relative z-5 ml-auto h-4 w-4 items-center rounded-full bg-red-500 text-center text-xs text-white">
+                                                {notification.communityCount > 99 ? "99+" : notification.communityCount}
+                                            </div>
                                         </Link>
                                     </HoverCardTrigger>
 
