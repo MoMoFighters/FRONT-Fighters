@@ -76,10 +76,10 @@ export default async function StudentMainPage() {
                     priority
                     className="object-cover"
                 />
-                <BusStation mode='MY' responsive />
-                <PostBoard mode="MY" responsive />
-                <Phone responsive />
-                <MonthlyStreakGarden responsive />
+                <BusStation mode='MY' />
+                <PostBoard mode="MY" />
+                <Phone />
+                <MonthlyStreakGarden />
             </div>
         </div>
     );

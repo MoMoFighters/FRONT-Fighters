@@ -11,10 +11,9 @@ import Link from 'next/link';
 
 interface BusStationProps {
     mode: 'MY' | "FRIEND";
-    responsive?: boolean;
 }
 
-export default function BusStation({ mode, responsive = false }: BusStationProps) {
+export default function BusStation({ mode }: BusStationProps) {
 
     const [isModal, setIsModal] = useState(false);
 
@@ -26,9 +25,9 @@ export default function BusStation({ mode, responsive = false }: BusStationProps
             >
                 <HoverCardTrigger asChild>
                     {mode === 'FRIEND' ? (<Link href='/student'>
-                        <CityBusStationImage responsive={responsive} onClick={() => setIsModal(true)} />
+                        <CityBusStationImage onClick={() => setIsModal(true)} />
                     </Link>) : (
-                        <CityBusStationImage responsive={responsive} onClick={() => setIsModal(true)} />
+                        <CityBusStationImage onClick={() => setIsModal(true)} />
                     )}
                 </HoverCardTrigger>
                 <HoverCardContent
@@ -121,36 +120,20 @@ export default function BusStation({ mode, responsive = false }: BusStationProps
 }
 
 function CityBusStationImage({
-    responsive,
     onClick,
 }: {
-    responsive: boolean;
     onClick: () => void;
 }) {
-    if (responsive) {
-        return (
-            <div className="absolute left-[20%] top-[20%] aspect-square w-[9.375%] cursor-pointer">
-                <Image
-                    src={busStaion}
-                    alt="버스정류장"
-                    fill
-                    quality={80}
-                    sizes="10vw"
-                    onClick={onClick}
-                />
-            </div>
-        );
-    }
-
     return (
-        <Image
-            src={busStaion}
-            alt="버스정류장"
-            quality={80}
-            width={120}
-            height={120}
-            className="top-47 left-63.5 fixed cursor-pointer"
-            onClick={onClick}
-        />
+        <div className="absolute left-[17.5%] top-[24%] aspect-square w-[9.375%] cursor-pointer">
+            <Image
+                src={busStaion}
+                alt="버스정류장"
+                fill
+                quality={80}
+                sizes="10vw"
+                onClick={onClick}
+            />
+        </div>
     );
 }
