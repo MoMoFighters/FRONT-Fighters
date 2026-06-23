@@ -96,7 +96,7 @@ export default async function StudentChatPage({
                                 </p>
                             </div>
 
-                            <MyProfileDropdown myChatRoomId={myChatRoom?.roomInfo.roomId} />
+                            <MyProfileDropdown myChatRoomId={myChatRoom?.roomId} />
                         </div>
                         <FriendList
                             friends={friends}
@@ -132,7 +132,7 @@ export default async function StudentChatPage({
                             {otherChatRooms.length > 0 ? (
                                 otherChatRooms.map(room => (
                                     <ChatRoomItem
-                                        key={room.roomInfo.roomId}
+                                        key={room.roomId}
                                         data={room}
                                     />
                                 ))
@@ -148,7 +148,7 @@ export default async function StudentChatPage({
                         <ChatRoomArea
                             currentRoomId={currentRoomId}
                             accessToken={accessToken}
-                            isMine={currentRoomId === myChatRoom?.roomInfo.roomId}
+                            isMine={currentRoomId === myChatRoom?.roomId}
                         />
                     </div>
                 </div>

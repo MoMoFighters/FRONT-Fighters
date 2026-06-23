@@ -1,37 +1,25 @@
 import type { ApiResponse } from "@/lib/api";
+import type {
+    ChatMemberResponse,
+    ChatRoomListResponse,
+    ChatRoomResponse,
+    Message,
+    SendMessageResponse,
+} from "@/features/chat/type";
 
 const BASE_SERVER_URL =
     process.env.NEXT_PUBLIC_API_BASE_URL;
 
+export type ChatRoomMemberData = ChatMemberResponse;
+export type ChatRoomInfoData = ChatRoomResponse["roomInfo"];
+export type ChatRoomListData = ChatRoomListResponse;
+export type ChatMessageData = Message;
+export type ChatHistoryData = ChatRoomResponse;
+export type SendMessageData = SendMessageResponse;
 
-// ==========================================
-// 1. 채팅방 목록 조회
-// GET /api/v1/messages/rooms
-// ==========================================
-
-export interface ChatRoomMemberData {
-    userId: number;
-    name: string | null;
-    nickname: string;
-    role: "STUDENT" | "TEACHER";
-    profileImageUrl: string | null;
-    lectureTitle?: string | null;
-    status: "FRIEND" | "BLOCK" | null;
-}
-
-export interface ChatRoomInfoData {
-    roomId: number;
-    roomTitle: string | null;
-    memberInfo: ChatRoomMemberData[];
-    inMemberCount: number;
-}
-
-export interface ChatRoomListData {
-    roomInfo: ChatRoomInfoData;
-    content: string | null;
-    createdAt: string | null;
-    unreadCount: number;
-}
+export const getChatRoomSubscribeDestination = (
+    roomId: number
+) => `/user/sub/chat/room/${roomId}`;
 
 export const getChatRoomsService = async (
     accessToken: string
@@ -60,39 +48,31 @@ export const getChatRoomsService = async (
     return result;
 };
 
+export function getChatHistoryService(
+    accessToken: string,
+    roomId: number,
+    lastMessageId?: number
+): Promise<ApiResponse<ChatHistoryData>>;
 
-// ==========================================
-// 2. 채팅 내역 조회
-// GET /api/v1/messages/history/{roomId}
-// ==========================================
-
-export interface ChatMessageData {
-    messageId: number;
-    content: string;
-    name: string | null;
-    nickname?: string | null;
-    profileImageUrl: string | null;
-    createdAt: string;
-    role: "STUDENT" | "TEACHER" | null;
-    status: "FRIEND" | "BLOCK" | null;
-    isMine: boolean;
-    isRead?: boolean;
-    type: "INVITE" | "LEAVE" | "RENAME" | null;
-}
-
-export interface ChatHistoryData {
-    roomInfo: ChatRoomInfoData;
-    messages: ChatMessageData[];
-}
-
-export const getChatHistoryService = async (
+export function getChatHistoryService(
     roomId: number,
     accessToken: string,
     lastMessageId?: number
-): Promise<ApiResponse<ChatHistoryData>> => {
-    const queryString = lastMessageId
-        ? `?lastMessageId=${lastMessageId}`
-        : "";
+): Promise<ApiResponse<ChatHistoryData>>;
+
+export async function getChatHistoryService(
+    first: string | number,
+    second: string | number,
+    lastMessageId?: number
+): Promise<ApiResponse<ChatHistoryData>> {
+    const accessToken =
+        typeof first === "string" ? first : String(second);
+
+    const roomId =
+        typeof first === "number" ? first : Number(second);
+
+    const queryString =
+        lastMessageId ? `?lastMessageId=${lastMessageId}` : "";
 
     const response = await fetch(
         `${BASE_SERVER_URL}/api/v1/messages/history/${roomId}${queryString}`,
@@ -116,23 +96,6 @@ export const getChatHistoryService = async (
     }
 
     return result;
-};
-
-
-// ==========================================
-// 3. 메시지 전송
-// POST /api/v1/messages/send/{roomId}
-// ==========================================
-
-export interface SendMessageData {
-    messageId: number;
-    roomId: number;
-    userId: number;
-    nickname: string;
-    role: "STUDENT" | "TEACHER";
-    status: "FRIEND" | "BLOCK" | null;
-    content: string;
-    createdAt: string;
 }
 
 export const sendMessageService = async (
@@ -166,12 +129,6 @@ export const sendMessageService = async (
 
     return result;
 };
-
-
-// ==========================================
-// 4. 메시지 읽음 처리
-// PATCH /api/v1/messages/read/{roomId}
-// ==========================================
 
 export interface ReadMessageData {
     roomId: number;
@@ -207,17 +164,11 @@ export const readMessageService = async (
     return result;
 };
 
-
-// ==========================================
-// 5. 채팅방 생성 또는 기존 채팅방 조회
-// POST /api/v1/messages/chatrooms/create/{userId}
-// ==========================================
-
 export interface CreateChatRoomData {
     roomId: number;
     userId: number;
     nickname: string;
-    role: "STUDENT" | "TEACHER";
+    role: string;
     status: string;
 }
 
@@ -248,17 +199,11 @@ export const createChatRoomService = async (
     return result;
 };
 
-
-// ==========================================
-// 6. 채팅방 나가기
-// DELETE /api/v1/messages/leave/{roomId}
-// ==========================================
-
 export interface LeaveChatRoomMemberData {
     userId: number;
     name: string | null;
     nickname: string;
-    role: "STUDENT" | "TEACHER";
+    role: string;
     status: string;
     profileImageUrl?: string | null;
 }

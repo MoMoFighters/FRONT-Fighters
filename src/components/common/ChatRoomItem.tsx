@@ -1,76 +1,85 @@
-'use client'
+"use client";
 
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChatRoomListData } from "@/app/services/phone/chat/service";
 
-
-
 export default function ChatRoomItem({ data }: { data: ChatRoomListData }) {
-
     const pathname = usePathname();
     const {
-        roomInfo,
+        roomId,
+        roomTitle,
+        memberInfo,
         content,
         unreadCount,
     } = data;
-    const opponent = roomInfo.memberInfo[0];
-    const roomId = roomInfo.roomId;
-    const nickname = opponent?.nickname ?? roomInfo.roomTitle ?? "채팅방";
+
+    const opponent =
+        memberInfo.find(
+            member => member.status !== "me"
+        ) ?? memberInfo[0];
+
+    const isMyRoom =
+        memberInfo.some(
+            member => member.status === "me"
+        );
+
+    const title =
+        roomTitle ??
+        (isMyRoom ? "나와의 채팅" : opponent?.nickname) ??
+        "채팅방";
+
     const role = opponent?.role;
     const profileImageUrl = opponent?.profileImageUrl;
 
     const href =
-        pathname.startsWith('/teacher')
+        pathname.startsWith("/teacher")
             ? `/teacher/ask?roomId=${roomId}`
             : `/student/phone/friends?status=chat&roomId=${roomId}`;
-
-
-    //searchParams로 온클릭 걸어서 오른쪽에 채팅방 상세 내역 띄워주기
 
     return (
         <Link href={href}>
             <div
-                className="px-4 py-3 flex flex-row gap-3 w-full hover:bg-slate-50 transition-colors cursor-pointer items-center border-b border-slate-100"
+                className="flex w-full cursor-pointer flex-row items-center gap-3 border-b border-slate-100 px-4 py-3 transition-colors hover:bg-slate-50"
                 key={roomId}
             >
                 {profileImageUrl ? (
                     <Image
                         src={profileImageUrl}
-                        alt="프사"
+                        alt="프로필"
                         width={48}
                         height={48}
-                        className="rounded-full object-cover w-12 h-12"
+                        className="h-12 w-12 rounded-full object-cover"
                     />
                 ) : (
-                    <div className="rounded-full bg-indigo-100 text-indigo-700 flex justify-center items-center w-12 h-12 shrink-0">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-700">
                         <p className="font-bold">
-                            {nickname[0] ?? "?"}
+                            {title[0] ?? "?"}
                         </p>
                     </div>
                 )}
 
-                <div className="flex flex-col flex-1 min-w-0">
+                <div className="flex min-w-0 flex-1 flex-col">
                     <div className="flex items-center gap-1">
-                        <p className="font-semibold text-slate-800 truncate">
-                            {nickname}
+                        <p className="truncate font-semibold text-slate-800">
+                            {title}
                         </p>
 
                         {role === "TEACHER" && (
-                            <span className="text-[11px] px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-600 font-medium">
+                            <span className="rounded bg-indigo-50 px-1.5 py-0.5 text-[11px] font-medium text-indigo-600">
                                 강사
                             </span>
                         )}
                     </div>
 
-                    <p className="text-sm text-slate-500 truncate mt-0.5">
+                    <p className="mt-0.5 truncate text-sm text-slate-500">
                         {content}
                     </p>
                 </div>
 
                 {unreadCount > 0 && (
-                    <div className="min-w-5 h-5 px-1.5 rounded-full bg-indigo-500 flex items-center justify-center">
+                    <div className="flex h-5 min-w-5 items-center justify-center rounded-full bg-indigo-500 px-1.5">
                         <p className="text-[11px] font-semibold text-white">
                             {unreadCount > 99 ? "99+" : unreadCount}
                         </p>

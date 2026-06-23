@@ -1,6 +1,11 @@
+"use client"
+
+import ChatReportBtn from "@/features/chat/ChatReportBtn";
+import { useState } from "react";
+
 interface MessageData {
     id: number;
-    isMine: boolean;
+    isMine: boolean | null;
     message: string;
     time: string;
 }
@@ -11,13 +16,30 @@ export default function ChatItem({
     time,
     id,
 }: MessageData) {
+
+    const [isHover, setIsHover] = useState(false);
+
+    if (isMine === null) {
+        return (
+            <div className="justify-center w-full h-3">
+                <div className="max-w-fit min-w-10 rounded-md bg-indigo-500/50 py-1 px-2">
+                    <p className="text-center text-sm text-slate-100">
+                        {message}
+                    </p>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div
-            className={`w-full flex gap-2 ${isMine ? "justify-end" : "justify-start"
+            className={`w-full flex gap-2 ${isMine === true ? "justify-end" : "justify-start"
                 }`}
             key={id}
+            onMouseEnter={() => setIsHover(true)}
+            onMouseLeave={() => setIsHover(false)}
         >
-            {!isMine ? (
+            {isMine === false ? (
                 <>
                     <div
                         className="
@@ -39,6 +61,9 @@ export default function ChatItem({
                     <p className="mt-auto text-xs text-slate-400 shrink-0">
                         {time}
                     </p>
+                    {isHover ? (
+                        <ChatReportBtn />
+                    ) : ""}
                 </>
             ) : (
                 <>
