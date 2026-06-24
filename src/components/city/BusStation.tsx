@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { Button } from '../ui/button';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '../ui/hover-card';
 import Link from 'next/link';
+import { getFriendListAction } from '@/features/friend/action';
 
 interface BusStationProps {
     mode: 'MY' | "FRIEND";
