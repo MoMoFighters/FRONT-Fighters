@@ -5,6 +5,8 @@ import MonthlyStreakGarden from "@/components/city/MonthlyStreakGarden";
 import BusStation from "@/components/city/BusStation";
 import PostBoard from "@/components/city/PostBoard";
 import CityCanvas from "@/components/city/CityCanvas";
+import mypage from "@/app/assets/img/mypage.png"
+import Image from "next/image";
 
 interface Building {
     position: string;
@@ -68,6 +70,9 @@ export default async function StudentMainPage() {
             <PostBoard mode="MY" />
             <Phone />
             <MonthlyStreakGarden />
+            <div className="w-80 h-55 absolute top-113 left-208">
+                <Image src={mypage} alt="집 건물" fill />
+            </div>
         </CityCanvas>
     );
 }
