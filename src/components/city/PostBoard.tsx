@@ -11,10 +11,13 @@ interface PostBoardProps {
     mode: "MY" | "FRIEND";
 }
 
+type PostBoardMode = "guestbook" | "notice";
+
 export default function PostBoard({ mode }: PostBoardProps) {
 
     const [isModal, setIsModal] = useState(false);
     const [detail, setDetail] = useState(false);
+    const [nav, setNav] = useState<PostBoardMode>('guestbook');
 
     return (
         <>
@@ -78,27 +81,50 @@ export default function PostBoard({ mode }: PostBoardProps) {
                         <div className="mb-1 pr-10">
 
                             <h2 className="text-2xl font-black text-slate-900">
-                                방명록
+                                게시판
                             </h2>
 
                             <p className="mt-1 text-sm font-medium text-slate-400">
-                                친구가 남긴 방명록을 확인해보세요.
+                                친구가 남긴 방명록과 시스템 공지사항을 확인해보세요.
                             </p>
                         </div>
-                        <div className="mb-3 mr-2 flex flex-row gap-2">
-                            <div className="flex-1" />
-                            <Button className="cursor-pointer py-4 bg-indigo-500">
-                                <Plus />
-                                방명록 작성
-                            </Button>
+                        <div className="mt-2 mb-3 mr-2 flex flex-row gap-2">
+                            {mode === "MY" ? (
+                                <div className="mb-1 ml-2 flex flex-1 gap-8 border-b border-slate-200">
+                                    <div
+                                        className={`border-b-2 px-1 pb-3 text-sm font-bold transition ${nav === 'guestbook'
+                                            ? "border-indigo-400 text-indigo-500"
+                                            : "border-transparent text-slate-500 hover:text-slate-900"
+                                            } cursor-pointer`}
+                                        onClick={() => setNav('guestbook')}
+                                    >
+                                        방명록
+                                    </div>
+                                    <div
+                                        className={`border-b-2 px-1 pb-3 text-sm font-bold transition ${nav === 'notice'
+                                            ? "border-indigo-400 text-indigo-500"
+                                            : "border-transparent text-slate-500 hover:text-slate-900"
+                                            } cursor-pointer`}
+                                        onClick={() => setNav('notice')}
+                                    >
+                                        공지사항
+                                    </div>
+                                </div>
+                            ) : <div className="flex-1"></div>}
+                            {mode === 'FRIEND' ? (
+                                <Button className="cursor-pointer py-4 bg-indigo-500">
+                                    <Plus />
+                                    방명록 작성
+                                </Button>
+                            ) : ""}
                         </div>
 
-                        <div className="min-h-0 flex-1 overflow-y-auto rounded-2xl border border-slate-100 bg-slate-50/80 p-3 scrollbar-none">
-                            <div className="grid grid-cols-4 gap-2">
-                                {Array.from({ length: 11 }).map((_, index) => (
+                        <div className="h-101 flex-1 overflow-y-auto rounded-2xl border border-slate-100 bg-slate-50/80 p-3 scrollbar-none">
+                            <div className="grid grid-cols-3 gap-2 min-h-94.5">
+                                {Array.from({ length: 21 }).map((_, index) => (
                                     <div
                                         key={index}
-                                        className="cursor-pointer flex w-full items-center justify-between rounded-2xl border border-indigo-100 bg-white p-3 text-left shadow-sm transition hover:border-indigo-200 hover:bg-indigo-50/60"
+                                        className="h-22 cursor-pointer flex w-full items-center justify-between rounded-2xl border border-indigo-100 bg-white p-3 text-left shadow-sm transition hover:border-indigo-200 hover:bg-indigo-50/60"
                                     >
                                         <div className="w-full flex flex-col gap-0">
                                             <p className="select-none text-sm font-black text-slate-800">
