@@ -3,20 +3,84 @@
 import busStaion from '@/app/assets/img/busStation.png'
 import { Search, X } from 'lucide-react'
 import Image from "next/image";
-import { useState } from 'react';
+import Link from 'next/link';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
+
+import { getFriendListAction } from '@/features/friend/action';
 
 import { Button } from '../ui/button';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '../ui/hover-card';
-import Link from 'next/link';
 
 interface BusStationProps {
     mode: 'MY' | "FRIEND";
+}
+
+interface CityFriend {
+    userId: number;
+    nickname: string;
+    role: "STUDENT" | "TEACHER";
+    profileImageUrl?: string;
 }
 
 export default function BusStation({ mode }: BusStationProps) {
 
     const [isModal, setIsModal] = useState(false);
     const [searchedValue, setSearchedValue] = useState("");
+    const [submittedKeyword, setSubmittedKeyword] = useState("");
+    const [friends, setFriends] = useState<CityFriend[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
+
+    useEffect(() => {
+        let ignore = false;
+
+        const fetchFriends = async () => {
+            setIsLoading(true);
+            setErrorMessage("");
+
+            const response = await getFriendListAction("FRIEND");
+
+            if (ignore) {
+                return;
+            }
+
+            if (response.status === 200 && response.data) {
+                setFriends(
+                    response.data.filter(
+                        (friend) => friend.role !== "TEACHER"
+                    )
+                );
+            } else {
+                setFriends([]);
+                setErrorMessage(response.message || "친구 목록을 불러오지 못했습니다.");
+            }
+
+            setIsLoading(false);
+        };
+
+        fetchFriends();
+
+        return () => {
+            ignore = true;
+        };
+    }, []);
+
+    const filteredFriends = useMemo(() => {
+        const keyword = submittedKeyword.trim().toLowerCase();
+
+        if (!keyword) {
+            return friends;
+        }
+
+        return friends.filter((friend) =>
+            friend.nickname.toLowerCase().includes(keyword)
+        );
+    }, [friends, submittedKeyword]);
+
+    const handleSearch = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        setSubmittedKeyword(searchedValue);
+    };
 
     return (
         <>
@@ -60,7 +124,7 @@ export default function BusStation({ mode }: BusStationProps) {
                             버스정류장
                         </p>
                         <p className="text-xs font-medium text-slate-500">
-                            {mode === 'MY' ? "친구의 도시로 이동해보세요" : "내 도시로 이동합니다."}
+                            {mode === 'MY' ? "친구의 도시로 이동해보세요" : "내 도시로 이동합니다"}
                         </p>
                     </div>
                 </HoverCardContent>
@@ -96,7 +160,10 @@ export default function BusStation({ mode }: BusStationProps) {
                             </p>
                         </div>
 
-                        <div className="mb-4 flex flex-row gap-2">
+                        <form
+                            onSubmit={handleSearch}
+                            className="mb-4 flex flex-row gap-2"
+                        >
                             <input
                                 type="text"
                                 placeholder="친구 닉네임으로 검색해보세요"
@@ -106,33 +173,59 @@ export default function BusStation({ mode }: BusStationProps) {
                             />
 
                             <Button
-                                type="button"
+                                type="submit"
                                 className="h-11 rounded-2xl bg-indigo-500 px-4 font-black text-white hover:bg-indigo-600"
                             >
                                 <Search className="h-4 w-4" />
                                 검색
                             </Button>
-                        </div>
+                        </form>
 
-                        <div className="min-h-0 flex-1 overflow-y-auto rounded-2xl border border-slate-100 bg-slate-50/80 p-3 scrollbar-none">
-                            <div className="grid grid-cols-3 gap-2">
-                                {Array.from({ length: 11 }).map((_, index) => (
-                                    <button
-                                        key={index}
-                                        type="button"
-                                        className="cursor-pointer flex h-18 w-full items-center justify-between rounded-2xl border border-indigo-100 bg-white p-3 text-left shadow-sm transition hover:border-indigo-200 hover:bg-indigo-50/60"
-                                    >
-                                        <div>
-                                            <p className="text-sm font-black text-slate-800">
-                                                친구 닉네임
-                                            </p>
-                                            <p className="mt-0.5 text-xs font-semibold text-slate-400">
-                                                친구 도시로 이동하기
-                                            </p>
-                                        </div>
-                                    </button>
-                                ))}
-                            </div>
+                        <div className="min-h-0 flex-1 overflow-y-auto rounded-2xl border border-slate-100 bg-slate-50/80 p-3 scrollbar-hidden">
+                            {isLoading ? (
+                                <div className="flex h-36 items-center justify-center text-sm font-bold text-slate-400">
+                                    친구 목록을 불러오는 중입니다.
+                                </div>
+                            ) : errorMessage ? (
+                                <div className="flex h-36 items-center justify-center text-sm font-bold text-rose-400">
+                                    {errorMessage}
+                                </div>
+                            ) : filteredFriends.length === 0 ? (
+                                <div className="flex h-36 items-center justify-center text-sm font-bold text-slate-400">
+                                    검색 결과가 없습니다.
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-3 gap-2">
+                                    {filteredFriends.map((friend) => (
+                                        <Link
+                                            key={friend.userId}
+                                            href={`/student/users/${friend.userId}`}
+                                            className="flex h-20 w-full cursor-pointer items-center gap-3 rounded-2xl border border-indigo-100 bg-white p-3 text-left shadow-sm transition hover:border-indigo-200 hover:bg-indigo-50/60"
+                                        >
+                                            <div className="flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-indigo-100 text-sm font-black text-indigo-500">
+                                                {friend.profileImageUrl ? (
+                                                    <img
+                                                        src={friend.profileImageUrl}
+                                                        alt={`${friend.nickname} 프로필`}
+                                                        className="h-full w-full object-cover"
+                                                    />
+                                                ) : (
+                                                    friend.nickname.slice(0, 1)
+                                                )}
+                                            </div>
+
+                                            <div className="min-w-0">
+                                                <p className="truncate text-sm font-black text-slate-800">
+                                                    {friend.nickname}
+                                                </p>
+                                                <p className="mt-0.5 text-xs font-semibold text-slate-400">
+                                                    친구 도시로 이동하기
+                                                </p>
+                                            </div>
+                                        </Link>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
