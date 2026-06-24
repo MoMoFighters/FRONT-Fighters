@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 
 import MyPageNav from "@/components/mypage/MyPageNav";
+import StudentPageHeader from "@/features/student/components/StudentPageHeader";
 import {
     Pagination,
     PaginationContent,
@@ -113,6 +114,24 @@ export default async function MypagePointPage({
 
     return (
         <main className="mx-auto w-full max-w-360 px-12 py-12">
+            <StudentPageHeader
+                backHref="/student/mypage"
+                breadcrumbs={[
+                    {
+                        label: "홈",
+                        href: "/student",
+                    },
+                    {
+                        label: "마이페이지",
+                        href: "/student/mypage",
+                    },
+                    {
+                        label: "포인트",
+                    },
+                ]}
+                title="포인트"
+            />
+
             <MyPageNav />
 
             <section className="mt-8 space-y-6">

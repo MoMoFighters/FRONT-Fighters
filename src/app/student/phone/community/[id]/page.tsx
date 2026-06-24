@@ -90,75 +90,78 @@ export default async function CommunityPostDetailPage({
     return (
         <section className="grid h-full min-h-0 grid-cols-[7fr_3fr] gap-4 rounded-3xl bg-white/80 p-5 shadow-sm ring-1 ring-slate-200/80 backdrop-blur">
             <article className="flex min-h-0 flex-col rounded-3xl bg-white/90 p-5 shadow-sm ring-1 ring-slate-100">
-                <header className="border-b border-slate-100 pb-4 w-full">
-                    <Link
-                        href="/student/phone/community"
-                        className="inline-flex items-center gap-1 text-xs font-black text-slate-400 transition hover:text-indigo-500"
-                    >
-                        <ChevronLeft className="h-4 w-4" />
-                        목록 보기
-                    </Link>
+                <header className="w-full border-b border-slate-100 pb-3">
+                    <div className="flex items-center justify-between gap-3">
+                        <Link
+                            href="/student/phone/community"
+                            className="inline-flex items-center gap-1 text-xs font-black text-slate-400 transition hover:text-indigo-500"
+                        >
+                            <ChevronLeft className="h-4 w-4" />
+                            목록 보기
+                        </Link>
 
-                    <div className="mt-1 flex items-start justify-between w-full flex-col">
-                        <div className="mb-2 flex items-center gap-2 w-full">
-                            <div className="flex-1 flex gap-1 items-center">
-                                <span className="rounded-full bg-indigo-50 px-2.5 py-1 text-[11px] font-black text-indigo-500">
-                                    {post.category}
-                                </span>
-                                <span className="text-xs font-bold text-slate-400">
-                                    {post.createdAt.slice(0, 10)}
-                                </span>
-                            </div>
-                            {!post.isMine ? (
-                                <CreateReportBtn triggerClassName="cursor-pointer rounded-md border border-slate-300 px-3 py-1.5 text-xs font-bold text-slate-500 hover:bg-slate-100" />
-                            ) : (
-                                <Link
-                                    className="cursor-pointer rounded-md border border-slate-300 px-3 py-1.5 text-xs font-bold text-slate-500 hover:bg-slate-100"
-                                    href={`/student/phone/community/${id}/edit`}
-                                >
-                                    수정
-                                </Link>
-                            )}
-                        </div>
+                        {!post.isMine ? (
+                            <CreateReportBtn triggerClassName="cursor-pointer rounded-md border border-slate-200 px-2.5 py-1 text-xs font-bold text-slate-500 transition hover:bg-slate-100" />
+                        ) : (
+                            <Link
+                                className="cursor-pointer rounded-md border border-slate-200 px-2.5 py-1 text-xs font-bold text-slate-500 transition hover:bg-slate-100"
+                                href={`/student/phone/community/${id}/edit`}
+                            >
+                                수정
+                            </Link>
+                        )}
+                    </div>
 
-                        <h1 className="line-clamp-2 text-2xl font-black tracking-tight text-slate-900">
+                    <div className="mt-2 flex min-w-0 items-center gap-2">
+                        <h1 className="min-w-0 flex-1 truncate text-xl font-black tracking-tight text-slate-900">
                             {post.title}
                         </h1>
+                        <span className="shrink-0 rounded-full bg-indigo-50 px-2.5 py-1 text-[11px] font-black text-indigo-500">
+                            {post.category}
+                        </span>
+                        <span className="shrink-0 text-xs font-bold text-slate-400">
+                            {post.createdAt.slice(0, 10)}
+                        </span>
+                    </div>
 
-                        <div className="mt-3 flex items-center flex-row w-full">
-                            <Link
-                                href={post.isMine ?
-                                    "/student/phone/community/mypage" :
-                                    `/student/phone/community/user/${post.authorId}`
-                                }
-                                className="flex flex-row gap-2 px-1 min-w-50 items-center"
-                            >
-                                <img
-                                    src={post.authorProfileImageUrl}
-                                    alt={`${post.authorName} profile`}
-                                    className="h-8 w-8 rounded-full object-cover ring-1 ring-indigo-100"
-                                />
-                                <div>
-                                    <p className="text-sm font-black text-slate-700">
-                                        {post.authorName}
-                                    </p>
-                                    <p className="text-[11px] font-bold text-slate-400">
-                                        {post.authorRole === "STUDENT" ? "학생" : post.authorRole === "TEACHER" ? "강사" : "관리자"}
-                                    </p>
-                                </div>
-
-                            </Link>
-                            <div className="flex-1" />
-                            <div className="flex items-center gap-4 text-xs font-bold text-slate-400">
-                                <span className="flex items-center gap-1">
-                                    <Eye className="h-4 w-4" />
-                                    조회수 {post.viewCount}
-                                </span>
-                                <PostLikeBtn
-                                    postId={post.postId}
-                                    postLikeCount={post.likeCount}
-                                />
+                    <div className="mt-2 flex items-center gap-3">
+                        <Link
+                            href={post.isMine
+                                ? "/student/phone/community/mypage"
+                                : `/student/phone/community/user/${post.authorId}`
+                            }
+                            className="flex min-w-0 items-center gap-2"
+                        >
+                            <img
+                                src={post.authorProfileImageUrl}
+                                alt={`${post.authorName} profile`}
+                                className="h-8 w-8 rounded-full object-cover ring-1 ring-indigo-100"
+                            />
+                            <div className="min-w-0">
+                                <p className="truncate text-sm font-black text-slate-700">
+                                    {post.authorName}
+                                </p>
+                                <p className="text-[11px] font-bold text-slate-400">
+                                    {post.authorRole === "STUDENT"
+                                        ? "학생"
+                                        : post.authorRole === "TEACHER"
+                                            ? "강사"
+                                            : "관리자"}
+                                </p>
                             </div>
+                        </Link>
+
+                        <div className="flex-1" />
+
+                        <div className="flex items-center gap-4 text-xs font-bold text-slate-400">
+                            <span className="flex items-center gap-1">
+                                <Eye className="h-4 w-4" />
+                                조회수 {post.viewCount}
+                            </span>
+                            <PostLikeBtn
+                                postId={post.postId}
+                                postLikeCount={post.likeCount}
+                            />
                         </div>
                     </div>
                 </header>
