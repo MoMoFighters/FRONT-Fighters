@@ -14,7 +14,7 @@ export default function PhoneLayout({
                     <div className="relative z-10 flex h-full min-h-0 flex-col">
                         <PhoneTopBar />
 
-                        <main className="min-h-0 flex-1 overflow-hidden bg-transparent p-4">
+                        <main className="min-h-0 flex-1 overflow-hidden bg-transparent p-2">
                             <div className="h-full min-h-0 overflow-hidden rounded-3xl [&>*]:h-full [&>*]:min-h-0">
                                 {children}
                             </div>

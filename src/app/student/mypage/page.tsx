@@ -2,6 +2,7 @@ import MomoResidentCard from "@/components/mypage/MomoResidentCard";
 import MyBuildingInfo from "@/components/mypage/MyBuildingInfo";
 import MyInfoTable from "@/components/mypage/MyInfoTable";
 import MyPageNav from "@/components/mypage/MyPageNav";
+import StudentPageHeader from "@/features/student/components/StudentPageHeader";
 import { getMyInfo } from "@/features/user/action";
 import Link from "next/link";
 
@@ -24,6 +25,20 @@ export default async function MyPage() {
     return (
         <>
             <div className="p-12">
+                <StudentPageHeader
+                    backHref="/student"
+                    breadcrumbs={[
+                        {
+                            label: "홈",
+                            href: "/student",
+                        },
+                        {
+                            label: "마이페이지",
+                        },
+                    ]}
+                    title="마이페이지"
+                />
+
                 <MyPageNav isPaid={USER_DATA.isPaid} />
                 <div className="mt-20 flex-1 h-full flex flex-row gap-10">
                     <div>

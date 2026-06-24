@@ -8,6 +8,7 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "@/components/ui/pagination";
+import CommunitySideBar from "@/components/phone/community/CommunitySideBar";
 import CommunityMypagePostItem, {
     type CommunityMypagePostViewMode,
 } from "@/components/phone/community/CommunityMypagePostItem";
@@ -151,22 +152,22 @@ const VIEW_MODE_OPTIONS: {
     label: string;
     icon: typeof LayoutList;
 }[] = [
-    {
-        mode: "list",
-        label: "List",
-        icon: LayoutList,
-    },
-    {
-        mode: "grid",
-        label: "Grid",
-        icon: Grid2X2,
-    },
-    {
-        mode: "card",
-        label: "Card",
-        icon: PanelsTopLeft,
-    },
-];
+        {
+            mode: "list",
+            label: "List",
+            icon: LayoutList,
+        },
+        {
+            mode: "grid",
+            label: "Grid",
+            icon: Grid2X2,
+        },
+        {
+            mode: "card",
+            label: "Card",
+            icon: PanelsTopLeft,
+        },
+    ];
 
 const isViewMode = (mode?: string): mode is CommunityMypagePostViewMode => {
     return mode === "list" || mode === "grid" || mode === "card";
@@ -205,168 +206,172 @@ export default async function CommunityMyPage({
                 : "grid grid-cols-2 gap-3";
 
     return (
-        <section className="flex h-full min-h-0 flex-col rounded-3xl bg-white/80 p-4 shadow-sm ring-1 ring-slate-200/80 backdrop-blur">
-            <header className="shrink-0 rounded-3xl bg-white/90 p-4 shadow-sm ring-1 ring-slate-100">
-                <div className="flex items-center justify-between gap-5">
-                    <div className="flex min-w-0 items-center gap-3">
-                        {PROFILE.profileImageUrl ? (
-                            <img
-                                src={PROFILE.profileImageUrl}
-                                alt={`${PROFILE.nickname} profile`}
-                                className="h-16 w-16 rounded-2xl object-cover shadow-sm ring-1 ring-indigo-100"
-                            />
-                        ) : (
-                            <div className="h-16 w-16 rounded-2xl bg-indigo-50" />
-                        )}
+        <div className="flex h-full min-h-0 flex-row overflow-hidden bg-white/80 shadow-sm ring-1 ring-slate-200/80 backdrop-blur">
+            <CommunitySideBar />
 
-                        <div className="min-w-0">
-                            <p className="truncate text-xl font-black text-slate-900">
-                                {PROFILE.nickname}
-                            </p>
-                            <p className="mt-1 w-fit rounded-full bg-indigo-50 px-2.5 py-1 text-[11px] font-black text-indigo-500">
-                                {PROFILE.role}
-                            </p>
+            <section className="flex h-full min-h-0 min-w-0 flex-1 flex-col p-4">
+                <header className="shrink-0 rounded-3xl bg-white/90 p-4 shadow-sm ring-1 ring-slate-100">
+                    <div className="flex items-center justify-between gap-5">
+                        <div className="flex min-w-0 items-center gap-3">
+                            {PROFILE.profileImageUrl ? (
+                                <img
+                                    src={PROFILE.profileImageUrl}
+                                    alt={`${PROFILE.nickname} profile`}
+                                    className="h-16 w-16 rounded-2xl object-cover shadow-sm ring-1 ring-indigo-100"
+                                />
+                            ) : (
+                                <div className="h-16 w-16 rounded-2xl bg-indigo-50" />
+                            )}
+
+                            <div className="min-w-0">
+                                <p className="truncate text-xl font-black text-slate-900">
+                                    {PROFILE.nickname}
+                                </p>
+                                <p className="mt-1 w-fit rounded-full bg-indigo-50 px-2.5 py-1 text-[11px] font-black text-indigo-500">
+                                    {PROFILE.role}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="grid flex-1 grid-cols-4 overflow-hidden rounded-3xl border border-slate-100 bg-slate-50/80">
+                            <DashboardStat
+                                label="Posts"
+                                value={PROFILE.totalPostCount}
+                            />
+                            <DashboardStat
+                                label="Views"
+                                value={PROFILE.totalViewCount}
+                            />
+                            <DashboardStat
+                                label="Comments"
+                                value={PROFILE.totalCommentCount}
+                            />
+                            <DashboardStat
+                                label="Likes"
+                                value={PROFILE.totalLikeCount}
+                            />
                         </div>
                     </div>
+                </header>
 
-                    <div className="grid flex-1 grid-cols-4 overflow-hidden rounded-3xl border border-slate-100 bg-slate-50/80">
-                        <DashboardStat
-                            label="Posts"
-                            value={PROFILE.totalPostCount}
-                        />
-                        <DashboardStat
-                            label="Views"
-                            value={PROFILE.totalViewCount}
-                        />
-                        <DashboardStat
-                            label="Comments"
-                            value={PROFILE.totalCommentCount}
-                        />
-                        <DashboardStat
-                            label="Likes"
-                            value={PROFILE.totalLikeCount}
-                        />
-                    </div>
-                </div>
-            </header>
-
-            <div className="mt-4 flex shrink-0 items-center justify-between gap-3">
-                <div>
-                    <h2 className="text-lg font-black text-slate-900">
-                        작성한 게시글
-                    </h2>
-                    <p className="mt-0.5 text-xs font-bold text-slate-400">
-                        총 {POSTS.length}개의 게시글
-                    </p>
-                </div>
-
-                <div className="flex items-center gap-2">
-                    <div className="flex rounded-2xl bg-slate-100 p-1">
-                        {VIEW_MODE_OPTIONS.map((option) => {
-                            const Icon = option.icon;
-                            const isActive = selectedMode === option.mode;
-
-                            return (
-                                <Link
-                                    key={option.mode}
-                                    href={createHref({
-                                        mode: option.mode,
-                                        page: 1,
-                                    })}
-                                    className={`flex h-8 items-center gap-1.5 rounded-xl px-2.5 text-[11px] font-black transition ${isActive
-                                        ? "bg-white text-indigo-500 shadow-sm"
-                                        : "text-slate-400 hover:bg-white/70 hover:text-slate-700"
-                                        }`}
-                                >
-                                    <Icon className="h-3.5 w-3.5" />
-                                    {option.label}
-                                </Link>
-                            );
-                        })}
+                <div className="mt-4 flex shrink-0 items-center justify-between gap-3">
+                    <div>
+                        <h2 className="text-lg font-black text-slate-900">
+                            작성한 게시글
+                        </h2>
+                        <p className="mt-0.5 text-xs font-bold text-slate-400">
+                            총 {POSTS.length}개의 게시글
+                        </p>
                     </div>
 
-                    <button
-                        type="button"
-                        className="flex h-9 items-center gap-1.5 rounded-xl bg-indigo-500 px-3 text-xs font-black text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-indigo-600 hover:shadow-md"
-                    >
-                        <UserPlus className="h-3.5 w-3.5" />
-                        친구추가
-                    </button>
+                    <div className="flex items-center gap-2">
+                        <div className="flex rounded-2xl bg-slate-100 p-1">
+                            {VIEW_MODE_OPTIONS.map((option) => {
+                                const Icon = option.icon;
+                                const isActive = selectedMode === option.mode;
+
+                                return (
+                                    <Link
+                                        key={option.mode}
+                                        href={createHref({
+                                            mode: option.mode,
+                                            page: 1,
+                                        })}
+                                        className={`flex h-8 items-center gap-1.5 rounded-xl px-2.5 text-[11px] font-black transition ${isActive
+                                            ? "bg-white text-indigo-500 shadow-sm"
+                                            : "text-slate-400 hover:bg-white/70 hover:text-slate-700"
+                                            }`}
+                                    >
+                                        <Icon className="h-3.5 w-3.5" />
+                                        {option.label}
+                                    </Link>
+                                );
+                            })}
+                        </div>
+
+                        <button
+                            type="button"
+                            className="flex h-9 items-center gap-1.5 rounded-xl bg-indigo-500 px-3 text-xs font-black text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-indigo-600 hover:shadow-md"
+                        >
+                            <UserPlus className="h-3.5 w-3.5" />
+                            친구추가
+                        </button>
+                    </div>
                 </div>
-            </div>
 
-            <div className="mt-3 min-h-0 flex-1 overflow-y-auto pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                <div className={listClassName}>
-                    {posts.map((post) => (
-                        <CommunityMypagePostItem
-                            key={post.postId}
-                            mode={selectedMode}
-                            postId={post.postId}
-                            thumbnailImageUrl={post.thumbnailImageUrl}
-                            title={post.title}
-                            viewCount={post.viewCount}
-                            likeCount={post.likeCount}
-                            commentCount={post.commentCount}
-                            createdAt={post.createdAt}
-                        />
-                    ))}
-                </div>
-            </div>
-
-            {totalPages > 1 && (
-                <Pagination className="mt-3 shrink-0">
-                    <PaginationContent>
-                        {currentPage > 1 && (
-                            <PaginationItem>
-                                <PaginationPrevious
-                                    href={createHref({
-                                        mode: selectedMode,
-                                        page: currentPage - 1,
-                                    })}
-                                    text=""
-                                    className="h-8 w-8 border border-slate-200 bg-white p-0 text-slate-500 hover:text-slate-900"
-                                />
-                            </PaginationItem>
-                        )}
-
-                        {Array.from(
-                            { length: totalPages },
-                            (_, index) => index + 1
-                        ).map((pageNumber) => (
-                            <PaginationItem key={pageNumber}>
-                                <PaginationLink
-                                    href={createHref({
-                                        mode: selectedMode,
-                                        page: pageNumber,
-                                    })}
-                                    isActive={currentPage === pageNumber}
-                                    className={
-                                        currentPage === pageNumber
-                                            ? "h-8 w-8 border-indigo-300 bg-indigo-50 text-indigo-500 hover:bg-indigo-50"
-                                            : "h-8 w-8 text-slate-500 hover:border-slate-200 hover:bg-white hover:text-slate-900"
-                                    }
-                                >
-                                    {pageNumber}
-                                </PaginationLink>
-                            </PaginationItem>
+                <div className="mt-3 min-h-0 flex-1 overflow-y-auto pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                    <div className={listClassName}>
+                        {posts.map((post) => (
+                            <CommunityMypagePostItem
+                                key={post.postId}
+                                mode={selectedMode}
+                                postId={post.postId}
+                                thumbnailImageUrl={post.thumbnailImageUrl}
+                                title={post.title}
+                                viewCount={post.viewCount}
+                                likeCount={post.likeCount}
+                                commentCount={post.commentCount}
+                                createdAt={post.createdAt}
+                            />
                         ))}
+                    </div>
+                </div>
 
-                        {currentPage < totalPages && (
-                            <PaginationItem>
-                                <PaginationNext
-                                    href={createHref({
-                                        mode: selectedMode,
-                                        page: currentPage + 1,
-                                    })}
-                                    text=""
-                                    className="h-8 w-8 border border-slate-200 bg-white p-0 text-slate-500 hover:text-slate-900"
-                                />
-                            </PaginationItem>
-                        )}
-                    </PaginationContent>
-                </Pagination>
-            )}
-        </section>
+                {totalPages > 1 && (
+                    <Pagination className="mt-3 shrink-0">
+                        <PaginationContent>
+                            {currentPage > 1 && (
+                                <PaginationItem>
+                                    <PaginationPrevious
+                                        href={createHref({
+                                            mode: selectedMode,
+                                            page: currentPage - 1,
+                                        })}
+                                        text=""
+                                        className="h-8 w-8 border border-slate-200 bg-white p-0 text-slate-500 hover:text-slate-900"
+                                    />
+                                </PaginationItem>
+                            )}
+
+                            {Array.from(
+                                { length: totalPages },
+                                (_, index) => index + 1
+                            ).map((pageNumber) => (
+                                <PaginationItem key={pageNumber}>
+                                    <PaginationLink
+                                        href={createHref({
+                                            mode: selectedMode,
+                                            page: pageNumber,
+                                        })}
+                                        isActive={currentPage === pageNumber}
+                                        className={
+                                            currentPage === pageNumber
+                                                ? "h-8 w-8 border-indigo-300 bg-indigo-50 text-indigo-500 hover:bg-indigo-50"
+                                                : "h-8 w-8 text-slate-500 hover:border-slate-200 hover:bg-white hover:text-slate-900"
+                                        }
+                                    >
+                                        {pageNumber}
+                                    </PaginationLink>
+                                </PaginationItem>
+                            ))}
+
+                            {currentPage < totalPages && (
+                                <PaginationItem>
+                                    <PaginationNext
+                                        href={createHref({
+                                            mode: selectedMode,
+                                            page: currentPage + 1,
+                                        })}
+                                        text=""
+                                        className="h-8 w-8 border border-slate-200 bg-white p-0 text-slate-500 hover:text-slate-900"
+                                    />
+                                </PaginationItem>
+                            )}
+                        </PaginationContent>
+                    </Pagination>
+                )}
+            </section>
+        </div>
     );
 }
 
