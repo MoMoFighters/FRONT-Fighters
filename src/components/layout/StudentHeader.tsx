@@ -48,6 +48,7 @@ export default async function AuthHeader({ role }: { role: string }) {
                         profileImageUrl={myInfo.data?.profileImageUrl}
                         nickname={myInfo.data?.nickname ?? "모모시민"}
                         isPaid={myInfo.data?.isPaid ?? false}
+                        mode='student'
                     />
                 </div>
             </div>

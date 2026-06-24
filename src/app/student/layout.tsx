@@ -1,4 +1,4 @@
-import AuthHeader from "@/components/layout/AuthHeader";
+import StudentHeader from "@/components/layout/StudentHeader";
 import Footer from "@/components/layout/Footer";
 import StudentLayoutShell from "@/components/layout/StudentLayoutShell";
 
@@ -9,7 +9,7 @@ export default function StudentLayout({
 }>) {
     return (
         <StudentLayoutShell
-            header={<AuthHeader role="student" />}
+            header={<StudentHeader role="student" />}
             footer={<Footer />}
         >
             {children}

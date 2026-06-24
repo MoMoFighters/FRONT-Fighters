@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import {
+    BookOpenText,
     CalendarDays,
     ChevronDown,
     LogOut,
@@ -25,48 +26,68 @@ interface HeaderProfileCardProps {
     profileImageUrl?: string | null;
     nickname: string;
     isPaid: boolean;
+    mode: 'student' | 'teacher';
 }
 
-const profileMenus = [
-    {
-        label: "프로필",
-        href: "/student/mypage",
-        icon: User,
-    },
-    {
-        label: "커뮤니티",
-        href: "/student/phone/community",
-        icon: Users,
-    },
-    {
-        label: "채팅",
-        href: "/student/phone/friends",
-        icon: MessageSquare,
-    },
-    {
-        label: "일정",
-        href: "/student/phone/calendar",
-        icon: CalendarDays,
-    },
-    {
-        label: "친구",
-        href: "/student/phone/friends",
-        icon: UserRoundPlus,
-    },
-    {
-        label: "방명록",
-        href: "/student/users",
-        icon: NotebookPen,
-    },
-];
+
 
 export default function HeaderProfileCard({
     role,
     profileImageUrl,
     nickname,
     isPaid,
+    mode
 }: HeaderProfileCardProps) {
     const defaultProfile = nickname?.[0] ?? "모";
+
+    const profileMenus = mode === 'student' ? [
+        {
+            label: "프로필",
+            href: "/student/mypage",
+            icon: User,
+        },
+        {
+            label: "커뮤니티",
+            href: "/student/phone/community",
+            icon: Users,
+        },
+        {
+            label: "채팅",
+            href: "/student/phone/friends",
+            icon: MessageSquare,
+        },
+        {
+            label: "일정",
+            href: "/student/phone/calendar",
+            icon: CalendarDays,
+        },
+        {
+            label: "친구",
+            href: "/student/phone/friends",
+            icon: UserRoundPlus,
+        },
+        {
+            label: "방명록",
+            href: "/student/users",
+            icon: NotebookPen,
+        },
+    ] : [
+        {
+            label: "내 강의",
+            href: "/teacher/lectures",
+            icon: BookOpenText,
+        },
+        {
+            label: "커뮤니티",
+            href: "/teacher/community",
+            icon: Users,
+        },
+        {
+            label: "채팅",
+            href: "/teacher/ask",
+            icon: MessageSquare,
+        },
+    ];
 
     return (
         <HoverCard openDelay={80} closeDelay={120}>
@@ -151,6 +172,7 @@ export default function HeaderProfileCard({
                 </div>
 
                 <div className="border-t border-slate-100 py-2">
+
                     {profileMenus.map(({ label, href, icon: Icon }) => (
                         <Link
                             key={label}
