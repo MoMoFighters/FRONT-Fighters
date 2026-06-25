@@ -19,6 +19,7 @@ interface LectureListPageProps {
         category?: string;
         keyword?: string;
         page?: string;
+        position?: string;
     }>;
 }
 
@@ -29,6 +30,7 @@ export default async function LectureListPage({
         keyword,
         category,
         page,
+        position
     } = await searchParams;
 
     const payload: LectureListRequest = {
@@ -54,9 +56,27 @@ export default async function LectureListPage({
             params.set("category", category);
         }
 
+        if (position) {
+            params.set("position", position);
+        }
+
         params.set("page", String(pageNumber));
 
         return `?${params.toString()}`;
+    };
+
+    const createLectureDetailHref = (lectureId: number) => {
+        const params = new URLSearchParams();
+
+        if (position) {
+            params.set("position", position);
+        }
+
+        const queryString = params.toString();
+
+        return queryString
+            ? `/student/lectures/${lectureId}?${queryString}`
+            : `/student/lectures/${lectureId}`;
     };
 
     return (
@@ -80,6 +100,7 @@ export default async function LectureListPage({
                     <LectureSearchbar
                         category={category}
                         keyword={keyword}
+                        position={position}
                     />
 
                     <LectureFilterBtn />
@@ -99,7 +120,7 @@ export default async function LectureListPage({
                     <>
                         <StudentLectureList
                             lectures={lectures}
-                            getHref={(lecture) => `/student/lectures/${lecture.lectureId}`}
+                            getHref={(lecture) => createLectureDetailHref(lecture.lectureId)}
                             showLearningStatus={false}
                         />
 

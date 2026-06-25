@@ -8,9 +8,10 @@ interface LectureSearchbarProps {
     keyword?: string;
     category?: string;
     filter?: string;
+    position?: string;
 }
 
-export default function LectureSearchbar({ status, keyword, category, filter }: LectureSearchbarProps) {
+export default function LectureSearchbar({ status, keyword, category, filter, position }: LectureSearchbarProps) {
 
     const urlParams = new URLSearchParams();
 
@@ -24,6 +25,10 @@ export default function LectureSearchbar({ status, keyword, category, filter }: 
 
     if (filter) {
         urlParams.set("filter", filter);
+    }
+
+    if (position) {
+        urlParams.set("position", position);
     }
 
     const clearHref = `?${urlParams.toString()}`;
@@ -47,6 +52,13 @@ export default function LectureSearchbar({ status, keyword, category, filter }: 
                     name="filter"
                     defaultValue={filter}
                 /> : ""}
+                {position ? (
+                    <input
+                        type="hidden"
+                        name="position"
+                        defaultValue={position}
+                    />
+                ) : ""}
                 <input
                     type="text"
                     name="keyword"

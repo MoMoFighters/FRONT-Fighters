@@ -10,9 +10,15 @@ import createBuilding from "@/app/assets/img/createBuilding.png"
 
 type CommonBuilding = "mypage" | "point";
 
-interface BuildingItemProps { common?: CommonBuilding, category?: Category, level?: number, buildingUrl?: StaticImageData }
+interface BuildingItemProps {
+    common?: CommonBuilding,
+    category?: Category,
+    level?: number,
+    buildingUrl?: StaticImageData
+    position?: number
+}
 
-export default function BuildingItem({ common, category, level, buildingUrl }: BuildingItemProps) {
+export default function BuildingItem({ common, category, level, buildingUrl, position }: BuildingItemProps) {
 
     const getBuildingInfo = () => {
         if (common && common === "mypage") {
@@ -48,7 +54,7 @@ export default function BuildingItem({ common, category, level, buildingUrl }: B
             buildingName: "건물 생성",
             description: "강의를 수강하고 건물을 성장시켜보세요.",
             buildingImage: createBuilding,
-            href: "/student/lectures"
+            href: `/student/lectures${position ? `?position=${position}` : ""}`
         }
     }
 
@@ -68,7 +74,7 @@ export default function BuildingItem({ common, category, level, buildingUrl }: B
 
                 </Link>
             </HoverCardTrigger>
-            <HoverCardContent className="flex w-64 flex-col gap-0.5" side="right">
+            <HoverCardContent className="flex w-64 flex-col gap-0.5" side="bottom">
                 <div className="font-semibold text-slate-700 text-[14px]">{buildingInfo.buildingName} {level ? `Lv.${level}` : ""}</div>
                 <div className="text-slate-500 text-[12px]">{buildingInfo.description}</div>
             </HoverCardContent>

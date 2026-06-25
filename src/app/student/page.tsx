@@ -71,18 +71,18 @@ export default async function StudentMainPage() {
             level: 2,
             buildingUrl: art
         },
-        {
-            position: 3,
-            category: "FITNESS",
-            level: 1,
-            buildingUrl: fitness
-        },
-        {
-            position: 4,
-            category: "COOK",
-            level: 3,
-            buildingUrl: cook
-        },
+        // {
+        //     position: 3,
+        //     category: "FITNESS",
+        //     level: 1,
+        //     buildingUrl: fitness
+        // },
+        // {
+        //     position: 4,
+        //     category: "COOK",
+        //     level: 3,
+        //     buildingUrl: cook
+        // },
         {
             position: 5,
             category: "BEAUTY",
@@ -110,7 +110,7 @@ export default async function StudentMainPage() {
                     >
                         {building
                             ? <BuildingItem category={building.category} level={building.level} buildingUrl={building.buildingUrl} />
-                            : <BuildingItem />}
+                            : <BuildingItem position={slot.position} />}
                     </div>
                 );
             })}

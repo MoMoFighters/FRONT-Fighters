@@ -10,7 +10,6 @@ interface StudentLectureDetailItemProps {
     lecture: LectureDetailResponse;
     category: string;
     categoryLabel: string;
-    buildingImage: StaticImageData;
     resumeChapterId?: number;
     chapterBaseHref?: string;
 }
@@ -19,7 +18,6 @@ export default function StudentLectureDetailItem({
     lecture,
     category,
     categoryLabel,
-    buildingImage,
     resumeChapterId,
     chapterBaseHref,
 }: StudentLectureDetailItemProps) {
@@ -33,13 +31,15 @@ export default function StudentLectureDetailItem({
         <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <div className="grid grid-cols-[320px_minmax(0,1fr)] gap-8">
                 <div className="relative h-56 overflow-hidden rounded-xl bg-slate-100">
-                    <Image
-                        src={lecture.thumbnailUrl || buildingImage}
-                        alt={lecture.title}
-                        fill
-                        sizes="320px"
-                        className="object-cover"
-                    />
+                    {lecture.thumbnailUrl
+                        ? <Image
+                            src={lecture.thumbnailUrl}
+                            alt={lecture.title}
+                            fill
+                            sizes="320px"
+                            className="object-cover"
+                        />
+                        : ""}
                 </div>
 
                 <div className="flex min-w-0 flex-col">

@@ -22,6 +22,7 @@ interface LectureDetailPageProps {
     searchParams: Promise<{
         page?: string;
         tab?: string;
+        position?: string;
     }>;
 }
 
@@ -75,7 +76,7 @@ export default async function LectureDetailPage({
     searchParams,
 }: LectureDetailPageProps) {
     const { lectureId } = await params;
-    const { tab, page } = await searchParams;
+    const { tab, page, position } = await searchParams;
 
     const lecture = await getLectureById(lectureId);
 
@@ -104,11 +105,23 @@ export default async function LectureDetailPage({
     const createReviewPageHref = (pageNumber: number) => {
         const params = new URLSearchParams();
 
+        if (position) {
+            params.set("position", position);
+        }
+
         params.set("tab", "reviews");
         params.set("page", String(pageNumber));
 
         return `?${params.toString()}`;
     };
+
+    const lectureListHref = position
+        ? `/student/lectures?position=${position}`
+        : "/student/lectures";
+
+    const lectureDetailHref = position
+        ? `/student/lectures/${lectureId}?position=${position}`
+        : `/student/lectures/${lectureId}`;
 
     const firstChapter = chapters.find((chapter) => chapter.orderNo === 1);
     const resumeChapter = chapters.find((chapter) => (
@@ -120,7 +133,7 @@ export default async function LectureDetailPage({
         <main className="mx-auto grid w-full max-w-360 grid-cols-[minmax(0,1fr)_320px] gap-8 px-12 py-12">
             <section className="min-w-0">
                 <StudentPageHeader
-                    backHref="/student/lectures"
+                    backHref={lectureListHref}
                     breadcrumbs={[
                         {
                             label: "홈",
@@ -128,7 +141,7 @@ export default async function LectureDetailPage({
                         },
                         {
                             label: "강의 둘러보기",
-                            href: "/student/lectures",
+                            href: lectureListHref,
                         },
                         {
                             label: lecture.title,
@@ -141,13 +154,12 @@ export default async function LectureDetailPage({
                     lecture={lecture}
                     category={category}
                     categoryLabel={categoryMeta.label}
-                    buildingImage={categoryMeta.buildingImage}
                     resumeChapterId={resumeChapter?.chapterId}
                 />
 
                 <section className="mt-8 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
                     <StudentLectureDetailTabs
-                        href={`/student/lectures/${lectureId}`}
+                        href={lectureDetailHref}
                         currentTab={currentTab}
                         reviewCount={DUMMY_REVIEWS.length}
                     />
