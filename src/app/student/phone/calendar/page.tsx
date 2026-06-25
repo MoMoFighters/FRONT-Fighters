@@ -1,4 +1,4 @@
-﻿import { getCalendarSchedulesAction } from '@/features/calendar/action';
+import CalendarSide from '@/components/phone/calendar/CalendarSide';
 import Calendar from '@/features/phone/components/todo/Calendar';
 import { redirect } from 'next/navigation';
 
@@ -26,11 +26,19 @@ export default async function CalendarPage({
         );
     }
 
-    console.log(getCalendarSchedulesAction({ date }))
-    const schedules = await getCalendarSchedulesAction({ date });
-
-
     return (
-        <Calendar schedules={schedules} />
+        <div className="
+            h-full
+            flex
+            overflow-hidden
+        ">
+            <Calendar
+                selectedDate={date}
+            />
+
+            <CalendarSide
+                selectedDate={date}
+            />
+        </div>
     );
-} 
+}

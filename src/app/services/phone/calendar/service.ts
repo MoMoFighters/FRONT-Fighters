@@ -69,7 +69,7 @@ export const getMonthlyCalendar = async ({
     date: string;
 }): Promise<ApiResponse<GetMonthlyCalendarData>> => {
     const response = await fetchWithAuth(
-        `/api/v2/calendar/monthly?month=${date}`
+        `/api/v1/calendar/monthly?month=${date}`
     );
 
     await handleErrorResponse(response);
@@ -82,7 +82,7 @@ export const getTodoList = async ({
     date,
 }: GetTodoListRequest): Promise<ApiResponse<GetTodoListData>> => {
     const response = await fetchWithAuth(
-        `/api/v2/calendar/daily?date=${date}`
+        `/api/v1/calendar/daily?date=${date}`
     );
 
     await handleErrorResponse(response);
