@@ -35,8 +35,8 @@ export default function MomoResidentCard({ data }: ResidentCardProps) {
         <div className="flex flex-col w-145 h-93.5 border border-slate-300 rounded-xl bg-mauve-50 shadow-2xl">
             {/* 헤더 */}
             <div className="p-4 flex flex-row border-b border-slate-300">
-                <div className="flex-1 flex justify-start">
-                    <Image src={momocityLogo} alt='모모시티' className="h-10 w-26 ml-2" />
+                <div className="flex-1 flex justify-start items-center">
+                    <Image src={momocityLogo} alt='모모시티' width={100} className="ml-2" />
                 </div>
                 <div className="flex-1"></div>
                 <div className="flex flex-col justify-end">

@@ -49,7 +49,7 @@ export default async function MyPage() {
                             </Link>
                         </div>
                     </div>
-                    <div className="grid grid-rows-2 flex-1 h-full">
+                    <div className="grid flex-1 grid-cols-2 gap-6 self-start">
                         <div className="flex flex-col py-2">
                             <p className="text-lg font-bold">계정 정보</p>
                             <MyInfoTable data={USER_DATA} />
