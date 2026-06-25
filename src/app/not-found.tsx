@@ -1,7 +1,7 @@
 'use client'
 
 import Image from "next/image";
-import logo from '@/app/assets/img/header_logo.png'
+import logo from '@/app/assets/img/logo.png'
 import notFound from '@/app/assets/img/404.png'
 import { RotateCcw } from "lucide-react";
 import { useRouter } from "next/navigation";

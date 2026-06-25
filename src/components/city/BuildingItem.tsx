@@ -1,110 +1,72 @@
-﻿import Image, { StaticImageData } from "next/image";
-import library from '@/app/assets/img/library.png'
-import mypage from '@/app/assets/img/mypage.png'
-import market from '@/app/assets/img/market.png'
+﻿import Image from "next/image";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "../ui/hover-card";
 import Link from "next/link";
 import getCategoryMeta from "@/features/lecture/components/student/shared/category";
 import { Category } from "@/features/lecture/type";
 
-interface BuildingItemProps { category: string, level?: number }
+import mypage from "@/app/assets/img/mypage.png";
+import point from "@/app/assets/img/point.png";
+import createBuilding from "@/app/assets/img/createBuilding.png"
 
-export default function BuildingItem({ category, level }: BuildingItemProps) {
+interface BuildingItemProps { common?: string, category?: Category, level?: number }
 
-    let image: StaticImageData;
-    let label: string;
-    let explain: string;
-    let building: string;
+export default function BuildingItem({ common, category, level }: BuildingItemProps) {
 
-    switch (category) {
-        case 'study':
-        case 'art':
-        case 'cook':
-        case 'fitness':
-        case 'beauty':
-            const categoryMeta = getCategoryMeta(category.toUpperCase() as Category);
-            image = categoryMeta.buildingImage;
-            label = categoryMeta.label;
-            building = categoryMeta.buildingName;
-            explain = categoryMeta.description;
-            break;
+    const getBuildingInfo = () => {
+        if (common && common === "mypage") {
+            return {
+                label: "마이페이지",
+                buildingName: "집",
+                description: "마이페이지로 이동합니다.",
+                buildingImage: mypage,
+                href: "/student/mypage"
+            }
+        }
 
-        case 'community':
-            image = library;
-            label = '도서관';
-            building = '도서관';
-            explain = '모모시티의 커뮤니티 페이지로 이동합니다.'
-            break;
+        if (common && common === "point") {
+            return {
+                label: "포인트상점",
+                buildingName: "포인트상점",
+                description: "포인트 상점으로 이동합니다.",
+                buildingImage: point,
+                href: "/student/point-store"
+            }
+        }
 
-        case 'mypage':
-            image = mypage;
-            label = '집';
-            building = '집';
-            explain = '마이 페이지로 이동합니다.'
-            break;
+        if (category) {
+            return {
+                ...getCategoryMeta(category),
+                href: `/student/${category.toLowerCase()}/lectures`
+            }
+        }
 
-        case 'payments':
-            image = market;
-            label = '상점';
-            building = '포인트 상점';
-            explain = '포인트를 사용할 수 있는 상점 페이지로 이동합니다.'
-            break;
-
-        default:
-            const defaultCategoryMeta = getCategoryMeta("STUDY");
-            image = defaultCategoryMeta.buildingImage;
-            label = '';
-            building = '';
-            explain = ''
+        return {
+            label: "수강신청하기",
+            buildingName: "건물 생성",
+            description: "강의를 수강하고 건물을 성장시켜보세요.",
+            buildingImage: createBuilding,
+            href: "/student/lectures"
+        }
     }
 
-    const moveHref = (category === "community" && '/student/community')
-        || (category === "mypage" && '/student/mypage')
-        || (category === "payments" && '/student/payments')
-        || `/student/${category}`
+    const buildingInfo = getBuildingInfo();
 
     return (
         <HoverCard openDelay={50} closeDelay={50}>
             <HoverCardTrigger asChild>
-                <Link href={moveHref}>
-                    <div className="relative w-45 h-30 rounded-lg cursor-pointer hover:scale-[1.02] transition-all">
-                        <Image
-                            src={image}
-                            alt="건물 이미지"
-                            fill
-                            sizes="10vw"
-                            className="w-45 absolute bottom-5"
-                        />
+                <Link href={buildingInfo.href}>
+                    <Image
+                        src={buildingInfo.buildingImage}
+                        alt={buildingInfo.label}
+                        fill
+                    />
 
-                        <div
-                            className="
-                    absolute
-                    left-1/2
-                    -translate-x-1/2
-                    -bottom-2
 
-                    px-4
-                    py-1.5
-
-                    rounded-lg
-
-                    bg-slate-50/90
-
-                    shadow-sm
-
-                    text-sm
-                    font-bold
-                    text-slate-900
-                "
-                        >
-                            {label}
-                        </div>
-                    </div>
                 </Link>
             </HoverCardTrigger>
-            <HoverCardContent className="flex w-64 flex-col gap-0.5">
-                <div className="font-semibold text-slate-700 text-[14px]">{building} {level ? `Lv.${level}` : ""}</div>
-                <div className="text-slate-500 text-[12px]">{explain}</div>
+            <HoverCardContent className="flex w-64 flex-col gap-0.5" side="right">
+                <div className="font-semibold text-slate-700 text-[14px]">{buildingInfo.buildingName} {level ? `Lv.${level}` : ""}</div>
+                <div className="text-slate-500 text-[12px]">{buildingInfo.description}</div>
             </HoverCardContent>
         </HoverCard>
 
