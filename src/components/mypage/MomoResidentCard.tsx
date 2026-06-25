@@ -1,5 +1,5 @@
 import Image from "next/image";
-import momocityLogo from '@/app/assets/img/header_logo.png'
+import momocityLogo from '@/app/assets/img/logo.png'
 import momo from '@/app/assets/img/momo.png'
 import Link from "next/link";
 import { UserRound } from "lucide-react";
