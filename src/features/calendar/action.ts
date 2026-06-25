@@ -3,17 +3,22 @@
 import { cookies } from 'next/headers';
 
 import type { ApiResponse } from '@/lib/api';
-import { addDateMemoService, addDateRangeMemoService, checkTodoService, createTodoService, deleteMemoService, deleteTodoService, editDateMemoService, editDateRangeMemoService, editTodoService, getTodoList }
+import { addDateMemoService, addDateRangeMemoService, checkTodoService, createTodoService, deleteMemoService, deleteTodoService, editDateMemoService, editDateRangeMemoService, editTodoService, getMonthlyCalendar, getTodoList }
     from '@/app/services/phone/calendar/service';
 
-import { GetCalendarSchedulesActionProps, ScheduleItem }
+import { GetCalendarSchedulesActionProps, ScheduleItem, TodayChapter }
     from './type';
 
 
 
 
 
-export const getCalendarSchedulesAction = async ({
+interface DailyCalendarActionData {
+    todos: ScheduleItem[];
+    todayChapters: TodayChapter[];
+}
+
+export const getMonthlyCalendarAction = async ({
     date,
 }: GetCalendarSchedulesActionProps)
     : Promise<ScheduleItem[]> => {
@@ -38,38 +43,22 @@ export const getCalendarSchedulesAction = async ({
         }
 
 
-        // 서비스 호출
-        const result =
-            await getTodoList({
+        const monthlyResult =
+            await getMonthlyCalendar({
                 date,
-                accessToken,
             });
 
+        const monthlyData =
+            monthlyResult.data;
 
-        const calendarData =
-            result.data;
 
-
-        // 데이터 없음
-        if (!calendarData) {
+        if (!monthlyData) {
             return [];
         }
 
 
         return [
-
-            ...calendarData.todos.map(
-                (todo) => ({
-
-                    calendarId: todo.calendarId,
-                    title: todo.title,
-                    category: "TODO" as const,
-                    start: todo.start,
-                    isCompleted: todo.isCompleted
-                })
-            ),
-
-            ...calendarData.memos.map(
+            ...monthlyData.memos.map(
                 (memo) => ({
 
                     calendarId: memo.calendarId,
@@ -84,11 +73,81 @@ export const getCalendarSchedulesAction = async ({
     } catch (error) {
 
         console.error(
-            '캘린더 일정 조회 실패:',
+            '월별 캘린더 조회 실패:',
             error
         );
 
         return [];
+    }
+};
+
+export const getDailyCalendarAction = async ({
+    date,
+}: GetCalendarSchedulesActionProps)
+    : Promise<DailyCalendarActionData> => {
+    try {
+
+        const cookieStore =
+            await cookies();
+
+        const accessToken =
+            cookieStore
+                .get('accessToken')
+                ?.value;
+
+
+        if (!accessToken) {
+
+            throw new Error(
+                '로그인이 필요합니다.'
+            );
+        }
+
+
+        const dailyResult =
+            await getTodoList({
+                date,
+                accessToken,
+            });
+
+
+        const dailyData =
+            dailyResult.data;
+
+
+        if (!dailyData) {
+            return {
+                todos: [],
+                todayChapters: [],
+            };
+        }
+
+
+        return {
+            todos: dailyData.todos.map(
+                (todo) => ({
+
+                    calendarId: todo.calendarId,
+                    title: todo.title,
+                    category: "TODO" as const,
+                    start: todo.start,
+                    isCompleted: todo.isCompleted
+                })
+            ),
+            todayChapters: dailyData.todayChapters,
+        };
+
+    } catch (error) {
+
+        console.error(
+            '일별 캘린더 조회 실패:',
+            error
+        );
+
+        return {
+            todos: [],
+            todayChapters: [],
+        };
     }
 };
 
