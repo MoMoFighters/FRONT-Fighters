@@ -27,10 +27,10 @@ export default async function CalendarPage({
     }
 
     return (
-        <div className="
-            h-full
-            flex
-            overflow-hidden
+        <div className=" 
+             h-full
+             flex
+             overflow-hidden
         ">
             <Calendar
                 selectedDate={date}
