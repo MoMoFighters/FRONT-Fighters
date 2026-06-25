@@ -1,29 +1,19 @@
-// Todo 관련
-
-import type { ApiResponse } from "@/lib/api";
-import { CheckTodoRequest, CreateTodoProps, DeleteTodoRequest, EditTodoRequest, GetTodoListData, GetTodoListRequest, ScheduleItem } from "@/features/calendar/type";
-
-/*
- - Todo 목록 월별 조회(byUserId)
- 
- - Todo 추가하기
- - Todo 제거하기
-
-//  PATCH -> 합칠수도?
- - Todo 수정하기 string
- - Todo 완료 상태 변경하기 boolean
-*/
-
-
-
-
-const BASE_SERVER_URL =
-    process.env.NEXT_PUBLIC_API_BASE_URL;
+import { fetchWithAuth, type ApiResponse } from "@/lib/api";
+import {
+    CheckTodoRequest,
+    CreateTodoProps,
+    DeleteTodoRequest,
+    EditTodoRequest,
+    GetMonthlyCalendarData,
+    GetTodoListData,
+    GetTodoListRequest,
+    ScheduleItem,
+} from "@/features/calendar/type";
 
 interface CreateTodoData {
     calendarId: number;
     title: string;
-    category: 'TODO';
+    category: "TODO";
     start: string;
     isCompleted: boolean;
 }
@@ -57,681 +47,167 @@ interface DeleteMemoRequest {
 interface AddMemoData {
     calendarId: number;
     title: string;
-    category: 'MEMO';
+    category: "MEMO";
     start: string;
     end?: string;
 }
 
-
-
-export const getTodoList = async ({
-    date,
-    accessToken,
-}: GetTodoListRequest): Promise<ApiResponse<GetTodoListData>> => {
-
-    try {
-
-        const response = await fetch(
-            `${BASE_SERVER_URL}/api/v1/calendar/monthly?month=${date}`,
-            {
-                method: 'GET',
-
-                headers: {
-                    Authorization:
-                        `Bearer ${accessToken}`,
-                },
-            }
-        );
-
-
-        const result:
-            ApiResponse<GetTodoListData> =
-            await response.json();
-
-
-        // 성공
-        if (response.ok) {
-
-            return result;
-        }
-
-
-        // 400
-        if (response.status === 400) {
-
-            throw new Error(
-                result.message ||
-                '날짜는 필수 항목입니다.'
-            );
-        }
-
-
-        // 401
-        if (response.status === 401) {
-
-            throw new Error(
-                result.message ||
-                'Authentication required.'
-            );
-        }
-
+const handleErrorResponse = async (response: Response) => {
+    if (!response.ok) {
+        const errorData = await response.json();
 
         throw new Error(
-            result.message ||
-            '월별 캘린더 조회에 실패했습니다.'
-        );
-
-    } catch (error) {
-
-        console.error(error);
-
-        if (error instanceof Error) {
-
-            throw error;
-        }
-
-        throw new Error(
-            '알 수 없는 오류가 발생했습니다.'
+            `${errorData.status}|${errorData.message}`
         );
     }
 };
 
-// Todo 추가하기
+// 월간 조회
+export const getMonthlyCalendar = async ({
+    date,
+}: {
+    date: string;
+}): Promise<ApiResponse<GetMonthlyCalendarData>> => {
+    const response = await fetchWithAuth(
+        `/api/v2/calendar/monthly?month=${date}`
+    );
+
+    await handleErrorResponse(response);
+
+    return response.json();
+};
+
+// 일간 조회(Todo 및 TodayLectures)
+export const getTodoList = async ({
+    date,
+}: GetTodoListRequest): Promise<ApiResponse<GetTodoListData>> => {
+    const response = await fetchWithAuth(
+        `/api/v2/calendar/daily?date=${date}`
+    );
+
+    await handleErrorResponse(response);
+
+    return response.json();
+};
+
 export const createTodoService = async ({
     title,
     start,
-    accessToken,
-}: CreateTodoProps)
-    : Promise<ApiResponse<CreateTodoData>> => {
+}: CreateTodoProps): Promise<ApiResponse<CreateTodoData>> => {
+    const response = await fetchWithAuth("/api/v1/calendar/todo", {
+        method: "POST",
+        body: JSON.stringify({
+            title,
+            start,
+        }),
+    });
 
-    try {
+    await handleErrorResponse(response);
 
-        const response = await fetch(
-            `${BASE_SERVER_URL}/api/v1/calendar/todo`,
-            {
-                method: 'POST',
-
-                headers: {
-                    'Content-Type':
-                        'application/json',
-
-                    Authorization:
-                        `Bearer ${accessToken}`,
-                },
-
-                body: JSON.stringify({
-                    title,
-                    start,
-                }),
-            }
-        );
-
-
-        const result:
-            ApiResponse<CreateTodoData> =
-            await response.json();
-
-
-        // 성공
-        if (
-            response.ok &&
-            result.status === 201
-        ) {
-
-            return result;
-        }
-
-
-        // validation error
-        if (response.status === 400) {
-
-            throw new Error(
-                result.message ||
-                '제목은 필수 항목입니다.'
-            );
-        }
-
-
-        // unauthorized
-        if (response.status === 401) {
-
-            throw new Error(
-                result.message ||
-                '로그인이 필요합니다.'
-            );
-        }
-
-
-        throw new Error(
-            result.message ||
-            'Todo 등록에 실패하였습니다.'
-        );
-
-    } catch (error) {
-
-        if (error instanceof Error) {
-            throw error;
-        }
-
-        throw new Error(
-            '알수없는 오류가 발생했습니다.'
-        );
-    }
+    return response.json();
 };
 
-
-
-
-
-// Todo 삭제하기
 export const deleteTodoService = async ({
     calendarId,
-    accessToken
 }: DeleteTodoRequest): Promise<ApiResponse<unknown>> => {
-    try {
-        const response = await fetch(
-            `${BASE_SERVER_URL}/api/v1/calendar/todo/${calendarId}`,
-            {
-                method: 'DELETE',
+    const response = await fetchWithAuth(`/api/v1/calendar/todo/${calendarId}`, {
+        method: "DELETE",
+    });
 
-                headers: {
-                    Authorization:
-                        `Bearer ${accessToken}`,
-                }
-            }
-        );
+    await handleErrorResponse(response);
 
+    return response.json();
+};
 
-        const result: ApiResponse<unknown> =
-            response.status !== 204
-                ? await response.json()
-                : {
-                    timestamp: '',
-                    status: 204,
-                    code: 'NO_CONTENT',
-                    message: 'Todo deleted successfully.',
-                };
-
-
-        // 성공
-        if (response.ok) {
-            return result;
-        }
-
-
-        if (response.status === 401) {
-
-            throw new Error(
-                result.message ||
-                '로그인이 필요합니다.'
-            );
-        }
-
-
-        if (response.status === 403) {
-
-            throw new Error(
-                result.message ||
-                '본인의 Todo 만 삭제할 수 있습니다.'
-            );
-        }
-        if (response.status === 404) {
-
-            throw new Error(
-                result.message ||
-                '해당 Todo 를 찾을 수 없습니다.'
-            );
-        }
-
-
-        throw new Error(
-            result.message ||
-            'Todo 삭제에 실패하였습니다.'
-        );
-
-    } catch (error) {
-
-        if (error instanceof Error) {
-            throw error;
-        }
-
-        throw new Error(
-            '알수없는 오류가 발생했습니다.'
-        );
-    }
-
-}
-
-
-
-
-// Todo 수정하기
 export const editTodoService = async ({
     calendarId,
-    accessToken,
     title,
-    start
+    start,
 }: EditTodoRequest): Promise<ApiResponse<ScheduleItem>> => {
-    try {
-        const response = await fetch(
-            `${BASE_SERVER_URL}/api/v1/calendar/todo/${calendarId}`,
-            {
-                method: 'PATCH',
+    const response = await fetchWithAuth(`/api/v1/calendar/todo/${calendarId}`, {
+        method: "PATCH",
+        body: JSON.stringify({
+            title,
+            start,
+        }),
+    });
 
-                headers: {
-                    Authorization:
-                        `Bearer ${accessToken}`,
+    await handleErrorResponse(response);
 
-                    'Content-Type':
-                        'application/json',
-                },
-                body:
-                    JSON.stringify({ title, start })
-
-            }
-        );
-
-
-        const result:
-            ApiResponse<ScheduleItem> =
-            await response.json();
-
-
-
-        // 성공
-        if (response.ok) {
-            return result;
-        }
-
-
-        if (response.status === 401) {
-
-            throw new Error(
-                result.message ||
-                '로그인이 필요합니다.'
-            );
-        }
-
-
-        if (response.status === 403) {
-
-            throw new Error(
-                result.message ||
-                '본인의 Todo 만 수정할 수 있습니다.'
-            );
-        }
-        if (response.status === 404) {
-
-            throw new Error(
-                result.message ||
-                '해당 Todo 를 찾을 수 없습니다.'
-            );
-        }
-
-
-        throw new Error(
-            result.message ||
-            'Todo 수정에 실패하였습니다.'
-        );
-
-    } catch (error) {
-
-        if (error instanceof Error) {
-            throw error;
-        }
-
-        throw new Error(
-            '알수없는 오류가 발생했습니다.'
-        );
-    }
-}
+    return response.json();
+};
 
 export const checkTodoService = async ({
     calendarId,
-    accessToken,
     isCompleted,
 }: CheckTodoRequest): Promise<ApiResponse<ScheduleItem>> => {
-
-    try {
-
-        const response = await fetch(
-            `${BASE_SERVER_URL}/api/v1/calendar/todo/${calendarId}/check`,
-            {
-                method: 'PATCH',
-
-                headers: {
-                    Authorization:
-                        `Bearer ${accessToken}`,
-
-                    'Content-Type':
-                        'application/json',
-                },
-
-                body:
-                    JSON.stringify({
-                        isCompleted,
-                    }),
-            }
-        );
-
-
-        const result:
-            ApiResponse<ScheduleItem> =
-            await response.json();
-
-
-        // 성공
-        if (response.ok) {
-
-            return result;
+    const response = await fetchWithAuth(
+        `/api/v1/calendar/todo/${calendarId}/check`,
+        {
+            method: "PATCH",
+            body: JSON.stringify({
+                isCompleted,
+            }),
         }
+    );
 
+    await handleErrorResponse(response);
 
-        // 400
-        if (response.status === 400) {
-
-            throw new Error(
-                result.message ||
-                '체크 상태를 변경할 수 없습니다.'
-            );
-        }
-
-
-        // 401
-        if (response.status === 401) {
-
-            throw new Error(
-                result.message ||
-                '로그인이 필요합니다.'
-            );
-        }
-
-
-        // 403
-        if (response.status === 403) {
-
-            throw new Error(
-                result.message ||
-                '본인의 Todo만 변경할 수 있습니다.'
-            );
-        }
-
-
-        // 404
-        if (response.status === 404) {
-
-            throw new Error(
-                result.message ||
-                'Todo를 찾을 수 없습니다.'
-            );
-        }
-
-
-        throw new Error(
-            result.message ||
-            'Todo 체크 상태 변경에 실패했습니다.'
-        );
-
-    } catch (error) {
-
-        if (error instanceof Error) {
-
-            throw error;
-        }
-
-        throw new Error(
-            '알 수 없는 오류가 발생했습니다.'
-        );
-    }
+    return response.json();
 };
 
 export const addDateMemoService = async ({
     title,
     start,
-    accessToken,
 }: AddDateMemoRequest): Promise<ApiResponse<AddMemoData>> => {
+    const response = await fetchWithAuth("/api/v1/calendar/memo", {
+        method: "POST",
+        body: JSON.stringify({
+            title,
+            start,
+        }),
+    });
 
-    try {
+    await handleErrorResponse(response);
 
-        const response = await fetch(
-            `${BASE_SERVER_URL}/api/v1/calendar/memo`,
-            {
-                method: 'POST',
-
-                headers: {
-                    'Content-Type':
-                        'application/json',
-
-                    Authorization:
-                        `Bearer ${accessToken}`,
-                },
-
-                body: JSON.stringify({
-                    title,
-                    start,
-                }),
-            }
-        );
-
-
-        const result:
-            ApiResponse<AddMemoData> =
-            await response.json();
-
-
-        if (response.ok) {
-
-            return result;
-        }
-
-
-        if (response.status === 400) {
-
-            throw new Error(
-                result.message ||
-                '메모 제목과 날짜는 필수 항목입니다.'
-            );
-        }
-
-
-        if (response.status === 401) {
-
-            throw new Error(
-                result.message ||
-                '로그인이 필요합니다.'
-            );
-        }
-
-
-        throw new Error(
-            result.message ||
-            '메모 등록에 실패했습니다.'
-        );
-
-    } catch (error) {
-
-        if (error instanceof Error) {
-
-            throw error;
-        }
-
-        throw new Error(
-            '알 수 없는 오류가 발생했습니다.'
-        );
-    }
+    return response.json();
 };
 
 export const addDateRangeMemoService = async ({
     title,
     start,
     end,
-    accessToken,
 }: AddDateRangeMemoRequest): Promise<ApiResponse<AddMemoData>> => {
+    const response = await fetchWithAuth("/api/v1/calendar/memo", {
+        method: "POST",
+        body: JSON.stringify({
+            title,
+            start,
+            end,
+        }),
+    });
 
-    try {
+    await handleErrorResponse(response);
 
-        const response = await fetch(
-            `${BASE_SERVER_URL}/api/v1/calendar/memo`,
-            {
-                method: 'POST',
-
-                headers: {
-                    'Content-Type':
-                        'application/json',
-
-                    Authorization:
-                        `Bearer ${accessToken}`,
-                },
-
-                body: JSON.stringify({
-                    title,
-                    start,
-                    end,
-                }),
-            }
-        );
-
-
-        const result:
-            ApiResponse<AddMemoData> =
-            await response.json();
-
-
-        if (response.ok) {
-
-            return result;
-        }
-
-
-        if (response.status === 400) {
-
-            throw new Error(
-                result.message ||
-                '메모 제목, 시작일, 종료일은 필수 항목입니다.'
-            );
-        }
-
-
-        if (response.status === 401) {
-
-            throw new Error(
-                result.message ||
-                '로그인이 필요합니다.'
-            );
-        }
-
-
-        throw new Error(
-            result.message ||
-            '기간 메모 등록에 실패했습니다.'
-        );
-
-    } catch (error) {
-
-        if (error instanceof Error) {
-
-            throw error;
-        }
-
-        throw new Error(
-            '알 수 없는 오류가 발생했습니다.'
-        );
-    }
+    return response.json();
 };
 
 export const editDateMemoService = async ({
     calendarId,
     title,
     start,
-    accessToken,
 }: EditDateMemoRequest): Promise<ApiResponse<AddMemoData>> => {
+    const response = await fetchWithAuth(`/api/v1/calendar/memo/${calendarId}`, {
+        method: "PATCH",
+        body: JSON.stringify({
+            title,
+            start,
+        }),
+    });
 
-    try {
+    await handleErrorResponse(response);
 
-        const response = await fetch(
-            `${BASE_SERVER_URL}/api/v1/calendar/memo/${calendarId}`,
-            {
-                method: 'PATCH',
-
-                headers: {
-                    'Content-Type':
-                        'application/json',
-
-                    Authorization:
-                        `Bearer ${accessToken}`,
-                },
-
-                body: JSON.stringify({
-                    title,
-                    start,
-                }),
-            }
-        );
-
-
-        const result:
-            ApiResponse<AddMemoData> =
-            await response.json();
-
-
-        if (response.ok) {
-
-            return result;
-        }
-
-
-        if (response.status === 400) {
-
-            throw new Error(
-                result.message ||
-                '수정할 메모 정보가 올바르지 않습니다.'
-            );
-        }
-
-
-        if (response.status === 401) {
-
-            throw new Error(
-                result.message ||
-                'Authentication required.'
-            );
-        }
-
-
-        if (response.status === 403) {
-
-            throw new Error(
-                result.message ||
-                '본인의 메모만 수정할 수 있습니다.'
-            );
-        }
-
-
-        if (response.status === 404) {
-
-            throw new Error(
-                result.message ||
-                '메모를 찾을 수 없습니다.'
-            );
-        }
-
-
-        throw new Error(
-            result.message ||
-            '메모 수정에 실패했습니다.'
-        );
-
-    } catch (error) {
-
-        if (error instanceof Error) {
-
-            throw error;
-        }
-
-        throw new Error(
-            '알 수 없는 오류가 발생했습니다.'
-        );
-    }
+    return response.json();
 };
 
 export const editDateRangeMemoService = async ({
@@ -739,170 +215,29 @@ export const editDateRangeMemoService = async ({
     title,
     start,
     end,
-    accessToken,
 }: EditDateRangeMemoRequest): Promise<ApiResponse<AddMemoData>> => {
+    const response = await fetchWithAuth(`/api/v1/calendar/memo/${calendarId}`, {
+        method: "PATCH",
+        body: JSON.stringify({
+            title,
+            start,
+            end,
+        }),
+    });
 
-    try {
+    await handleErrorResponse(response);
 
-        const response = await fetch(
-            `${BASE_SERVER_URL}/api/v1/calendar/memo/${calendarId}`,
-            {
-                method: 'PATCH',
-
-                headers: {
-                    'Content-Type':
-                        'application/json',
-
-                    Authorization:
-                        `Bearer ${accessToken}`,
-                },
-
-                body: JSON.stringify({
-                    title,
-                    start,
-                    end,
-                }),
-            }
-        );
-
-
-        const result:
-            ApiResponse<AddMemoData> =
-            await response.json();
-
-
-        if (response.ok) {
-
-            return result;
-        }
-
-
-        if (response.status === 400) {
-
-            throw new Error(
-                result.message ||
-                '수정할 메모 정보가 올바르지 않습니다.'
-            );
-        }
-
-
-        if (response.status === 401) {
-
-            throw new Error(
-                result.message ||
-                'Authentication required.'
-            );
-        }
-
-
-        if (response.status === 403) {
-
-            throw new Error(
-                result.message ||
-                '본인의 메모만 수정할 수 있습니다.'
-            );
-        }
-
-
-        if (response.status === 404) {
-
-            throw new Error(
-                result.message ||
-                '메모를 찾을 수 없습니다.'
-            );
-        }
-
-
-        throw new Error(
-            result.message ||
-            '메모 수정에 실패했습니다.'
-        );
-
-    } catch (error) {
-
-        if (error instanceof Error) {
-
-            throw error;
-        }
-
-        throw new Error(
-            '알 수 없는 오류가 발생했습니다.'
-        );
-    }
+    return response.json();
 };
 
 export const deleteMemoService = async ({
     calendarId,
-    accessToken,
 }: DeleteMemoRequest): Promise<ApiResponse<null>> => {
+    const response = await fetchWithAuth(`/api/v1/calendar/memo/${calendarId}`, {
+        method: "DELETE",
+    });
 
-    try {
+    await handleErrorResponse(response);
 
-        const response = await fetch(
-            `${BASE_SERVER_URL}/api/v1/calendar/memo/${calendarId}`,
-            {
-                method: 'DELETE',
-
-                headers: {
-                    Authorization:
-                        `Bearer ${accessToken}`,
-                },
-            }
-        );
-
-
-        const result:
-            ApiResponse<null> =
-            await response.json();
-
-
-        if (response.ok) {
-
-            return result;
-        }
-
-
-        if (response.status === 401) {
-
-            throw new Error(
-                result.message ||
-                'Authentication required.'
-            );
-        }
-
-
-        if (response.status === 403) {
-
-            throw new Error(
-                result.message ||
-                '본인의 메모만 삭제할 수 있습니다.'
-            );
-        }
-
-
-        if (response.status === 404) {
-
-            throw new Error(
-                result.message ||
-                '메모를 찾을 수 없습니다.'
-            );
-        }
-
-
-        throw new Error(
-            result.message ||
-            '메모 삭제에 실패했습니다.'
-        );
-
-    } catch (error) {
-
-        if (error instanceof Error) {
-
-            throw error;
-        }
-
-        throw new Error(
-            '알 수 없는 오류가 발생했습니다.'
-        );
-    }
+    return response.json();
 };

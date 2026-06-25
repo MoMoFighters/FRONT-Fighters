@@ -26,7 +26,9 @@ export default async function CalendarPage({
         );
     }
 
+    console.log(getCalendarSchedulesAction({ date }))
     const schedules = await getCalendarSchedulesAction({ date });
+
 
     return (
         <Calendar schedules={schedules} />

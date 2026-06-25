@@ -3,7 +3,7 @@
 import { cookies } from 'next/headers';
 
 import type { ApiResponse } from '@/lib/api';
-import { addDateMemoService, addDateRangeMemoService, checkTodoService, createTodoService, deleteMemoService, deleteTodoService, editDateMemoService, editDateRangeMemoService, editTodoService, getTodoList }
+import { addDateMemoService, addDateRangeMemoService, checkTodoService, createTodoService, deleteMemoService, deleteTodoService, editDateMemoService, editDateRangeMemoService, editTodoService, getMonthlyCalendar, getTodoList }
     from '@/app/services/phone/calendar/service';
 
 import { GetCalendarSchedulesActionProps, ScheduleItem }
@@ -38,27 +38,32 @@ export const getCalendarSchedulesAction = async ({
         }
 
 
-        // 서비스 호출
-        const result =
-            await getTodoList({
+        const [monthlyResult, dailyResult] = await Promise.all([
+            getMonthlyCalendar({
+                date,
+            }),
+            getTodoList({
                 date,
                 accessToken,
-            });
+            }),
+        ]);
 
 
-        const calendarData =
-            result.data;
+        const monthlyData =
+            monthlyResult.data;
+
+        const dailyData =
+            dailyResult.data;
 
 
-        // 데이터 없음
-        if (!calendarData) {
+        if (!monthlyData && !dailyData) {
             return [];
         }
 
 
         return [
 
-            ...calendarData.todos.map(
+            ...(dailyData?.todos ?? []).map(
                 (todo) => ({
 
                     calendarId: todo.calendarId,
@@ -69,7 +74,7 @@ export const getCalendarSchedulesAction = async ({
                 })
             ),
 
-            ...calendarData.memos.map(
+            ...(monthlyData?.memos ?? []).map(
                 (memo) => ({
 
                     calendarId: memo.calendarId,
