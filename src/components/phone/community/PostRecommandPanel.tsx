@@ -12,12 +12,6 @@ export default function PostRecommandPanel({
                 <h2 className="text-base font-black text-slate-900">
                     추천 게시물
                 </h2>
-                <Link
-                    href="/student/phone/community"
-                    className="text-xs font-black text-indigo-500 transition hover:text-indigo-600"
-                >
-                    목록 보기
-                </Link>
             </div>
 
             <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">

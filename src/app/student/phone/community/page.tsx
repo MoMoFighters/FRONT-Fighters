@@ -178,7 +178,7 @@ const COMMUNITY_POSTS: CommunityPost[] = [
     },
 ];
 
-const PAGE_SIZE = 9;
+const PAGE_SIZE = 8;
 
 const isCommunityCategory = (
     category?: string
@@ -331,64 +331,67 @@ export default async function CommunityPage({
                             </p>
                         </div>
                     )}
+                    <div className="mr-[63px] mt-5">
+                        {totalPages > 1 && (
+                            <Pagination className="">
+                                <PaginationContent>
+                                    {currentPage > 1 && (
+                                        <PaginationItem>
+                                            <PaginationPrevious
+                                                href={createPageHref({
+                                                    pageNumber: currentPage - 1,
+                                                    keyword,
+                                                    category: selectedCategory,
+                                                })}
+                                                text=""
+                                                className="h-8 w-8 border border-slate-200 bg-white p-0 text-slate-500 hover:text-slate-900"
+                                            />
+                                        </PaginationItem>
+                                    )}
+
+                                    {Array.from(
+                                        { length: totalPages },
+                                        (_, index) => index + 1
+                                    ).map((pageNumber) => (
+                                        <PaginationItem key={pageNumber}>
+                                            <PaginationLink
+                                                href={createPageHref({
+                                                    pageNumber,
+                                                    keyword,
+                                                    category: selectedCategory,
+                                                })}
+                                                isActive={currentPage === pageNumber}
+                                                className={
+                                                    currentPage === pageNumber
+                                                        ? "h-8 w-8 border-indigo-300 bg-indigo-50 text-indigo-500 hover:bg-indigo-50"
+                                                        : "h-8 w-8 text-slate-500 hover:border-slate-200 hover:bg-white hover:text-slate-900"
+                                                }
+                                            >
+                                                {pageNumber}
+                                            </PaginationLink>
+                                        </PaginationItem>
+                                    ))}
+
+                                    {currentPage < totalPages && (
+                                        <PaginationItem>
+                                            <PaginationNext
+                                                href={createPageHref({
+                                                    pageNumber: currentPage + 1,
+                                                    keyword,
+                                                    category: selectedCategory,
+                                                })}
+                                                text=""
+                                                className="h-8 w-8 border border-slate-200 bg-white p-0 text-slate-500 hover:text-slate-900"
+                                            />
+                                        </PaginationItem>
+                                    )}
+                                </PaginationContent>
+                            </Pagination>
+                        )}
+                    </div>
                 </div>
 
-                {totalPages > 1 && (
-                    <Pagination className="-mt-2">
-                        <PaginationContent>
-                            {currentPage > 1 && (
-                                <PaginationItem>
-                                    <PaginationPrevious
-                                        href={createPageHref({
-                                            pageNumber: currentPage - 1,
-                                            keyword,
-                                            category: selectedCategory,
-                                        })}
-                                        text=""
-                                        className="h-8 w-8 border border-slate-200 bg-white p-0 text-slate-500 hover:text-slate-900"
-                                    />
-                                </PaginationItem>
-                            )}
 
-                            {Array.from(
-                                { length: totalPages },
-                                (_, index) => index + 1
-                            ).map((pageNumber) => (
-                                <PaginationItem key={pageNumber}>
-                                    <PaginationLink
-                                        href={createPageHref({
-                                            pageNumber,
-                                            keyword,
-                                            category: selectedCategory,
-                                        })}
-                                        isActive={currentPage === pageNumber}
-                                        className={
-                                            currentPage === pageNumber
-                                                ? "h-8 w-8 border-indigo-300 bg-indigo-50 text-indigo-500 hover:bg-indigo-50"
-                                                : "h-8 w-8 text-slate-500 hover:border-slate-200 hover:bg-white hover:text-slate-900"
-                                        }
-                                    >
-                                        {pageNumber}
-                                    </PaginationLink>
-                                </PaginationItem>
-                            ))}
-
-                            {currentPage < totalPages && (
-                                <PaginationItem>
-                                    <PaginationNext
-                                        href={createPageHref({
-                                            pageNumber: currentPage + 1,
-                                            keyword,
-                                            category: selectedCategory,
-                                        })}
-                                        text=""
-                                        className="h-8 w-8 border border-slate-200 bg-white p-0 text-slate-500 hover:text-slate-900"
-                                    />
-                                </PaginationItem>
-                            )}
-                        </PaginationContent>
-                    </Pagination>
-                )}
             </section>
         </div>
     );
