@@ -39,7 +39,18 @@ const assertApiData = <T>(result: ApiResponse<T>): T => {
  * @returns Building[]
  */
 export const getMyBuildings = async () => {
-    const response = await fetchWithAuth("api/v1/users/buildings");
+    const response = await fetchWithAuth("api/v1/user/buildings");
+    await handleErrorResponse(response);
+    const result: ApiResponse<Building[]> = await response.json();
+    return assertApiData(result);
+}
+
+/**
+ * 친구 도시의 내 건물 정보 조회 api
+ * @returns Building[]
+ */
+export const getFriendBuildings = async (id: string) => {
+    const response = await fetchWithAuth(`api/v1/user/${id}/buildings`);
     await handleErrorResponse(response);
     const result: ApiResponse<Building[]> = await response.json();
     return assertApiData(result);
