@@ -27,12 +27,23 @@ export interface CalendarMemo {
     end: string;
 }
 
-export interface GetTodoListData {
+export interface TodayChapter {
+    lectureTitle: string;
+    lectureId: number;
+    category: 'FITNESS' | 'ART' | 'COOK' | 'BEAUTY' | 'STUDY';
+    chapterTitle: string;
+}
+
+export interface GetMonthlyCalendarData {
     startDate: string;
     endDate: string;
-
-    todos: CalendarTodo[];
     memos: CalendarMemo[];
+}
+
+export interface GetTodoListData {
+    date: string;
+    todos: CalendarTodo[];
+    todayChapters: TodayChapter[];
 }
 
 export interface GetTodoListResponse {
