@@ -1,4 +1,4 @@
-﻿import Image from "next/image";
+﻿import Image, { StaticImageData } from "next/image";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "../ui/hover-card";
 import Link from "next/link";
 import getCategoryMeta from "@/features/lecture/components/student/shared/category";
@@ -8,9 +8,11 @@ import mypage from "@/app/assets/img/mypage.png";
 import point from "@/app/assets/img/point.png";
 import createBuilding from "@/app/assets/img/createBuilding.png"
 
-interface BuildingItemProps { common?: string, category?: Category, level?: number }
+type CommonBuilding = "mypage" | "point";
 
-export default function BuildingItem({ common, category, level }: BuildingItemProps) {
+interface BuildingItemProps { common?: CommonBuilding, category?: Category, level?: number, buildingUrl?: StaticImageData }
+
+export default function BuildingItem({ common, category, level, buildingUrl }: BuildingItemProps) {
 
     const getBuildingInfo = () => {
         if (common && common === "mypage") {
@@ -33,9 +35,10 @@ export default function BuildingItem({ common, category, level }: BuildingItemPr
             }
         }
 
-        if (category) {
+        if (category && buildingUrl) {
             return {
                 ...getCategoryMeta(category),
+                buildingImage: buildingUrl,
                 href: `/student/${category.toLowerCase()}/lectures`
             }
         }
@@ -54,11 +57,12 @@ export default function BuildingItem({ common, category, level }: BuildingItemPr
     return (
         <HoverCard openDelay={50} closeDelay={50}>
             <HoverCardTrigger asChild>
-                <Link href={buildingInfo.href}>
+                <Link href={buildingInfo.href} className="relative block w-full h-full">
                     <Image
                         src={buildingInfo.buildingImage}
                         alt={buildingInfo.label}
                         fill
+                        className="object-contain"
                     />
 
 

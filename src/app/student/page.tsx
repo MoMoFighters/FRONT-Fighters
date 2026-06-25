@@ -7,7 +7,49 @@ import PostBoard from "@/components/city/PostBoard";
 import CityCanvas from "@/components/city/CityCanvas";
 import { Building } from "@/features/city/type";
 import BuildingItem from "@/components/city/BuildingItem";
+
+// 임의로 로컬에 이미지 저장해놓고 사용, 실제로는 api 응답값에 있는 이미지 사용
+import study from "@/app/assets/img/study.png"
+import fitness from "@/app/assets/img/fitness.png"
+import art from "@/app/assets/img/art.png"
+import beauty from "@/app/assets/img/beauty.png"
+import cook from "@/app/assets/img/cook.png"
+
+// 추후 api 연동 시 임포트 구문
 // import { getMyBuildings } from "../services/city/service";
+
+const buildingSlots = [
+    {
+        position: 1,
+        filledStyle: { top: "9.54%", left: "47.5%", width: "11.11%", aspectRatio: "1 / 1" },
+        emptyStyle: { top: "17.65%", left: "50.28%", width: "5.56%", aspectRatio: "1 / 1" },
+    },
+    {
+        position: 2,
+        filledStyle: { top: "25%", left: "31.8%", width: "12.5%", aspectRatio: "9 / 8" },
+        emptyStyle: { top: "32.5%", left: "35%", width: "5.56%", aspectRatio: "1 / 1" },
+    },
+    {
+        position: 3,
+        filledStyle: { top: "25%", left: "63%", width: "12.5%", aspectRatio: "9 / 8" },
+        emptyStyle: { top: "32.5%", left: "66.11%", width: "5.56%", aspectRatio: "1 / 1" },
+    },
+    {
+        position: 4,
+        filledStyle: { top: "40%", left: "47.5%", width: "12.5%", aspectRatio: "9 / 8" },
+        emptyStyle: { top: "48.5%", left: "50.5%", width: "5.56%", aspectRatio: "1 / 1" },
+    },
+    {
+        position: 5,
+        filledStyle: { top: "58%", left: "30.5%", width: "12.5%", aspectRatio: "9 / 8" },
+        emptyStyle: { top: "66%", left: "33.75%", width: "5.56%", aspectRatio: "1 / 1" },
+    },
+] as const;
+
+const commonBuildingSlots = {
+    point: { top: "41.5%", left: "15%", width: "12.5%", aspectRatio: "9 / 8" },
+    mypage: { top: "60%", left: "62.22%", width: "13.89%", aspectRatio: "5 / 4" },
+} as const;
 
 export default async function StudentMainPage() {
 
@@ -20,35 +62,34 @@ export default async function StudentMainPage() {
         {
             position: 1,
             category: "STUDY",
-            level: 1
+            level: 1,
+            buildingUrl: study
         },
         {
             position: 2,
             category: "ART",
-            level: 2
+            level: 2,
+            buildingUrl: art
         },
         {
             position: 3,
             category: "FITNESS",
-            level: 1
+            level: 1,
+            buildingUrl: fitness
         },
         {
             position: 4,
             category: "COOK",
-            level: 3
+            level: 3,
+            buildingUrl: cook
         },
         {
             position: 5,
             category: "BEAUTY",
-            level: 3
+            level: 3,
+            buildingUrl: beauty
         },
     ]
-
-    const firstBuilding = buildings.find((building) => building.position === 1);
-    const secondBuilding = buildings.find((building) => building.position === 2);
-    const thirdBuilding = buildings.find((building) => building.position === 3);
-    const forthBuilding = buildings.find((building) => building.position === 4);
-    const fifthBuilding = buildings.find((building) => building.position === 5);
 
     return (
         <CityCanvas>
@@ -58,46 +99,34 @@ export default async function StudentMainPage() {
             <Phone />
             <MonthlyStreakGarden />
 
-            {/* 1번 자리 */}
-            <div className={`${firstBuilding ? "w-40 h-40" : "w-20 h-20"} absolute ${firstBuilding ? "top-18 left-171" : "top-35 left-181"} cursor-pointer ${firstBuilding ? "hover:scale-105" : "hover:scale-110"} transition-all`}>                {firstBuilding
-                ? <BuildingItem category={firstBuilding.category} level={firstBuilding.level}></BuildingItem>
-                : <BuildingItem></BuildingItem>}
-            </div>
+            {buildingSlots.map((slot) => {
+                const building = buildings.find((building) => building.position === slot.position);
 
-            {/* 2번 자리 */}
-            <div className={`${secondBuilding ? "w-45 h-40" : "w-20 h-20"} absolute  ${secondBuilding ? "top-48 left-113" : "top-66 left-126"} cursor-pointer ${secondBuilding ? "hover:scale-105" : "hover:scale-110"} transition-all`}>
-                {secondBuilding
-                    ? <BuildingItem category={secondBuilding.category} level={secondBuilding.level}></BuildingItem>
-                    : <BuildingItem></BuildingItem>}
-            </div>
-
-            {/* 3번 자리 */}
-            <div className={`${thirdBuilding ? "w-45 h-40" : "w-20 h-20"} absolute ${thirdBuilding ? "top-48 left-228" : "top-66 left-238"} cursor-pointer ${thirdBuilding ? "hover:scale-105" : "hover:scale-110"} transition-all`}>
-                {thirdBuilding
-                    ? <BuildingItem category={thirdBuilding.category} level={thirdBuilding.level}></BuildingItem>
-                    : <BuildingItem></BuildingItem>}
-            </div>
-
-            {/* 4번 자리 */}
-            <div className={`${forthBuilding ? "w-45 h-40" : "w-20 h-20"} absolute ${forthBuilding ? "top-82 left-171" : "top-98 left-181"} cursor-pointer ${forthBuilding ? "hover:scale-105" : "hover:scale-110"} transition-all`}>
-                {forthBuilding
-                    ? <BuildingItem category={forthBuilding.category} level={forthBuilding.level}></BuildingItem>
-                    : <BuildingItem></BuildingItem>}
-            </div>
-
-            {/* 5번 자리 */}
-            <div className={`${fifthBuilding ? "w-45 h-40" : "w-20 h-20"} absolute ${fifthBuilding ? "top-120 left-108" : "top-134 left-121"} cursor-pointer ${fifthBuilding ? "hover:scale-105" : "hover:scale-110"} transition-all`}>
-                {fifthBuilding
-                    ? <BuildingItem category={fifthBuilding.category} level={fifthBuilding.level}></BuildingItem>
-                    : <BuildingItem></BuildingItem>}
-            </div>
+                return (
+                    <div
+                        key={slot.position}
+                        className={`absolute cursor-pointer transition-all ${building ? "hover:scale-105" : "hover:scale-110"}`}
+                        style={building ? slot.filledStyle : slot.emptyStyle}
+                    >
+                        {building
+                            ? <BuildingItem category={building.category} level={building.level} buildingUrl={building.buildingUrl} />
+                            : <BuildingItem />}
+                    </div>
+                );
+            })}
 
             {/* 포인트 상점 고정 자리 */}
-            <div className="w-45 h-40 absolute top-84 left-54 cursor-pointer hover:scale-105 transition-all">
+            <div
+                className="absolute cursor-pointer transition-all hover:scale-105"
+                style={commonBuildingSlots.point}
+            >
                 <BuildingItem common="point" />
             </div>
             {/* 집 고정 자리 */}
-            <div className="w-50 h-40 absolute top-120 left-224 cursor-pointer hover:scale-105 transition-all">
+            <div
+                className="absolute cursor-pointer transition-all hover:scale-105"
+                style={commonBuildingSlots.mypage}
+            >
                 <BuildingItem common="mypage" />
             </div>
         </CityCanvas>
