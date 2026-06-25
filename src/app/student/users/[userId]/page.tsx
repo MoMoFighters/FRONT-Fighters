@@ -1,5 +1,3 @@
-import { getMyInfo } from "@/features/user/action";
-import NicknameInputModal from "@/features/auth/components/NicknameInputModal";
 import Phone from "@/components/city/Phone";
 import MonthlyStreakGarden from "@/components/city/MonthlyStreakGarden";
 import BusStation from "@/components/city/BusStation";
@@ -7,6 +5,7 @@ import PostBoard from "@/components/city/PostBoard";
 import CityCanvas from "@/components/city/CityCanvas";
 import { Building } from "@/features/city/type";
 import BuildingItem from "@/components/city/BuildingItem";
+import Image from "next/image";
 
 // 임의로 로컬에 이미지 저장해놓고 사용, 실제로는 api 응답값에 있는 이미지 사용
 import study from "@/app/assets/img/study.png"
@@ -14,6 +13,8 @@ import fitness from "@/app/assets/img/fitness.png"
 import art from "@/app/assets/img/art.png"
 import beauty from "@/app/assets/img/beauty.png"
 import cook from "@/app/assets/img/cook.png"
+import mypage from "@/app/assets/img/mypage.png";
+import point from "@/app/assets/img/point.png";
 
 // 추후 api 연동 시 임포트 구문
 // import { getMyBuildings } from "../services/city/service";
@@ -101,35 +102,51 @@ export default async function StudentMainPage({ params }: {
             <Phone />
             <MonthlyStreakGarden />
 
+            {/* 친구 도시의 경우 각 아이템들은 그저 볼 수 있는 고정 이미지로 */}
             {buildingSlots.map((slot) => {
                 const building = buildings.find((building) => building.position === slot.position);
 
                 return (
                     <div
                         key={slot.position}
-                        className={`absolute cursor-pointer transition-all ${building ? "hover:scale-105" : "hover:scale-110"}`}
+                        className="absolute"
                         style={building ? slot.filledStyle : slot.emptyStyle}
                     >
                         {building
-                            ? <BuildingItem category={building.category} level={building.level} buildingUrl={building.buildingUrl} />
-                            : <BuildingItem />}
+                            ? <Image
+                                src={building.buildingUrl}
+                                alt={building.category}
+                                fill
+                                className="object-contain"
+                            />
+                            : ""}
                     </div>
                 );
             })}
 
             {/* 포인트 상점 고정 자리 */}
             <div
-                className="absolute cursor-pointer transition-all hover:scale-105"
+                className="absolute"
                 style={commonBuildingSlots.point}
             >
-                <BuildingItem common="point" />
+                <Image
+                    src={point}
+                    alt="포인트 상점"
+                    fill
+                    className="object-contain"
+                />
             </div>
             {/* 집 고정 자리 */}
             <div
-                className="absolute cursor-pointer transition-all hover:scale-105"
+                className="absolute"
                 style={commonBuildingSlots.mypage}
             >
-                <BuildingItem common="mypage" />
+                <Image
+                    src={mypage}
+                    alt="집"
+                    fill
+                    className="object-contain"
+                />
             </div>
         </CityCanvas>
     );

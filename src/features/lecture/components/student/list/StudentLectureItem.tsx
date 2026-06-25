@@ -10,8 +10,6 @@ interface StudentLectureItemProps {
     lecture: Lecture;
     href: string;
     progress?: number;
-    chapterCount?: number;
-    reviewCount?: number;
     showLearningStatus?: boolean;
 }
 
@@ -19,15 +17,10 @@ export default function StudentLectureItem({
     lecture,
     href,
     progress,
-    chapterCount,
-    reviewCount,
     showLearningStatus = true,
 }: StudentLectureItemProps) {
 
     const categoryMeta = getCategoryMeta(lecture.category);
-    const progressValue = progress ?? lecture.lectureProgress ?? 0;
-    const chapterCountValue = chapterCount ?? lecture.chapterCount;
-    const reviewCountValue = reviewCount ?? lecture.reviewCount;
 
     return (
         <Link
@@ -68,13 +61,12 @@ export default function StudentLectureItem({
                 {showLearningStatus && (
                     <div className="mt-auto flex items-center gap-3 text-xs font-semibold text-slate-400">
                         <Progress
-                            value={progressValue}
+                            value={lecture?.lectureProgress}
                             id={`lecture-progress-${lecture.lectureId}`}
                             className="max-w-40"
                         />
 
-                        <span>진도율 {progressValue}%</span>
-                        <span>총 {chapterCountValue}강</span>
+                        <span>진도율 {lecture?.lectureProgress}%</span>
                     </div>
                 )}
             </div>
@@ -86,10 +78,10 @@ export default function StudentLectureItem({
                     <span className="font-medium text-slate-400">
                         / 5.0
                     </span>
-                    ({reviewCountValue})
+                    ({lecture.reviewCount})
                 </div>
 
-                {showLearningStatus && (
+                {showLearningStatus ? (
                     <span
                         className={`
                             rounded-lg border px-3 py-1.5
@@ -102,7 +94,7 @@ export default function StudentLectureItem({
                     >
                         {lecture.isEnrolled ? "학습 중" : "미시청"}
                     </span>
-                )}
+                ) : <span className="text-sm font-semibold">챕터 : 총 {lecture.chapterCount}강</span>}
             </div>
         </Link>
     );
