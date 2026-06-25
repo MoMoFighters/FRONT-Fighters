@@ -1,12 +1,7 @@
 import { Search } from "lucide-react";
 
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+import CommunitySideBar from "@/components/phone/community/CommunitySideBar";
+import PostListItem from "@/components/phone/community/PostListItem";
 import {
     Pagination,
     PaginationContent,
@@ -15,26 +10,22 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "@/components/ui/pagination";
-import CommunitySideBar from "@/components/phone/community/CommunitySideBar";
-import PostListItem from "@/components/phone/community/PostListItem";
-
-type CommunityCategory =
-    | "STUDY"
-    | "FASHION"
-    | "BEAUTY"
-    | "FITNESS"
-    | "COOK"
-    | "FREE";
-
-interface CommunityPost {
-    id: number;
-    title: string;
-    category: CommunityCategory;
-    authorNickname: string;
-    thumbnailUrl: string;
-    likeCount: number;
-    viewCount: number;
-}
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import {
+    getCommunityPostListAction,
+    searchCommunityPostAction,
+} from "@/features/community/action";
+import type {
+    CommunityCategory,
+    CommunityPostListItem,
+    CommunityPostSearchData,
+} from "@/features/community/type";
 
 interface CommunityPageProps {
     searchParams: Promise<{
@@ -44,141 +35,17 @@ interface CommunityPageProps {
     }>;
 }
 
-const CATEGORY_OPTIONS = [
-    {
-        value: "ALL",
-        label: "전체",
-    },
-    {
-        value: "STUDY",
-        label: "학습",
-    },
-    {
-        value: "FASHION",
-        label: "패션",
-    },
-    {
-        value: "BEAUTY",
-        label: "뷰티",
-    },
-    {
-        value: "FITNESS",
-        label: "피트니스",
-    },
-    {
-        value: "COOK",
-        label: "요리",
-    },
-    {
-        value: "FREE",
-        label: "자유",
-    },
-] as const;
-
-const COMMUNITY_POSTS: CommunityPost[] = [
-    {
-        id: 1,
-        title: "오늘 요리 수업 후기",
-        category: "COOK",
-        authorNickname: "복숭아밥상",
-        thumbnailUrl:
-            "https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=360&q=80",
-        likeCount: 24,
-        viewCount: 10,
-    },
-    {
-        id: 2,
-        title: "헬스 초보 루틴 질문",
-        category: "FITNESS",
-        authorNickname: "운동시작",
-        thumbnailUrl:
-            "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=360&q=80",
-        likeCount: 18,
-        viewCount: 10,
-    },
-    {
-        id: 3,
-        title: "집중 잘 되는 공부법",
-        category: "STUDY",
-        authorNickname: "스터디메이트",
-        thumbnailUrl:
-            "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=360&q=80",
-        likeCount: 9,
-        viewCount: 10,
-    },
-    {
-        id: 4,
-        title: "그림 연습 같이 할 사람",
-        category: "STUDY",
-        authorNickname: "매일드로잉",
-        thumbnailUrl:
-            "https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=360&q=80",
-        likeCount: 31,
-        viewCount: 10,
-    },
-    {
-        id: 5,
-        title: "오늘의 작은 성공 공유",
-        category: "FREE",
-        authorNickname: "도시산책",
-        thumbnailUrl:
-            "https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=360&q=80",
-        likeCount: 42,
-        viewCount: 10,
-    },
-    {
-        id: 6,
-        title: "옷장 정리하고 배운 것",
-        category: "FASHION",
-        authorNickname: "색조합기록",
-        thumbnailUrl:
-            "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=360&q=80",
-        likeCount: 16,
-        viewCount: 10,
-    },
-    {
-        id: 7,
-        title: "피부 관리 루틴 추천",
-        category: "BEAUTY",
-        authorNickname: "아침루틴",
-        thumbnailUrl:
-            "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=360&q=80",
-        likeCount: 27,
-        viewCount: 10,
-    },
-    {
-        id: 8,
-        title: "주말 강의 추천 받아요",
-        category: "FREE",
-        authorNickname: "주말러",
-        thumbnailUrl:
-            "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=360&q=80",
-        likeCount: 12,
-        viewCount: 10,
-    },
-    {
-        id: 9,
-        title: "샐러드 만들기 성공",
-        category: "COOK",
-        authorNickname: "요리보고",
-        thumbnailUrl:
-            "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=360&q=80",
-        likeCount: 35,
-        viewCount: 10,
-    },
-    {
-        id: 10,
-        title: "아침 스트레칭 기록",
-        category: "FITNESS",
-        authorNickname: "매일운동",
-        thumbnailUrl:
-            "https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=360&q=80",
-        likeCount: 21,
-        viewCount: 10,
-    },
-];
-
 const PAGE_SIZE = 8;
+
+const CATEGORY_OPTIONS: { value: CommunityCategory | "ALL"; label: string; }[] = [
+    { value: "ALL", label: "전체" },
+    { value: "STUDY", label: "학습" },
+    { value: "FASHION", label: "패션" },
+    { value: "BEAUTY", label: "뷰티" },
+    { value: "FITNESS", label: "피트니스" },
+    { value: "COOK", label: "요리" },
+    { value: "FREE", label: "자유" },
+];
 
 const isCommunityCategory = (
     category?: string
@@ -190,26 +57,64 @@ const isCommunityCategory = (
 
 const createPageHref = ({
     pageNumber,
-    keyword,
     category,
+    keyword,
 }: {
     pageNumber: number;
-    keyword?: string;
-    category?: CommunityCategory | "ALL";
+    category: CommunityCategory | "ALL";
+    keyword: string;
 }) => {
     const params = new URLSearchParams();
 
     if (keyword) {
         params.set("keyword", keyword);
-    }
-
-    if (category && category !== "ALL") {
+    } else if (category !== "ALL") {
         params.set("category", category);
     }
 
     params.set("page", String(pageNumber));
 
     return `/student/phone/community?${params.toString()}`;
+};
+
+const getSearchPage = async ({
+    keyword,
+    page,
+}: {
+    keyword: string;
+    page: number;
+}) => {
+    let cursor: number | null = null;
+    let result: CommunityPostSearchData = {
+        totalCount: 0,
+        posts: [],
+        nextCursor: null,
+    };
+
+    for (let index = 0; index <= page; index += 1) {
+        const response =
+            await searchCommunityPostAction({
+                keyword,
+                cursor,
+                size: PAGE_SIZE,
+            });
+
+        result = response.data ?? result;
+
+        if (index < page) {
+            if (result.nextCursor === null || result.nextCursor === undefined) {
+                result = {
+                    ...result,
+                    posts: [],
+                };
+                break;
+            }
+
+            cursor = result.nextCursor;
+        }
+    }
+
+    return result;
 };
 
 export default async function CommunityPage({
@@ -221,28 +126,51 @@ export default async function CommunityPage({
         page,
     } = await searchParams;
 
-    const selectedCategory = isCommunityCategory(category)
-        ? category
-        : "ALL";
-    const normalizedKeyword = keyword.trim().toLowerCase();
+    const normalizedKeyword = keyword.trim();
+    const isSearchMode = normalizedKeyword.length > 0;
+    const selectedCategory =
+        isCommunityCategory(category)
+            ? category
+            : "ALL";
+    const requestedPage =
+        Math.max(Number(page) || 0, 0);
 
-    const filteredPosts = COMMUNITY_POSTS.filter((post) => {
-        const isMatchedCategory =
-            selectedCategory === "ALL" || post.category === selectedCategory;
-        const isMatchedKeyword =
-            !normalizedKeyword ||
-            post.title.toLowerCase().includes(normalizedKeyword);
+    let posts: CommunityPostListItem[] = [];
+    let totalElements = 0;
+    let totalPages = 1;
+    let currentPage = requestedPage;
 
-        return isMatchedCategory && isMatchedKeyword;
-    });
+    if (isSearchMode) {
+        const searchData =
+            await getSearchPage({
+                keyword: normalizedKeyword,
+                page: requestedPage,
+            });
 
-    const totalPages = Math.max(Math.ceil(filteredPosts.length / PAGE_SIZE), 1);
-    const currentPage = Math.min(
-        Math.max(Number(page) || 1, 1),
-        totalPages
-    );
-    const startIndex = (currentPage - 1) * PAGE_SIZE;
-    const posts = filteredPosts.slice(startIndex, startIndex + PAGE_SIZE);
+        posts = searchData.posts;
+        totalElements = searchData.totalCount;
+        totalPages = Math.max(Math.ceil(searchData.totalCount / PAGE_SIZE), 1);
+        currentPage = Math.min(requestedPage, totalPages - 1);
+    } else {
+        const response =
+            await getCommunityPostListAction({
+                category: selectedCategory === "ALL" ? undefined : selectedCategory,
+                page: requestedPage,
+                size: PAGE_SIZE,
+            });
+
+        const pageData = response.data ?? {
+            posts: [],
+            totalElements: 0,
+            totalPages: 0,
+            currentPage: requestedPage,
+        };
+
+        posts = pageData.posts;
+        totalElements = pageData.totalElements;
+        totalPages = Math.max(pageData.totalPages, 1);
+        currentPage = Math.min(pageData.currentPage, totalPages - 1);
+    }
 
     return (
         <div className="flex h-full min-h-0 flex-row overflow-hidden bg-white/80 shadow-sm ring-1 ring-slate-200/80 backdrop-blur">
@@ -256,12 +184,14 @@ export default async function CommunityPage({
                                 커뮤니티
                             </h1>
                             <p className="mt-0.5 text-xs font-bold text-slate-400">
-                                홈과 전체목록은 지금 같은 게시글 목록을 사용합니다.
+                                {isSearchMode
+                                    ? `"${normalizedKeyword}" 검색 결과입니다.`
+                                    : "모모시티 친구들과 이야기를 나눠보세요."}
                             </p>
                         </div>
 
                         <p className="text-xs font-bold text-slate-400">
-                            게시글 {filteredPosts.length}개
+                            게시글 {totalElements}개
                         </p>
                     </div>
 
@@ -273,7 +203,7 @@ export default async function CommunityPage({
                             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                             <input
                                 name="keyword"
-                                defaultValue={keyword}
+                                defaultValue={normalizedKeyword}
                                 placeholder="게시글 검색"
                                 className="h-9 w-full rounded-xl border border-slate-200 bg-white pl-9 pr-3 text-sm font-semibold text-slate-700 outline-none transition focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100"
                             />
@@ -312,13 +242,13 @@ export default async function CommunityPage({
                         <div className="grid grid-cols-4 gap-8">
                             {posts.map((post) => (
                                 <PostListItem
-                                    key={post.id}
-                                    id={post.id}
+                                    key={post.postId}
+                                    id={post.postId}
                                     thumbnailUrl={post.thumbnailUrl}
                                     title={post.title}
                                     category={post.category}
                                     likeCount={post.likeCount}
-                                    authorNickname={post.authorNickname}
+                                    authorNickname={post.authorName}
                                     viewCount={post.viewCount}
                                 />
                             ))}
@@ -327,21 +257,24 @@ export default async function CommunityPage({
                         <div className="flex h-full min-h-56 flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-slate-50 text-center">
                             <Search className="h-9 w-9 text-slate-300" />
                             <p className="mt-3 text-sm font-black text-slate-600">
-                                검색 결과가 없습니다.
+                                {isSearchMode
+                                    ? "검색 결과가 없습니다."
+                                    : "게시글이 없습니다."}
                             </p>
                         </div>
                     )}
-                    <div className="mr-[63px] mt-5">
-                        {totalPages > 1 && (
-                            <Pagination className="">
+
+                    {totalPages > 1 && (
+                        <div className="mr-[63px] mt-5">
+                            <Pagination>
                                 <PaginationContent>
-                                    {currentPage > 1 && (
+                                    {currentPage > 0 && (
                                         <PaginationItem>
                                             <PaginationPrevious
                                                 href={createPageHref({
                                                     pageNumber: currentPage - 1,
-                                                    keyword,
                                                     category: selectedCategory,
+                                                    keyword: normalizedKeyword,
                                                 })}
                                                 text=""
                                                 className="h-8 w-8 border border-slate-200 bg-white p-0 text-slate-500 hover:text-slate-900"
@@ -351,14 +284,14 @@ export default async function CommunityPage({
 
                                     {Array.from(
                                         { length: totalPages },
-                                        (_, index) => index + 1
+                                        (_, index) => index
                                     ).map((pageNumber) => (
                                         <PaginationItem key={pageNumber}>
                                             <PaginationLink
                                                 href={createPageHref({
                                                     pageNumber,
-                                                    keyword,
                                                     category: selectedCategory,
+                                                    keyword: normalizedKeyword,
                                                 })}
                                                 isActive={currentPage === pageNumber}
                                                 className={
@@ -367,18 +300,18 @@ export default async function CommunityPage({
                                                         : "h-8 w-8 text-slate-500 hover:border-slate-200 hover:bg-white hover:text-slate-900"
                                                 }
                                             >
-                                                {pageNumber}
+                                                {pageNumber + 1}
                                             </PaginationLink>
                                         </PaginationItem>
                                     ))}
 
-                                    {currentPage < totalPages && (
+                                    {currentPage < totalPages - 1 && (
                                         <PaginationItem>
                                             <PaginationNext
                                                 href={createPageHref({
                                                     pageNumber: currentPage + 1,
-                                                    keyword,
                                                     category: selectedCategory,
+                                                    keyword: normalizedKeyword,
                                                 })}
                                                 text=""
                                                 className="h-8 w-8 border border-slate-200 bg-white p-0 text-slate-500 hover:text-slate-900"
@@ -387,11 +320,9 @@ export default async function CommunityPage({
                                     )}
                                 </PaginationContent>
                             </Pagination>
-                        )}
-                    </div>
+                        </div>
+                    )}
                 </div>
-
-
             </section>
         </div>
     );

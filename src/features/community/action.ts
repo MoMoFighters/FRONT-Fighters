@@ -4,7 +4,9 @@ import {
     createCommunityPostContentsService,
     createCommunityPostService,
     getCommunityPostDetailService,
+    getCommunityPostListService,
     likeCommunityPostService,
+    searchCommunityPostService,
     unlikeCommunityPostService,
     uploadCommunityPostImageService,
 } from "@/app/services/community/service";
@@ -14,7 +16,10 @@ import {
     CreateCommunityPostResponse,
     CreateCommunityPostContentsResponse,
     CommunityPostLikeResponse,
+    CommunityCategory,
     GetCommunityPostDetailResponse,
+    GetCommunityPostListResponse,
+    SearchCommunityPostResponse,
     UploadCommunityPostImageResponse,
 } from "./type";
 
@@ -45,9 +50,47 @@ export const getCommunityPostDetailAction = async (
     postId: number
 ): Promise<GetCommunityPostDetailResponse> => {
     try {
-        const a = await getCommunityPostDetailService(postId);
-        console.log(a);
-        return a
+        return await getCommunityPostDetailService(postId);
+    } catch (error) {
+        return createFailureResponse(error);
+    }
+};
+
+export const getCommunityPostListAction = async ({
+    category,
+    page,
+    size,
+}: {
+    category?: CommunityCategory;
+    page: number;
+    size: number;
+}): Promise<GetCommunityPostListResponse> => {
+    try {
+        return await getCommunityPostListService({
+            category,
+            page,
+            size,
+        });
+    } catch (error) {
+        return createFailureResponse(error);
+    }
+};
+
+export const searchCommunityPostAction = async ({
+    keyword,
+    cursor,
+    size,
+}: {
+    keyword: string;
+    cursor?: number | null;
+    size: number;
+}): Promise<SearchCommunityPostResponse> => {
+    try {
+        return await searchCommunityPostService({
+            keyword,
+            cursor,
+            size,
+        });
     } catch (error) {
         return createFailureResponse(error);
     }

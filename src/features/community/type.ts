@@ -78,3 +78,42 @@ export type GetCommunityPostDetailResponse =
 
 export type CommunityPostLikeResponse =
     ApiResponse<null>;
+
+export interface CommunityPostListItem {
+    postId: number;
+    title: string;
+    category: CommunityCategory;
+    viewCount: number;
+    likeCount: number;
+    commentCount: number;
+    thumbnailUrl: string | null;
+    authorName: string;
+    authorProfileImageUrl: string;
+    authorRole: CommunityAuthorRole;
+    createdAt: string;
+}
+
+export interface CommunityPostListData {
+    posts: CommunityPostListItem[];
+    totalElements: number;
+    totalPages: number;
+    currentPage: number;
+}
+
+export type GetCommunityPostListResponse =
+    ApiResponse<CommunityPostListData> & {
+        statusCode?: number;
+        errors?: Record<string, unknown>;
+    };
+
+export interface CommunityPostSearchData {
+    totalCount: number;
+    posts: CommunityPostListItem[];
+    nextCursor: number | null;
+}
+
+export type SearchCommunityPostResponse =
+    ApiResponse<CommunityPostSearchData> & {
+        statusCode?: number;
+        errors?: Record<string, unknown>;
+    };

@@ -19,7 +19,7 @@ const CATEGORY_LABEL: Record<CommunityCategory, string> = {
 
 export default function PostListItem({ id, thumbnailUrl, title, category, likeCount, viewCount, authorNickname }: {
     id: number;
-    thumbnailUrl: string;
+    thumbnailUrl: string | null;
     title: string;
     category: CommunityCategory;
     likeCount: number;

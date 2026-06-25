@@ -6,7 +6,11 @@ import {
     CreateCommunityPostRequest,
     CreateCommunityPostResponse,
     CommunityPostLikeResponse,
+    CommunityCategory,
+    CommunityPostSearchData,
     GetCommunityPostDetailResponse,
+    GetCommunityPostListResponse,
+    SearchCommunityPostResponse,
     UploadCommunityPostImageResponse,
 } from "@/features/community/type";
 
@@ -24,8 +28,32 @@ const parseApiResponse = async <T>(
             result.status = result.statusCode;
         }
 
+        if (typeof result.status !== "number") {
+            result.status = response.status;
+        }
+
+        if (!result.message) {
+            result.message = response.ok
+                ? "요청이 성공했습니다."
+                : "요청 처리 중 문제가 발생했습니다.";
+        }
+
+        if (!result.timestamp) {
+            result.timestamp = new Date().toISOString();
+        }
+
+        if (!result.code) {
+            result.code = response.ok
+                ? "COMMON-SUCCESS"
+                : "COMMON-UNKNOWN";
+        }
+
         if (!response.ok) {
-            console.error(`[community] ${context} failed`, result);
+            console.warn(`[community] ${context} failed`, {
+                status: response.status,
+                statusText: response.statusText,
+                result,
+            });
         }
 
         return result;
@@ -65,6 +93,73 @@ export const getCommunityPostDetailService = async (
     });
 
     return parseApiResponse(response, "get post detail");
+};
+
+export const getCommunityPostListService = async ({
+    category,
+    page,
+    size,
+}: {
+    category?: CommunityCategory;
+    page: number;
+    size: number;
+}): Promise<GetCommunityPostListResponse> => {
+    const params = new URLSearchParams({
+        page: String(page),
+        size: String(size),
+    });
+
+    if (category) {
+        params.set("category", category);
+    }
+
+    const response = await fetchWithAuth(`/api/v2/posts?${params.toString()}`, {
+        method: "GET",
+    });
+
+    return parseApiResponse(response, "get post list");
+};
+
+export const searchCommunityPostService = async ({
+    keyword,
+    cursor,
+    size,
+}: {
+    keyword: string;
+    cursor?: number | null;
+    size: number;
+}): Promise<SearchCommunityPostResponse> => {
+    const params = new URLSearchParams({
+        keyword,
+        size: String(size),
+    });
+
+    if (cursor !== null && cursor !== undefined) {
+        params.set("cursor", String(cursor));
+    }
+
+    const endpoint = `/api/v2/posts/search?${params.toString()}`;
+
+    const response = await fetchWithAuth(endpoint, {
+        method: "PUT",
+    });
+
+    const result =
+        await parseApiResponse<CommunityPostSearchData>(
+            response,
+            `search posts ${endpoint}`
+        );
+
+    console.info("[community] search posts result", {
+        endpoint,
+        status: result.status,
+        totalCount: result.data?.totalCount,
+        postsLength: result.data?.posts.length,
+        nextCursor: result.data?.nextCursor,
+        firstPostTitle: result.data?.posts[0]?.title,
+    });
+
+    return result;
 };
 
 export const likeCommunityPostService = async (
