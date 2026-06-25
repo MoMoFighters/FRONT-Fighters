@@ -2,12 +2,22 @@
 
 import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ArrowLeft, ImagePlus, X } from "lucide-react";
+import { toast } from "sonner";
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select";
+import {
+    createCommunityPostAction,
+    createCommunityPostContentsAction,
+    uploadCommunityPostImageAction,
+} from "@/features/community/action";
+import {
+    CommunityCategory,
+    CreateCommunityPostContentItem,
+} from "@/features/community/type";
 
 type CommunityPostFormMode = "CREATE" | "EDIT";
-type CommunityCategory = "STUDY" | "FASHION" | "BEAUTY" | "FITNESS" | "COOK" | "FREE";
 
 interface CommunityPostFormProps {
     mode: CommunityPostFormMode;
@@ -34,6 +44,9 @@ const CATEGORY_OPTIONS: { value: CommunityCategory; label: string; }[] = [
 
 const MAX_IMAGE_COUNT = 5;
 
+const isSuccessResponse = (status: number) =>
+    status >= 200 && status < 300;
+
 const createPostContentBlock = (file: File): PostContentBlock => ({
     id: crypto.randomUUID(),
     file,
@@ -49,19 +62,25 @@ const mergeContent = (prevContent: string, nextContent: string) => {
 };
 
 export default function CommunityPostForm({ mode, data, }: CommunityPostFormProps) {
+    const router = useRouter();
+
+    const [title, setTitle] = useState("");
+    const [category, setCategory] = useState<CommunityCategory>("FREE");
     const [mainContent, setMainContent] = useState("");
     const [postContents, setPostContents] = useState<PostContentBlock[]>([]);
     const [thumbnailId, setThumbnailId] = useState<string | null>(null);
+    const [createdPostId, setCreatedPostId] = useState<number | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
     const mainContentRef = useRef(mainContent);
     const postContentsRef = useRef(postContents);
 
     const canAddImage = postContents.length < MAX_IMAGE_COUNT;
     const hasImage = postContents.length > 0;
-    const thumbnailOrderNo =
-        thumbnailId
-            ? postContents.findIndex((postContent) => postContent.id === thumbnailId) + 1
-            : 0;
-    const isSubmitDisabled = hasImage && thumbnailId === null;
+    const isSubmitDisabled =
+        isSubmitting ||
+        title.trim().length === 0 ||
+        (hasImage && thumbnailId === null);
     const backHref =
         mode === "EDIT" && data?.postId
             ? `/student/phone/community/${data.postId}`
@@ -182,25 +201,142 @@ export default function CommunityPostForm({ mode, data, }: CommunityPostFormProp
         setPostContents(nextPostContents);
     };
 
-    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-        const hasImage = postContents.length > 0;
+    const uploadImages = async () => {
+        const imageUrlById = new Map<string, string>();
+
+        for (const postContent of postContents) {
+            const formData = new FormData();
+            formData.append("image", postContent.file);
+
+            const response =
+                await uploadCommunityPostImageAction(formData);
+
+            if (!isSuccessResponse(response.status) || !response.data) {
+                throw new Error(response.message || "이미지 업로드에 실패했습니다.");
+            }
+
+            imageUrlById.set(postContent.id, response.data);
+        }
+
+        return imageUrlById;
+    };
+
+    const createContentsPayload = (
+        imageUrlById: Map<string, string>
+    ) => {
+        const contents: CreateCommunityPostContentItem[] = [];
+
+        if (mainContent.trim()) {
+            contents.push({
+                type: "TEXT",
+                content: mainContent.trim(),
+                imageUrl: null,
+            });
+        }
+
+        postContents.forEach((postContent) => {
+            const imageUrl = imageUrlById.get(postContent.id);
+
+            if (!imageUrl) {
+                throw new Error("업로드된 이미지 URL을 찾을 수 없습니다.");
+            }
+
+            contents.push({
+                type: "IMAGE",
+                content: null,
+                imageUrl,
+            });
+
+            if (postContent.content.trim()) {
+                contents.push({
+                    type: "TEXT",
+                    content: postContent.content.trim(),
+                    imageUrl: null,
+                });
+            }
+        });
+
+        const thumbnailImageUrl =
+            thumbnailId
+                ? imageUrlById.get(thumbnailId) ?? null
+                : null;
+
+        return {
+            thumbnailImageUrl,
+            contents,
+        };
+    };
+
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        if (mode !== "CREATE") {
+            toast.error("게시글 수정 기능은 아직 연결되지 않았습니다.");
+            return;
+        }
+
         const hasMainContent = mainContent.trim().length > 0;
 
         if (hasImage && !thumbnailId) {
-            e.preventDefault();
-            alert("이미지가 있는 게시글은 썸네일을 하나 지정해야 합니다.");
+            toast.error("이미지가 있는 게시글은 썸네일을 하나 지정해야 합니다.");
             return;
         }
 
         if (!hasImage && !hasMainContent) {
-            e.preventDefault();
-            alert("이미지가 없는 게시글은 본문을 입력해야 합니다.");
+            toast.error("이미지가 없는 게시글은 본문을 입력해야 합니다.");
+            return;
+        }
+
+        try {
+            setIsSubmitting(true);
+
+            const postResponse =
+                await createCommunityPostAction({
+                    title: title.trim(),
+                    category,
+                });
+
+            const postId =
+                postResponse.data?.postId;
+
+            if (!isSuccessResponse(postResponse.status) || !postId) {
+                throw new Error(postResponse.message || "게시글 등록에 실패했습니다.");
+            }
+
+            setCreatedPostId(postId);
+
+            const imageUrlById =
+                await uploadImages();
+
+            const contentsPayload =
+                createContentsPayload(imageUrlById);
+
+            const contentsResponse =
+                await createCommunityPostContentsAction(
+                    postId,
+                    contentsPayload
+                );
+
+            if (!isSuccessResponse(contentsResponse.status)) {
+                throw new Error(contentsResponse.message || "게시글 본문 등록에 실패했습니다.");
+            }
+
+            toast.success("게시글이 등록되었습니다.");
+            router.push(`/student/phone/community/${postId}`);
+        } catch (error) {
+            const message =
+                error instanceof Error
+                    ? error.message.split("|").at(-1) ?? error.message
+                    : "게시글 등록에 실패했습니다.";
+
+            toast.error(message);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     return (
         <form
-            action=""
             onSubmit={handleSubmit}
             className="flex h-full min-h-0 flex-col rounded-3xl bg-white/85 p-5 shadow-sm ring-1 ring-slate-200/80 backdrop-blur"
         >
@@ -211,8 +347,8 @@ export default function CommunityPostForm({ mode, data, }: CommunityPostFormProp
             />
             <input
                 type="hidden"
-                name="thumbnailOrderNo"
-                value={thumbnailOrderNo}
+                name="createdPostId"
+                value={createdPostId ?? ""}
             />
 
             <Link
@@ -226,13 +362,15 @@ export default function CommunityPostForm({ mode, data, }: CommunityPostFormProp
             <div className="grid shrink-0 grid-cols-[minmax(0,1fr)_180px] gap-3">
                 <input
                     name="title"
+                    value={title}
+                    onChange={(event) => setTitle(event.target.value)}
                     placeholder="제목"
                     className="h-11 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100"
                 />
 
                 <Select
-                    name="category"
-                    defaultValue="FREE"
+                    value={category}
+                    onValueChange={(value) => setCategory(value as CommunityCategory)}
                 >
                     <SelectTrigger className="h-11! w-full rounded-2xl border-slate-200 bg-white px-4 text-sm font-bold text-slate-600">
                         <SelectValue placeholder="카테고리" />
@@ -278,7 +416,6 @@ export default function CommunityPostForm({ mode, data, }: CommunityPostFormProp
 
                 <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                     <AutoResizeTextarea
-                        name="content"
                         value={mainContent}
                         onChange={setMainContent}
                         className="w-full bg-transparent px-2 py-2 text-sm font-medium leading-7 text-slate-700 outline-none transition placeholder:text-slate-400"
@@ -305,7 +442,11 @@ export default function CommunityPostForm({ mode, data, }: CommunityPostFormProp
                 disabled={isSubmitDisabled}
                 className="mt-5 h-11 shrink-0 rounded-2xl bg-indigo-400 text-sm font-black text-white transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:bg-slate-300"
             >
-                {mode === "CREATE" ? "게시글 등록" : "게시글 수정"}
+                {isSubmitting
+                    ? "등록 중..."
+                    : mode === "CREATE"
+                        ? "게시글 등록"
+                        : "게시글 수정"}
             </button>
         </form>
     );
@@ -339,10 +480,6 @@ function PostContentFieldset({
                 type="hidden"
                 name={`postContentIsThumbnail_${orderNo}`}
                 value={String(isThumbnail)}
-            />
-            <PostContentFileInput
-                name={`postContentImage_${orderNo}`}
-                file={postContent.file}
             />
 
             <div className="mx-[30%] w-[40%]">
@@ -386,7 +523,6 @@ function PostContentFieldset({
             </div>
 
             <AutoResizeTextarea
-                name={`postContentContent_${orderNo}`}
                 value={postContent.content}
                 onChange={(content) => onChangeContent(postContent.id, content)}
                 className="mt-3 w-full bg-transparent px-2 py-2 text-sm font-medium leading-7 text-slate-700 outline-none transition placeholder:text-slate-400"
@@ -397,13 +533,11 @@ function PostContentFieldset({
 }
 
 function AutoResizeTextarea({
-    name,
     value,
     onChange,
     className,
     placeholder,
 }: {
-    name: string;
     value: string;
     onChange: (value: string) => void;
     className: string;
@@ -424,7 +558,6 @@ function AutoResizeTextarea({
     return (
         <textarea
             ref={textareaRef}
-            name={name}
             value={value}
             rows={rows}
             onChange={(e) => onChange(e.target.value)}
@@ -434,37 +567,6 @@ function AutoResizeTextarea({
                 overflow: "hidden",
             }}
             placeholder={placeholder}
-        />
-    );
-}
-
-function PostContentFileInput({
-    name,
-    file,
-}: {
-    name: string;
-    file: File;
-}) {
-    const inputRef = useRef<HTMLInputElement>(null);
-
-    useEffect(() => {
-        if (!inputRef.current) {
-            return;
-        }
-
-        const dataTransfer = new DataTransfer();
-        dataTransfer.items.add(file);
-        inputRef.current.files = dataTransfer.files;
-    }, [file]);
-
-    return (
-        <input
-            ref={inputRef}
-            type="file"
-            name={name}
-            className="hidden"
-            tabIndex={-1}
-            readOnly
         />
     );
 }
