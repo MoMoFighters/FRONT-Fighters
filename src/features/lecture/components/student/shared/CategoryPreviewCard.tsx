@@ -51,16 +51,6 @@ export default function CategoryPreviewCard({
                 건설 예정 건물
             </h2>
 
-            <div className="relative mx-auto mt-4 h-40 w-40">
-                <Image
-                    src={categoryMeta.buildingImage}
-                    alt={`${categoryMeta.buildingName} 이미지`}
-                    fill
-                    sizes="160px"
-                    className="object-contain"
-                />
-            </div>
-
             <div className="mt-5">
                 <p className="text-sm font-bold text-slate-950">
                     {categoryMeta.buildingName}
