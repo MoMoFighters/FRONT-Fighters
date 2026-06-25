@@ -1,4 +1,4 @@
-﻿import Image, { StaticImageData } from "next/image";
+import Image from "next/image";
 import Link from "next/link";
 import { Play, Star } from "lucide-react";
 
@@ -10,6 +10,7 @@ interface StudentLectureDetailItemProps {
     lecture: LectureDetailResponse;
     category: string;
     categoryLabel: string;
+    position: string;
     resumeChapterId?: number;
     chapterBaseHref?: string;
 }
@@ -18,6 +19,7 @@ export default function StudentLectureDetailItem({
     lecture,
     category,
     categoryLabel,
+    position,
     resumeChapterId,
     chapterBaseHref,
 }: StudentLectureDetailItemProps) {
@@ -31,15 +33,15 @@ export default function StudentLectureDetailItem({
         <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <div className="grid grid-cols-[320px_minmax(0,1fr)] gap-8">
                 <div className="relative h-56 overflow-hidden rounded-xl bg-slate-100">
-                    {lecture.thumbnailUrl
-                        ? <Image
+                    {lecture.thumbnailUrl && (
+                        <Image
                             src={lecture.thumbnailUrl}
                             alt={lecture.title}
                             fill
                             sizes="320px"
                             className="object-cover"
                         />
-                        : ""}
+                    )}
                 </div>
 
                 <div className="flex min-w-0 flex-col">
@@ -98,6 +100,8 @@ export default function StudentLectureDetailItem({
                             <div className="flex justify-end">
                                 <EnrollLectureBtn
                                     lectureId={lecture.lectureId}
+                                    category={category}
+                                    position={position}
                                     className="h-11 rounded-xl bg-indigo-500 px-5 text-sm font-bold text-white transition hover:bg-indigo-600"
                                 />
                             </div>

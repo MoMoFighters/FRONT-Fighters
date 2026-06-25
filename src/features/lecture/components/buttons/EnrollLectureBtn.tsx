@@ -8,40 +8,42 @@ import { useRouter } from "next/navigation";
 
 interface EnrollLectureBtnProps {
     lectureId: number;
+    category?: string;
+    position?: string;
     className?: string;
 }
 
 export default function EnrollLectureBtn({
     lectureId,
+    category,
+    position,
     className,
 }: EnrollLectureBtnProps) {
-
     const router = useRouter();
 
     const handleEnrollLecture = async () => {
-
         try {
-            await enrollLectureAction(String(lectureId));
+            await enrollLectureAction(String(lectureId), position ?? "");
 
-            router.refresh();
+            if (category) {
+                router.push(`/student/${category}/lectures/${lectureId}`);
+            } else {
+                router.refresh();
+            }
 
-            toast.success('성공적으로 수강 신청 되었습니다!', {
-                duration: 1000
+            toast.success("정상적으로 수강 신청 되었습니다.", {
+                duration: 1000,
             });
         } catch (error) {
-
             if (!(error instanceof Error)) {
-                toast.error('알 수 없는 오류가 발생했습니다.');
+                toast.error("알 수 없는 오류가 발생했습니다.");
                 return;
             }
 
-            const [status, message] =
-                error.message.split('|');
+            const [status, message] = error.message.split("|");
 
-            if (status === '409') {
-                toast.error(
-                    message || '이미 수강 신청한 강의입니다.'
-                );
+            if (status === "409") {
+                toast.error(message || "이미 수강 신청한 강의입니다.");
                 return;
             }
 
@@ -58,10 +60,9 @@ export default function EnrollLectureBtn({
                     수강 신청
                 </Button>
             )}
-            title="해당 강의의 수강을 신청하시겠습니까?"
-            description={`수강 신청한 강의는 내 강의 탭에서 \n 확인 가능합니다.`}
+            title="해당 강의를 수강 신청하시겠습니까?"
+            description={`수강 신청한 강의는 내 강의 목록에서\n 확인 가능합니다.`}
             onConfirm={handleEnrollLecture}
         />
-
     );
 }

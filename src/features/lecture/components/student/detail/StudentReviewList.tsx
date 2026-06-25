@@ -1,15 +1,8 @@
+import { Review } from "@/features/lecture/type";
 import { SearchX, Star } from "lucide-react";
 
-export interface StudentReview {
-    id: number;
-    name: string;
-    rating: number;
-    content: string;
-    createdAt: string;
-}
-
 interface StudentReviewListProps {
-    reviews: StudentReview[];
+    reviews: Review[];
 }
 
 export default function StudentReviewList({
@@ -30,16 +23,16 @@ export default function StudentReviewList({
     return (
         <div className="divide-y divide-slate-100">
             {reviews.map((review) => (
-                <article key={review.id} className="p-5">
+                <article key={review.reviewId} className="p-5">
                     <div className="flex items-start gap-4">
                         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-sm font-black text-indigo-500">
-                            {review.name.slice(0, 1)}
+                            {review.nickname.slice(0, 1)}
                         </div>
 
                         <div className="min-w-0 flex-1">
                             <div className="flex items-center justify-between gap-4">
                                 <p className="text-sm font-bold text-slate-950">
-                                    {review.name}
+                                    {review.nickname}
                                 </p>
 
                                 <span className="text-xs font-medium text-slate-400">

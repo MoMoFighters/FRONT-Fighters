@@ -24,6 +24,18 @@ const nextConfig = {
         port: "",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "placehold.co",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "d1w7ptjpsyo7f4.cloudfront.net",
+        port: "",
+        pathname: "/**",
+      },
     ],
     formats: ['image/webp', 'image/avif']
   },

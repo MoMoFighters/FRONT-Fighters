@@ -2,17 +2,18 @@
 
 import {
     getLectureById,
+    // getReviewsByLectureId,
 } from "@/app/services/lecture/service";
 import ListPagination from "@/components/common/ListPagination";
+import CreateReviewBtn from "@/features/lecture/components/buttons/CreateReviewBtn";
 import BuildGuideCard from "@/features/lecture/components/student/shared/BuildGuideCard";
 import CategoryPreviewCard from "@/features/lecture/components/student/shared/CategoryPreviewCard";
 import getCategoryMeta from "@/features/lecture/components/student/shared/category";
 import StudentChapterList from "@/features/lecture/components/student/detail/StudentChapterList";
 import StudentLectureDetailItem from "@/features/lecture/components/student/detail/StudentLectureDetailItem";
 import StudentLectureDetailTabs from "@/features/lecture/components/student/detail/StudentLectureDetailTabs";
-import StudentReviewList, {
-    StudentReview,
-} from "@/features/lecture/components/student/detail/StudentReviewList";
+import StudentReviewList from "@/features/lecture/components/student/detail/StudentReviewList";
+import { ReviewResponse } from "@/features/lecture/type";
 import StudentPageHeader from "@/features/student/components/StudentPageHeader";
 
 interface LectureDetailPageProps {
@@ -26,50 +27,23 @@ interface LectureDetailPageProps {
     }>;
 }
 
-const DUMMY_REVIEWS: StudentReview[] = [
-    {
-        id: 1,
-        name: "모모시티러버",
-        rating: 5,
-        content: "설명이 자세하고 따라가기 쉬웠어요. 꾸준히 듣기 좋은 강의입니다.",
-        createdAt: "2026.06.10",
-    },
-    {
-        id: 2,
-        name: "학습러",
-        rating: 4,
-        content: "챕터 구성이 깔끔해서 흐름을 놓치지 않고 볼 수 있었습니다.",
-        createdAt: "2026.06.09",
-    },
-    {
-        id: 3,
-        name: "민수",
-        rating: 5,
-        content: "초보자도 부담 없이 시작할 수 있는 난이도라 만족합니다.",
-        createdAt: "2026.06.08",
-    },
-    {
-        id: 4,
-        name: "성장중",
-        rating: 4,
-        content: "실습 예시가 조금 더 많으면 더 좋을 것 같아요.",
-        createdAt: "2026.06.07",
-    },
-    {
-        id: 5,
-        name: "도시건설자",
-        rating: 5,
-        content: "강의를 들으면서 건물이 성장하는 느낌이 좋아요.",
-        createdAt: "2026.06.06",
-    },
-    {
-        id: 6,
-        name: "꾸준함",
-        rating: 4,
-        content: "짧은 챕터 단위라 매일 듣기 편합니다.",
-        createdAt: "2026.06.05",
-    },
-];
+const DUMMY_REVIEW_RESPONSE: ReviewResponse = {
+    content: [
+        {
+            reviewId: 1,
+            userId: 1,
+            nickname: "모모시민",
+            profileImageUrl: "",
+            content: "수강평 API 연동 전 화면 확인용 더미 수강평입니다.",
+            rating: 5,
+            createdAt: "2026.06.25",
+        },
+    ],
+    page: 1,
+    size: 5,
+    totalElements: 1,
+    totalPages: 1,
+};
 
 export default async function LectureDetailPage({
     params,
@@ -89,18 +63,16 @@ export default async function LectureDetailPage({
 
     const chapters = lecture.chapters;
 
-    const currentTab = tab === "reviews"
-        ? "reviews"
-        : "chapters";
+    const currentTab = tab === "reviews" ? "reviews" : "chapters";
     const currentPage = Number(page) || 1;
-    const reviewsPerPage = 5;
-    const totalReviewPages = Math.ceil(
-        DUMMY_REVIEWS.length / reviewsPerPage
-    );
-    const paginatedReviews = DUMMY_REVIEWS.slice(
-        (currentPage - 1) * reviewsPerPage,
-        currentPage * reviewsPerPage
-    );
+
+    // TODO: 수강평 목록 조회 API 완성 후 아래 더미 응답을 getReviewsByLectureId 호출로 교체
+    // const reviewResponseData = currentTab === "reviews"
+    //     ? await getReviewsByLectureId(lectureId, currentPage)
+    //     : undefined;
+    const reviewResponseData = currentTab === "reviews"
+        ? DUMMY_REVIEW_RESPONSE
+        : undefined;
 
     const createReviewPageHref = (pageNumber: number) => {
         const params = new URLSearchParams();
@@ -154,6 +126,7 @@ export default async function LectureDetailPage({
                     lecture={lecture}
                     category={category}
                     categoryLabel={categoryMeta.label}
+                    position={position ?? ""}
                     resumeChapterId={resumeChapter?.chapterId}
                 />
 
@@ -161,7 +134,7 @@ export default async function LectureDetailPage({
                     <StudentLectureDetailTabs
                         href={lectureDetailHref}
                         currentTab={currentTab}
-                        reviewCount={DUMMY_REVIEWS.length}
+                        reviewCount={DUMMY_REVIEW_RESPONSE.totalElements}
                     />
 
                     {currentTab === "chapters" ? (
@@ -169,16 +142,19 @@ export default async function LectureDetailPage({
                             category={category}
                             lectureId={lectureId}
                             chapters={chapters}
-                            isEnrolled={lecture.isEnrolled}
-                        />
-                    ) : (
+                            isEnrolled={false} />
+                    ) : reviewResponseData && (
                         <>
-                            <StudentReviewList reviews={paginatedReviews} />
+                            <div className="flex justify-end border-b border-slate-100 px-5 py-4">
+                                <CreateReviewBtn disabled={lecture.isCompleted !== true} />
+                            </div>
+
+                            <StudentReviewList reviews={reviewResponseData.content} />
 
                             <div className="border-t border-slate-100 px-5 pb-5">
                                 <ListPagination
                                     currentPage={currentPage}
-                                    totalPages={totalReviewPages}
+                                    totalPages={reviewResponseData.totalPages}
                                     createHref={createReviewPageHref}
                                 />
                             </div>

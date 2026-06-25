@@ -7,6 +7,10 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
+import {
+    likeCommunityPostAction,
+    unlikeCommunityPostAction,
+} from "@/features/community/action";
 import { Heart } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -27,7 +31,7 @@ const likedUserDummyData: PostLikedUser[] = [
     },
     {
         userId: 2,
-        nickname: "피치러버",
+        nickname: "멋쟁이러너",
         role: "STUDENT",
         profileImageUrl: null,
     },
@@ -39,42 +43,70 @@ const likedUserDummyData: PostLikedUser[] = [
     },
 ];
 
-export default function PostLikeBtn({ postId, postLikeCount }: { postId: number; postLikeCount: number; }) {
+interface PostLikeBtnProps {
+    postId: number;
+    postLikeCount: number;
+    initialIsLiked?: boolean;
+}
 
+export default function PostLikeBtn({
+    postId,
+    postLikeCount,
+    initialIsLiked = false,
+}: PostLikeBtnProps) {
     const [isModal, setIsModal] = useState(false);
     const [likedUsers] = useState<PostLikedUser[]>(likedUserDummyData);
-    const [isLiked, setIsLiked] = useState(false);
+    const [isLiked, setIsLiked] = useState(initialIsLiked);
+    const [likeCount, setLikeCount] = useState(postLikeCount);
+    const [isPending, setIsPending] = useState(false);
+
+    const handleToggleLike = async () => {
+        if (isPending) {
+            return;
+        }
+
+        const prevIsLiked = isLiked;
+        const prevLikeCount = likeCount;
+        const nextIsLiked = !prevIsLiked;
+        const nextLikeCount = prevLikeCount + (nextIsLiked ? 1 : -1);
+
+        setIsPending(true);
+        setIsLiked(nextIsLiked);
+        setLikeCount(nextLikeCount);
+
+        const response =
+            nextIsLiked
+                ? await likeCommunityPostAction(postId)
+                : await unlikeCommunityPostAction(postId);
+
+        if (response.status < 200 || response.status >= 300) {
+            setIsLiked(prevIsLiked);
+            setLikeCount(prevLikeCount);
+            toast.error(response.message || "좋아요 처리에 실패했습니다.");
+            setIsPending(false);
+            return;
+        }
+
+        toast.success(nextIsLiked ? "좋아요를 눌렀습니다." : "좋아요를 취소했습니다.");
+        setIsPending(false);
+    };
 
     return (
         <>
             <div
                 className={`flex shrink-0 items-center gap-3 rounded-md ${isLiked ? "bg-rose-50" : "bg-slate-100"} px-3 py-2 text-sm font-black`}
             >
-                {isLiked ? (
-                    <Heart
-                        className="h-4 w-4 cursor-pointer fill-current text-rose-500"
-                        onClick={() => {
-                            toast("좋아요 취소 성공");
-                            setIsLiked(false)
-                        }}
-                    />
-                ) : (
-                    <Heart
-                        className="h-4 w-4 cursor-pointer text-slate-500"
-                        onClick={() => {
-                            toast("좋아요 누르기 성공");
-                            setIsLiked(true)
-                        }}
-                    />
-                )}
-
+                <Heart
+                    className={`h-4 w-4 ${isLiked ? "fill-current text-rose-500" : "text-slate-500"} ${isPending ? "cursor-wait opacity-60" : "cursor-pointer"}`}
+                    onClick={handleToggleLike}
+                />
 
                 <button
                     type="button"
                     className={`cursor-pointer ${isLiked ? "text-rose-500" : "text-slate-600"}`}
                     onClick={() => setIsModal(true)}
                 >
-                    {postLikeCount}
+                    {likeCount}
                 </button>
             </div>
 
@@ -82,7 +114,7 @@ export default function PostLikeBtn({ postId, postLikeCount }: { postId: number;
                 open={isModal}
                 onOpenChange={setIsModal}
             >
-                <DialogContent className="overflow-hidden rounded-3xl border border-rose-100 bg-white p-0 shadow-2xl w-md">
+                <DialogContent className="w-md overflow-hidden rounded-3xl border border-rose-100 bg-white p-0 shadow-2xl">
                     <DialogHeader className="border-b border-slate-100 px-6 pb-4 pt-6">
                         <DialogTitle className="flex items-center gap-2 text-lg font-black text-slate-900">
                             <span className="flex size-8 items-center justify-center rounded-full bg-rose-50 text-rose-500">
@@ -92,7 +124,7 @@ export default function PostLikeBtn({ postId, postLikeCount }: { postId: number;
                         </DialogTitle>
 
                         <DialogDescription className="text-sm font-semibold text-slate-400">
-                            이 게시글을 좋아한 사람 목록입니다.
+                            이 게시글을 좋아요한 사람 목록입니다.
                         </DialogDescription>
                     </DialogHeader>
 
