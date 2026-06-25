@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "../ui/hover-card";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import postBoard from "@/app/assets/img/guestBook.png"
 import { Button } from "../ui/button";
 import { Plus, Search, X } from "lucide-react";
@@ -18,6 +18,15 @@ export default function PostBoard({ mode }: PostBoardProps) {
     const [isModal, setIsModal] = useState(false);
     const [detail, setDetail] = useState(false);
     const [nav, setNav] = useState<PostBoardMode>('guestbook');
+
+    useEffect(() => {
+        if (nav === 'guestbook') {
+            // 방명록 목록 불러오기
+        }
+        else {
+            // 공지사항 목록 불러오기
+        }
+    }, [nav])
 
     return (
         <>
@@ -52,10 +61,10 @@ export default function PostBoard({ mode }: PostBoardProps) {
                 >
                     <div className="space-y-1 -top-20">
                         <p className="text-sm font-bold text-slate-900">
-                            방명록
+                            게시판
                         </p>
                         <p className="text-xs font-medium text-slate-500">
-                            {mode === "MY" ? "친구가 작성한 방명록을 확인해보세요." : "방명록을 작성해보세요."}
+                            {mode === "MY" ? "방명록과 공지사항을 확인해보세요." : "방명록을 작성해보세요."}
                         </p>
                     </div>
                 </HoverCardContent>
