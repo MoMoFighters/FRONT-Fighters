@@ -39,8 +39,8 @@ export const updateVideoProgressByExitAction = async (
 
 // 수강 신청 액션 함수
 
-export const enrollLectureAction = async (lectureId: string) => {
-    await enrollLectureById(lectureId);
+export const enrollLectureAction = async (lectureId: string, position?: string) => {
+    await enrollLectureById(lectureId, position);
     revalidatePath('/student/lectures');
     revalidatePath('/student/study/lectures');
     revalidatePath('/student/fitness/lectures');

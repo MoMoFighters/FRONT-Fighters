@@ -49,8 +49,8 @@ export interface LectureDetailResponse {
     category: Category;
     lectureStatus: LectureStatus;
     averageRating: number;
+    reviewCount: number;
     chapters: Chapter[];
-    reviews: Review[];
     createdAt: string;
     updatedAt: string;
 
@@ -58,12 +58,6 @@ export interface LectureDetailResponse {
     isEnrolled?: boolean;
     isCompleted?: boolean;
     lectureProgress?: number;
-
-    // 수강평 페이지네이션 데이터
-    page: number;
-    size: number;
-    totalElements: number;
-    totalPages: number;
 }
 
 export interface Chapter {
@@ -71,7 +65,9 @@ export interface Chapter {
     orderNo: number;
     title: string;
     durationSec: number;
-    thumbnailUrl: string;
+
+    // api 가능하면
+    thumbnailUrl?: string;
 
     // 수강 중인 학생의 경우
     isCompleted?: boolean;
@@ -79,15 +75,23 @@ export interface Chapter {
     chapterProgress?: number;
 }
 
+// 수강평 목록 조회 타입 정의
 export interface Review {
     reviewId: number;
     userId: number;
-    userName: string;
-    profileImageUrl?: string;
-    profileImgUrl?: string;
+    nickname: string;
+    profileImageUrl: string;
     content: string;
     rating: number;
     createdAt: string;
+}
+
+export interface ReviewResponse {
+    content: Review[]
+    page: number;
+    size: number;
+    totalElements: number;
+    totalPages: number;
 }
 
 // 카테고리 별 강의 진척도 및 이어보기 데이터 조회 타입 정의 -> 강의 관련 페이지 오른쪽 사이드 카드 데이터

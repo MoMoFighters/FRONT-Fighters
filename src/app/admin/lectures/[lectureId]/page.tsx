@@ -16,12 +16,12 @@ interface AdminLectureDetailPageProps {
 
 const DUMMY_ADMIN_REVIEWS: Review[] = [
     // TODO: 관리자 강의 상세 API에 수강평 목록이 포함되면 해당 응답으로 교체한다.
-    { reviewId: 1, userId: 101, userName: "모모시티러버", rating: 5, content: "설명이 자세하고 따라가기 쉬웠어요. 꾸준히 듣기 좋은 강의입니다.", createdAt: "2026.06.10" },
-    { reviewId: 2, userId: 102, userName: "학습러", rating: 4, content: "챕터 구성이 깔끔해서 흐름을 놓치지 않고 볼 수 있었습니다.", createdAt: "2026.06.09" },
-    { reviewId: 3, userId: 103, userName: "민수", rating: 5, content: "초보자도 부담 없이 시작할 수 있는 난이도라 만족합니다.", createdAt: "2026.06.08" },
-    { reviewId: 4, userId: 104, userName: "성장중", rating: 4, content: "실습 예시가 조금 더 많으면 더 좋을 것 같아요.", createdAt: "2026.06.07" },
-    { reviewId: 5, userId: 105, userName: "도시건설자", rating: 5, content: "짧은 챕터 단위라 매일 듣기 편합니다.", createdAt: "2026.06.06" },
-    { reviewId: 6, userId: 106, userName: "꾸준함", rating: 4, content: "기초부터 차근차근 설명해서 이해하기 좋았습니다.", createdAt: "2026.06.05" },
+    { reviewId: 1, userId: 101, nickname: "모모시티러버", profileImageUrl: "", rating: 5, content: "설명이 자세하고 따라가기 쉬웠어요. 꾸준히 듣기 좋은 강의입니다.", createdAt: "2026.06.10" },
+    { reviewId: 2, userId: 102, nickname: "학습러", profileImageUrl: "", rating: 4, content: "챕터 구성이 깔끔해서 흐름을 놓치지 않고 볼 수 있었습니다.", createdAt: "2026.06.09" },
+    { reviewId: 3, userId: 103, nickname: "민수", profileImageUrl: "", rating: 5, content: "초보자도 부담 없이 시작할 수 있는 난이도라 만족합니다.", createdAt: "2026.06.08" },
+    { reviewId: 4, userId: 104, nickname: "성장중", profileImageUrl: "", rating: 4, content: "실습 예시가 조금 더 많으면 더 좋을 것 같아요.", createdAt: "2026.06.07" },
+    { reviewId: 5, userId: 105, nickname: "도시건설자", profileImageUrl: "", rating: 5, content: "짧은 챕터 단위라 매일 듣기 편합니다.", createdAt: "2026.06.06" },
+    { reviewId: 6, userId: 106, nickname: "꾸준함", profileImageUrl: "", rating: 4, content: "기초부터 차근차근 설명해서 이해하기 좋았습니다.", createdAt: "2026.06.05" },
 ];
 
 export default async function AdminLectureDetailPage({
