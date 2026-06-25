@@ -225,7 +225,7 @@ export const updateVideoProgressByExit = async (
   return assertApiData(result);
 };
 
-/**
+/**  ==> id 랑 position 같이 넘겨서 position은 쿼리 파라미터로 넘기기 해야됨
  * 수강 신청 api
  * @param id 
  * @returns 
@@ -233,7 +233,7 @@ export const updateVideoProgressByExit = async (
 export const enrollLectureById = async (
   id: string
 ): Promise<EnrollLectureResponse> => {
-  const response = await fetchWithAuth(`/api/v1/lectures/${id}/enrollments`, {
+  const response = await fetchWithAuth(`/api/v1/lectures/${id}/enrollments?position=1`, {
     method: "POST",
   });
 
