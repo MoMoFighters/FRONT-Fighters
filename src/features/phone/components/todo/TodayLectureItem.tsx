@@ -1,14 +1,15 @@
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
-import { TodayChapter } from "@/features/calendar/type";
 import Link from "next/link";
 
-interface TodayLectureItemProps {
-    info: TodayChapter;
-}
-
-export default function TodayLectureItem({
-    info,
-}: TodayLectureItemProps) {
+// props : lectureId , lectureTitle , chapterTitle , category
+export default function TodayLectureItem() {
+    // props로 수정
+    const info = {
+        lectureId: 1,
+        lectureTitle: '강의의 제목',
+        chapterTitle: '챕터의 제목 챕터의 제목 챕터의 제목 챕터의 제목 챕터의 제목 챕터의 제목 챕터의 제목 챕터의 제목',
+        category: "STUDY"
+    }
 
     const link = `/student/${info.category.toLowerCase()}/lectures/${info.lectureId}`;
 
