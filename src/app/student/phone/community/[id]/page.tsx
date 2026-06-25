@@ -1,8 +1,13 @@
+import Image from "next/image";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { ChevronLeft, Eye } from "lucide-react";
+
+import PostDetailSide from "@/components/phone/community/PostDetailSide";
 import CreateReportBtn from "@/features/report/components/buttons/CreateReportBtn";
 import PostLikeBtn from "@/features/post/PostLikeBtn";
-import PostDetailSide from "@/components/phone/community/PostDetailSide";
+import { getCommunityPostDetailAction } from "@/features/community/action";
+import type { CommunityAuthorRole } from "@/features/community/type";
 
 interface CommunityPostDetailPageProps {
     params: Promise<{
@@ -10,82 +15,36 @@ interface CommunityPostDetailPageProps {
     }>;
 }
 
-type CommunityPostCategory =
-    | "STUDY"
-    | "FASHION"
-    | "BEAUTY"
-    | "FITNESS"
-    | "COOK"
-    | "FREE";
-
-type CommunityAuthorRole = "STUDENT" | "TEACHER" | "ADMIN";
-
-type CommunityPostContent =
-    | {
-        type: "TEXT";
-        content: string;
+const getRoleLabel = (role: CommunityAuthorRole) => {
+    if (role === "TEACHER") {
+        return "강사";
     }
-    | {
-        type: "IMAGE";
-        content: string;
-    };
 
-interface CommunityPostDetail {
-    postId: number;
-    title: string;
-    category: CommunityPostCategory;
-    viewCount: number;
-    likeCount: number;
-    commentCount: number;
-    isMine: boolean;
-    authorName: string;
-    authorProfileImageUrl: string;
-    authorRole: CommunityAuthorRole;
-    authorId: number;
-    contents: CommunityPostContent[];
-    createdAt: string;
-}
+    if (role === "ADMIN") {
+        return "관리자";
+    }
 
-const COMMUNITY_POST: CommunityPostDetail = {
-    postId: 1,
-    title: "모강사 코딩 강의 리뷰",
-    category: "STUDY",
-    viewCount: 11,
-    likeCount: 5,
-    commentCount: 5,
-    isMine: false,
-    authorName: "김태완",
-    authorProfileImageUrl: "https://placehold.co/80x80/e0e7ff/4f46e5?text=M",
-    authorRole: "STUDENT",
-    authorId: 3,
-    contents: [
-        {
-            type: "TEXT",
-            content:
-                "공부가 이렇게 재밌는거였다니,,공부가 이렇게 재밌는거였다니,,공부가 이렇게 재밌는거였다니,,공부가 이렇게 재밌는거였다니,,공부가 이렇게 재밌는거였다니,,공부가 이렇게 재밌는거였다니,,공부가 이렇게 재밌는거였다니,,공부가 이렇게 재밌는거였다니,,공부가 이렇게 재밌는거였다니,,공부가 이렇게 재밌는거였다니,,",
-        },
-        {
-            type: "IMAGE",
-            content: "https://placehold.co/900x560/e0e7ff/4f46e5?text=Community+Image",
-        },
-        {
-            type: "TEXT",
-            content:
-                "저는 공부만 하다 죽을게요. 저는 공부만 하다 죽을게요. 저는 공부만 하다 죽을게요. 저는 공부만 하다 죽을게요. 저는 공부만 하다 죽을게요. 저는 공부만 하다 죽을게요. 저는 공부만 하다 죽을게요. 저는 공부만 하다 죽을게요. 저는 공부만 하다 죽을게요. 저는 공부만 하다 죽을게요. 저는 공부만 하다 죽을게요. 저는 공부만 하다 죽을게요. 저는 공부만 하다 죽을게요. 저는 공부만 하다 죽을게요. 저는 공부만 하다 죽을게요. 저는 공부만 하다 죽을게요. ",
-        },
-    ],
-    createdAt: "2026-06-18T13:00:00.000000Z",
+    return "학생";
 };
 
 export default async function CommunityPostDetailPage({
     params,
 }: CommunityPostDetailPageProps) {
     const { id } = await params;
+    const postId = Number(id);
 
-    const post: CommunityPostDetail = {
-        ...COMMUNITY_POST,
-        postId: Number(id) || COMMUNITY_POST.postId,
-    };
+    if (!Number.isFinite(postId)) {
+        notFound();
+    }
+
+    const response =
+        await getCommunityPostDetailAction(postId);
+
+    if (!response.data) {
+        notFound();
+    }
+
+    const post = response.data;
 
     return (
         <section className="grid h-full min-h-0 grid-cols-[7fr_3fr] gap-4 rounded-3xl bg-white/80 p-5 shadow-sm ring-1 ring-slate-200/80 backdrop-blur">
@@ -105,7 +64,7 @@ export default async function CommunityPostDetailPage({
                         ) : (
                             <Link
                                 className="cursor-pointer rounded-md border border-slate-200 px-2.5 py-1 text-xs font-bold text-slate-500 transition hover:bg-slate-100"
-                                href={`/student/phone/community/${id}/edit`}
+                                href={`/student/phone/community/${post.postId}/edit`}
                             >
                                 수정
                             </Link>
@@ -132,21 +91,20 @@ export default async function CommunityPostDetailPage({
                             }
                             className="flex min-w-0 items-center gap-2"
                         >
-                            <img
-                                src={post.authorProfileImageUrl}
+                            <Image
+                                src={post.authorProfileImageUrl || "https://placehold.co/80x80/e0e7ff/4f46e5?text=M"}
                                 alt={`${post.authorName} profile`}
+                                width={32}
+                                height={32}
                                 className="h-8 w-8 rounded-full object-cover ring-1 ring-indigo-100"
+                                unoptimized
                             />
                             <div className="min-w-0">
                                 <p className="truncate text-sm font-black text-slate-700">
                                     {post.authorName}
                                 </p>
                                 <p className="text-[11px] font-bold text-slate-400">
-                                    {post.authorRole === "STUDENT"
-                                        ? "학생"
-                                        : post.authorRole === "TEACHER"
-                                            ? "강사"
-                                            : "관리자"}
+                                    {getRoleLabel(post.authorRole)}
                                 </p>
                             </div>
                         </Link>
@@ -161,13 +119,12 @@ export default async function CommunityPostDetailPage({
                             <PostLikeBtn
                                 postId={post.postId}
                                 postLikeCount={post.likeCount}
+                                initialIsLiked={post.isLiked}
                             />
                         </div>
                     </div>
                 </header>
 
-                {/* ==================== COMMUNITY_POST_CONTENT_COMPONENT_START ==================== */}
-                {/* TODO: Extract this post content block later. */}
                 <div className="min-h-0 flex-1 overflow-y-auto pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                     <div className="flex flex-col gap-5 py-5">
                         {post.contents.map((content, index) => {
@@ -177,10 +134,13 @@ export default async function CommunityPostDetailPage({
                                         key={`${content.type}-${index}`}
                                         className="flex justify-center"
                                     >
-                                        <img
-                                            src={content.content}
+                                        <Image
+                                            src={content.imageUrl}
                                             alt=""
-                                            className="w-[40%] rounded-2xl object-cover shadow-sm ring-1 ring-slate-100"
+                                            width={720}
+                                            height={448}
+                                            className="h-auto w-[40%] rounded-2xl object-cover shadow-sm ring-1 ring-slate-100"
+                                            unoptimized
                                         />
                                     </div>
                                 );
@@ -197,13 +157,11 @@ export default async function CommunityPostDetailPage({
                         })}
                     </div>
                 </div>
-                {/* TODO: Extract this post content block later. */}
-                {/* ===================== COMMUNITY_POST_CONTENT_COMPONENT_END ===================== */}
             </article>
 
             <PostDetailSide
                 postId={post.postId}
-                commentTotalCount={post.commentCount}
+                commentTotalCount={0}
             />
         </section>
     );

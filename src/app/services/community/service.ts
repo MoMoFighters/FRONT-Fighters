@@ -5,6 +5,8 @@ import {
     CreateCommunityPostContentsResponse,
     CreateCommunityPostRequest,
     CreateCommunityPostResponse,
+    CommunityPostLikeResponse,
+    GetCommunityPostDetailResponse,
     UploadCommunityPostImageResponse,
 } from "@/features/community/type";
 
@@ -18,6 +20,10 @@ const parseApiResponse = async <T>(
         await response.json().catch(() => null);
 
     if (result) {
+        if (typeof result.status !== "number" && typeof result.statusCode === "number") {
+            result.status = result.statusCode;
+        }
+
         if (!response.ok) {
             console.error(`[community] ${context} failed`, result);
         }
@@ -49,6 +55,36 @@ export const createCommunityPostService = async (
     });
 
     return parseApiResponse(response, "create post");
+};
+
+export const getCommunityPostDetailService = async (
+    postId: number
+): Promise<GetCommunityPostDetailResponse> => {
+    const response = await fetchWithAuth(`/api/v2/posts/${postId}`, {
+        method: "GET",
+    });
+
+    return parseApiResponse(response, "get post detail");
+};
+
+export const likeCommunityPostService = async (
+    postId: number
+): Promise<CommunityPostLikeResponse> => {
+    const response = await fetchWithAuth(`/api/v2/posts/${postId}/likes`, {
+        method: "POST",
+    });
+
+    return parseApiResponse(response, "like post");
+};
+
+export const unlikeCommunityPostService = async (
+    postId: number
+): Promise<CommunityPostLikeResponse> => {
+    const response = await fetchWithAuth(`/api/v2/posts/${postId}/likes`, {
+        method: "DELETE",
+    });
+
+    return parseApiResponse(response, "unlike post");
 };
 
 export const uploadCommunityPostImageService = async (
