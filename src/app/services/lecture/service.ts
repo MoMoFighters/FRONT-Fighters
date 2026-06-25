@@ -9,6 +9,7 @@ import {
   UpdateVideoProgressResponse,
   LectureStatus,
   VideoPlayerResponse,
+  ReviewResponse,
 } from "@/features/lecture/type";
 import { ApiResponse, fetchWithAuth } from "@/lib/api";
 import { notFound } from "next/navigation";
@@ -101,13 +102,27 @@ export const getLecturesWithAuth = async (
  * @param id 조회를 원하는 강의의 id
  * @returns LectureDetailResponse
  */
-export const getLectureById = async (
-  id: string
-): Promise<LectureDetailResponse> => {
+export const getLectureById = async (id: string): Promise<LectureDetailResponse> => {
   const response = await fetchWithAuth(`/api/v1/lectures/${id}`);
 
   await handleErrorResponse(response);
   const result: ApiResponse<LectureDetailResponse> = await response.json();
+  return assertApiData(result);
+};
+
+/**
+ * 수강평 목록 조회 api -> 강의 상세 조회 페이지 내에서 수강평을 클릭했을 때 즉, tab === "reviews" 일 때 요청
+ * @param id 수강평 목록을 불러올 강의의 id
+ * @param page 페이지네이션
+ * @returns ReviewResponse
+ */
+export const getReviewsByLectureId = async (id: string, page: number): Promise<ReviewResponse> => {
+  const params = new URLSearchParams();
+  params.set("page", String(page));
+
+  const response = await fetchWithAuth(`/api/v1/lectures/${id}/reviews?${params.toString()}`);
+  await handleErrorResponse(response);
+  const result: ApiResponse<ReviewResponse> = await response.json();
   return assertApiData(result);
 };
 
@@ -231,9 +246,16 @@ export const updateVideoProgressByExit = async (
  * @returns 
  */
 export const enrollLectureById = async (
-  id: string
+  id: string,
+  position?: string
 ): Promise<EnrollLectureResponse> => {
-  const response = await fetchWithAuth(`/api/v1/lectures/${id}/enrollments?position=1`, {
+  const params = new URLSearchParams();
+  if (position) {
+    params.set("position", position);
+  }
+
+  const queryString = params.toString();
+  const response = await fetchWithAuth(`/api/v1/lectures/${id}/enrollments${queryString ? `?${queryString}` : ""}`, {
     method: "POST",
   });
 

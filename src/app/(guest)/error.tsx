@@ -27,8 +27,8 @@ export default function Error({
     const [status, message] = parts;
 
     return (
-        <div className='w-full h-full relative'>
-            <Image src={errorImg} alt='error' fill priority />
+        <div className='relative w-screen min-h-[calc(100vh-140px)] overflow-hidden'>
+            <Image src={errorImg} alt='error' priority fill className='object-cover' />
             <h1 className='absolute top-60 left-20 text-6xl font-extrabold text-slate-700'>{isApiError ? status : "에러 발생!"}</h1>
             <div className='absolute w-80 max-w-80 break-all top-80 left-20 text-lg text-slate-500 font-semibold'>{isApiError ? message : "알 수 없는 오류가 발생했습니다."}</div>
             <Button onClick={() => router.back()}
