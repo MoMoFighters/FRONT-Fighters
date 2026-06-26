@@ -76,12 +76,6 @@ export default async function LectureDetailPage({
         ? `/student/lectures/${lectureId}?position=${position}`
         : `/student/lectures/${lectureId}`;
 
-    const firstChapter = chapters.find((chapter) => chapter.orderNo === 1);
-    const resumeChapter = chapters.find((chapter) => (
-        chapter.isAccessible !== false &&
-        !chapter.isCompleted
-    )) ?? firstChapter;
-
     return (
         <main className="mx-auto grid w-full max-w-360 grid-cols-[minmax(0,1fr)_320px] gap-8 px-12 py-12">
             <section className="min-w-0">
@@ -108,7 +102,6 @@ export default async function LectureDetailPage({
                     category={category}
                     categoryLabel={categoryMeta.label}
                     position={position ?? ""}
-                    resumeChapterId={resumeChapter?.chapterId}
                 />
 
                 <section className="mt-8 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">

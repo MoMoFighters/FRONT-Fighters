@@ -166,7 +166,7 @@ export default function FriendDetail({ friend }: FriendDetailProps) {
 
                 <div className="mt-8 flex items-center gap-3">
                     <Button
-                        className="h-11 gap-2 rounded-xl bg-mauve-500 px-5 text-white hover:bg-mauve-600"
+                        className="h-11 gap-2 rounded-xl bg-indigo-500 px-5 text-white hover:bg-indigo-600"
                         onClick={handleCreateChatRoom}
                     >
                         <MessageCircle className="h-5 w-5" />

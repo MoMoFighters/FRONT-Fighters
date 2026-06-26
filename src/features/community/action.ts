@@ -4,6 +4,7 @@ import {
     createCommunityPostContentsService,
     createCommunityPostService,
     getCommunityPostDetailService,
+    getCommunityPostListService,
     likeCommunityPostService,
     unlikeCommunityPostService,
     uploadCommunityPostImageService,
@@ -14,7 +15,9 @@ import {
     CreateCommunityPostResponse,
     CreateCommunityPostContentsResponse,
     CommunityPostLikeResponse,
+    CommunityCategory,
     GetCommunityPostDetailResponse,
+    GetCommunityPostListResponse,
     UploadCommunityPostImageResponse,
 } from "./type";
 
@@ -48,6 +51,26 @@ export const getCommunityPostDetailAction = async (
         const a = await getCommunityPostDetailService(postId);
         console.log(a);
         return a
+    } catch (error) {
+        return createFailureResponse(error);
+    }
+};
+
+export const getCommunityPostListAction = async ({
+    category,
+    page,
+    size,
+}: {
+    category?: CommunityCategory;
+    page: number;
+    size: number;
+}): Promise<GetCommunityPostListResponse> => {
+    try {
+        return await getCommunityPostListService({
+            category,
+            page,
+            size,
+        });
     } catch (error) {
         return createFailureResponse(error);
     }

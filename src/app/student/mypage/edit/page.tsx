@@ -6,13 +6,13 @@ import MyPageEditClient from "@/features/user/components/mypage/MyPageEditClient
 export default async function MyPageEdit() {
     const userInfo = await getMyInfo();
 
-    if (!userInfo.success || !userInfo.data) {
+    if (userInfo.status < 200 || userInfo.status >= 300 || !userInfo.data) {
         throw new Error(userInfo.message || "유저 정보 로드 실패");
     }
 
     const cardData = {
         name: userInfo.data.name,
-        nickname: userInfo.data.nickname,
+        nickname: userInfo.data.nickname || "닉네임 없음",
         createdAt: userInfo.data.createdAt,
         profileImageUrl: userInfo.data.profileImageUrl,
     };
