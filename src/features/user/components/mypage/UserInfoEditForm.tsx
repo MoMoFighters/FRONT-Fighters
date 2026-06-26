@@ -181,13 +181,14 @@ export default function UserInfoEditForm({
                     프로필
                 </p>
                 <div className="relative w-28 h-28">
-                    <Image
-                        src={profileUrl}
-                        alt='프로필'
-                        fill
-                        className="object-cover rounded-md border border-slate-300"
-                        onClick={!profileChangeOpen ? () => setProfileChangeOpen(true) : () => { }}
-                    />
+                    {profileUrl &&
+                        <Image
+                            src={profileUrl}
+                            alt='프로필'
+                            fill
+                            className="object-cover rounded-md border border-slate-300"
+                            onClick={!profileChangeOpen ? () => setProfileChangeOpen(true) : () => { }}
+                        />}
                     <UserProfileChoice profileChangeOpen={profileChangeOpen} setProfileChangeOpen={setProfileChangeOpen} />
                 </div>
             </div>

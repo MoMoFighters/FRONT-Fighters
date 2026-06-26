@@ -63,7 +63,7 @@ export default function TwoButtonModal({
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel variant="outline" className="cursor-pointer">취소</AlertDialogCancel>
-                    <AlertDialogAction variant="ghost" className="bg-mauve-500 text-white hover:text-white! hover:bg-mauve-600!" onClick={onConfirm}>확인</AlertDialogAction>
+                    <AlertDialogAction variant="ghost" className="bg-indigo-500 text-white hover:text-white! hover:bg-indigo-600!" onClick={onConfirm}>확인</AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>
