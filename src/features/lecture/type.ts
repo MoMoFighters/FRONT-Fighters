@@ -115,14 +115,17 @@ export interface AsideCardInfoResponse {
     MyTotalProgress?: number;
 
     // 특정 카테고리 강의 목록 조회 시에만
-    // 1. 건물 정보
+    // 1. 카테고리별 총 진척도 -> 나의 학습 현황
+    progressByCategory?: number;
+
+    // 2. 건물 정보
     buildingLevel?: number;
     buildingCurrentExp?: number;
     buildingTotalExp?: number;
-    // 2. 카테고리별 총 진척도 -> 나의 학습 현황
-    progressByCategory?: number;
+    buildingUrl?: string;
+}
 
-    // 이어보기 데이터 -> 특정 카테고리 강의 목록 조회 + 마이페이지 내 강의 조회 공통
+export interface LatestChapterInfoResponse {
     lectureId: number;
     lectureTitle: string;
     chapterId: number;

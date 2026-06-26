@@ -1,6 +1,11 @@
-﻿import { BookOpen, SearchX } from "lucide-react";
+import { BookOpen, SearchX } from "lucide-react";
 
-import { getLectures } from "@/app/services/lecture/service";
+import {
+    getLatestChapterInfo,
+    getLectures,
+    getLecturesWithAuth,
+    getProgressByCategory,
+} from "@/app/services/lecture/service";
 import {
     Category,
     LectureListRequest,
@@ -40,24 +45,31 @@ export default async function LectureListByCategory({
     const payload: LectureListRequest = {
         category: categoryApiValue,
         keyword,
-        enrolled: filter === "my" ? true : undefined,
         page: Number(page) || 1,
     };
 
-    const categoryLabel = categoryMeta.label;
-    const buildingName = categoryMeta.buildingName;
-    const buildingImage = categoryMeta.buildingImage;
+    const [
+        responseData,
+        progressInfo,
+        latestChapterInfo,
+    ] = await Promise.all([
+        filter === "my"
+            ? getLecturesWithAuth(payload)
+            : getLectures(payload),
+        getProgressByCategory(categoryApiValue),
+        getLatestChapterInfo(categoryApiValue),
+    ]);
 
-    const responseData = await getLectures(payload);
-
+    console.log(responseData.content, '?');
+    console.log(progressInfo, '??');
+    console.log(latestChapterInfo, '???');
+    const lectures = responseData.content;
     const currentPage = Number(page) || 1;
     const totalPages = responseData.totalPages;
 
-    // 하드코딩 - 추후 실제 학습/건물 성장 데이터로 교체 필요
-    const categoryProgress = 42;
-    const buildingLevel = 3;
-    const currentExp = 320;
-    const maxExp = 600;
+    const categoryLabel = categoryMeta.label;
+    const buildingName = categoryMeta.buildingName;
+    const buildingImage = progressInfo.buildingUrl;
 
     const createPageHref = (pageNumber: number) => {
         const params = new URLSearchParams();
@@ -98,10 +110,10 @@ export default async function LectureListByCategory({
                     totalElements={responseData.totalElements}
                 />
 
-                {responseData.content.length > 0 ? (
+                {lectures.length > 0 ? (
                     <>
                         <StudentLectureList
-                            lectures={responseData.content}
+                            lectures={lectures}
                             getHref={(lecture) => `/student/${category}/lectures/${lecture.lectureId}`}
                             showLearningStatus={filter === "my"}
                         />
@@ -134,23 +146,26 @@ export default async function LectureListByCategory({
                     category={category}
                     buildingName={buildingName}
                     buildingImage={buildingImage}
-                    level={buildingLevel}
-                    currentExp={currentExp}
-                    maxExp={maxExp}
+                    level={progressInfo.buildingLevel!}
+                    currentExp={progressInfo.buildingCurrentExp!}
+                    maxExp={progressInfo.buildingTotalExp!}
                 />
 
                 <LearningProgressCard
                     categoryLabel={categoryLabel}
-                    progress={categoryProgress}
+                    progress={progressInfo.progressByCategory!}
                 />
 
-                <ResumeLectureCard
-                    href={`/student/${category}/lectures`}
-                    thumbnail={buildingImage}
-                    title="생활 영어 회화"
-                    description="여행에서 쓰는 영어"
-                    progress={35}
-                />
+                {latestChapterInfo ? (
+                    <ResumeLectureCard
+                        href={`/student/${category}/lectures/${latestChapterInfo.lectureId}/chapters/${latestChapterInfo.chapterId}`}
+                        title={latestChapterInfo.lectureTitle}
+                        description={latestChapterInfo.chapterTitle}
+                        progress={latestChapterInfo.chapterProgress}
+                    />
+                ) : (
+                    <ResumeLectureCard empty />
+                )}
             </aside>
         </main>
     );
