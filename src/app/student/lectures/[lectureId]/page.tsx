@@ -2,7 +2,7 @@
 
 import {
     getLectureById,
-    // getReviewsByLectureId,
+    getReviewsByLectureId,
 } from "@/app/services/lecture/service";
 import ListPagination from "@/components/common/ListPagination";
 import CreateReviewBtn from "@/features/lecture/components/buttons/CreateReviewBtn";
@@ -13,7 +13,6 @@ import StudentChapterList from "@/features/lecture/components/student/detail/Stu
 import StudentLectureDetailItem from "@/features/lecture/components/student/detail/StudentLectureDetailItem";
 import StudentLectureDetailTabs from "@/features/lecture/components/student/detail/StudentLectureDetailTabs";
 import StudentReviewList from "@/features/lecture/components/student/detail/StudentReviewList";
-import { ReviewResponse } from "@/features/lecture/type";
 import StudentPageHeader from "@/features/student/components/StudentPageHeader";
 
 interface LectureDetailPageProps {
@@ -26,24 +25,6 @@ interface LectureDetailPageProps {
         position?: string;
     }>;
 }
-
-const DUMMY_REVIEW_RESPONSE: ReviewResponse = {
-    content: [
-        {
-            reviewId: 1,
-            userId: 1,
-            nickname: "모모시민",
-            profileImageUrl: "",
-            content: "수강평 API 연동 전 화면 확인용 더미 수강평입니다.",
-            rating: 5,
-            createdAt: "2026.06.25",
-        },
-    ],
-    page: 1,
-    size: 5,
-    totalElements: 1,
-    totalPages: 1,
-};
 
 export default async function LectureDetailPage({
     params,
@@ -58,6 +39,10 @@ export default async function LectureDetailPage({
         notFound();
     }
 
+    if (lecture.lectureStatus !== "ACTIVE") {
+        throw new Error('403|접근할 수 없는 상태의 강의입니다.');
+    }
+
     const categoryMeta = getCategoryMeta(lecture.category);
     const category = lecture.category.toLowerCase();
 
@@ -66,12 +51,8 @@ export default async function LectureDetailPage({
     const currentTab = tab === "reviews" ? "reviews" : "chapters";
     const currentPage = Number(page) || 1;
 
-    // TODO: 수강평 목록 조회 API 완성 후 아래 더미 응답을 getReviewsByLectureId 호출로 교체
-    // const reviewResponseData = currentTab === "reviews"
-    //     ? await getReviewsByLectureId(lectureId, currentPage)
-    //     : undefined;
     const reviewResponseData = currentTab === "reviews"
-        ? DUMMY_REVIEW_RESPONSE
+        ? await getReviewsByLectureId(lectureId, currentPage)
         : undefined;
 
     const createReviewPageHref = (pageNumber: number) => {
@@ -134,7 +115,7 @@ export default async function LectureDetailPage({
                     <StudentLectureDetailTabs
                         href={lectureDetailHref}
                         currentTab={currentTab}
-                        reviewCount={DUMMY_REVIEW_RESPONSE.totalElements}
+                        reviewCount={lecture.reviewCount}
                     />
 
                     {currentTab === "chapters" ? (
@@ -142,12 +123,17 @@ export default async function LectureDetailPage({
                             category={category}
                             lectureId={lectureId}
                             chapters={chapters}
-                            isEnrolled={false} />
+                            isEnrolled={lecture.isEnrolled} />
                     ) : reviewResponseData && (
                         <>
-                            <div className="flex justify-end border-b border-slate-100 px-5 py-4">
-                                <CreateReviewBtn disabled={lecture.isCompleted !== true} />
-                            </div>
+                            {lecture.isEnrolled && (
+                                <div className="flex justify-end border-b border-slate-100 px-5 py-4">
+                                    <CreateReviewBtn
+                                        lectureId={lecture.lectureId}
+                                        disabled={lecture.isCompleted !== true}
+                                    />
+                                </div>
+                            )}
 
                             <StudentReviewList reviews={reviewResponseData.content} />
 

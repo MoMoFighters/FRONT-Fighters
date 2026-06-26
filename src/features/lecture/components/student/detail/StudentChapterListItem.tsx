@@ -1,5 +1,5 @@
+import Image from "next/image";
 import Link from "next/link";
-import { CheckCircle2, LockKeyhole, PlayCircle } from "lucide-react";
 
 import { Progress } from "@/components/ui/progress";
 import { Chapter } from "@/features/lecture/type";
@@ -27,20 +27,24 @@ export default function StudentChapterListItem({
     href,
 }: StudentChapterListItemProps) {
     const isLocked =
-        !isEnrolled ||
-        chapter.isAccessible === false;
+        isEnrolled !== true ||
+        chapter.isAccessible !== true;
     const progress = chapter.chapterProgress ?? 0;
     const chapterHref = href ?? `/student/${category}/lectures/${lectureId}/chapters/${chapter.chapterId}`;
 
     const content = (
         <>
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-400">
-                {isLocked ? (
-                    <LockKeyhole className="h-5 w-5" />
-                ) : chapter.isCompleted ? (
-                    <CheckCircle2 className="h-5 w-5 text-indigo-500" />
+            <div className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-100 text-[10px] font-bold text-slate-400">
+                {chapter.thumbnailUrl ? (
+                    <Image
+                        src={chapter.thumbnailUrl}
+                        alt={`${chapter.title} 썸네일`}
+                        fill
+                        sizes="48px"
+                        className="object-cover"
+                    />
                 ) : (
-                    <PlayCircle className="h-5 w-5 text-indigo-500" />
+                    "이미지 없음"
                 )}
             </div>
 

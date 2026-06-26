@@ -1,7 +1,7 @@
 'use server'
 
-import { enrollLectureById, updateLectureStatus, updateVideoProgress, updateVideoProgressByExit } from "@/app/services/lecture/service";
-import { LectureStatus, UpdateVideoProgressByExitRequest, UpdateVideoProgressRequest } from "./type";
+import { createReviewByLectureId, enrollLectureById, updateLectureStatus, updateVideoProgress, updateVideoProgressByExit } from "@/app/services/lecture/service";
+import { CreateReviewRequest, LectureStatus, UpdateVideoProgressByExitRequest, UpdateVideoProgressRequest } from "./type";
 import { revalidatePath } from "next/cache";
 
 
@@ -47,4 +47,12 @@ export const enrollLectureAction = async (lectureId: string, position?: string) 
     revalidatePath('/student/cook/lectures');
     revalidatePath('/student/beauty/lectures');
     revalidatePath('/student/art/lectures');
+}
+
+export const createReviewAction = async (
+    lectureId: string,
+    payload: CreateReviewRequest
+) => {
+    await createReviewByLectureId(lectureId, payload);
+    revalidatePath(`/student/lectures/${lectureId}`);
 }

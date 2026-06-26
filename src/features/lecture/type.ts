@@ -94,6 +94,11 @@ export interface ReviewResponse {
     totalPages: number;
 }
 
+export interface CreateReviewRequest {
+    rating: number;
+    content: string;
+}
+
 // 카테고리 별 강의 진척도 및 이어보기 데이터 조회 타입 정의 -> 강의 관련 페이지 오른쪽 사이드 카드 데이터
 export interface AsideCardInfoResponse {
     // 내 강의 총 진척도 -> 마이페이지 내 강의 조회 시에만
@@ -116,6 +121,8 @@ export interface LatestChapterInfoResponse {
     chapterId: number;
     chapterTitle: string;
     chapterProgress: number;
+    // api 수정에서 반드시 받아오게 될 예정
+    chapterThumbnailUrl?: string;
 }
 
 // 강의 메타 데이터 조회 타입 정의 -> 챕터 상세 조회 시

@@ -1,10 +1,12 @@
 'use client'
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Star } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { createReviewAction } from "@/features/lecture/action";
 import {
     Dialog,
     DialogContent,
@@ -16,21 +18,46 @@ import {
 } from "@/components/ui/dialog";
 
 interface CreateReviewBtnProps {
+    lectureId: number;
     disabled?: boolean;
 }
 
 export default function CreateReviewBtn({
+    lectureId,
     disabled = false,
 }: CreateReviewBtnProps) {
     const [open, setOpen] = useState(false);
     const [rating, setRating] = useState(5);
     const [content, setContent] = useState("");
+    const [isPending, startTransition] = useTransition();
+    const router = useRouter();
 
     const handleSubmit = () => {
-        toast.success("수강평이 등록되었습니다.");
-        setOpen(false);
-        setRating(5);
-        setContent("");
+        if (!content.trim()) {
+            toast.error("수강평 내용을 입력해주세요.");
+            return;
+        }
+
+        startTransition(async () => {
+            try {
+                await createReviewAction(String(lectureId), {
+                    rating,
+                    content: content.trim(),
+                });
+
+                toast.success("수강평이 등록되었습니다.");
+                setOpen(false);
+                setRating(5);
+                setContent("");
+                router.refresh();
+            } catch (error) {
+                const message = error instanceof Error
+                    ? error.message.split("|")[1]
+                    : undefined;
+
+                toast.error(message || "수강평 등록에 실패했습니다.");
+            }
+        });
     };
 
     return (
@@ -71,7 +98,7 @@ export default function CreateReviewBtn({
                                             className={`h-7 w-7 ${value <= rating
                                                 ? "fill-amber-400 text-amber-400"
                                                 : "text-slate-300"
-                                                }`}
+                                            }`}
                                         />
                                     </button>
                                 );
@@ -102,6 +129,7 @@ export default function CreateReviewBtn({
                         variant="outline"
                         className="cursor-pointer"
                         onClick={() => setOpen(false)}
+                        disabled={isPending}
                     >
                         취소
                     </Button>
@@ -109,8 +137,9 @@ export default function CreateReviewBtn({
                         type="button"
                         className="cursor-pointer bg-indigo-500 text-white hover:bg-indigo-600"
                         onClick={handleSubmit}
+                        disabled={isPending}
                     >
-                        등록
+                        {isPending ? "등록 중" : "등록"}
                     </Button>
                 </DialogFooter>
             </DialogContent>

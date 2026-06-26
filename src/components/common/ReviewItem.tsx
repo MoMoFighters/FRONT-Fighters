@@ -1,4 +1,4 @@
-import { Review } from "@/app/admin/lectures/[lectureId]/page";
+import { Review } from "@/features/lecture/type";
 import { Star } from "lucide-react";
 
 export default function ReviewItem({ review }: { review: Review }) {
@@ -9,7 +9,7 @@ export default function ReviewItem({ review }: { review: Review }) {
                 </div>
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-slate-900 font-semibold text-md">{review.name}</span>
+                        <span className="text-slate-900 font-semibold text-md">{review.nickname}</span>
                         <span className="text-slate-500 text-sm">{review.createdAt}</span>
                     </div>
                     <div className="flex items-center gap-1 mb-2.5">

@@ -10,6 +10,7 @@ import {
   LectureStatus,
   VideoPlayerResponse,
   ReviewResponse,
+  CreateReviewRequest,
   Category,
   AsideCardInfoResponse,
   LatestChapterInfoResponse,
@@ -31,7 +32,6 @@ const handleErrorResponse = async (response: Response) => {
 
   if (!response.ok) {
     const errorData = await response.json();
-    console.log(errorData, '??');
 
     throw new Error(
       `${errorData.status}|${errorData.message}`
@@ -128,6 +128,19 @@ export const getReviewsByLectureId = async (id: string, page: number): Promise<R
   await handleErrorResponse(response);
   const result: ApiResponse<ReviewResponse> = await response.json();
   return assertApiData(result);
+};
+
+export const createReviewByLectureId = async (
+  id: string,
+  payload: CreateReviewRequest
+) => {
+  const response = await fetchWithAuth(`/api/v1/lectures/${id}/reviews`, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+
+  await handleErrorResponse(response);
+  return response.json();
 };
 
 /**

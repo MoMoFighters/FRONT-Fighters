@@ -159,6 +159,7 @@ export default async function LectureListByCategory({
                 {latestChapterInfo ? (
                     <ResumeLectureCard
                         href={`/student/${category}/lectures/${latestChapterInfo.lectureId}/chapters/${latestChapterInfo.chapterId}`}
+                        thumbnail={latestChapterInfo.chapterThumbnailUrl}
                         title={latestChapterInfo.lectureTitle}
                         description={latestChapterInfo.chapterTitle}
                         progress={latestChapterInfo.chapterProgress}

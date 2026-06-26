@@ -1,85 +1,76 @@
-import { Review } from "@/app/admin/lectures/[lectureId]/page";
 import MovePageBackBtn from "@/components/common/MovePageBackBtn";
 import LectureItem from "@/components/common/LectureItem";
 import LectureDetailNav from "@/features/lecture/components/common/LectureDetailNav";
 import LectureDetailList from "@/features/lecture/components/common/LectureDetailList";
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
-import { getLectureById } from "@/app/services/lecture/service";
+import {
+    Pagination,
+    PaginationContent,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from "@/components/ui/pagination";
+import {
+    getLectureById,
+    getReviewsByLectureId,
+} from "@/app/services/lecture/service";
 
 interface TeacherLectureDetailPageProps {
     params: Promise<{
         lectureId: string;
         category: string;
-    }>
+    }>;
     searchParams: Promise<{
         tab?: string;
         page?: string;
-    }>
+    }>;
 }
 
-export default async function TeacherLectureDetailPage({ searchParams, params }: TeacherLectureDetailPageProps) {
-
+export default async function TeacherLectureDetailPage({
+    searchParams,
+    params,
+}: TeacherLectureDetailPageProps) {
     const { lectureId } = await params;
     const { tab, page } = await searchParams;
-
-    const dummyReviews: Review[] = [
-        { id: 1, name: '홍길동', rating: 5, content: '정말 유익한 강의였습니다! 매일 아침 따라하고 있어요.', createdAt: '2024.05.15' },
-        { id: 2, name: '김철수', rating: 4, content: '설명이 쉽고 자세해서 좋았습니다. 추천합니다!', createdAt: '2024.05.14' },
-        { id: 3, name: '이영희', rating: 5, content: '운동 초보자도 쉽게 따라할 수 있어요.', createdAt: '2024.05.13' },
-        { id: 4, name: '박민수', rating: 4, content: '체계적인 커리큘럼이 마음에 듭니다.', createdAt: '2024.05.12' },
-        { id: 5, name: '최수진', rating: 5, content: '강사님이 친절하고 설명이 명확해요.', createdAt: '2024.05.11' },
-        { id: 6, name: '정대호', rating: 3, content: '괜찮은 강의입니다. 다만 난이도가 조금 낮은 편.', createdAt: '2024.05.10' },
-    ];
-
+    const currentPage = Number(page) || 1;
     const lecture = await getLectureById(lectureId);
 
-    const currentPage = Number(page ?? 1);
-
-    const REVIEWS_PER_PAGE = 5;
-
-    const totalPages = Math.ceil(
-        dummyReviews.length / REVIEWS_PER_PAGE
-    );
-
-    const paginatedReviews = dummyReviews.slice(
-        (currentPage - 1) * REVIEWS_PER_PAGE,
-        currentPage * REVIEWS_PER_PAGE
-    );
+    const reviewResponseData = tab === "reviews"
+        ? await getReviewsByLectureId(lectureId, currentPage)
+        : undefined;
 
     if (!lecture) {
-        return (
-            <div>
-                존재하지 않는 강의입니다.
-            </div>
-        );
+        return <div>존재하지 않는 강의입니다.</div>;
     }
 
     return (
-        <div className="p-12 relative">
+        <div className="relative p-12">
             <MovePageBackBtn href="/teacher/lectures/" />
             <LectureItem lecture={lecture} role="teacher" mode="detail" />
-            <div className="mt-10 bg-white flex flex-col border rounded-lg border-slate-200 p-6 relative">
+
+            <div className="relative mt-10 flex flex-col rounded-lg border border-slate-200 bg-white p-6">
                 <LectureDetailNav href={`/teacher/lectures/${lectureId}`} />
-                <div className="border-t border-slate-400 mb-4" />
-                <LectureDetailList role="teacher" chapters={lecture.chapters} reviews={paginatedReviews} />
+                <div className="mb-4 border-t border-slate-400" />
+                <LectureDetailList
+                    role="teacher"
+                    chapters={lecture.chapters}
+                    reviews={reviewResponseData?.content ?? []}
+                />
             </div>
-            {tab === "reviews" && (
+
+            {tab === "reviews" && reviewResponseData && (
                 <Pagination className="mt-8">
                     <PaginationContent>
-
                         {currentPage > 1 && (
                             <PaginationItem>
-                                <PaginationPrevious
-                                    href={`?tab=reviews&page=${currentPage - 1}`}
-                                />
+                                <PaginationPrevious href={`?tab=reviews&page=${currentPage - 1}`} />
                             </PaginationItem>
                         )}
 
                         {Array.from(
-                            { length: totalPages },
-                            (_, i) => i + 1
+                            { length: reviewResponseData.totalPages },
+                            (_, index) => index + 1,
                         ).map((pageNumber) => (
-
                             <PaginationItem key={pageNumber}>
                                 <PaginationLink
                                     href={`?tab=reviews&page=${pageNumber}`}
@@ -88,17 +79,13 @@ export default async function TeacherLectureDetailPage({ searchParams, params }:
                                     {pageNumber}
                                 </PaginationLink>
                             </PaginationItem>
-
                         ))}
 
-                        {currentPage < totalPages && (
+                        {currentPage < reviewResponseData.totalPages && (
                             <PaginationItem>
-                                <PaginationNext
-                                    href={`?tab=reviews&page=${currentPage + 1}`}
-                                />
+                                <PaginationNext href={`?tab=reviews&page=${currentPage + 1}`} />
                             </PaginationItem>
                         )}
-
                     </PaginationContent>
                 </Pagination>
             )}
