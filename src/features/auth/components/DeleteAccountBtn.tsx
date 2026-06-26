@@ -68,7 +68,7 @@ export default function DeleteAccountBtn({ userName }: { userName: string }) {
                         </div>
 
                         <div className="my-3 flex flex-col items-center gap-2 flex-1">
-                            <p className="text-sm text-slate-500 w-[90%]">회원탈퇴 시 3개월의 기간 동안 동일 이메일 또는 소셜 로그인 정보로 회원가입이 불가능합니다.
+                            <p className="text-sm text-center text-slate-500 w-[93%]">회원탈퇴 시 3개월의 기간 동안 해당 계정으로 회원가입이 불가능합니다.
                                 탈퇴 후 계정 복구를 원하시는 경우 3개월 이내에 <span className="font-bold text-black underline">yourmomocity@gmail.com</span> 로 문의 부탁드립니다.</p>
                             <p className="mt-7">
                                 회원탈퇴를 하시려면 "

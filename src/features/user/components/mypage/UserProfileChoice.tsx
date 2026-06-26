@@ -64,7 +64,7 @@ export default function UserProfileChoice({ profileChangeOpen, setProfileChangeO
                     <h3 className="font-black text-md text-slate-800">
                         프로필 변경
                     </h3>
-                    <Link href='/student/point' className="flex items-center">
+                    <Link href='/student/point-store' className="flex items-center">
                         <p className="text-[13px] font-bold text-indigo-400">
                             상점으로 이동
                         </p>

@@ -1,5 +1,6 @@
-import { Eye, Heart, ImageIcon } from "lucide-react";
+import { Eye, Heart, ImageIcon, UserRound } from "lucide-react";
 import Link from "next/link";
+
 type CommunityCategory =
     | "STUDY"
     | "FASHION"
@@ -7,6 +8,7 @@ type CommunityCategory =
     | "FITNESS"
     | "COOK"
     | "FREE";
+
 const CATEGORY_LABEL: Record<CommunityCategory, string> = {
     STUDY: "학습",
     FASHION: "패션",
@@ -16,21 +18,30 @@ const CATEGORY_LABEL: Record<CommunityCategory, string> = {
     FREE: "자유",
 };
 
-
-export default function PostListItem({ id, thumbnailUrl, title, category, likeCount, viewCount, authorNickname }: {
+export default function PostListItem({
+    id,
+    thumbnailUrl,
+    title,
+    category,
+    likeCount,
+    viewCount,
+    authorNickname,
+    authorProfileImageUrl,
+}: {
     id: number;
-    thumbnailUrl: string;
+    thumbnailUrl: string | null;
     title: string;
     category: CommunityCategory;
     likeCount: number;
     viewCount: number;
     authorNickname: string;
+    authorProfileImageUrl?: string | null;
 }) {
     return (
         <Link
             key={id}
             href={`/student/phone/community/${id}`}
-            className="flex flex-col h-50 group overflow-hidden rounded-2xl border border-white/70 bg-white/90 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+            className="group flex h-50 flex-col overflow-hidden rounded-2xl border border-white/70 bg-white/90 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
         >
             <div className="relative h-32.5 bg-slate-100">
                 {thumbnailUrl ? (
@@ -50,7 +61,7 @@ export default function PostListItem({ id, thumbnailUrl, title, category, likeCo
                 </span>
             </div>
 
-            <div className="p-3 h-17.5">
+            <div className="h-17.5 p-3">
                 <div className="flex items-start justify-between gap-2">
                     <h2 className="line-clamp-1 text-sm font-black text-slate-900">
                         {title}
@@ -64,9 +75,22 @@ export default function PostListItem({ id, thumbnailUrl, title, category, likeCo
                     </span>
                 </div>
 
-                <p className="mt-1.5 line-clamp-2 text-xs font-medium leading-5 text-slate-500">
-                    {authorNickname}
-                </p>
+                <div className="mt-1.5 flex min-w-0 items-center gap-1.5">
+                    <div className="flex h-5 w-5 shrink-0 items-center justify-center overflow-hidden rounded-full bg-indigo-50 text-indigo-400 ring-1 ring-indigo-100">
+                        {authorProfileImageUrl ? (
+                            <img
+                                src={authorProfileImageUrl}
+                                alt={`${authorNickname} 프로필`}
+                                className="h-full w-full object-cover"
+                            />
+                        ) : (
+                            <UserRound className="h-3.5 w-3.5" />
+                        )}
+                    </div>
+                    <p className="line-clamp-1 text-xs font-bold leading-5 text-slate-500">
+                        {authorNickname}
+                    </p>
+                </div>
             </div>
         </Link>
     );
