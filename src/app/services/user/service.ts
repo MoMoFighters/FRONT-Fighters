@@ -54,8 +54,12 @@ export interface GetMyInfoResponse {
          nickname: string | null;
          isTempPwd: boolean;
          createdAt: string;
+         points?: number;
+         point?: number;
       },
       buildings: BuildingInfo[]
+      points?: number;
+      point?: number;
    };
 }
 

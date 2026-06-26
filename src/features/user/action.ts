@@ -14,6 +14,15 @@ import { ApiResponse } from "@/lib/api";
 import { Category } from "../lecture/type";
 import { redirect } from "next/navigation";
 
+/* 401 에러 페이지 및 회원탈퇴에서 사용할
+   토큰 죽이고, 로그인페이지로 리다이렉트 시키는 함수 */
+export const killTokenAction = async () => {
+    const cookieStore = await cookies();
+    cookieStore.delete('accessToken');
+    cookieStore.delete('refreshToken');
+    redirect('/auth/login');
+}
+
 // 내 정보 불러오기 인터페이스 규격
 
 export interface MomoUserInfo {
@@ -54,6 +63,7 @@ export const getMyInfo = async (): Promise<MomoUserInfoResponse> => {
         const result = await getMyInfoService(accessToken);
         const userDetail = result.data.userDetail;
         const buildings = result.data.buildings ?? [];
+        const points = result.data.points ?? result.data.point ?? userDetail.points ?? userDetail.point ?? 0;
 
         return {
             timestamp: result.timestamp,
@@ -67,7 +77,7 @@ export const getMyInfo = async (): Promise<MomoUserInfoResponse> => {
                 nickname: userDetail.nickname,
                 isTempPwd: userDetail.isTempPwd,
                 createdAt: userDetail.createdAt,
-                points: 0,
+                points,
                 buildings: buildings.length,
                 buildingInfos: buildings,
                 isPaid: false,
