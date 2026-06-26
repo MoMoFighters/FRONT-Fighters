@@ -52,7 +52,7 @@ export default async function ChapterViewPage({
         (chapter) => chapter.chapterId === Number(chapterId)
     );
     const nextChapter = metaData.chapters[currentChapterIndex + 1];
-    const nextChapterHref = nextChapter && nextChapter.isAccessible !== false
+    const nextChapterHref = nextChapter && nextChapter.isAccessible === true
         ? `/student/${category}/lectures/${lectureId}/chapters/${nextChapter.chapterId}`
         : undefined;
 

@@ -185,4 +185,12 @@ export interface LectureEnrollResponse {
     enrolledAt: string;
 }
 
+export interface EnrollLectureResponse {
+    timestamp: string;
+    status: number;
+    code: string;
+    message: string;
+    data?: LectureEnrollResponse | null;
+}
+
 
