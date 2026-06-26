@@ -2,6 +2,7 @@ import MomoResidentCard from "@/components/mypage/MomoResidentCard";
 import MyBuildingInfo from "@/components/mypage/MyBuildingInfo";
 import MyInfoTable from "@/components/mypage/MyInfoTable";
 import MyPageNav from "@/components/mypage/MyPageNav";
+import DeleteAccountBtn from "@/features/auth/components/DeleteAccountBtn";
 import StudentPageHeader from "@/features/student/components/StudentPageHeader";
 import { getMyInfo } from "@/features/user/action";
 import { BadgeCheck, ChevronRight, Landmark, PencilLine, UserRound } from "lucide-react";
@@ -9,6 +10,7 @@ import Link from "next/link";
 
 export default async function MyPage() {
     const DATA = await getMyInfo();
+    console.log(DATA);
 
     const USER_DATA = {
         name: DATA.data?.name || "이름 없음",
@@ -67,45 +69,11 @@ export default async function MyPage() {
 
                 <div className="grid grid-cols-[580px_minmax(0,1fr)] gap-8">
                     <div className="space-y-4">
-                        <MomoResidentCard data={USER_DATA} />
-
-                        <div className="grid grid-cols-2 gap-3">
-                            <Link
-                                href="/student/mypage/point"
-                                className="group rounded-3xl border border-white bg-white/80 p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
-                            >
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <div className="flex size-10 items-center justify-center rounded-2xl bg-amber-50 text-amber-500 ring-1 ring-amber-100">
-                                            <Landmark className="h-5 w-5" />
-                                        </div>
-                                        <div>
-                                            <p className="text-xs font-black text-slate-400">
-                                                보유 포인트
-                                            </p>
-                                            <p className="text-lg font-black text-slate-900">
-                                                {USER_DATA.points.toLocaleString()} P
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <ChevronRight className="h-4 w-4 text-slate-300 transition group-hover:translate-x-1 group-hover:text-indigo-400" />
-                                </div>
-                            </Link>
-
-                            <div className="rounded-3xl border border-white bg-white/80 p-4 shadow-sm">
-                                <div className="flex items-center gap-3">
-                                    <div className="flex size-10 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-500 ring-1 ring-emerald-100">
-                                        <BadgeCheck className="h-5 w-5" />
-                                    </div>
-                                    <div>
-                                        <p className="text-xs font-black text-slate-400">
-                                            멤버십 상태
-                                        </p>
-                                        <p className="text-lg font-black text-slate-900">
-                                            {USER_DATA.isPaid ? "활성화" : "미가입"}
-                                        </p>
-                                    </div>
-                                </div>
+                        <div className="h-full flex justify-center flex-col p-2">
+                            <div className="h-full" />
+                            <MomoResidentCard data={USER_DATA} />
+                            <div className="h-full flex justify-start items-end">
+                                <DeleteAccountBtn userName={USER_DATA.nickname} />
                             </div>
                         </div>
                     </div>

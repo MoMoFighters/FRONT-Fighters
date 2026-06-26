@@ -29,7 +29,6 @@ const formatResidentNumber = (createdAt: string) => {
 
 export default function MomoResidentCard({ data }: ResidentCardProps) {
     const residentNumber = formatResidentNumber(data.createdAt);
-    const isBlobProfileImage = data.profileImageUrl.startsWith("blob:");
 
     return (
         <div className="flex flex-col w-145 h-93.5 border border-slate-300 rounded-xl bg-mauve-50 shadow-2xl">
