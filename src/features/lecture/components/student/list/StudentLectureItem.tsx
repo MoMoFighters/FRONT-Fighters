@@ -9,14 +9,12 @@ import getCategoryMeta from "../shared/category";
 interface StudentLectureItemProps {
     lecture: Lecture;
     href: string;
-    progress?: number;
     showLearningStatus?: boolean;
 }
 
 export default function StudentLectureItem({
     lecture,
     href,
-    progress,
     showLearningStatus = true,
 }: StudentLectureItemProps) {
 
