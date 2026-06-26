@@ -51,6 +51,7 @@ export default async function LectureByCategoryDetail({
     if (!lecture) {
         notFound();
     }
+    console.log(lecture);
 
     if (lecture.lectureStatus !== "ACTIVE") {
         throw new Error('403|접근할 수 없는 상태의 강의입니다.');
