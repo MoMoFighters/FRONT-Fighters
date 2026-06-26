@@ -1,4 +1,4 @@
-﻿import Image from "next/image";
+import Image from "next/image";
 import Link from "next/link";
 import { Star } from "lucide-react";
 
@@ -9,18 +9,19 @@ import getCategoryMeta from "../shared/category";
 interface StudentLectureItemProps {
     lecture: Lecture;
     href: string;
-    progress?: number;
     showLearningStatus?: boolean;
 }
 
 export default function StudentLectureItem({
     lecture,
     href,
-    progress,
     showLearningStatus = true,
 }: StudentLectureItemProps) {
-
     const categoryMeta = getCategoryMeta(lecture.category);
+    const progress = lecture.lectureProgress ?? 0;
+    const shouldShowLearningStatus =
+        showLearningStatus &&
+        lecture.isCompleted !== undefined;
 
     return (
         <Link
@@ -34,13 +35,15 @@ export default function StudentLectureItem({
             "
         >
             <div className="relative h-28 overflow-hidden rounded-xl bg-slate-100">
-                {lecture.thumbnailUrl && <Image
-                    src={lecture.thumbnailUrl}
-                    alt={lecture.title}
-                    fill
-                    sizes="184px"
-                    className="object-cover"
-                />}
+                {lecture.thumbnailUrl && (
+                    <Image
+                        src={lecture.thumbnailUrl}
+                        alt={lecture.title}
+                        fill
+                        sizes="184px"
+                        className="object-cover"
+                    />
+                )}
             </div>
 
             <div className="flex h-full min-w-0 flex-col">
@@ -58,15 +61,15 @@ export default function StudentLectureItem({
                     {lecture.description}
                 </p>
 
-                {showLearningStatus && (
+                {shouldShowLearningStatus && (
                     <div className="mt-auto flex items-center gap-3 text-xs font-semibold text-slate-400">
                         <Progress
-                            value={lecture?.lectureProgress}
+                            value={progress}
                             id={`lecture-progress-${lecture.lectureId}`}
                             className="max-w-40"
                         />
 
-                        <span>진도율 {lecture?.lectureProgress}%</span>
+                        <span>진도율 {progress}%</span>
                     </div>
                 )}
             </div>
@@ -81,20 +84,23 @@ export default function StudentLectureItem({
                     ({lecture.reviewCount})
                 </div>
 
-                {showLearningStatus ? (
+                {shouldShowLearningStatus ? (
                     <span
                         className={`
-                            rounded-lg border px-3 py-1.5
-                            text-sm font-bold
-                            ${lecture.isEnrolled
-                                ? "border-indigo-300 text-indigo-500"
-                                : "border-slate-300 text-slate-500"
+                            rounded-lg border px-3 py-1.5 text-sm font-bold
+                            ${lecture.isCompleted
+                                ? "border-emerald-300 text-emerald-500"
+                                : "border-indigo-300 text-indigo-500"
                             }
                         `}
                     >
-                        {lecture.isEnrolled ? "학습 중" : "미시청"}
+                        {lecture.isCompleted ? "학습 완료" : "학습 중"}
                     </span>
-                ) : <span className="text-sm font-semibold">챕터 : 총 {lecture.chapterCount}강</span>}
+                ) : (
+                    <span className="text-sm font-semibold text-slate-500">
+                        총 {lecture.chapterCount}개 챕터
+                    </span>
+                )}
             </div>
         </Link>
     );

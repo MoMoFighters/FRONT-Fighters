@@ -1,11 +1,12 @@
-import Image, { StaticImageData } from "next/image";
+import Image from "next/image";
 import Link from "next/link";
 
 import { Progress } from "@/components/ui/progress";
+
 interface CategoryBuildingCardProps {
     category: string;
     buildingName: string;
-    buildingImage: StaticImageData;
+    buildingImage?: string;
     level: number;
     currentExp: number;
     maxExp: number;
@@ -25,14 +26,18 @@ export default function CategoryBuildingCard({
                 나의 MoMoCITY
             </h2>
 
-            <div className="relative mx-auto mt-4 h-40 w-40">
-                <Image
-                    src={buildingImage}
-                    alt={`${buildingName} 이미지`}
-                    fill
-                    sizes="160px"
-                    className="object-contain"
-                />
+            <div className="relative mx-auto mt-4 flex h-40 w-40 items-center justify-center rounded-2xl bg-slate-50 text-sm font-bold text-slate-400">
+                {buildingImage ? (
+                    <Image
+                        src={buildingImage}
+                        alt={`${buildingName} 이미지`}
+                        fill
+                        sizes="160px"
+                        className="object-contain"
+                    />
+                ) : (
+                    "이미지 없음"
+                )}
             </div>
 
             <div className="mt-5">

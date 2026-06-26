@@ -1,21 +1,45 @@
-import Image, { StaticImageData } from "next/image";
+import Image from "next/image";
 import Link from "next/link";
 
-interface ResumeLectureCardProps {
+interface AvailableResumeLectureCardProps {
     href: string;
-    thumbnail: StaticImageData;
+    thumbnail?: string;
     title: string;
     description: string;
     progress: number;
 }
 
-export default function ResumeLectureCard({
-    href,
-    thumbnail,
-    title,
-    description,
-    progress,
-}: ResumeLectureCardProps) {
+interface EmptyResumeLectureCardProps {
+    empty: true;
+}
+
+type ResumeLectureCardProps =
+    | AvailableResumeLectureCardProps
+    | EmptyResumeLectureCardProps;
+
+export default function ResumeLectureCard(props: ResumeLectureCardProps) {
+    if ("empty" in props) {
+        return (
+            <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                <h2 className="text-base font-bold text-slate-950">
+                    이어보기
+                </h2>
+
+                <p className="mt-4 text-sm font-medium leading-6 text-slate-500">
+                    이어볼 강의 영상이 존재하지 않습니다. 수강 신청을 한 후 영상을 시청해보세요!
+                </p>
+            </section>
+        );
+    }
+
+    const {
+        href,
+        thumbnail,
+        title,
+        description,
+        progress,
+    } = props;
+
     return (
         <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <h2 className="text-base font-bold text-slate-950">
@@ -23,14 +47,18 @@ export default function ResumeLectureCard({
             </h2>
 
             <div className="mt-4 flex gap-3">
-                <div className="relative h-16 w-16 overflow-hidden rounded-xl bg-slate-100">
-                    <Image
-                        src={thumbnail}
-                        alt="이어보기 강의"
-                        fill
-                        sizes="64px"
-                        className="object-cover"
-                    />
+                <div className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-100 text-[10px] font-bold text-slate-400">
+                    {thumbnail ? (
+                        <Image
+                            src={thumbnail}
+                            alt="이어보기 강의"
+                            fill
+                            sizes="64px"
+                            className="object-cover"
+                        />
+                    ) : (
+                        "이미지 없음"
+                    )}
                 </div>
 
                 <div className="min-w-0 flex-1">

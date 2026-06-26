@@ -10,6 +10,9 @@ import {
   LectureStatus,
   VideoPlayerResponse,
   ReviewResponse,
+  Category,
+  AsideCardInfoResponse,
+  LatestChapterInfoResponse,
 } from "@/features/lecture/type";
 import { ApiResponse, fetchWithAuth } from "@/lib/api";
 import { notFound } from "next/navigation";
@@ -28,6 +31,7 @@ const handleErrorResponse = async (response: Response) => {
 
   if (!response.ok) {
     const errorData = await response.json();
+    console.log(errorData, '??');
 
     throw new Error(
       `${errorData.status}|${errorData.message}`
@@ -125,6 +129,41 @@ export const getReviewsByLectureId = async (id: string, page: number): Promise<R
   const result: ApiResponse<ReviewResponse> = await response.json();
   return assertApiData(result);
 };
+
+/**
+ * 강의 조회 페이지들 중 우측 사이드 카드에 담을 진척도 정보 조회 api
+ * @param category 카테고리별 진척도 조회 시 필요한 카테고리
+ * @returns AsideCardInfoResponse
+ */
+export const getProgressByCategory = async (category: Category): Promise<AsideCardInfoResponse> => {
+  const params = new URLSearchParams();
+  params.set("category", String(category));
+
+  const response = await fetchWithAuth(`/api/v1/enrollments/progress?${params.toString()}`);
+  await handleErrorResponse(response);
+  const result: ApiResponse<AsideCardInfoResponse> = await response.json();
+  return assertApiData(result);
+}
+
+/**
+ * 강의 조회 페이지들 중 우측 사이드 카드에 담을 이어보기 정보 조회 api
+ * @param category 카테고리별 이어보기 조회 시 필요한 카테고리
+ * @returns LatestChapterInfoResponse
+ */
+export const getLatestChapterInfo = async (
+  category: Category
+): Promise<LatestChapterInfoResponse | undefined> => {
+  const params = new URLSearchParams();
+  params.set("category", String(category));
+
+  const response = await fetchWithAuth(`/api/v1/enrollments/continue-learning?${params.toString()}`);
+  await handleErrorResponse(response);
+  const result: ApiResponse<LatestChapterInfoResponse> = await response.json();
+
+  return result.data && Object.keys(result.data).length > 0
+    ? result.data
+    : undefined;
+}
 
 /**
  * 선택한 강의의 상태를 변경하는 api

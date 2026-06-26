@@ -1,7 +1,12 @@
 import Link from "next/link";
 
-export default function StudentLectureNav({ keyword, filter }: { keyword?: string, filter?: string }) {
-
+export default function StudentLectureNav({
+    keyword,
+    filter,
+}: {
+    keyword?: string;
+    filter?: string;
+}) {
     const createFilterHref = (nextFilter?: string) => {
         const params = new URLSearchParams();
 
@@ -22,12 +27,12 @@ export default function StudentLectureNav({ keyword, filter }: { keyword?: strin
                 <Link
                     href={createFilterHref()}
                     className={`
-                                            border-b-2 px-1 pb-4 text-sm font-bold transition
-                                            ${filter !== "my"
+                        border-b-2 px-1 pb-4 text-sm font-bold transition
+                        ${filter !== "my"
                             ? "border-indigo-400 text-indigo-500"
                             : "border-transparent text-slate-500 hover:text-slate-900"
                         }
-                                        `}
+                    `}
                 >
                     전체
                 </Link>
@@ -35,12 +40,12 @@ export default function StudentLectureNav({ keyword, filter }: { keyword?: strin
                 <Link
                     href={createFilterHref("my")}
                     className={`
-                                            border-b-2 px-1 pb-4 text-sm font-bold transition
-                                            ${filter === "my"
+                        border-b-2 px-1 pb-4 text-sm font-bold transition
+                        ${filter === "my"
                             ? "border-indigo-400 text-indigo-500"
                             : "border-transparent text-slate-500 hover:text-slate-900"
                         }
-                                        `}
+                    `}
                 >
                     내 강의
                 </Link>
