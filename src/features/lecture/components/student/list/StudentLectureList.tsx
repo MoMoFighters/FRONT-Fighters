@@ -26,12 +26,11 @@ export default function StudentLectureList({
 }: StudentLectureListProps) {
     return (
         <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-            {lectures.map((lecture, index) => (
+            {lectures.map((lecture) => (
                 <StudentLectureItem
                     key={lecture.lectureId}
                     lecture={lecture}
                     href={getHref ? getHref(lecture) : `/student/lectures/${lecture.lectureId}`}
-                    progress={getLectureProgress(lecture, index)}
                     showLearningStatus={showLearningStatus}
                 />
             ))}

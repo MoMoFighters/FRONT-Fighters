@@ -1,5 +1,4 @@
 import {
-  EnrollLectureResponse,
   LectureListRequest,
   LectureDetailResponse,
   LectureListResponse,
@@ -10,6 +9,9 @@ import {
   LectureStatus,
   VideoPlayerResponse,
   ReviewResponse,
+  EnrollReviewRequest,
+  LectureEnrollResponse,
+  EnrollReviewResponse,
 } from "@/features/lecture/type";
 import { ApiResponse, fetchWithAuth } from "@/lib/api";
 import { notFound } from "next/navigation";
@@ -120,11 +122,28 @@ export const getReviewsByLectureId = async (id: string, page: number): Promise<R
   const params = new URLSearchParams();
   params.set("page", String(page));
 
-  const response = await fetchWithAuth(`/api/v1/lectures/${id}/reviews?${params.toString()}`);
+  const response = await fetch(`${BASE_URL}/api/v1/lectures/${id}/reviews?${params.toString()}`);
   await handleErrorResponse(response);
   const result: ApiResponse<ReviewResponse> = await response.json();
   return assertApiData(result);
 };
+
+/**
+ * 수강평 등록 api
+ * @param id 수강평을 등록할 강의의 id
+ * @param payload 수강평 등록 시 저장할 값 (별점, 내용)
+ * @returns EnrollReviewResponse
+ */
+export const enrollReviewByLectureId = async (id: string, payload: EnrollReviewRequest): Promise<EnrollReviewResponse> => {
+  const response = await fetchWithAuth(`/api/v1/lectures/${id}/reviews`, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+
+  await handleErrorResponse(response);
+  const result: ApiResponse<EnrollReviewResponse> = await response.json();
+  return assertApiData(result);
+}
 
 /**
  * 선택한 강의의 상태를 변경하는 api
@@ -248,7 +267,7 @@ export const updateVideoProgressByExit = async (
 export const enrollLectureById = async (
   id: string,
   position?: string
-): Promise<EnrollLectureResponse> => {
+): Promise<LectureEnrollResponse> => {
   const params = new URLSearchParams();
   if (position) {
     params.set("position", position);
@@ -260,6 +279,6 @@ export const enrollLectureById = async (
   });
 
   await handleErrorResponse(response);
-
-  return response.json();
+  const result: ApiResponse<LectureEnrollResponse> = await response.json();
+  return assertApiData(result);
 };

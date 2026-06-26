@@ -1,21 +1,20 @@
 'use client'
 
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
 import TwoButtonModal from "@/features/modal/TwoButtonModal";
-import { toast } from "sonner";
 import { enrollLectureAction } from "../../action";
-import { useRouter } from "next/navigation";
 
 interface EnrollLectureBtnProps {
     lectureId: number;
-    category?: string;
     position?: string;
     className?: string;
 }
 
 export default function EnrollLectureBtn({
     lectureId,
-    category,
     position,
     className,
 }: EnrollLectureBtnProps) {
@@ -25,11 +24,7 @@ export default function EnrollLectureBtn({
         try {
             await enrollLectureAction(String(lectureId), position ?? "");
 
-            if (category) {
-                router.push(`/student/${category}/lectures/${lectureId}`);
-            } else {
-                router.refresh();
-            }
+            router.refresh();
 
             toast.success("정상적으로 수강 신청 되었습니다.", {
                 duration: 1000,

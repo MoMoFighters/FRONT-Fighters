@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Star } from "lucide-react";
 import { toast } from "sonner";
 
@@ -14,23 +14,51 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
+import { enrollReviewAction } from "../../action";
 
 interface CreateReviewBtnProps {
+    lectureId: number;
     disabled?: boolean;
 }
 
 export default function CreateReviewBtn({
+    lectureId,
     disabled = false,
 }: CreateReviewBtnProps) {
     const [open, setOpen] = useState(false);
     const [rating, setRating] = useState(5);
     const [content, setContent] = useState("");
+    const [isPending, startTransition] = useTransition();
 
     const handleSubmit = () => {
-        toast.success("수강평이 등록되었습니다.");
-        setOpen(false);
-        setRating(5);
-        setContent("");
+        const payload = {
+            rating,
+            content: content,
+        };
+
+        if (!payload.content.trim()) {
+            toast.error("수강평 내용을 입력해주세요.");
+            return;
+        }
+
+        startTransition(async () => {
+            try {
+                await enrollReviewAction(String(lectureId), payload);
+
+                toast.success("수강평이 등록되었습니다.");
+                setOpen(false);
+                setRating(5);
+                setContent("");
+            } catch (error) {
+                if (!(error instanceof Error)) {
+                    toast.error("알 수 없는 오류가 발생했습니다.");
+                    return;
+                }
+
+                const [, message] = error.message.split("|");
+                toast.error(message || "수강평 등록에 실패했습니다.");
+            }
+        });
     };
 
     return (
@@ -101,6 +129,7 @@ export default function CreateReviewBtn({
                         type="button"
                         variant="outline"
                         className="cursor-pointer"
+                        disabled={isPending}
                         onClick={() => setOpen(false)}
                     >
                         취소
@@ -108,9 +137,10 @@ export default function CreateReviewBtn({
                     <Button
                         type="button"
                         className="cursor-pointer bg-indigo-500 text-white hover:bg-indigo-600"
+                        disabled={isPending}
                         onClick={handleSubmit}
                     >
-                        등록
+                        {isPending ? "등록 중..." : "등록"}
                     </Button>
                 </DialogFooter>
             </DialogContent>

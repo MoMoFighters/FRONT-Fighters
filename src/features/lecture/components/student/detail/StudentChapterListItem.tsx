@@ -27,8 +27,8 @@ export default function StudentChapterListItem({
     href,
 }: StudentChapterListItemProps) {
     const isLocked =
-        !isEnrolled ||
-        chapter.isAccessible === false;
+        isEnrolled !== true ||
+        chapter.isAccessible !== true;
     const progress = chapter.chapterProgress ?? 0;
     const chapterHref = href ?? `/student/${category}/lectures/${lectureId}/chapters/${chapter.chapterId}`;
 
