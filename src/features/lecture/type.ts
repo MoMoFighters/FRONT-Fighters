@@ -94,6 +94,21 @@ export interface ReviewResponse {
     totalPages: number;
 }
 
+// 수강평 등록 타입 정의
+export interface EnrollReviewRequest {
+    rating: number,
+    content: string
+}
+
+export interface EnrollReviewResponse {
+    reviewId: number,
+    lectureId: number,
+    userId: number,
+    rating: number,
+    content: string,
+    createdAt: string
+}
+
 // 카테고리 별 강의 진척도 및 이어보기 데이터 조회 타입 정의 -> 강의 관련 페이지 오른쪽 사이드 카드 데이터
 export interface AsideCardInfoResponse {
     // 내 강의 총 진척도 -> 마이페이지 내 강의 조회 시에만
@@ -177,14 +192,5 @@ export interface LectureEnrollResponse {
     completedCount: number;
     enrolledAt: string;
 }
-
-export interface EnrollLectureResponse {
-    timestamp: string;
-    status: number;
-    code: string;
-    message: string;
-    data?: LectureEnrollResponse | null;
-}
-
 
 

@@ -1,6 +1,5 @@
-import Image from "next/image";
-import Link from "next/link";
-import { Play, Star } from "lucide-react";
+import Image, { StaticImageData } from "next/image";
+import { Star } from "lucide-react";
 
 import { Progress } from "@/components/ui/progress";
 import EnrollLectureBtn from "@/features/lecture/components/buttons/EnrollLectureBtn";
@@ -10,24 +9,21 @@ interface StudentLectureDetailItemProps {
     lecture: LectureDetailResponse;
     category: string;
     categoryLabel: string;
-    position: string;
+    position?: string;
+    buildingImage?: StaticImageData;
     resumeChapterId?: number;
     chapterBaseHref?: string;
 }
 
 export default function StudentLectureDetailItem({
     lecture,
-    category,
     categoryLabel,
     position,
-    resumeChapterId,
-    chapterBaseHref,
 }: StudentLectureDetailItemProps) {
     const progress = lecture.lectureProgress ?? 0;
     const chapterCount = lecture.chapters.length;
-    const chapterHref = resumeChapterId
-        ? `${chapterBaseHref ?? `/student/${category}/lectures/${lecture.lectureId}`}/chapters/${resumeChapterId}`
-        : undefined;
+    const isEnrolled = lecture.isEnrolled === true;
+    const isCompleted = lecture.isCompleted === true;
 
     return (
         <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -69,15 +65,19 @@ export default function StudentLectureDetailItem({
                         <span>총 {chapterCount}개 챕터</span>
 
                         <span>
-                            {lecture.isEnrolled ? "학습 중" : "수강 전"}
+                            {isEnrolled
+                                ? isCompleted
+                                    ? "학습 완료"
+                                    : "학습 중"
+                                : "수강 전"}
                         </span>
                     </div>
 
-                    <div className="mt-auto border-t border-slate-100 pt-5">
-                        {lecture.isEnrolled ? (
+                    <div className="mt-auto pt-5">
+                        {isEnrolled ? (
                             <div className="flex items-center gap-5">
                                 <span className="text-sm font-bold text-indigo-500">
-                                    학습 중
+                                    {isCompleted ? "학습 완료" : "학습 중"}
                                 </span>
 
                                 <Progress value={progress} className="max-w-48" />
@@ -85,22 +85,11 @@ export default function StudentLectureDetailItem({
                                 <span className="text-sm font-semibold text-slate-500">
                                     진도율 {progress}%
                                 </span>
-
-                                {chapterHref && (
-                                    <Link
-                                        href={chapterHref}
-                                        className="ml-auto flex h-11 items-center gap-2 rounded-xl bg-slate-950 px-5 text-sm font-bold text-white transition hover:bg-slate-800"
-                                    >
-                                        <Play className="h-4 w-4 fill-white" />
-                                        이어보기
-                                    </Link>
-                                )}
                             </div>
                         ) : (
                             <div className="flex justify-end">
                                 <EnrollLectureBtn
                                     lectureId={lecture.lectureId}
-                                    category={category}
                                     position={position}
                                     className="h-11 rounded-xl bg-indigo-500 px-5 text-sm font-bold text-white transition hover:bg-indigo-600"
                                 />

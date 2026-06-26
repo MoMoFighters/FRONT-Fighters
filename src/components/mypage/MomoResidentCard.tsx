@@ -13,30 +13,29 @@ interface ResidentCardProps {
     }
 }
 
-const formatResidentCreatedAt = (createdAt: string) => {
-    const digits = createdAt.replace(/\D/g, "");
+const formatResidentNumber = (createdAt: string) => {
+    const date = new Date(createdAt);
 
-    if (digits.length >= 8) {
-        return digits.slice(2, 8);
+    if (Number.isNaN(date.getTime())) {
+        return "000000-xxxxxxx";
     }
 
-    if (digits.length >= 6) {
-        return digits.slice(0, 6);
-    }
+    const year = String(date.getFullYear()).slice(2);
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
 
-    return createdAt;
+    return `${year}${month}${day}-xxxxxxx`;
 };
 
 export default function MomoResidentCard({ data }: ResidentCardProps) {
-    const residentNumberPrefix = formatResidentCreatedAt(data.createdAt);
-    const isBlobProfileImage = data.profileImageUrl.startsWith("blob:");
+    const residentNumber = formatResidentNumber(data.createdAt);
 
     return (
         <div className="flex flex-col w-145 h-93.5 border border-slate-300 rounded-xl bg-mauve-50 shadow-2xl">
             {/* 헤더 */}
             <div className="p-4 flex flex-row border-b border-slate-300">
-                <div className="flex-1 flex justify-start">
-                    <Image src={momocityLogo} alt='모모시티' className="h-10 w-26 ml-2" />
+                <div className="flex-1 flex justify-start items-center">
+                    <Image src={momocityLogo} alt='모모시티' width={100} className="ml-2" />
                 </div>
                 <div className="flex-1"></div>
                 <div className="flex flex-col justify-end">
@@ -69,7 +68,7 @@ export default function MomoResidentCard({ data }: ResidentCardProps) {
                         </div>
                         <div className="flex flex-col gap-[2.5px]">
                             <p className="text-[11px] text-slate-400">모모등록번호</p>
-                            <p className="text-[19px] text-slate-900 font-bold">{residentNumberPrefix}-xxxxxx</p>
+                            <p className="text-[19px] text-slate-900 font-bold">{residentNumber}</p>
                         </div>
                         <div className="flex flex-col gap-[2.5px]">
                             <p className="text-[11px] text-slate-400">주소</p>
