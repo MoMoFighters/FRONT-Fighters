@@ -23,7 +23,6 @@ export default function EnrollLectureBtn({
     const handleEnrollLecture = async () => {
         try {
             await enrollLectureAction(String(lectureId), position ?? "");
-
             router.refresh();
 
             toast.success("정상적으로 수강 신청 되었습니다.", {
