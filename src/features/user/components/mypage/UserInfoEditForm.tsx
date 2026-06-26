@@ -146,7 +146,7 @@ export default function UserInfoEditForm({
             });
 
 
-            if (res.success) {
+            if (res.status >= 200 && res.status < 300) {
 
                 // 비밀번호 입력 폼 초기화
                 setCurrentPassword("");
@@ -181,14 +181,19 @@ export default function UserInfoEditForm({
                     프로필
                 </p>
                 <div className="relative w-28 h-28">
-                    {profileUrl &&
-                        <Image
-                            src={profileUrl}
-                            alt='프로필'
-                            fill
-                            className="object-cover rounded-md border border-slate-300"
-                            onClick={!profileChangeOpen ? () => setProfileChangeOpen(true) : () => { }}
-                        />}
+                    <div className="h-full w-full border border-black"
+                        onClick={!profileChangeOpen ? () => setProfileChangeOpen(true) : () => { }}>
+                        {profileUrl &&
+
+                            <Image
+                                src={profileUrl}
+                                alt='프로필'
+                                fill
+                                className="object-cover rounded-md border border-slate-300"
+
+                            />
+                        }
+                    </div>
                     <UserProfileChoice profileChangeOpen={profileChangeOpen} setProfileChangeOpen={setProfileChangeOpen} />
                 </div>
             </div>

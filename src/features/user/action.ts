@@ -4,31 +4,42 @@ import {
     getMyInfoService,
     editMyInfoService,
     nicknameCheckService,
-    EditMyInfoResponse,
     NicknameCheckResponse,
     updateTeacherStatus
 } from "@/app/services/user/service";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { UpdateTeacherStatusResponse } from "./type";
+import { ApiResponse } from "@/lib/api";
+import { Category } from "../lecture/type";
+import { redirect } from "next/navigation";
 
 // 내 정보 불러오기 인터페이스 규격
-export interface MomoUserInfoResponse {
-    success: boolean;
-    message: string;
-    data?: MomoUserInfo;
-}
 
 export interface MomoUserInfo {
     profileImageUrl: string;
     email: string | null;
     name: string;
-    nickname: string;
+    nickname: string | null;
     isTempPwd: boolean;
     createdAt: string;
-    points?: number;
-    isPaid?: boolean;
+    points: number;
+    buildings: number;
+    buildingInfos: BuildingInfo[];
+    isPaid: boolean;
 }
+
+export interface BuildingInfo {
+    category: Category;
+    position: number;
+    level: number;
+}
+
+
+export type MomoUserInfoResponse = ApiResponse<MomoUserInfo>
+export type EditMyInfoActionResponse = ApiResponse<{
+    isPwdChanged: boolean;
+}>
 
 // 1. 내 정보 불러오기 액션
 export const getMyInfo = async (): Promise<MomoUserInfoResponse> => {
@@ -37,25 +48,30 @@ export const getMyInfo = async (): Promise<MomoUserInfoResponse> => {
         const accessToken = cookieStore.get('accessToken')?.value;
 
         if (!accessToken) {
-            return {
-                success: false,
-                message: '다시 로그인 해주세요',
-            };
+            redirect('/auth/login')
         }
 
         const result = await getMyInfoService(accessToken);
+        const userDetail = result.data.userDetail;
+        const buildings = result.data.buildings ?? [];
 
         return {
-            success: true,
-            message: '성공',
+            timestamp: result.timestamp,
+            status: result.status,
+            code: result.code,
+            message: result.message,
             data: {
-                profileImageUrl: result.data.profileImageUrl,
-                email: result.data?.email || null,
-                name: result.data.name,
-                nickname: result.data.nickname,
-                isTempPwd: result.data.isTempPwd,
-                createdAt: result.data.createdAt,
-            }
+                profileImageUrl: userDetail.profileImageUrl,
+                email: userDetail.email,
+                name: userDetail.name,
+                nickname: userDetail.nickname,
+                isTempPwd: userDetail.isTempPwd,
+                createdAt: userDetail.createdAt,
+                points: 0,
+                buildings: buildings.length,
+                buildingInfos: buildings,
+                isPaid: false,
+            },
         };
     } catch (error) {
         const errorMessage = error instanceof Error
@@ -63,7 +79,9 @@ export const getMyInfo = async (): Promise<MomoUserInfoResponse> => {
             : '내 정보를 불러오는 중 오류가 발생했습니다.';
 
         return {
-            success: false,
+            timestamp: new Date().toISOString(),
+            status: 500,
+            code: "USER-MY-INFO-FAILED",
             message: errorMessage,
         };
     }
@@ -78,14 +96,16 @@ export interface EditMyInfoInput {
 // 2. 내 정보 수정하기 액션 (비어있던 부분 완성)
 export const editMyInfo = async (
     { nickname, currentPassword, password }: EditMyInfoInput
-): Promise<EditMyInfoResponse> => {
+): Promise<EditMyInfoActionResponse> => {
     try {
         const cookieStore = await cookies();
         const accessToken = cookieStore.get('accessToken')?.value;
 
         if (!accessToken) {
             return {
-                success: false,
+                timestamp: new Date().toISOString(),
+                status: 401,
+                code: "COMMON-UNAUTHORIZED",
                 message: '로그인 세션이 만료되었습니다.',
             };
         }
@@ -101,7 +121,9 @@ export const editMyInfo = async (
         return result;
     } catch (error) {
         return {
-            success: false,
+            timestamp: new Date().toISOString(),
+            status: 500,
+            code: "USER-MY-INFO-UPDATE-FAILED",
             message: error instanceof Error ? error.message : '정보 수정 중 알 수 없는 오류가 발생했습니다.'
         };
     }
@@ -110,15 +132,18 @@ export const editMyInfo = async (
 // 3. 닉네임 중복확인 및 검증 액션 (새로 추가)
 export const checkAndRegisterNickname = async (
     nickname: string
-) => {
+): Promise<NicknameCheckResponse> => {
 
     const cookieStore = await cookies();
     const accessToken = cookieStore.get('accessToken')?.value;
 
     if (!accessToken) {
         return {
-            success: false,
+            timestamp: new Date().toISOString(),
+            status: 401,
+            code: "COMMON-UNAUTHORIZED",
             message: '로그인 세션이 만료되었습니다.',
+            data: null,
         };
     }
 

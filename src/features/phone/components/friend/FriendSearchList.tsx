@@ -75,7 +75,7 @@ export default function FriendSearchList() {
                     <Button
                         type="submit"
                         disabled={!searchValue.trim()}
-                        className="h-10 bg-mauve-500 px-4 text-white hover:bg-mauve-600"
+                        className="h-10 bg-indigo-500 px-4 text-white hover:bg-indigo-600"
                     >
                         검색
                     </Button>

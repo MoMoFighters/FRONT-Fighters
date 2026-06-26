@@ -1,7 +1,8 @@
 ﻿// 학생, 강사 - 마이페이지 기능
 
+import { Category } from "@/features/lecture/type";
 import { GetUsersRequest, GetUsersResponse, UpdateTeacherStatusRequest, UpdateTeacherStatusResponse } from "@/features/user/type";
-import { fetchWithAuth } from "@/lib/api";
+import { ApiResponse, fetchWithAuth } from "@/lib/api";
 
 /*
  - 내 상세 정보 조회
@@ -34,20 +35,27 @@ const BASE_SERVER_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 // ==========================================
 // [SY-12] 내 상세 정보 조회 관련 타입 및 서비스
 // ==========================================
+export interface BuildingInfo {
+   category: Category;
+   position: number;
+   level: number;
+}
+
 export interface GetMyInfoResponse {
-   success: boolean;
    timestamp: string;
    status: number;
    code: string;
    message: string;
    data: {
-      profileImageUrl: string;
-      email: string | null;
-      name: string;
-      nickname: string;
-      birth: string | null;
-      isTempPwd: boolean;
-      createdAt: string;
+      userDetail: {
+         profileImageUrl: string;
+         email: string | null;
+         name: string;
+         nickname: string | null;
+         isTempPwd: boolean;
+         createdAt: string;
+      },
+      buildings: BuildingInfo[]
    };
 }
 
@@ -71,13 +79,9 @@ export const getMyInfoService = async (accessToken: string): Promise<GetMyInfoRe
 // ==========================================
 // [SY-13] 내 정보 수정 관련 타입 및 서비스
 // ==========================================
-export interface EditMyInfoResponse {
-   success: boolean;
-   message: string;
-   data?: {
-      isPwdChanged: boolean;
-   };
-}
+export type EditMyInfoResponse = ApiResponse<{
+   isPwdChanged: boolean;
+}>
 
 export interface EditMyInfoRequest {
    accessToken: string;
@@ -107,20 +111,7 @@ export const editMyInfoService = async ({
 
    const result: EditMyInfoResponse = await response.json();
 
-   if (!response.ok) {
-      return {
-         success: false,
-         message: result.message || '내 정보 수정 실패',
-      };
-   }
-
-   return {
-      success: true,
-      message: result.message || '내 정보 수정 성공',
-      data: {
-         isPwdChanged: result.data?.isPwdChanged ?? false,
-      },
-   };
+   return result;
 };
 
 // ==========================================

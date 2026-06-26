@@ -6,7 +6,9 @@ import {
     CreateCommunityPostRequest,
     CreateCommunityPostResponse,
     CommunityPostLikeResponse,
+    CommunityCategory,
     GetCommunityPostDetailResponse,
+    GetCommunityPostListResponse,
     UploadCommunityPostImageResponse,
 } from "@/features/community/type";
 
@@ -65,6 +67,31 @@ export const getCommunityPostDetailService = async (
     });
 
     return parseApiResponse(response, "get post detail");
+};
+
+export const getCommunityPostListService = async ({
+    category,
+    page,
+    size,
+}: {
+    category?: CommunityCategory;
+    page: number;
+    size: number;
+}): Promise<GetCommunityPostListResponse> => {
+    const params = new URLSearchParams({
+        page: String(page),
+        size: String(size),
+    });
+
+    if (category) {
+        params.set("category", category);
+    }
+
+    const response = await fetchWithAuth(`/api/v2/posts?${params.toString()}`, {
+        method: "GET",
+    });
+
+    return parseApiResponse(response, "get post list");
 };
 
 export const likeCommunityPostService = async (
