@@ -1,7 +1,13 @@
 "use server";
 
-import { getPointStoreItemsService } from "@/app/services/point/service";
-import { PointStoreListResponse } from "./type";
+import {
+    getPointStoreItemsService,
+    getProfileOrderListService,
+} from "@/app/services/point/service";
+import {
+    PointStoreListResponse,
+    ProfileOrderListResponse,
+} from "./type";
 
 export const getPointStoreItemsAction = async ({
     page,
@@ -11,12 +17,10 @@ export const getPointStoreItemsAction = async ({
     size: number;
 }): Promise<PointStoreListResponse> => {
     try {
-        const a = await getPointStoreItemsService({
+        return await getPointStoreItemsService({
             page,
             size,
         });
-        console.log(a, '포인트포인트');
-        return a
     } catch (error) {
         return {
             timestamp: new Date().toISOString(),
@@ -29,3 +33,23 @@ export const getPointStoreItemsAction = async ({
         };
     }
 };
+
+export const getProfileOrderListAction =
+    async (): Promise<ProfileOrderListResponse> => {
+        try {
+            const a = await getProfileOrderListService();
+            console.log(a, "내꺼");
+            return a;
+        } catch (error) {
+            console.log(error, '에러')
+            return {
+                timestamp: new Date().toISOString(),
+                status: 500,
+                code: "PROFILE-ORDER-LIST-FAILED",
+                message:
+                    error instanceof Error
+                        ? error.message
+                        : "프로필 아이템 목록을 불러오지 못했습니다.",
+            };
+        }
+    };

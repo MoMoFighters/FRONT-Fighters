@@ -36,6 +36,19 @@ export interface PointStoreListData {
 export type PointStoreListResponse =
     ApiResponse<PointStoreListData>;
 
+export interface ProfileOrderItem {
+    itemName: string;
+    imageUrl: string | null;
+}
+
+export interface ProfileOrderListData {
+    owned: ProfileOrderItem[];
+    notOwned: ProfileOrderItem[];
+}
+
+export type ProfileOrderListResponse =
+    ApiResponse<ProfileOrderListData>;
+
 export interface MyPointItem {
     id: number;
     itemId: number;
