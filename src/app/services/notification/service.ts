@@ -1,5 +1,6 @@
 import { fetchWithAuth } from "@/lib/api";
 import {
+    NoticeAppCountsResponse,
     NoticeNotificationListResponse,
     NoticeTotalCountsResponse,
 } from "@/features/user/components/notification/type";
@@ -29,6 +30,21 @@ export const getNoticeNotificationListService =
 
         if (!response.ok) {
             throw new Error(result.message || "알림 목록을 불러오지 못했습니다.");
+        }
+
+        return result;
+    };
+
+export const getNoticeAppCountsService =
+    async (): Promise<NoticeAppCountsResponse> => {
+        const response = await fetchWithAuth("/api/v2/notice/app-counts", {
+            method: "GET",
+        });
+
+        const result: NoticeAppCountsResponse = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "앱별 알림 개수를 불러오지 못했습니다.");
         }
 
         return result;

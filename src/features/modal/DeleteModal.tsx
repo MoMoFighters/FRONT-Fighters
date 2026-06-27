@@ -22,32 +22,49 @@ interface DeleteModalProps {
 }
 
 /**
- * 
- * @param param0 trigger => 모달 열 버튼(div로 감싸면 안됨), title => 질문, description => 설명, onDelete => 삭제 실행 함수
- * @returns 
+ * @param trigger => 모달을 열 버튼 (asChild가 적용되므로 단일 요소여야 함)
+ * @param title => 모달 제목
+ * @param description => 모달 상세 설명
+ * @param onDelete => 삭제 버튼 클릭 시 실행될 함수
  */
 export default function DeleteModal({
     trigger, title, description, onDelete
 }: DeleteModalProps) {
-
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
                 {trigger}
             </AlertDialogTrigger>
-            <AlertDialogContent size="sm" className="overflow-hidden rounded-lg border border-slate-200 bg-white p-0 shadow-xl">
-                <AlertDialogHeader className="gap-3 px-6 pt-6">
-                    <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
-                        <Trash2Icon />
+
+            <AlertDialogContent size="sm">
+                <AlertDialogHeader>
+                    {/* 이미지의 레드 테마를 반영한 아이콘 영역 */}
+                    <AlertDialogMedia className="bg-red-100 text-red-500">
+                        <Trash2Icon className="w-5 h-5" />
                     </AlertDialogMedia>
-                    <AlertDialogTitle>{title}</AlertDialogTitle>
-                    <AlertDialogDescription>
+
+                    {/* 줄바꿈 유지를 위한 whitespace-pre-line 적용 */}
+                    <AlertDialogTitle className="whitespace-pre-line">
+                        {title}
+                    </AlertDialogTitle>
+                    <AlertDialogDescription className="whitespace-pre-line">
                         {description}
                     </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogFooter className="!mx-0 !mb-0 mt-6 !flex !flex-row !justify-end gap-2 !border-0 !bg-transparent !px-6 !pb-6 !pt-0">
-                    <AlertDialogCancel variant="outline" className="h-9 rounded-md border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-100">취소</AlertDialogCancel>
-                    <AlertDialogAction variant="outline" onClick={onDelete} className="h-9 rounded-md !border-rose-600 !bg-rose-600 px-4 text-sm font-bold !text-white hover:!bg-rose-700 hover:!text-white">삭제</AlertDialogAction>
+
+                <AlertDialogFooter>
+                    <AlertDialogCancel variant="outline" className="cursor-pointer">
+                        취소
+                    </AlertDialogCancel>
+
+                    {/* 첫 번째 예시의 스타일을 유지하며 삭제(Red) 테마 적용 */}
+                    <AlertDialogAction
+                        variant="ghost"
+                        className="bg-red-500 text-white hover:text-white! hover:bg-red-600!"
+                        onClick={onDelete}
+                    >
+                        삭제
+                    </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>

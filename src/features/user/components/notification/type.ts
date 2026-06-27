@@ -25,3 +25,20 @@ export interface NoticeNotification {
 
 export type NoticeNotificationListResponse =
     ApiResponse<NoticeNotification[]>;
+
+export interface NoticeAppCountsData {
+    totalMsgFriendCount: number;
+    calendarCount: number;
+    communityCount: number;
+}
+
+export interface NoticeAppCountsResponse {
+    success?: boolean;
+    statusCode?: number;
+    timestamp?: string;
+    status?: number;
+    code?: string;
+    message: string;
+    data?: NoticeAppCountsData | null;
+    errors?: Record<string, unknown>;
+}
