@@ -19,7 +19,7 @@ export default function MyPointItemCard({
 
     return (
         <article
-            className="group relative m-1.5 flex min-h-44 cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white p-3 shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-md"
+            className="group relative flex min-h-44 cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white p-3 shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-md"
             onClick={handleMyItemClick}
         >
             {item.isUsing && (
@@ -49,9 +49,11 @@ export default function MyPointItemCard({
                 <p className="truncate text-sm font-black text-slate-900">
                     {item.name}
                 </p>
-                <p className="mt-1 text-[11px] font-semibold text-slate-400">
-                    {item.acquiredAt} 구매
-                </p>
+                {item.acquiredAt && (
+                    <p className="mt-1 text-[11px] font-semibold text-slate-400">
+                        {item.acquiredAt} 구매
+                    </p>
+                )}
             </div>
 
             <div className="mt-auto pt-3">

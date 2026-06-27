@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Coins, ShoppingBag } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import {
@@ -13,6 +14,7 @@ import {
     PaginationPrevious,
 } from "@/components/ui/pagination";
 import TwoButtonModal from "@/features/modal/TwoButtonModal";
+import { createPointOrderAction } from "../action";
 import { POINT_STORE_CATEGORIES } from "../data";
 import { PointStoreItem, PointStoreTab } from "../type";
 import PointStoreItemCard from "./PointStoreItemCard";
@@ -30,24 +32,43 @@ export default function PointStorePurchaseSection({
     currentPage,
     totalPages,
 }: PointStorePurchaseSectionProps) {
+    const router = useRouter();
     const [activeTab, setActiveTab] = useState<PointStoreTab>("ALL");
     const [selectedItem, setSelectedItem] = useState<PointStoreItem | null>(null);
+    const [isPurchasing, setIsPurchasing] = useState(false);
 
     const filteredItems = useMemo(() => {
         if (activeTab === "ALL") {
             return items;
         }
 
-        return items.filter((item) => item.category == activeTab);
+        return items.filter((item) => item.category === activeTab);
     }, [activeTab, items]);
 
-    const handleConfirmPurchase = () => {
-        if (!selectedItem) {
+    const handleConfirmPurchase = async () => {
+        if (!selectedItem || isPurchasing) {
             return;
         }
 
-        toast.info("구매 API 연결 예정입니다.");
-        setSelectedItem(null);
+        setIsPurchasing(true);
+
+        try {
+            const response = await createPointOrderAction({
+                reason: "PROFILE",
+                itemName: selectedItem.name,
+            });
+
+            if (response.status >= 400) {
+                toast.error(response.message || "구매에 실패했습니다.");
+                return;
+            }
+
+            toast.success(response.message || "구매가 완료되었습니다.");
+            setSelectedItem(null);
+            router.refresh();
+        } finally {
+            setIsPurchasing(false);
+        }
     };
 
     const createPageHref = (pageNumber: number) =>
@@ -84,10 +105,11 @@ export default function PointStorePurchaseSection({
                             key={category.value}
                             type="button"
                             onClick={() => setActiveTab(category.value)}
-                            className={`cursor-pointer rounded-full px-4 py-2 text-sm font-black transition ${activeTab === category.value
+                            className={`cursor-pointer rounded-full px-4 py-2 text-sm font-black transition ${
+                                activeTab === category.value
                                     ? "bg-indigo-500 text-white shadow-sm shadow-indigo-200"
                                     : "bg-slate-100 text-slate-500 hover:bg-indigo-50 hover:text-indigo-500"
-                                }`}
+                            }`}
                         >
                             {category.label}
                         </button>
