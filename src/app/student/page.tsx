@@ -5,6 +5,7 @@ import PostBoard from "@/components/city/PostBoard";
 import CityCanvas from "@/components/city/CityCanvas";
 import { Building } from "@/features/city/type";
 import BuildingItem from "@/components/city/BuildingItem";
+import { cookies } from "next/headers";
 
 // 임의로 로컬에 이미지 저장해놓고 사용, 실제로는 api 응답값에 있는 이미지 사용
 import study from "@/app/assets/img/study.png"
@@ -51,6 +52,9 @@ const commonBuildingSlots = {
 
 export default async function StudentMainPage() {
 
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get("accessToken")?.value;
+
     // 추후 api 연동
     // const buildings = await getMyBuildings();
 
@@ -91,7 +95,7 @@ export default async function StudentMainPage() {
         <CityCanvas>
             <BusStation mode='MY' />
             <PostBoard mode="MY" />
-            <Phone />
+            <Phone accessToken={accessToken} />
             <MonthlyStreakGarden />
 
             {buildingSlots.map((slot) => {

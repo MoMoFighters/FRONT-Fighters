@@ -42,7 +42,7 @@ export default async function AuthHeader({ role }: { role: string }) {
                 </Link>
                 <div className="flex justify-end mr-4 items-center">
                     <AuthRefreshArea initialTime={initialTime} />
-                    <HeaderNotificationZone />
+                    <HeaderNotificationZone accessToken={token} />
                     <HeaderProfileCard
                         role={role}
                         profileImageUrl={myInfo.data?.profileImageUrl}

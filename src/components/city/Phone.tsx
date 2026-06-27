@@ -10,42 +10,103 @@ import {
 } from "@/components/ui/hover-card";
 import Image from "next/image";
 
-import logo from '@/app/assets/img/logo.png'
+import logo from "@/app/assets/img/logo.png";
 import message from "@/app/assets/img/phone-message.png";
 import calendar from "@/app/assets/img/phone-calendar.png";
 import tutorial from "@/app/assets/img/phone-tutorial.png";
 import community from "@/app/assets/img/phone-community.png";
+import { getNoticeAppCountsAction } from "@/features/user/components/notification/action";
+import { connectNoticeStomp } from "@/features/user/components/notification/stomp";
+import { NoticeAppCountsData } from "@/features/user/components/notification/type";
 
 interface PhoneProps {
+    accessToken?: string;
     hasNotification?: boolean;
 }
 
+const EMPTY_COUNTS: NoticeAppCountsData = {
+    totalMsgFriendCount: 0,
+    calendarCount: 0,
+    communityCount: 0,
+};
+
+const formatCount = (count: number) => (count > 99 ? "99+" : count);
+
 export default function Phone({
+    accessToken,
     hasNotification = false,
 }: PhoneProps) {
-    // TODO: do-not-disturb API response와 연결
     const [notificationEnabled, setNotificationEnabled] = useState(true);
     const [isHovered, setIsHovered] = useState(false);
     const [isInteractionLocked, setIsInteractionLocked] = useState(false);
     const [vibrationOffset, setVibrationOffset] = useState({ x: 0, y: 0 });
+    const [notification, setNotification] =
+        useState<NoticeAppCountsData>(EMPTY_COUNTS);
     const hoverReleaseTimerRef = useRef<number | null>(null);
     const interactionLockTimerRef = useRef<number | null>(null);
 
-    // TODO: notification API response와 연결
-    const [notification] = useState({
-        totalMsgFriendCount: 11,
-        calendaerCount: 44,
-        communityCount: 101,
-    });
-
+    const hasNotificationValue =
+        Object.values(notification).some((count) => count > 0);
     const notificationActive =
-        notificationEnabled && hasNotification;
-    const hasNotificationValue = Object.values(notification).some(count => count > 0);
+        notificationEnabled && (hasNotification || hasNotificationValue);
     const shouldVibrate =
         !isHovered &&
         !isInteractionLocked &&
-        notificationEnabled &&
-        hasNotificationValue;
+        notificationActive;
+
+    useEffect(() => {
+        let isMounted = true;
+
+        const loadAppCounts = async () => {
+            const response = await getNoticeAppCountsAction();
+
+            if (!isMounted) {
+                return;
+            }
+
+            setNotification(response.data ?? EMPTY_COUNTS);
+        };
+
+        void loadAppCounts();
+
+        return () => {
+            isMounted = false;
+        };
+    }, []);
+
+    useEffect(() => {
+        if (!accessToken) {
+            return;
+        }
+
+        let subscription:
+            | ReturnType<ReturnType<typeof connectNoticeStomp>["subscribe"]>
+            | undefined;
+        const client = connectNoticeStomp({
+            accessToken,
+            onConnect: (stompClient) => {
+                subscription =
+                    stompClient.subscribe(
+                        "/user/sub/notice/app-counts",
+                        (body) => {
+                            const data =
+                                JSON.parse(body) as Partial<NoticeAppCountsData>;
+
+                            setNotification({
+                                totalMsgFriendCount: data.totalMsgFriendCount ?? 0,
+                                calendarCount: data.calendarCount ?? 0,
+                                communityCount: data.communityCount ?? 0,
+                            });
+                        }
+                    );
+            },
+        });
+
+        return () => {
+            subscription?.unsubscribe();
+            client.disconnect();
+        };
+    }, [accessToken]);
 
     const clearHoverReleaseTimer = () => {
         if (hoverReleaseTimerRef.current === null) {
@@ -86,10 +147,10 @@ export default function Phone({
         }
 
         const vibrationPositions = [
-            { x: -3, y: 0 },
-            { x: 3, y: 0 },
-            { x: 0, y: -3 },
-            { x: 0, y: 3 },
+            { x: -10, y: 0 },
+            { x: 10, y: 0 },
+            { x: 0, y: -10 },
+            { x: 0, y: 10 },
             { x: 0, y: 0 },
         ];
 
@@ -129,164 +190,158 @@ export default function Phone({
                 transform: `translate(${vibrationOffset.x}px, ${vibrationOffset.y}px)`,
             }}
         >
-            {notificationActive && (
-                    <>
-                        <div className="pointer-events-none absolute -inset-2 rounded-[42px] bg-indigo-400/40 blur-xl animate-pulse" />
-                        <div className="pointer-events-none absolute -inset-1 rounded-[40px] border-2 border-indigo-300 animate-pulse" />
-                    </>
-                )}
 
-                <div className="relative h-full overflow-hidden rounded-[30px] border-[8px] border-slate-950 bg-slate-950 shadow-2xl">
-                    <div className="absolute left-1/2 top-2 z-30 h-3 w-15 -translate-x-1/2 rounded-full bg-slate-950" />
+            <div className="relative h-full overflow-hidden rounded-[30px] border-[8px] border-slate-950 bg-slate-950 shadow-2xl">
+                <div className="absolute left-1/2 top-2 z-30 h-3 w-15 -translate-x-1/2 rounded-full bg-slate-950" />
 
-                    <div className="relative flex h-full flex-col overflow-hidden rounded-[28px] bg-white">
-                        <div className="absolute inset-0 bg-white" />
+                <div className="relative flex h-full flex-col overflow-hidden rounded-[28px] bg-white">
+                    <div className="absolute inset-0 bg-white" />
 
-                        <header className="relative z-10 flex h-[76px] shrink-0 items-center justify-end px-5 pt-3">
-                            <HoverCard openDelay={100} closeDelay={100}>
+                    <header className="relative z-10 flex h-[76px] shrink-0 items-center justify-end px-5 pt-3">
+                        <HoverCard openDelay={100} closeDelay={100}>
+                            <HoverCardTrigger asChild>
+                                <button
+                                    type="button"
+                                    aria-pressed={notificationEnabled}
+                                    aria-label={notificationEnabled ? "알림 끄기" : "알림 켜기"}
+                                    onClick={() => {
+                                        keepPhoneStable();
+                                        lockInteraction();
+                                        setNotificationEnabled((previous) => !previous);
+                                    }}
+                                    className="relative flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-full border border-white/0 bg-white/0 text-slate-50 shadow-sm backdrop-blur-md transition-colors hover:bg-white hover:text-slate-900"
+                                >
+                                    {notificationEnabled ? (
+                                        <Bell className="h-4 w-4 text-slate-500 hover:text-slate-700" />
+                                    ) : (
+                                        <BellOff className="h-4 w-4 text-slate-500 hover:text-slate-700" />
+                                    )}
+                                </button>
+                            </HoverCardTrigger>
+
+                            <HoverCardContent
+                                side="left"
+                                className="w-auto px-3 py-2"
+                                onMouseEnter={keepPhoneStable}
+                                onMouseLeave={releasePhoneStable}
+                            >
+                                {notificationEnabled ? "알림 끄기" : "알림 켜기"}
+                            </HoverCardContent>
+                        </HoverCard>
+                    </header>
+
+                    <main className="flex flex-col justify-center items-center gap-10 z-10 min-h-0 flex-1 px-4">
+                        <div className="relative w-30 h-5">
+                            <Image
+                                src={logo}
+                                alt="MOMOCITY 로고"
+                                fill
+                                priority
+                            />
+                        </div>
+                        <div className="grid grid-cols-2 gap-8">
+                            <HoverCard openDelay={200} closeDelay={100}>
                                 <HoverCardTrigger asChild>
-                                    <button
-                                        type="button"
-                                        aria-pressed={notificationEnabled}
-                                        aria-label={notificationEnabled ? "알림 끄기" : "알림 켜기"}
-                                        onClick={() => {
-                                            keepPhoneStable();
-                                            lockInteraction();
-                                            setNotificationEnabled(previous => !previous);
-                                        }}
-                                        className="relative flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-full border border-white/0 bg-white/0 text-slate-50 shadow-sm backdrop-blur-md transition-colors hover:bg-white hover:text-slate-900"
+                                    <Link
+                                        href="/student/phone/friends?status=chat"
+                                        aria-label="메신저"
+                                        className="h-14 w-14 rounded-2xl shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md relative"
                                     >
-                                        {notificationEnabled ? (
-                                            <Bell className="h-4 w-4 text-slate-500 hover:text-slate-700" />
-                                        ) : (
-                                            <BellOff className="h-4 w-4 text-slate-500 hover:text-slate-700" />
+                                        <Image
+                                            src={message}
+                                            alt="메신저"
+                                            fill
+                                        />
+                                        {notification.totalMsgFriendCount > 0 && (
+                                            <div className="relative z-5 ml-auto h-4 w-4 items-center rounded-full bg-red-500 text-center text-xs text-white">
+                                                {formatCount(notification.totalMsgFriendCount)}
+                                            </div>
                                         )}
-
-                                        {notificationActive && (
-                                            <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-white" />
-                                        )}
-                                    </button>
+                                    </Link>
                                 </HoverCardTrigger>
 
-                                <HoverCardContent
-                                    side="left"
-                                    className="w-auto px-3 py-2"
-                                    onMouseEnter={keepPhoneStable}
-                                    onMouseLeave={releasePhoneStable}
-                                >
-                                    {notificationEnabled ? "알림 끄기" : "알림 켜기"}
+                                <HoverCardContent side="left" className="w-auto px-3 py-2">
+                                    메신저
                                 </HoverCardContent>
                             </HoverCard>
-                        </header>
 
-                        <main className="flex flex-col justify-center items-center gap-10 z-10 min-h-0 flex-1 px-4">
-                            <div className="relative w-30 h-5">
-                                <Image
-                                    src={logo}
-                                    alt="MOMOCITY 로고"
-                                    fill
-                                    priority
-                                />
-                            </div>
-                            <div className="grid grid-cols-2 gap-8">
-                                <HoverCard openDelay={200} closeDelay={100}>
-                                    <HoverCardTrigger asChild>
-                                        <Link
-                                            href="/student/phone/friends?status=chat"
-                                            aria-label="메신저"
-                                            className="h-14 w-14 rounded-2xl shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md relative"
-                                        >
-                                            <>
-                                                <Image
-                                                    src={message}
-                                                    alt="메신저"
-                                                    fill
-                                                />
-                                                <div className="relative z-5 ml-auto h-4 w-4 items-center rounded-full bg-red-500 text-center text-xs text-white">
-                                                    {notification.totalMsgFriendCount > 99 ? "99+" : notification.totalMsgFriendCount}
-                                                </div>
-                                            </>
-                                        </Link>
-                                    </HoverCardTrigger>
-
-                                    <HoverCardContent side="left" className="w-auto px-3 py-2">
-                                        메신저
-                                    </HoverCardContent>
-                                </HoverCard>
-
-                                <HoverCard openDelay={200} closeDelay={100}>
-                                    <HoverCardTrigger asChild>
-                                        <Link
-                                            href="/student/phone/calendar"
-                                            aria-label="캘린더"
-                                            className="h-14 w-14 rounded-2xl shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md relative"
-                                        >
-                                            <Image
-                                                src={calendar}
-                                                alt="캘린더"
-                                                fill
-                                            />
+                            <HoverCard openDelay={200} closeDelay={100}>
+                                <HoverCardTrigger asChild>
+                                    <Link
+                                        href="/student/phone/calendar"
+                                        aria-label="캘린더"
+                                        className="h-14 w-14 rounded-2xl shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md relative"
+                                    >
+                                        <Image
+                                            src={calendar}
+                                            alt="캘린더"
+                                            fill
+                                        />
+                                        {notification.calendarCount > 0 && (
                                             <div className="relative z-5 ml-auto h-4 w-4 items-center rounded-full bg-red-500 text-center text-xs text-white">
-                                                {notification.calendaerCount > 99 ? "99+" : notification.calendaerCount}
+                                                {formatCount(notification.calendarCount)}
                                             </div>
-                                        </Link>
-                                    </HoverCardTrigger>
+                                        )}
+                                    </Link>
+                                </HoverCardTrigger>
 
-                                    <HoverCardContent side="right" className="w-auto px-3 py-2">
-                                        캘린더
-                                    </HoverCardContent>
-                                </HoverCard>
+                                <HoverCardContent side="right" className="w-auto px-3 py-2">
+                                    캘린더
+                                </HoverCardContent>
+                            </HoverCard>
 
-                                <HoverCard openDelay={200} closeDelay={100}>
-                                    <HoverCardTrigger asChild>
-                                        <Link
-                                            href="/student/tutorial"
-                                            aria-label="튜토리얼"
-                                            className="h-14 w-14 rounded-2xl shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md relative"
-                                        >
-                                            <Image
-                                                src={tutorial}
-                                                alt="튜토리얼"
-                                                fill
-                                            />
-                                        </Link>
-                                    </HoverCardTrigger>
+                            <HoverCard openDelay={200} closeDelay={100}>
+                                <HoverCardTrigger asChild>
+                                    <Link
+                                        href="/student/tutorial"
+                                        aria-label="튜토리얼"
+                                        className="h-14 w-14 rounded-2xl shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md relative"
+                                    >
+                                        <Image
+                                            src={tutorial}
+                                            alt="튜토리얼"
+                                            fill
+                                        />
+                                    </Link>
+                                </HoverCardTrigger>
 
-                                    <HoverCardContent side="left" className="w-auto px-3 py-2">
-                                        튜토리얼
-                                    </HoverCardContent>
-                                </HoverCard>
+                                <HoverCardContent side="left" className="w-auto px-3 py-2">
+                                    튜토리얼
+                                </HoverCardContent>
+                            </HoverCard>
 
-                                <HoverCard openDelay={200} closeDelay={100}>
-                                    <HoverCardTrigger asChild>
-                                        <Link
-                                            href="/student/phone/community"
-                                            aria-label="커뮤니티"
-                                            className="h-14 w-14 rounded-2xl shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md relative"
-                                        >
-                                            <Image
-                                                src={community}
-                                                alt="커뮤니티"
-                                                fill
-                                            />
+                            <HoverCard openDelay={200} closeDelay={100}>
+                                <HoverCardTrigger asChild>
+                                    <Link
+                                        href="/student/phone/community"
+                                        aria-label="커뮤니티"
+                                        className="h-14 w-14 rounded-2xl shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md relative"
+                                    >
+                                        <Image
+                                            src={community}
+                                            alt="커뮤니티"
+                                            fill
+                                        />
+                                        {notification.communityCount > 0 && (
                                             <div className="relative z-5 ml-auto h-4 w-4 items-center rounded-full bg-red-500 text-center text-xs text-white">
-                                                {notification.communityCount > 99 ? "99+" : notification.communityCount}
+                                                {formatCount(notification.communityCount)}
                                             </div>
-                                        </Link>
-                                    </HoverCardTrigger>
+                                        )}
+                                    </Link>
+                                </HoverCardTrigger>
 
-                                    <HoverCardContent side="right" className="w-auto px-3 py-2">
-                                        커뮤니티
-                                    </HoverCardContent>
-                                </HoverCard>
-                            </div>
-                        </main>
+                                <HoverCardContent side="right" className="w-auto px-3 py-2">
+                                    커뮤니티
+                                </HoverCardContent>
+                            </HoverCard>
+                        </div>
+                    </main>
 
-                        <footer className="pt-4 relative z-10 flex h-12 shrink-0 items-center justify-center">
-                            <div className="h-1.5 w-24 rounded-full bg-slate-700/85 shadow-[0_1px_8px_rgba(255,255,255,0.45)]" />
-                        </footer>
-                    </div>
+                    <footer className="relative z-10 flex h-12 shrink-0 items-center justify-center pt-4">
+                        <div className="h-1.5 w-24 rounded-full bg-slate-700/85 shadow-[0_1px_8px_rgba(255,255,255,0.45)]" />
+                    </footer>
                 </div>
+            </div>
         </div>
     );
 }

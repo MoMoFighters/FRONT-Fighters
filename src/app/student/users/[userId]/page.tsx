@@ -15,6 +15,7 @@ import beauty from "@/app/assets/img/beauty.png"
 import cook from "@/app/assets/img/cook.png"
 import mypage from "@/app/assets/img/mypage.png";
 import point from "@/app/assets/img/point.png";
+import { cookies } from "next/headers";
 
 // 추후 api 연동 시 임포트 구문
 // import { getMyBuildings } from "../services/city/service";
@@ -58,6 +59,8 @@ export default async function StudentMainPage({ params }: {
     }>
 }) {
     const { userId } = await params;
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get("accessToken")?.value;
 
     // 추후 api 연동 - 친구 껄로
     // const buildings = await getFriendBuildings(userId);
@@ -99,7 +102,7 @@ export default async function StudentMainPage({ params }: {
         <CityCanvas>
             <BusStation mode='FRIEND' />
             <PostBoard mode="FRIEND" />
-            <Phone />
+            <Phone accessToken={accessToken} />
             <MonthlyStreakGarden />
 
             {/* 친구 도시의 경우 각 아이템들은 그저 볼 수 있는 고정 이미지로 */}

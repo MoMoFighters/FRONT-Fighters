@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -10,16 +10,20 @@ import {
     updateVideoProgressAction,
     updateVideoProgressByExitAction,
 } from "@/features/lecture/action";
-import { Chapter } from "@/features/lecture/type";
+import {
+    ChapterByMeta,
+    UpdateVideoProgressResponse,
+} from "@/features/lecture/type";
 import TwoButtonModal from "@/features/modal/TwoButtonModal";
 
 interface VideoPlayerProps {
     lectureId: string;
-    chapter: Chapter;
+    chapter: ChapterByMeta;
     lectureTitle: string;
     currentChapterNo: number;
     presignedUrl: string;
     lastPositionSec: number;
+    exitHref: string;
     nextChapterHref?: string;
 }
 
@@ -37,15 +41,79 @@ export default function VideoPlayer({
     currentChapterNo,
     presignedUrl,
     lastPositionSec,
+    exitHref,
     nextChapterHref,
 }: VideoPlayerProps) {
     const router = useRouter();
     const videoRef = useRef<HTMLVideoElement>(null);
     const isSavingRef = useRef(false);
+    const savePromiseRef = useRef<Promise<UpdateVideoProgressResponse | undefined> | null>(null);
     const playbackSecondsRef = useRef(lastPositionSec);
     const isCompletedRef = useRef(chapter.isCompleted ?? false);
     const currentPositionRef = useRef(lastPositionSec);
-    const [isEnded, setIsEnded] = useState(false);
+    const [completedChapterId, setCompletedChapterId] = useState<number | null>(
+        chapter.isCompleted ? chapter.chapterId : null
+    );
+    const canMoveToNextChapter =
+        nextChapterHref &&
+        (
+            chapter.isCompleted === true ||
+            completedChapterId === chapter.chapterId
+        );
+
+    const markChapterCompleted = useCallback(() => {
+        if (isCompletedRef.current) return;
+
+        isCompletedRef.current = true;
+        setCompletedChapterId(chapter.chapterId);
+        toast.success("현재 챕터 학습이 완료되었습니다.");
+        router.refresh();
+    }, [
+        chapter.chapterId,
+        router,
+    ]);
+
+    const saveProgress = useCallback(async (
+        playbackSeconds = playbackSecondsRef.current
+    ): Promise<UpdateVideoProgressResponse | undefined> => {
+        if (isSavingRef.current) {
+            return savePromiseRef.current ?? undefined;
+        }
+
+        isSavingRef.current = true;
+
+        const savePromise = (async () => {
+            try {
+                const result = await updateVideoProgressAction(
+                    lectureId,
+                    String(chapter.chapterId),
+                    {
+                        playbackSeconds: Math.floor(playbackSeconds),
+                    }
+                );
+
+                if (result.isCompleted) {
+                    markChapterCompleted();
+                }
+
+                return result;
+            } catch (error) {
+                console.error(error);
+                return undefined;
+            } finally {
+                isSavingRef.current = false;
+                savePromiseRef.current = null;
+            }
+        })();
+
+        savePromiseRef.current = savePromise;
+
+        return savePromise;
+    }, [
+        chapter.chapterId,
+        lectureId,
+        markChapterCompleted,
+    ]);
 
     const handleTimeUpdate = () => {
         if (!videoRef.current) return;
@@ -67,7 +135,7 @@ export default function VideoPlayer({
         if (!video) return;
 
         const handleLoadedMetadata = () => {
-            video.currentTime = lastPositionSec;
+            video.currentTime = chapter.isCompleted ? 0 : lastPositionSec;
         };
 
         video.addEventListener(
@@ -83,54 +151,23 @@ export default function VideoPlayer({
         };
     }, [
         chapter.chapterId,
+        chapter.isCompleted,
         lastPositionSec,
     ]);
 
     useEffect(() => {
-        setIsEnded(false);
-    }, [chapter.chapterId]);
-
-    useEffect(() => {
-        const interval = setInterval(async () => {
-            if (isSavingRef.current) return;
-
-            isSavingRef.current = true;
-
-            try {
-                const result = await updateVideoProgressAction(
-                    lectureId,
-                    String(chapter.chapterId),
-                    {
-                        playbackSeconds: Math.floor(
-                            playbackSecondsRef.current
-                        ),
-                    }
-                );
-
-                if (
-                    result.isCompleted &&
-                    !isCompletedRef.current
-                ) {
-                    isCompletedRef.current = true;
-
-                    toast.success("챕터 수강 완료!");
-                }
-            } catch (error) {
-                console.error(error);
-            } finally {
-                isSavingRef.current = false;
-            }
-        }, 10000);
+        const interval = setInterval(() => {
+            void saveProgress();
+        }, 20000);
 
         return () => clearInterval(interval);
     }, [
-        chapter.chapterId,
-        lectureId,
+        saveProgress,
     ]);
 
     const handleExit = async () => {
         try {
-            await updateVideoProgressByExitAction(
+            const result = await updateVideoProgressByExitAction(
                 lectureId,
                 String(chapter.chapterId),
                 {
@@ -142,16 +179,35 @@ export default function VideoPlayer({
                     ),
                 }
             );
-        } catch (error) {
-            console.error(error);
+
+            if (result.isCompleted) {
+                markChapterCompleted();
+            }
+        } catch {
+            toast.error("학습 기록 저장에 실패했습니다.");
         } finally {
-            router.back();
+            router.push(exitHref);
         }
     };
 
-    const handleVideoEnded = () => {
-        setIsEnded(true);
-        router.refresh();
+    const handleVideoEnded = async () => {
+        const duration = videoRef.current?.duration;
+        const completedSeconds =
+            duration && Number.isFinite(duration)
+                ? duration
+                : chapter.durationSec;
+
+        playbackSecondsRef.current = Math.max(
+            playbackSecondsRef.current,
+            completedSeconds
+        );
+        currentPositionRef.current = playbackSecondsRef.current;
+
+        if (isSavingRef.current && savePromiseRef.current) {
+            await savePromiseRef.current;
+        }
+
+        await saveProgress(playbackSecondsRef.current);
     };
 
     return (
@@ -171,7 +227,7 @@ export default function VideoPlayer({
                     onConfirm={handleExit}
                 />
 
-                {isEnded && nextChapterHref && (
+                {canMoveToNextChapter && (
                     <Link
                         href={nextChapterHref}
                         className="absolute right-4 top-4 z-10 flex h-10 items-center justify-center rounded-xl bg-white px-4 text-sm font-bold text-slate-950 shadow-sm transition hover:bg-slate-100"
@@ -215,7 +271,6 @@ export default function VideoPlayer({
                     <p className="mt-2 text-sm font-bold text-slate-950">
                         Chapter {currentChapterNo}. {chapter.title}
                     </p>
-
                 </div>
 
                 <div>

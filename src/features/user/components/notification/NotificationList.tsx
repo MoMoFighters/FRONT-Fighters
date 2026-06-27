@@ -1,40 +1,128 @@
+'use client'
+
 import NotificationItem from "@/components/city/NotificationItem";
+import { useEffect, useState } from "react";
+
+import { getNoticeNotificationListAction } from "./action";
+import { connectNoticeStomp } from "./stomp";
+import { NoticeNotification } from "./type";
+
 interface NotificationListProps {
+    accessToken: string;
     onClose: () => void;
 }
 
+const getNotificationType = (
+    notification: NoticeNotification
+): "friend" | "calendar" | "community" => {
+    switch (notification.type) {
+        case "MESSAGE":
+        case "FRIEND_REQUEST":
+            return "friend";
+        case "CALENDAR":
+            return "calendar";
+        case "COMMUNITY":
+            return "community";
+        default:
+            return "community";
+    }
+};
+
 export default function NotificationList({
+    accessToken,
     onClose,
 }: NotificationListProps) {
+    const [notifications, setNotifications] = useState<NoticeNotification[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        let isMounted = true;
+
+        const loadNotifications = async () => {
+            const response = await getNoticeNotificationListAction();
+
+            if (!isMounted) {
+                return;
+            }
+
+            setNotifications(response.data ?? []);
+            setIsLoading(false);
+        };
+
+        void loadNotifications();
+
+        return () => {
+            isMounted = false;
+        };
+    }, []);
+
+    useEffect(() => {
+        if (!accessToken) {
+            return;
+        }
+
+        let subscription:
+            | ReturnType<ReturnType<typeof connectNoticeStomp>["subscribe"]>
+            | undefined;
+        const client = connectNoticeStomp({
+            accessToken,
+            onConnect: (stompClient) => {
+                subscription =
+                    stompClient.subscribe(
+                        "/user/sub/notice/list",
+                        (body) => {
+                            const data =
+                                JSON.parse(body) as NoticeNotification[];
+
+                            setNotifications(data);
+                        }
+                    );
+            },
+        });
+
+        return () => {
+            subscription?.unsubscribe();
+            client.disconnect();
+        };
+    }, [accessToken]);
+
     return (
         <div
-            className="fixed w-screen h-screen top-0 right-0"
+            className="fixed right-0 top-0 h-screen w-screen"
             onClick={onClose}
         >
             <div
-                className="fixed bg-white/70 w-70 min-h-30 max-h-106 top-15 right-44 rounded-xl flex flex-col border border-slate-300 shadow-xl shadow-slate-900/10 backdrop-blur-md"
+                className="fixed right-44 top-15 flex max-h-106 min-h-30 w-80 flex-col overflow-hidden rounded-xl border border-slate-300 bg-white/80 shadow-xl shadow-slate-900/10 backdrop-blur-md"
                 onClick={(e) => e.stopPropagation()}
             >
-                <div className="py-1.5 pl-7.5 border-b border-slate-500/30 rounded-t-xl">
-                    <h3 className="text-slate-800 font-bold">알림 목록</h3>
+                <div className="rounded-t-xl border-b border-slate-500/30 px-5 py-3">
+                    <h3 className="font-bold text-slate-800">
+                        알림 목록
+                    </h3>
                 </div>
-                {/* <div className="h-full flex-1 justify-center items-center flex">
-                <p className="font-bold my-auto">알림이 없습니다.</p>
-                </div> */}
-                <div className="pt-52 h-full flex flex-col flex-1 justify-center overflow-auto scrollbar-none">
-                    <NotificationItem type='friend' content="asdfasdfasdfaafsdafsdfasd" onClose={onClose} isRead={true} targetId={1} />
-                    <NotificationItem type='calendar' content="afsdafdsafdsafsdafsdafds" onClose={onClose} isRead={true} targetId={1} />
-                    <NotificationItem type="community" content="afdsadfsfadsfadsfadsfasdfasd" onClose={onClose} isRead={false} targetId={1} />
-                    <NotificationItem type='friend' content="321123132312321321" onClose={onClose} isRead={false} targetId={1} />
-                    <NotificationItem type='calendar' content="ㄻㅇ넴ㄹㄴ엘ㅇㄴ멞ㄴ엚ㄴ에" onClose={onClose} isRead={false} targetId={1} />
-                    <NotificationItem type="community" content="라ㅐㄷㅈ랠대즐ㄷ잴ㄷ" onClose={onClose} isRead={true} targetId={1} />
-                    <NotificationItem type='friend' content="321321321213123132" onClose={onClose} isRead={false} targetId={1} />
-                    <NotificationItem type='calendar' content="213132321321" onClose={onClose} isRead={true} targetId={1} />
-                    <NotificationItem type="community" content="ㅁㄴㅇㄹ1231ㅇㄹㄴㅁ" onClose={onClose} isRead={true} targetId={1} />
-                    <NotificationItem type='friend' content="ㅁㄴㅇㄻㄴㅇ123213" onClose={onClose} isRead={true} targetId={1} />
-                    <NotificationItem type='friend' content="ㅁㄻㄴㅇㅎ123" onClose={onClose} isRead={true} targetId={1} />
+
+                <div className="scrollbar-none min-h-0 flex-1 overflow-y-auto">
+                    {isLoading ? (
+                        <div className="flex h-32 items-center justify-center text-sm font-bold text-slate-400">
+                            알림을 불러오는 중입니다.
+                        </div>
+                    ) : notifications.length > 0 ? (
+                        notifications.map((notification) => (
+                            <NotificationItem
+                                key={notification.id}
+                                type={getNotificationType(notification)}
+                                content={notification.message}
+                                onClose={onClose}
+                                isRead={notification.isRead}
+                                targetId={notification.refId}
+                            />
+                        ))
+                    ) : (
+                        <div className="flex h-32 items-center justify-center text-sm font-bold text-slate-400">
+                            알림이 없습니다.
+                        </div>
+                    )}
                 </div>
-                <div className="h-12 bg-white/50 rounded-b-xl" />
             </div>
         </div>
     );

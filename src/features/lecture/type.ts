@@ -102,7 +102,7 @@ export interface CreateReviewRequest {
 // 카테고리 별 강의 진척도 및 이어보기 데이터 조회 타입 정의 -> 강의 관련 페이지 오른쪽 사이드 카드 데이터
 export interface AsideCardInfoResponse {
     // 내 강의 총 진척도 -> 마이페이지 내 강의 조회 시에만
-    MyTotalProgress?: number;
+    myTotalProgress?: number;
 
     // 특정 카테고리 강의 목록 조회 시에만
     // 1. 카테고리별 총 진척도 -> 나의 학습 현황
@@ -133,7 +133,19 @@ export interface LectureMetaResponse {
     currentChapterId: number;
     currentChapterNo: number;
     currentChapterTitle: string;
-    chapters: Chapter[];
+    chapters: ChapterByMeta[];
+}
+
+export interface ChapterByMeta {
+    chapterId: number;
+    // api 수정에서 반드시 받아오게 될 예정
+    chapterThumbnailUrl?: string;
+    title: string;
+    orderNo: number;
+    durationSec: number;
+    chapterProgress?: number;
+    isCompleted?: boolean;
+    isAccessible?: boolean;
 }
 
 // 챕터 이어보기 영상 재생 타입 정의 -> 영상 시청을 위한 url과 이어볼 재생 위치

@@ -1,4 +1,5 @@
 import { Review } from "@/features/lecture/type";
+import CreateReportBtn from "@/features/report/components/buttons/CreateReportBtn";
 import { SearchX, Star } from "lucide-react";
 
 interface StudentReviewListProps {
@@ -23,7 +24,15 @@ export default function StudentReviewList({
     return (
         <div className="divide-y divide-slate-100">
             {reviews.map((review) => (
-                <article key={review.reviewId} className="p-5">
+                <article key={review.reviewId} className="relative p-5 pr-14">
+                    <CreateReportBtn
+                        triggerLabel="수강평 신고"
+                        triggerVariant="icon"
+                        triggerClassName="absolute right-5 top-5 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full text-slate-300 transition hover:bg-rose-50 hover:text-rose-500"
+                        targetType="REVIEW"
+                        targetId={review.reviewId}
+                    />
+
                     <div className="flex items-start gap-4">
                         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-sm font-black text-indigo-500">
                             {review.nickname.slice(0, 1)}

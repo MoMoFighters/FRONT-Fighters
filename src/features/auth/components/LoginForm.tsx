@@ -1,10 +1,9 @@
-'use client'
+﻿'use client'
 
 import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import kakao from '@/app/assets/img/kakao.svg';
-import google from '@/app/assets/img/google.svg';
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import googleIcon from "@/app/assets/img/google.svg"
@@ -235,8 +234,8 @@ export default function LoginForm() {
                     <a href={googleAuthLink}>
                         <Image src={googleIcon} alt='구글' width={40} height={40} className="border-2 border-slate-100 hover:border-slate-400 hover:translate-y-0.5 rounded-full p-2" />
                     </a>
-                    <a href={googleAuthLink}>
-                        <Image src={naverIcon} alt='네이버' width={40} height={40} className="hover:translate-y-0.5" />
+                    <a href="/oauth/naver/start">
+                        <Image src={naverIcon} alt="네이버" width={40} height={40} className="hover:translate-y-0.5" />
                     </a>
                 </div>
 

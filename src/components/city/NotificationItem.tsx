@@ -53,6 +53,7 @@ export default function NotificationItem({
         <Link
             href={href}
             onClick={handleClick}
+            className="block w-full"
         >
             <article className="w-full bg-white/25 py-2 px-4 flex flex-row items-center border-b border-slate-500/30 hover:bg-white/90 hover:shadow-sm cursor-pointer transition-all">
                 {isRead ? (
@@ -61,8 +62,8 @@ export default function NotificationItem({
                     <div className="mb-5 h-2 w-2 rounded-full bg-red-500 mr-2" />
                 )}
 
-                <div className="flex-1 flex flex-row items-center gap-3">
-                    <div className="flex flex-col justify-between w-full">
+                <div className="min-w-0 flex-1 flex flex-row items-center gap-3">
+                    <div className="flex min-w-0 flex-col justify-between w-full">
                         <h3 className="font-bold text-sm text-slate-800">{title}</h3>
                         <p className="truncate text-xs">{content}</p>
                     </div>
@@ -74,6 +75,7 @@ export default function NotificationItem({
                         onDelete={handleDelete}
                         trigger={
                             <button
+                                type="button"
                                 className="w-6 h-6 p-0.5 hover:bg-rose-100 rounded-full text-slate-500 hover:text-rose-500 flex items-center transition-colors"
                             >
                                 <X />

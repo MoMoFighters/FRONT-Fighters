@@ -1,30 +1,77 @@
 'use client'
 
 import { Bell } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import NotificationList from "./NotificationList";
 import {
     HoverCard,
     HoverCardContent,
     HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import { getNoticeTotalCountsAction } from "./action";
+import { connectNoticeStomp } from "./stomp";
 
-export default function HeaderNotificationZone() {
+interface HeaderNotificationZoneProps {
+    accessToken: string;
+}
 
+export default function HeaderNotificationZone({
+    accessToken,
+}: HeaderNotificationZoneProps) {
     const [isOpen, setIsOpen] = useState(false);
-
     const [hoverOpen, setHoverOpen] = useState(false);
+    const [notification, setNotification] = useState(0);
 
-    const [notification, setNotification] = useState(4);
+    useEffect(() => {
+        let isMounted = true;
 
-    const [loading, setLoading] = useState(false);
-    const handleRead = async () => {
-        setLoading(true);
-        // 알림 읽음 처리 액션 함수 호출
+        const loadCount = async () => {
+            const response = await getNoticeTotalCountsAction();
 
-        setLoading(false);
-        setNotification(0); //나중엔 result값 따라서 변동시켜야함
-    }
+            if (!isMounted) {
+                return;
+            }
+
+            setNotification(response.data?.totalCount ?? 0);
+        };
+
+        void loadCount();
+
+        return () => {
+            isMounted = false;
+        };
+    }, []);
+
+    useEffect(() => {
+        if (!accessToken) {
+            return;
+        }
+
+        let subscription:
+            | ReturnType<ReturnType<typeof connectNoticeStomp>["subscribe"]>
+            | undefined;
+        const client = connectNoticeStomp({
+            accessToken,
+            onConnect: (stompClient) => {
+                subscription =
+                    stompClient.subscribe(
+                        "/user/sub/notice/total-counts",
+                        (body) => {
+                            const data = JSON.parse(body) as {
+                                totalCount?: number;
+                            };
+
+                            setNotification(data.totalCount ?? 0);
+                        }
+                    );
+            },
+        });
+
+        return () => {
+            subscription?.unsubscribe();
+            client.disconnect();
+        };
+    }, [accessToken]);
 
     return (
         <>
@@ -41,13 +88,12 @@ export default function HeaderNotificationZone() {
                         onClick={() => {
                             setHoverOpen(false);
                             setIsOpen((prev) => !prev);
-                            handleRead();
                         }}
                     >
                         <Bell />
-                        {notification === 0 ? "" : (
-                            <p className="absolute -top-2.5 left-3.5 h-4 w-4 rounded-full bg-red-500 flex justify-center items-center text-slate-200 text-xs">
-                                4
+                        {notification > 0 && (
+                            <p className="absolute -top-2.5 left-3.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-xs text-slate-200">
+                                {notification > 99 ? "99+" : notification}
                             </p>
                         )}
                     </button>
@@ -65,6 +111,7 @@ export default function HeaderNotificationZone() {
 
             {isOpen && (
                 <NotificationList
+                    accessToken={accessToken}
                     onClose={() => setIsOpen(false)}
                 />
             )}

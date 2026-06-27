@@ -1,9 +1,12 @@
 import StudentPageHeader from "@/features/student/components/StudentPageHeader";
 import { getMyInfo } from "@/features/user/action";
-import { getPointStoreItemsAction } from "@/features/point/action";
+import {
+    getPointStoreItemsAction,
+    getProfileOrderListAction,
+} from "@/features/point/action";
 import PointStoreInventorySection from "@/features/point/components/PointStoreInventorySection";
 import PointStorePurchaseSection from "@/features/point/components/PointStorePurchaseSection";
-import { PointStoreItem } from "@/features/point/type";
+import { MyPointItem, PointStoreItem, ProfileOrderItem } from "@/features/point/type";
 
 interface PointStorePageProps {
     searchParams: Promise<{
@@ -38,23 +41,40 @@ const toPointStoreItem = (
     accentClassName: STORE_ITEM_ACCENTS[index % STORE_ITEM_ACCENTS.length],
 });
 
+const toMyPointItem = (
+    item: ProfileOrderItem,
+    index: number
+): MyPointItem => ({
+    id: index + 1,
+    itemId: index + 1,
+    name: item.itemName,
+    category: "PROFILE",
+    acquiredAt: "",
+    isUsing: false,
+    imageUrl: item.imageUrl,
+    accentClassName: STORE_ITEM_ACCENTS[index % STORE_ITEM_ACCENTS.length],
+});
+
 export default async function PointStorePage({
     searchParams,
 }: PointStorePageProps) {
     const { page } = await searchParams;
     const requestedPage = Math.max(Number(page) || 1, 1);
 
-    const [myInfo, storeResponse] = await Promise.all([
+    const [myInfo, storeResponse, profileOrderResponse] = await Promise.all([
         getMyInfo(),
         getPointStoreItemsAction({
             page: requestedPage,
             size: PAGE_SIZE,
         }),
+        getProfileOrderListAction(),
     ]);
 
     const points = myInfo.data?.points ?? 0;
     const storeItems =
         storeResponse.data?.stores.map(toPointStoreItem) ?? [];
+    const ownedProfileItems =
+        profileOrderResponse.data?.owned.map(toMyPointItem) ?? [];
     const totalPages = Math.max(storeResponse.data?.totalPages ?? 1, 1);
     const currentPage = Math.min(
         Math.max(storeResponse.data?.page ?? requestedPage, 1),
@@ -85,7 +105,7 @@ export default async function PointStorePage({
                         currentPage={currentPage}
                         totalPages={totalPages}
                     />
-                    <PointStoreInventorySection />
+                    <PointStoreInventorySection items={ownedProfileItems} />
                 </div>
             </section>
         </main>
