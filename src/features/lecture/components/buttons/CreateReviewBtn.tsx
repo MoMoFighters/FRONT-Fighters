@@ -42,7 +42,7 @@ export default function CreateReviewBtn({
             try {
                 await createReviewAction(String(lectureId), {
                     rating,
-                    content: content.trim(),
+                    content: content,
                 });
 
                 toast.success("수강평이 등록되었습니다.");
@@ -98,7 +98,7 @@ export default function CreateReviewBtn({
                                             className={`h-7 w-7 ${value <= rating
                                                 ? "fill-amber-400 text-amber-400"
                                                 : "text-slate-300"
-                                            }`}
+                                                }`}
                                         />
                                     </button>
                                 );
