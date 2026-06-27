@@ -1,12 +1,12 @@
+import Image from "next/image";
 import Link from "next/link";
-import { CheckCircle2, LockKeyhole, PlayCircle } from "lucide-react";
 
-import { Chapter } from "@/features/lecture/type";
+import { ChapterByMeta } from "@/features/lecture/type";
 
 interface ChapterDetailListItemProps {
     category: string;
     lectureId: string;
-    chapter: Chapter;
+    chapter: ChapterByMeta;
     isActive: boolean;
     href?: string;
 }
@@ -30,21 +30,17 @@ export default function ChapterDetailListItem({
 
     const content = (
         <>
-            <div
-                className={`
-                    flex h-10 w-10 shrink-0 items-center justify-center rounded-full
-                    ${isActive
-                        ? "bg-indigo-500 text-white"
-                        : "bg-slate-100 text-slate-400"
-                    }
-                `}
-            >
-                {isLocked ? (
-                    <LockKeyhole className="h-4 w-4" />
-                ) : chapter.isCompleted ? (
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+            <div className="relative flex h-12 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-100 text-[10px] font-bold text-slate-400">
+                {chapter.chapterThumbnailUrl ? (
+                    <Image
+                        src={chapter.chapterThumbnailUrl}
+                        alt={`${chapter.title} 썸네일`}
+                        fill
+                        sizes="64px"
+                        className="object-cover"
+                    />
                 ) : (
-                    <PlayCircle className="h-4 w-4" />
+                    "이미지 없음"
                 )}
             </div>
 
@@ -69,7 +65,7 @@ export default function ChapterDetailListItem({
 
             <span className="text-xs font-bold text-slate-400">
                 {isLocked
-                    ? "잠김"
+                    ? "잠금"
                     : chapter.isCompleted
                         ? "완료"
                         : isActive

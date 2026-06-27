@@ -27,6 +27,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import TwoButtonModal from "@/features/modal/TwoButtonModal";
+import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { CreateReportAction } from "../../action";
 import { CreateReportRequest } from "../../type";
@@ -39,11 +40,17 @@ interface ReportFormData {
 interface CreateReportBtnProps {
     triggerLabel?: string;
     triggerClassName?: string;
+    triggerVariant?: "button" | "text" | "icon";
+    targetType?: string;
+    targetId?: number;
 }
 
 export default function CreateReportBtn({
     triggerLabel = "신고",
     triggerClassName,
+    triggerVariant = "button",
+    targetType = "LECTURE",
+    targetId = 1,
 }: CreateReportBtnProps) {
 
     // 신고 작성 모달
@@ -83,14 +90,13 @@ export default function CreateReportBtn({
 
         try {
             const payload: CreateReportRequest = {
-                targetType: "LECTURE", // 일단 모듈 3에서는 고정
-                targetId: 1, // 마찬가지
+                targetType,
+                targetId,
                 reason: formData.reason,
                 detail: formData.reasonDetail
             }
 
-            const reportResponse = await CreateReportAction(payload);
-
+            await CreateReportAction(payload);
 
             toast.success('신고 접수 성공', {
                 duration: 1000
@@ -124,7 +130,17 @@ export default function CreateReportBtn({
                 onOpenChange={setIsModal}
             >
 
-                {triggerClassName ? (
+                {triggerVariant === "icon" ? (
+                    <button
+                        type="button"
+                        className={triggerClassName}
+                        onClick={() => setIsModal(true)}
+                        aria-label={triggerLabel}
+                        title={triggerLabel}
+                    >
+                        <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                ) : triggerClassName ? (
                     <button
                         type="button"
                         className={triggerClassName}

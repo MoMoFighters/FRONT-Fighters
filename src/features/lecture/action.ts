@@ -18,11 +18,15 @@ export const updateVideoProgressAction = async (
     payload: UpdateVideoProgressRequest
 ) => {
 
-    return await updateVideoProgress(
+    const result = await updateVideoProgress(
         lectureId,
         chapterId,
         payload
     );
+
+    revalidateLectureProgressPaths(lectureId, chapterId);
+
+    return result;
 };
 
 // 나가기 버튼 클릭 시 진척도 저장하는 액션함수
@@ -32,11 +36,36 @@ export const updateVideoProgressByExitAction = async (
     payload: UpdateVideoProgressByExitRequest
 ) => {
 
-    return await updateVideoProgressByExit(
+    const result = await updateVideoProgressByExit(
         lectureId,
         chapterId,
         payload
     );
+
+    revalidateLectureProgressPaths(lectureId, chapterId);
+
+    return result;
+};
+
+const revalidateLectureProgressPaths = (
+    lectureId: string,
+    chapterId: string
+) => {
+    revalidatePath(`/student/lectures/${lectureId}`);
+    revalidatePath(`/student/mypage/lectures`);
+    revalidatePath(`/student/mypage/lectures/${lectureId}`);
+    revalidatePath(`/student/mypage/lectures/${lectureId}/chapters/${chapterId}`);
+
+    revalidatePath(`/student/study/lectures/${lectureId}`);
+    revalidatePath(`/student/study/lectures/${lectureId}/chapters/${chapterId}`);
+    revalidatePath(`/student/fitness/lectures/${lectureId}`);
+    revalidatePath(`/student/fitness/lectures/${lectureId}/chapters/${chapterId}`);
+    revalidatePath(`/student/cook/lectures/${lectureId}`);
+    revalidatePath(`/student/cook/lectures/${lectureId}/chapters/${chapterId}`);
+    revalidatePath(`/student/beauty/lectures/${lectureId}`);
+    revalidatePath(`/student/beauty/lectures/${lectureId}/chapters/${chapterId}`);
+    revalidatePath(`/student/art/lectures/${lectureId}`);
+    revalidatePath(`/student/art/lectures/${lectureId}/chapters/${chapterId}`);
 };
 
 // 수강 신청 액션 함수

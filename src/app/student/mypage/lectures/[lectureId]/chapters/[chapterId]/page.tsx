@@ -24,8 +24,10 @@ export default async function MyChapterViewPage({
         lectureId,
     } = await params;
 
-    const metaData = await getLectureMeta(lectureId);
-    const playerData = await getVideoPlayer(lectureId, chapterId);
+    const [metaData, playerData] = await Promise.all([
+        getLectureMeta(lectureId),
+        getVideoPlayer(lectureId, chapterId),
+    ]);
 
     if (!metaData) {
         throw new Error("강의 정보를 불러올 수 없습니다.");
@@ -48,7 +50,7 @@ export default async function MyChapterViewPage({
     );
     const nextChapter = metaData.chapters[currentChapterIndex + 1];
     const chapterBaseHref = `/student/mypage/lectures/${lectureId}`;
-    const nextChapterHref = nextChapter && nextChapter.isAccessible !== false
+    const nextChapterHref = nextChapter && nextChapter.isAccessible === true
         ? `${chapterBaseHref}/chapters/${nextChapter.chapterId}`
         : undefined;
 
@@ -85,9 +87,10 @@ export default async function MyChapterViewPage({
                     lectureId={lectureId}
                     chapter={currentChapter}
                     lectureTitle={metaData.lectureTitle}
-                    currentChapterNo={metaData.currentChapterNo}
+                    currentChapterNo={currentChapter.orderNo}
                     presignedUrl={playerData.presignedUrl}
                     lastPositionSec={playerData.lastPositionSec}
+                    exitHref={`/student/mypage/lectures/${lectureId}`}
                     nextChapterHref={nextChapterHref}
                 />
 

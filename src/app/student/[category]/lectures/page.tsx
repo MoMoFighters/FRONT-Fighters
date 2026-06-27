@@ -88,7 +88,7 @@ export default async function LectureListByCategory({
         <main className="mx-auto grid w-full max-w-360 grid-cols-[minmax(0,1fr)_320px] gap-8 px-12 py-12">
             <section className="min-w-0">
                 <StudentPageHeader
-                    backHref={`/student/${category}`}
+                    backHref="/student"
                     breadcrumbs={[
                         {
                             label: "홈",

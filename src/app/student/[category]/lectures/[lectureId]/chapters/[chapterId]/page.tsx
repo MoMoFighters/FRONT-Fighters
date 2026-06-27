@@ -29,8 +29,10 @@ export default async function ChapterViewPage({
     } = await params;
 
     const categoryMeta = getCategoryMeta(category.toUpperCase() as Category);
-    const metaData = await getLectureMeta(lectureId);
-    const playerData = await getVideoPlayer(lectureId, chapterId);
+    const [metaData, playerData] = await Promise.all([
+        getLectureMeta(lectureId),
+        getVideoPlayer(lectureId, chapterId),
+    ]);
 
     if (!metaData) {
         throw new Error("강의 정보를 불러올 수 없습니다.");
@@ -85,9 +87,10 @@ export default async function ChapterViewPage({
                     lectureId={lectureId}
                     chapter={currentChapter}
                     lectureTitle={metaData.lectureTitle}
-                    currentChapterNo={metaData.currentChapterNo}
+                    currentChapterNo={currentChapter.orderNo}
                     presignedUrl={playerData.presignedUrl}
                     lastPositionSec={playerData.lastPositionSec}
+                    exitHref={`/student/${category}/lectures/${lectureId}`}
                     nextChapterHref={nextChapterHref}
                 />
 
