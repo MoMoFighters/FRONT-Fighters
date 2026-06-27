@@ -51,8 +51,11 @@ export const enrollLectureAction = async (lectureId: string, position?: string) 
 }
 
 // 수강평 등록 액션 함수
-export const enrollReviewAction = async (lectureId: string, payload: EnrollReviewRequest) => {
-    await enrollReviewByLectureId(lectureId, payload);
+export const createReviewAction = async (
+    lectureId: string,
+    payload: CreateReviewRequest
+) => {
+    await createReviewByLectureId(lectureId, payload);
     revalidatePath(`/student/lectures/${lectureId}`);
     revalidatePath(`/student/study/lectures/${lectureId}`);
     revalidatePath(`/student/fitness/lectures/${lectureId}`);

@@ -25,7 +25,7 @@ export default function ChapterDetailListItem({
     isActive,
     href,
 }: ChapterDetailListItemProps) {
-    const isLocked = chapter.isAccessible === false;
+    const isLocked = chapter.isAccessible !== true;
     const chapterHref = href ?? `/student/${category}/lectures/${lectureId}/chapters/${chapter.chapterId}`;
 
     const content = (
