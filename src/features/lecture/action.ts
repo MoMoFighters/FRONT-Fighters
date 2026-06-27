@@ -62,6 +62,7 @@ export const createReviewAction = async (
     revalidatePath(`/student/cook/lectures/${lectureId}`);
     revalidatePath(`/student/beauty/lectures/${lectureId}`);
     revalidatePath(`/student/art/lectures/${lectureId}`);
+    revalidatePath(`/student/mypage/lectures/${lectureId}`);
     revalidatePath(`/admin/lectures/${lectureId}`);
     revalidatePath(`/teacher/lectures/${lectureId}`);
 }

@@ -81,7 +81,7 @@ export default function ResumeLectureCard(props: ResumeLectureCardProps) {
 
             <Link
                 href={href}
-                className="mt-4 flex h-10 items-center justify-center rounded-xl bg-slate-950 text-sm font-bold text-white transition hover:bg-slate-800"
+                className="mt-4 flex h-10 items-center justify-center rounded-xl bg-indigo-500 text-sm font-bold text-white transition hover:bg-indigo-600"
             >
                 이어서 보기
             </Link>

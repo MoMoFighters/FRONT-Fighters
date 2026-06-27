@@ -37,11 +37,10 @@ export default function PointStoreInventorySection() {
                             key={category.value}
                             type="button"
                             onClick={() => setActiveTab(category.value)}
-                            className={`cursor-pointer rounded-full px-3.5 py-2 text-sm font-black transition ${
-                                activeTab === category.value
-                                    ? "bg-slate-900 text-white"
-                                    : "bg-slate-100 text-slate-500 hover:bg-indigo-50 hover:text-indigo-500"
-                            }`}
+                            className={`cursor-pointer rounded-full px-3.5 py-2 text-sm font-black transition ${activeTab === category.value
+                                ? "bg-slate-900 text-white"
+                                : "bg-slate-100 text-slate-500 hover:bg-indigo-50 hover:text-indigo-500"
+                                }`}
                         >
                             {category.label}
                         </button>
@@ -49,7 +48,7 @@ export default function PointStoreInventorySection() {
                 </nav>
             </div>
 
-            <div className="scrollbar-hidden min-h-0 flex-1 space-y-3 overflow-y-auto p-5">
+            <div className="scrollbar-hidden min-h-0 grid grid-cols-2 space-y-3 overflow-y-auto p-5">
                 {filteredItems.length > 0 ? (
                     filteredItems.map((item) => (
                         <MyPointItemCard
