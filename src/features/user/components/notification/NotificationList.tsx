@@ -1,8 +1,7 @@
 'use client'
 
-import Link from "next/link";
+import NotificationItem from "@/components/city/NotificationItem";
 import { useEffect, useState } from "react";
-import { MessageCircle, UserPlus, Bell } from "lucide-react";
 
 import { getNoticeNotificationListAction } from "./action";
 import { connectNoticeStomp } from "./stomp";
@@ -13,31 +12,20 @@ interface NotificationListProps {
     onClose: () => void;
 }
 
-const getNotificationHref = (notification: NoticeNotification) => {
+const getNotificationType = (
+    notification: NoticeNotification
+): "friend" | "calendar" | "community" => {
     switch (notification.type) {
         case "MESSAGE":
-            return `/student/phone/friends?roomId=${notification.refId}`;
         case "FRIEND_REQUEST":
-            return "/student/phone/friends?status=request";
-        case "COMMUNITY":
-            return `/student/phone/community/${notification.refId}`;
+            return "friend";
         case "CALENDAR":
-            return `/student/phone/calendar?month=${notification.refId}`;
+            return "calendar";
+        case "COMMUNITY":
+            return "community";
         default:
-            return "/student";
+            return "community";
     }
-};
-
-const getNotificationIcon = (type: string) => {
-    if (type === "MESSAGE") {
-        return <MessageCircle className="h-4 w-4" />;
-    }
-
-    if (type === "FRIEND_REQUEST") {
-        return <UserPlus className="h-4 w-4" />;
-    }
-
-    return <Bell className="h-4 w-4" />;
 };
 
 export default function NotificationList({
@@ -120,35 +108,14 @@ export default function NotificationList({
                         </div>
                     ) : notifications.length > 0 ? (
                         notifications.map((notification) => (
-                            <Link
+                            <NotificationItem
                                 key={notification.id}
-                                href={getNotificationHref(notification)}
-                                onClick={onClose}
-                                className="flex w-full items-start gap-3 border-b border-slate-200/70 bg-white/25 px-4 py-3 transition hover:bg-white/90 hover:shadow-sm"
-                            >
-                                <span
-                                    className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
-                                        notification.isRead
-                                            ? "bg-slate-100 text-slate-400"
-                                            : "bg-indigo-50 text-indigo-500"
-                                    }`}
-                                >
-                                    {getNotificationIcon(notification.type)}
-                                </span>
-
-                                <span className="min-w-0 flex-1">
-                                    <span className="line-clamp-2 text-sm font-bold leading-5 text-slate-800">
-                                        {notification.message}
-                                    </span>
-                                    <span className="mt-1 block text-[11px] font-semibold text-slate-400">
-                                        {notification.createdAt.replace("T", " ")}
-                                    </span>
-                                </span>
-
-                                {!notification.isRead && (
-                                    <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-red-500" />
-                                )}
-                            </Link>
+                                type={getNotificationType(notification)}
+                                content={notification.message}
+                                onClose={onClose}
+                                isRead={notification.isRead}
+                                targetId={notification.refId}
+                            />
                         ))
                     ) : (
                         <div className="flex h-32 items-center justify-center text-sm font-bold text-slate-400">
