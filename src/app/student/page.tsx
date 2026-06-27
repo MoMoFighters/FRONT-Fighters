@@ -1,4 +1,4 @@
-import { getMyInfo } from "@/features/user/action";
+import { getMyInfo, killTokenAction } from "@/features/user/action";
 import NicknameInputModal from "@/features/auth/components/NicknameInputModal";
 import Phone from "@/components/city/Phone";
 import MonthlyStreakGarden from "@/components/city/MonthlyStreakGarden";
@@ -98,6 +98,10 @@ export default async function StudentMainPage() {
             <PostBoard mode="MY" />
             <Phone />
             <MonthlyStreakGarden />
+            <button
+                className="bg-red-500 w-20 h-20"
+                onClick={killTokenAction}
+            >asdfasdf</button>
 
             {buildingSlots.map((slot) => {
                 const building = buildings.find((building) => building.position === slot.position);
