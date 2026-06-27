@@ -28,7 +28,6 @@ function NaverCallbackContent() {
 
     useEffect(() => {
         if (hasCalled.current) return;
-
         hasCalled.current = true;
 
         const login = async () => {
