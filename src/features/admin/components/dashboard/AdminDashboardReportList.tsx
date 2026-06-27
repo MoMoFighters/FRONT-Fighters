@@ -5,12 +5,12 @@ export interface AdminDashboardReport {
     title: string;
     reporter: string;
     reportedAt: string;
-    status: "대기" | "긴급";
+    status: "처리" | "미처리";
 }
 
 const STATUS_CLASS = {
-    "대기": "bg-amber-50 text-amber-600",
-    "긴급": "bg-rose-50 text-rose-500",
+    "처리": "bg-slate-50 text-slate-600",
+    "미처리": "bg-amber-50 text-amber-500",
 };
 
 export default function AdminDashboardReportList({
