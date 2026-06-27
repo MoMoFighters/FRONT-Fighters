@@ -1,6 +1,5 @@
 import {
     Bell,
-    CalendarDays,
     CheckCircle2,
     ClipboardCheck,
     FileText,
@@ -207,21 +206,21 @@ export default function AdminDashboardPage() {
             title: "강의 내 부적절한 표현",
             reporter: "user_9281",
             reportedAt: "2026-06-14 13:10",
-            status: "긴급",
+            status: "처리",
         },
         {
             id: 2,
             title: "강사 부적절 언행",
             reporter: "user_7743",
             reportedAt: "2026-06-14 12:47",
-            status: "대기",
+            status: "미처리",
         },
         {
             id: 3,
             title: "저작권 침해 의심",
             reporter: "user_5120",
             reportedAt: "2026-06-14 11:22",
-            status: "대기",
+            status: "미처리",
         },
     ];
 
@@ -229,7 +228,6 @@ export default function AdminDashboardPage() {
     const accessLogs: AdminDashboardAccessLog[] = [
         {
             id: 1,
-            country: "대한민국",
             ip: "211.234.56.78",
             account: "admin",
             accessedAt: "2026-06-14 14:21:32",
@@ -237,7 +235,6 @@ export default function AdminDashboardPage() {
         },
         {
             id: 2,
-            country: "대한민국",
             ip: "211.234.56.78",
             account: "admin",
             accessedAt: "2026-06-14 14:18:05",
@@ -245,7 +242,6 @@ export default function AdminDashboardPage() {
         },
         {
             id: 3,
-            country: "미국",
             ip: "93.184.216.34",
             account: "admin",
             accessedAt: "2026-06-14 13:02:11",
@@ -253,7 +249,6 @@ export default function AdminDashboardPage() {
         },
         {
             id: 4,
-            country: "대한민국",
             ip: "211.234.56.78",
             account: "admin",
             accessedAt: "2026-06-14 09:11:47",
@@ -261,11 +256,10 @@ export default function AdminDashboardPage() {
         },
         {
             id: 5,
-            country: "일본",
             ip: "150.95.120.15",
             account: "admin",
             accessedAt: "2026-06-14 08:43:23",
-            status: "차단",
+            status: "실패",
         },
     ];
 
@@ -294,10 +288,6 @@ export default function AdminDashboardPage() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                    <div className="flex h-10 items-center gap-3 rounded-md border border-slate-200 bg-white px-4 text-sm font-bold text-slate-600">
-                        <span>2026-06-14 (토)</span>
-                        <CalendarDays className="h-4 w-4 text-slate-400" />
-                    </div>
 
                     <div className="flex h-10 items-center gap-2 rounded-md border border-slate-200 bg-white px-4 text-sm font-black text-emerald-600">
                         <CheckCircle2 className="h-4 w-4" />
@@ -340,7 +330,6 @@ export default function AdminDashboardPage() {
 
                     <AdminDashboardCard
                         title="접근 로그"
-                        subtitle="(최근 24시간)"
                         href="/admin/access-logs"
                         icon={FileText}
                     >

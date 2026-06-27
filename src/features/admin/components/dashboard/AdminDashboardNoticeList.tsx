@@ -27,12 +27,6 @@ export default function AdminDashboardNoticeList({
                         <p className="truncate text-xs font-bold text-slate-800">
                             {notice.title}
                         </p>
-
-                        {notice.isNew && (
-                            <span className="rounded-md bg-indigo-50 px-1.5 py-0.5 text-[10px] font-black text-indigo-500">
-                                NEW
-                            </span>
-                        )}
                     </div>
 
                     <span className="text-xs font-semibold text-slate-500">
