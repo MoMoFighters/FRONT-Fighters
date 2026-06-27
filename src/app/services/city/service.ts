@@ -1,4 +1,4 @@
-import { Building } from "@/features/city/type";
+import { Building, StreakRequest, StreakResponse } from "@/features/city/type";
 import { ApiResponse, fetchWithAuth } from "@/lib/api";
 import { notFound } from "next/navigation";
 
@@ -53,5 +53,44 @@ export const getFriendBuildings = async (id: string) => {
     const response = await fetchWithAuth(`api/v1/user/${id}/buildings`);
     await handleErrorResponse(response);
     const result: ApiResponse<Building[]> = await response.json();
+    return assertApiData(result);
+}
+
+/**
+ * 내 도시의 내 잔디 정보 조회 api
+ * @param payload 조회를 원하는 연도와 월 
+ * @returns StreakResponse
+ */
+export const getMyStreak = async (payload: StreakRequest): Promise<StreakResponse> => {
+    const queryString =
+        new URLSearchParams(
+            Object.entries(payload)
+                .filter(([, value]) => value !== undefined)
+                .map(([key, value]) => [
+                    key,
+                    String(value),
+                ])
+        ).toString();
+
+    const response = await fetchWithAuth(`/api/v2/streak?${queryString}`);
+    await handleErrorResponse(response);
+    const result: ApiResponse<StreakResponse> = await response.json();
+    return assertApiData(result);
+}
+
+export const getFriendStreak = async (id: string, payload: StreakRequest): Promise<StreakResponse> => {
+    const queryString =
+        new URLSearchParams(
+            Object.entries(payload)
+                .filter(([, value]) => value !== undefined)
+                .map(([key, value]) => [
+                    key,
+                    String(value),
+                ])
+        ).toString();
+
+    const response = await fetchWithAuth(`/api/v2/streak/users/${id}?${queryString}`);
+    await handleErrorResponse(response);
+    const result: ApiResponse<StreakResponse> = await response.json();
     return assertApiData(result);
 }

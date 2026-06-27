@@ -33,7 +33,6 @@ export default function AdminDashboardTaskTable({
                             <th className="px-4 py-3">제목</th>
                             <th className="w-28 px-4 py-3">요청자</th>
                             <th className="w-36 px-4 py-3">요청일</th>
-                            <th className="w-20 px-4 py-3">상태</th>
                         </tr>
                     </thead>
 
@@ -53,11 +52,6 @@ export default function AdminDashboardTaskTable({
                                 </td>
                                 <td className="px-4 py-3 font-semibold text-slate-500">
                                     {task.requestedAt}
-                                </td>
-                                <td className="px-4 py-3">
-                                    <span className={`rounded-md px-2 py-1 font-black ${STATUS_CLASS[task.status]}`}>
-                                        {task.status}
-                                    </span>
                                 </td>
                             </tr>
                         ))}

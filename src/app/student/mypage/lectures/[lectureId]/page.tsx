@@ -127,7 +127,7 @@ export default async function MyLectureDetailPage({
 
                 <LearningProgressCard
                     categoryLabel="전체 강의"
-                    progress={progressInfo.MyTotalProgress ?? 0}
+                    progress={progressInfo.myTotalProgress ?? 0}
                 />
 
                 {latestChapterInfo ? (
