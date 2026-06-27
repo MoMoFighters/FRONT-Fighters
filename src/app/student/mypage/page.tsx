@@ -3,6 +3,7 @@ import MyBuildingInfo from "@/components/mypage/MyBuildingInfo";
 import MyInfoTable from "@/components/mypage/MyInfoTable";
 import MyPageNav from "@/components/mypage/MyPageNav";
 import DeleteAccountBtn from "@/features/auth/components/DeleteAccountBtn";
+import NicknameInputModal from "@/features/auth/components/NicknameInputModal";
 import StudentPageHeader from "@/features/student/components/StudentPageHeader";
 import { getMyInfo } from "@/features/user/action";
 import { BadgeCheck, ChevronRight, Landmark, PencilLine, UserRound } from "lucide-react";
@@ -24,8 +25,11 @@ export default async function MyPage() {
         isPaid: DATA.data?.isPaid,
     };
 
+    console.log(DATA.data?.buildingInfos)
+
     return (
         <div className="p-12">
+            {DATA.data?.nickname === null && <NicknameInputModal nickIsNull />}
             <StudentPageHeader
                 backHref="/student"
                 breadcrumbs={[
@@ -40,7 +44,7 @@ export default async function MyPage() {
                 title="마이페이지"
             />
 
-            <MyPageNav isPaid={USER_DATA.isPaid} />
+            <MyPageNav noBuilding={DATA.data?.buildingInfos.length === 0} />
 
             <section className="mt-12 rounded-[2rem] border border-indigo-100 bg-gradient-to-br from-indigo-50 via-white to-slate-50 p-6 shadow-sm">
                 <div className="mb-6 flex items-center justify-between gap-4">

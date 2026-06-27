@@ -1,5 +1,3 @@
-import { getMyInfo, killTokenAction } from "@/features/user/action";
-import NicknameInputModal from "@/features/auth/components/NicknameInputModal";
 import Phone from "@/components/city/Phone";
 import MonthlyStreakGarden from "@/components/city/MonthlyStreakGarden";
 import BusStation from "@/components/city/BusStation";
@@ -53,8 +51,6 @@ const commonBuildingSlots = {
 
 export default async function StudentMainPage() {
 
-    const myInfo = await getMyInfo();
-
     // 추후 api 연동
     // const buildings = await getMyBuildings();
 
@@ -93,15 +89,10 @@ export default async function StudentMainPage() {
 
     return (
         <CityCanvas>
-            <NicknameInputModal nickIsNull={myInfo.data?.nickname === null ? true : false} />
             <BusStation mode='MY' />
             <PostBoard mode="MY" />
             <Phone />
             <MonthlyStreakGarden />
-            <button
-                className="bg-red-500 w-20 h-20"
-                onClick={killTokenAction}
-            >asdfasdf</button>
 
             {buildingSlots.map((slot) => {
                 const building = buildings.find((building) => building.position === slot.position);

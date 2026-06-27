@@ -16,6 +16,9 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "@/components/ui/pagination";
+import { jwtDecode } from "jwt-decode";
+import { cookies } from "next/headers";
+import NicknameInputModal from "@/features/auth/components/NicknameInputModal";
 
 type PointHistoryType =
     | "LECTURE_REWARD"
@@ -99,6 +102,18 @@ const createPageHref = (pageNumber: number) =>
 export default async function MypagePointPage({
     searchParams,
 }: MypagePointPageProps) {
+
+    const cookie = await cookies();
+    const token = cookie.get('accessToken')?.value;
+    var decoded;
+
+    if (token) {
+        // 옵션 없이 사용하면 페이로드(내용)를 디코딩합니다.
+        decoded = jwtDecode(token);
+        console.log(decoded);
+    }
+
+
     const { page } = await searchParams;
 
     const totalPages = Math.ceil(POINT_HISTORY.length / PAGE_SIZE);
@@ -114,6 +129,7 @@ export default async function MypagePointPage({
 
     return (
         <main className="mx-auto w-full max-w-360 px-12 py-12">
+            <NicknameInputModal nickIsNull={decoded?.roles === "STUDENT"} />
             <StudentPageHeader
                 backHref="/student/mypage"
                 breadcrumbs={[
@@ -206,11 +222,10 @@ export default async function MypagePointPage({
 
                                     <div className="flex min-w-0 items-center gap-2.5">
                                         <div
-                                            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
-                                                isIncrease
-                                                    ? "bg-indigo-50 text-indigo-500"
-                                                    : "bg-slate-100 text-slate-500"
-                                            }`}
+                                            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${isIncrease
+                                                ? "bg-indigo-50 text-indigo-500"
+                                                : "bg-slate-100 text-slate-500"
+                                                }`}
                                         >
                                             {isIncrease ? (
                                                 <ArrowDownLeft className="h-4 w-4" />
@@ -230,11 +245,10 @@ export default async function MypagePointPage({
                                     </div>
 
                                     <p
-                                        className={`text-right text-base font-black ${
-                                            isIncrease
-                                                ? "text-indigo-500"
-                                                : "text-rose-500"
-                                        }`}
+                                        className={`text-right text-base font-black ${isIncrease
+                                            ? "text-indigo-500"
+                                            : "text-rose-500"
+                                            }`}
                                     >
                                         {isIncrease ? "+" : "-"}
                                         {Math.abs(item.value).toLocaleString()} P

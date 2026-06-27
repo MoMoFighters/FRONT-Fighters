@@ -22,7 +22,7 @@ const NAV_ITEMS = [
     },
 ];
 
-export default function MyPageNav({ isPaid }: { isPaid?: boolean | undefined }) {
+export default function MyPageNav({ noBuilding }: { noBuilding?: boolean | undefined }) {
     const pathName = usePathname();
     const currentPage = pathName.split("/").pop() || "mypage";
 
@@ -51,7 +51,7 @@ export default function MyPageNav({ isPaid }: { isPaid?: boolean | undefined }) 
                     );
                 })}
             </nav>
-            {isPaid === false && (
+            {noBuilding === true && (
                 <TeacherRegistModal isModal={isModal} setIsModal={setIsModal} nickName="모모쌤" />
             )
             }
