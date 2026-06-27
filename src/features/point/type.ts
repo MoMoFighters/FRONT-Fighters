@@ -1,4 +1,6 @@
-export type PointItemCategory = "PROFILE_IMAGE";
+import type { ApiResponse } from "@/lib/api";
+
+export type PointItemCategory = "PROFILE";
 export type PointStoreTab = "ALL" | PointItemCategory;
 
 export interface PointStoreCategoryMeta {
@@ -11,11 +13,28 @@ export interface PointStoreItem {
     name: string;
     category: PointItemCategory;
     price: number;
-    description: string;
     imageUrl?: string | null;
-    badge?: string;
     accentClassName: string;
 }
+
+export interface PointStoreApiItem {
+    id: number;
+    name: string;
+    price: number;
+    url: string | null;
+    type: PointItemCategory;
+}
+
+export interface PointStoreListData {
+    stores: PointStoreApiItem[];
+    page: number;
+    size: number;
+    totalElements: number;
+    totalPages: number;
+}
+
+export type PointStoreListResponse =
+    ApiResponse<PointStoreListData>;
 
 export interface MyPointItem {
     id: number;
