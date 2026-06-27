@@ -1,4 +1,4 @@
-"use server";
+﻿"use server";
 
 import { cookies } from "next/headers";
 import { ApiResponse } from "@/lib/api";
@@ -17,6 +17,7 @@ import {
     nicknameRegistService,
     kakaoLoginService,
     googleLoginService,
+    naverLoginService,
 } from "@/app/services/auth/service";
 
 
@@ -37,12 +38,12 @@ const createUnauthorizedResponse = <T>(): ApiResponse<T> => ({
     timestamp: new Date().toISOString(),
     status: 401,
     code: "UNAUTHORIZED",
-    message: "로그인이 필요합니다.",
+    message: "濡쒓렇?몄씠 ?꾩슂?⑸땲??",
 });
 
 
 // ==========================================
-// 1-1. 학생 회원가입
+// 1-1. ?숈깮 ?뚯썝媛??
 // ==========================================
 
 interface StudentSignupData {
@@ -65,14 +66,14 @@ export const studentSignupAction = async (
     } catch (error) {
         return createErrorResponse<StudentSignupData>(
             error,
-            "학생 회원가입에 실패하였습니다."
+            "?숈깮 ?뚯썝媛?낆뿉 ?ㅽ뙣?섏??듬땲??"
         );
     }
 };
 
 
 // ==========================================
-// 1-2. 강사 회원가입
+// 1-2. 媛뺤궗 ?뚯썝媛??
 // ==========================================
 
 interface TeacherSignupData {
@@ -93,14 +94,14 @@ export const teacherSignupAction = async (
     } catch (error) {
         return createErrorResponse<TeacherSignupData>(
             error,
-            "강사 회원가입에 실패하였습니다."
+            "媛뺤궗 ?뚯썝媛?낆뿉 ?ㅽ뙣?섏??듬땲??"
         );
     }
 };
 
 
 // ==========================================
-// 1-n-1. 이메일 인증코드 발송
+// 1-n-1. ?대찓???몄쬆肄붾뱶 諛쒖넚
 // ==========================================
 
 interface SendEmailCodeData {
@@ -118,14 +119,14 @@ export const sendEmailCodeAction = async (
     } catch (error) {
         return createErrorResponse<SendEmailCodeData>(
             error,
-            "이메일 인증코드 발송에 실패하였습니다."
+            "?대찓???몄쬆肄붾뱶 諛쒖넚???ㅽ뙣?섏??듬땲??"
         );
     }
 };
 
 
 // ==========================================
-// 1-n-2. 이메일 인증하기
+// 1-n-2. ?대찓???몄쬆?섍린
 // ==========================================
 
 type EmailVerifyData = null;
@@ -142,15 +143,15 @@ export const verifyEmailAction = async (
     } catch (error) {
         return createErrorResponse<EmailVerifyData>(
             error,
-            "이메일 인증에 실패하였습니다."
+            "?대찓???몄쬆???ㅽ뙣?섏??듬땲??"
         );
     }
 };
 
 
 // ==========================================
-// 2-1. 로그인
-// 성공 시 토큰을 쿠키에 저장
+// 2-1. 濡쒓렇??
+// ?깃났 ???좏겙??荑좏궎?????
 // ==========================================
 
 interface LoginData {
@@ -202,14 +203,14 @@ export const loginAction = async (
     } catch (error) {
         return createErrorResponse<LoginData>(
             error,
-            "로그인에 실패하였습니다."
+            "濡쒓렇?몄뿉 ?ㅽ뙣?섏??듬땲??"
         );
     }
 };
 
 
 // ==========================================
-// 2-2. 로그인 완료 정보 조회
+// 2-2. 濡쒓렇???꾨즺 ?뺣낫 議고쉶
 // ==========================================
 
 interface LoginCompletedData {
@@ -235,14 +236,14 @@ export const loginSuccessAction = async (): Promise<
     } catch (error) {
         return createErrorResponse<LoginCompletedData>(
             error,
-            "로그인 정보를 불러오지 못했습니다."
+            "濡쒓렇???뺣낫瑜?遺덈윭?ㅼ? 紐삵뻽?듬땲??"
         );
     }
 };
 
 
 // ==========================================
-// 3. 비밀번호 변경
+// 3. 鍮꾨?踰덊샇 蹂寃?
 // ==========================================
 
 interface ChangePasswordData {
@@ -271,14 +272,14 @@ export const changePasswordAction = async (
     } catch (error) {
         return createErrorResponse<ChangePasswordData>(
             error,
-            "비밀번호 변경에 실패하였습니다."
+            "鍮꾨?踰덊샇 蹂寃쎌뿉 ?ㅽ뙣?섏??듬땲??"
         );
     }
 };
 
 
 // ==========================================
-// 4. 임시 비밀번호 발급
+// 4. ?꾩떆 鍮꾨?踰덊샇 諛쒓툒
 // ==========================================
 
 type TempPasswordData = null;
@@ -291,15 +292,15 @@ export const tempPwAction = async (
     } catch (error) {
         return createErrorResponse<TempPasswordData>(
             error,
-            "임시 비밀번호 발급에 실패하였습니다."
+            "?꾩떆 鍮꾨?踰덊샇 諛쒓툒???ㅽ뙣?섏??듬땲??"
         );
     }
 };
 
 
 // ==========================================
-// 5. 자동 로그아웃 연장
-// 새 accessToken을 쿠키에 저장
+// 5. ?먮룞 濡쒓렇?꾩썐 ?곗옣
+// ??accessToken??荑좏궎?????
 // ==========================================
 
 interface AuthRefreshData {
@@ -345,15 +346,15 @@ export const authRefreshAction = async (): Promise<
     } catch (error) {
         return createErrorResponse<AuthRefreshData>(
             error,
-            "로그인 연장에 실패하였습니다."
+            "濡쒓렇???곗옣???ㅽ뙣?섏??듬땲??"
         );
     }
 };
 
 
 // ==========================================
-// 6. 로그아웃
-// 성공 시 인증 쿠키 삭제
+// 6. 濡쒓렇?꾩썐
+// ?깃났 ???몄쬆 荑좏궎 ??젣
 // ==========================================
 
 type LogoutData = null;
@@ -386,15 +387,15 @@ export const logoutAction = async (): Promise<
     } catch (error) {
         return createErrorResponse<LogoutData>(
             error,
-            "로그아웃에 실패하였습니다."
+            "濡쒓렇?꾩썐???ㅽ뙣?섏??듬땲??"
         );
     }
 };
 
 
 // ==========================================
-// 7. 닉네임 등록
-// accessToken은 쿠키에서 조회
+// 7. ?됰꽕???깅줉
+// accessToken? 荑좏궎?먯꽌 議고쉶
 // ==========================================
 
 interface NicknameRegistData {
@@ -415,7 +416,7 @@ export const nicknameRegistAction = async (
                 timestamp: new Date().toISOString(),
                 status: 401,
                 code: "UNAUTHORIZED",
-                message: "로그인이 필요합니다.",
+                message: "濡쒓렇?몄씠 ?꾩슂?⑸땲??",
             };
         }
 
@@ -431,14 +432,14 @@ export const nicknameRegistAction = async (
             message:
                 error instanceof Error
                     ? error.message
-                    : "닉네임 등록에 실패하였습니다.",
+                    : "?됰꽕???깅줉???ㅽ뙣?섏??듬땲??",
         };
     }
 };
 
 // ==========================================
-// 8. 카카오, 구글 로그인 api
-// accessToken은 쿠키에서 조회
+// 8. 移댁뭅?? 援ш? 濡쒓렇??api
+// accessToken? 荑좏궎?먯꽌 議고쉶
 // ==========================================
 
 interface OAuthLoginData {
@@ -470,7 +471,7 @@ export const handleKakaoLoginCallback = async (
     code: string
 ): Promise<ApiResponse<OAuthLoginData>> => {
     if (!code) {
-        throw new Error("카카오 인가 코드가 없습니다.");
+        throw new Error("移댁뭅???멸? 肄붾뱶媛 ?놁뒿?덈떎.");
     }
 
     const result = await kakaoLoginService(code);
@@ -486,7 +487,7 @@ export const googleLoginAction = async (
     code: string
 ): Promise<ApiResponse<OAuthLoginData>> => {
     if (!code) {
-        throw new Error("구글 인가 코드가 없습니다.");
+        throw new Error("援ш? ?멸? 肄붾뱶媛 ?놁뒿?덈떎.");
     }
 
     const result = await googleLoginService(code);
@@ -502,10 +503,10 @@ export const naverLoginAction = async (
     code: string
 ): Promise<ApiResponse<OAuthLoginData>> => {
     if (!code) {
-        throw new Error("구글 인가 코드가 없습니다.");
+        throw new Error("네이버 인가 코드가 없습니다.");
     }
 
-    const result = await googleLoginService(code);
+    const result = await naverLoginService(code);
 
     if (result.data) {
         await setOAuthCookies(result.data);
