@@ -1,21 +1,20 @@
 import {
     Bell,
-    BookOpen,
     CalendarDays,
     CheckCircle2,
     ClipboardCheck,
     FileText,
     LayoutDashboard,
     ShieldAlert,
-    UserCheck,
-    Users,
 } from "lucide-react";
 
 import AdminDashboardAccessLogList, {
     AdminDashboardAccessLog,
 } from "@/features/admin/components/dashboard/AdminDashboardAccessLogList";
 import AdminDashboardCard from "@/features/admin/components/dashboard/AdminDashboardCard";
-import AdminDashboardMetricCard from "@/features/admin/components/dashboard/AdminDashboardMetricCard";
+import AdminDashboardMonthlyLineChart, {
+    AdminDashboardMonthlyDatum,
+} from "@/features/admin/components/dashboard/AdminDashboardMonthlyLineChart";
 import AdminDashboardNoticeList, {
     AdminDashboardNotice,
 } from "@/features/admin/components/dashboard/AdminDashboardNoticeList";
@@ -30,45 +29,81 @@ import AdminDashboardTaskTable, {
 } from "@/features/admin/components/dashboard/AdminDashboardTaskTable";
 
 export default function AdminDashboardPage() {
-    // TODO: 추후 관리자 대시보드 집계 API로 교체 예정입니다.
-    const metrics = [
+    // TODO: 추후 관리자 대시보드 월별 집계 API 응답으로 교체 예정입니다.
+    const dashboardYear = 2026;
+
+    const monthlyDashboardData: AdminDashboardMonthlyDatum[] = [
         {
-            title: "전체 회원",
-            value: "12,458",
-            previousLabel: "어제 대비",
-            change: "320 (2.64%)",
-            icon: Users,
-            tone: "indigo" as const,
-            changeTone: "indigo" as const,
+            month: "1월",
+            totalLectures: 82,
+            totalUsers: 8320,
+            totalPosts: 1240,
         },
         {
-            title: "승인 대기 강사",
-            value: "18",
-            previousLabel: "어제 대비",
-            change: "5 (38.46%)",
-            icon: UserCheck,
-            tone: "amber" as const,
-            changeTone: "amber" as const,
-            badge: "대기",
+            month: "2월",
+            totalLectures: 104,
+            totalUsers: 8940,
+            totalPosts: 1510,
         },
         {
-            title: "활성 강의",
-            value: "256",
-            previousLabel: "어제 대비",
-            change: "12 (4.92%)",
-            icon: BookOpen,
-            tone: "emerald" as const,
-            changeTone: "emerald" as const,
+            month: "3월",
+            totalLectures: 127,
+            totalUsers: 9560,
+            totalPosts: 1785,
         },
         {
-            title: "미처리 신고",
-            value: "27",
-            previousLabel: "어제 대비",
-            change: "7 (35.00%)",
-            icon: ShieldAlert,
-            tone: "rose" as const,
-            changeTone: "rose" as const,
-            badge: "긴급 3건",
+            month: "4월",
+            totalLectures: 151,
+            totalUsers: 10180,
+            totalPosts: 2045,
+        },
+        {
+            month: "5월",
+            totalLectures: 188,
+            totalUsers: 10960,
+            totalPosts: 2380,
+        },
+        {
+            month: "6월",
+            totalLectures: 216,
+            totalUsers: 11720,
+            totalPosts: 2670,
+        },
+        {
+            month: "7월",
+            totalLectures: 232,
+            totalUsers: 12080,
+            totalPosts: 2810,
+        },
+        {
+            month: "8월",
+            totalLectures: 248,
+            totalUsers: 12340,
+            totalPosts: 2950,
+        },
+        {
+            month: "9월",
+            totalLectures: 265,
+            totalUsers: 12890,
+            totalPosts: 3180,
+        },
+        {
+            month: "10월",
+            totalLectures: 284,
+            totalUsers: 13420,
+            totalPosts: 3420,
+        },
+        {
+            month: "11월",
+            totalLectures: 306,
+            totalUsers: 13940,
+            totalPosts: 3665,
+        },
+        {
+            month: "12월",
+            totalLectures: 328,
+            totalUsers: 14580,
+            totalPosts: 3920,
         },
     ];
 
@@ -271,21 +306,10 @@ export default function AdminDashboardPage() {
                 </div>
             </div>
 
-            <div className="mb-5 grid grid-cols-4 gap-4">
-                {metrics.map((metric) => (
-                    <AdminDashboardMetricCard
-                        key={metric.title}
-                        title={metric.title}
-                        value={metric.value}
-                        previousLabel={metric.previousLabel}
-                        change={metric.change}
-                        icon={metric.icon}
-                        tone={metric.tone}
-                        changeTone={metric.changeTone}
-                        badge={metric.badge}
-                    />
-                ))}
-            </div>
+            <AdminDashboardMonthlyLineChart
+                data={monthlyDashboardData}
+                year={dashboardYear}
+            />
 
             <div className="grid grid-cols-[minmax(0,1.1fr)_minmax(440px,0.96fr)] gap-5">
                 <div className="space-y-5">
