@@ -190,12 +190,6 @@ export default function Phone({
                 transform: `translate(${vibrationOffset.x}px, ${vibrationOffset.y}px)`,
             }}
         >
-            {notificationActive && (
-                <>
-                    <div className="pointer-events-none absolute -inset-2 rounded-[42px] bg-indigo-400/40 blur-xl animate-pulse" />
-                    <div className="pointer-events-none absolute -inset-1 rounded-[40px] border-2 border-indigo-300 animate-pulse" />
-                </>
-            )}
 
             <div className="relative h-full overflow-hidden rounded-[30px] border-[8px] border-slate-950 bg-slate-950 shadow-2xl">
                 <div className="absolute left-1/2 top-2 z-30 h-3 w-15 -translate-x-1/2 rounded-full bg-slate-950" />
