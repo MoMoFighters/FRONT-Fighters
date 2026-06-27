@@ -125,9 +125,9 @@ export default function LectureFormChapterItem({ chapter, mode, onDelete }: Lect
                         accept="image/*"
                         name={`chapterThumbnail_${index}`}
                         className="hidden"
+                        required={mode === 'create'}
                         onChange={handleThumbnailChange}
                     />
-                    {/* TODO: 챕터 썸네일 API 확정 후 action에서 chapterThumbnail_${index}를 FormData로 읽어 서버에 전달할 것 */}
                 </label>
             </div>
 

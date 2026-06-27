@@ -246,7 +246,13 @@ export interface CreateChapterResponse {
         lectureId: number;
         title: string;
         orderNo: number;
-        videoUrl: string;
+        videoUrl: string | null;
+        videoSizeBytes: number | null;
+        chapterThumbnailUrl: string | null;
+        durationSec: number | null;
+        originalFilename: string | null;
+        createdAt: string | null;
+        updatedAt: string | null;
     };
     errors?: Record<string, unknown>;
 }
@@ -357,13 +363,23 @@ export interface CreateChapterResponse {
  */
 export const createChapter = async (
     lectureId: number,
-    chapterData: { title: string; orderNo: number },
+    chapterData: { title: string; orderNo: number; thumbnailFile?: File },
     accessToken: string
 ): Promise<CreateChapterResponse> => {
     try {
         const chapterFormData = new FormData();
         chapterFormData.append('title', chapterData.title);
         chapterFormData.append('orderNo', String(chapterData.orderNo));
+
+        if (
+            chapterData.thumbnailFile &&
+            chapterData.thumbnailFile.size > 0
+        ) {
+            chapterFormData.append(
+                'thumbnail',
+                chapterData.thumbnailFile
+            );
+        }
 
         const response = await fetch(
             `${BASE_SERVER_URL}/api/v1/lectures/${lectureId}/chapters`,
