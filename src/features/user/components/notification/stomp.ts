@@ -1,10 +1,11 @@
+"use client";
+
+import { Client, type StompSubscription } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
+
 type StompMessageHandler = (body: string) => void;
 
-interface StompSubscription {
-    unsubscribe: () => void;
-}
-
-interface StompClient {
+interface MomoStompClient {
     subscribe: (
         destination: string,
         onMessage: StompMessageHandler
@@ -12,7 +13,7 @@ interface StompClient {
     disconnect: () => void;
 }
 
-const getStompUrl = () => {
+const getRawStompUrl = () => {
     if (process.env.NEXT_PUBLIC_STOMP_URL) {
         return process.env.NEXT_PUBLIC_STOMP_URL;
     }
@@ -24,142 +25,75 @@ const getStompUrl = () => {
     const apiBaseUrl =
         process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
 
-    return `${apiBaseUrl.replace(/^http/, "ws").replace(/\/$/, "")}/ws`;
+    return `${apiBaseUrl.replace(/\/$/, "")}/ws`;
 };
 
-const createFrame = (
-    command: string,
-    headers: Record<string, string> = {},
-    body = ""
-) => {
-    const headerLines =
-        Object.entries(headers)
-            .map(([key, value]) => `${key}:${value}`)
-            .join("\n");
+const getWebSocketUrl = () =>
+    getRawStompUrl()
+        .replace(/^http:\/\//, "ws://")
+        .replace(/^https:\/\//, "wss://");
 
-    return `${command}\n${headerLines}\n\n${body}\0`;
-};
+const getSockJsUrl = () =>
+    getRawStompUrl()
+        .replace(/^ws:\/\//, "http://")
+        .replace(/^wss:\/\//, "https://");
 
-const parseFrames = (data: string) =>
-    data
-        .split("\0")
-        .map((frame) => frame.trim())
-        .filter(Boolean)
-        .map((frame) => {
-            const separatorIndex = frame.indexOf("\n\n");
-            const head =
-                separatorIndex >= 0
-                    ? frame.slice(0, separatorIndex)
-                    : frame;
-            const body =
-                separatorIndex >= 0
-                    ? frame.slice(separatorIndex + 2)
-                    : "";
-            const [command, ...headerLines] = head.split("\n");
-            const headers =
-                Object.fromEntries(
-                    headerLines.map((line) => {
-                        const index = line.indexOf(":");
-                        return [
-                            line.slice(0, index),
-                            line.slice(index + 1),
-                        ];
-                    })
-                );
-
-            return {
-                command,
-                headers,
-                body,
-            };
-        });
+const shouldUseSockJs = () =>
+    process.env.NEXT_PUBLIC_STOMP_TRANSPORT === "sockjs";
 
 export const connectNoticeStomp = ({
     accessToken,
     onConnect,
 }: {
     accessToken: string;
-    onConnect: (client: StompClient) => void;
+    onConnect: (client: MomoStompClient) => void;
 }) => {
-    const socket = new WebSocket(getStompUrl());
-    const handlers = new Map<string, StompMessageHandler>();
-    let subscriptionSequence = 0;
-
-    const client: StompClient = {
-        subscribe: (destination, onMessage) => {
-            subscriptionSequence += 1;
-            const id = `notice-sub-${subscriptionSequence}`;
-
-            handlers.set(id, onMessage);
-
-            socket.send(
-                createFrame("SUBSCRIBE", {
-                    id,
-                    destination,
-                    ack: "auto",
-                })
-            );
-
-            return {
-                unsubscribe: () => {
-                    if (!handlers.has(id)) {
-                        return;
-                    }
-
-                    handlers.delete(id);
-
-                    if (socket.readyState === WebSocket.OPEN) {
-                        socket.send(
-                            createFrame("UNSUBSCRIBE", {
-                                id,
-                            })
-                        );
-                    }
-                },
-            };
+    const stompClient = new Client({
+        brokerURL: shouldUseSockJs() ? undefined : getWebSocketUrl(),
+        connectHeaders: {
+            Authorization: `Bearer ${accessToken}`,
         },
+        reconnectDelay: 5000,
+        heartbeatIncoming: 10000,
+        heartbeatOutgoing: 10000,
+        webSocketFactory: shouldUseSockJs()
+            ? () => new SockJS(getSockJsUrl())
+            : undefined,
+        debug: () => undefined,
+    });
+
+    const client: MomoStompClient = {
+        subscribe: (destination, onMessage) =>
+            stompClient.subscribe(destination, (message) => {
+                onMessage(message.body);
+            }),
         disconnect: () => {
-            handlers.clear();
-
-            if (socket.readyState === WebSocket.OPEN) {
-                socket.send(createFrame("DISCONNECT"));
-            }
-
-            socket.close();
+            void stompClient.deactivate();
         },
     };
 
-    socket.addEventListener("open", () => {
-        socket.send(
-            createFrame("CONNECT", {
-                "accept-version": "1.2",
-                host: window.location.host,
-                Authorization: `Bearer ${accessToken}`,
-            })
-        );
-    });
+    stompClient.onConnect = () => {
+        console.info("[STOMP] connected");
+        onConnect(client);
+    };
 
-    socket.addEventListener("message", (event) => {
-        const frames = parseFrames(String(event.data));
+    stompClient.onStompError = (frame) => {
+        console.error("[STOMP] broker error", frame.headers.message, frame.body);
+    };
 
-        frames.forEach((frame) => {
-            if (frame.command === "CONNECTED") {
-                onConnect(client);
-                return;
-            }
+    stompClient.onWebSocketError = (event) => {
+        console.error("[STOMP] websocket error", event);
+    };
 
-            if (frame.command !== "MESSAGE") {
-                return;
-            }
-
-            const subscriptionId =
-                frame.headers.subscription ?? frame.headers["subscription-id"];
-            const handler =
-                subscriptionId ? handlers.get(subscriptionId) : undefined;
-
-            handler?.(frame.body);
+    stompClient.onWebSocketClose = (event) => {
+        console.warn("[STOMP] websocket closed", {
+            code: event.code,
+            reason: event.reason,
+            wasClean: event.wasClean,
         });
-    });
+    };
+
+    stompClient.activate();
 
     return client;
 };

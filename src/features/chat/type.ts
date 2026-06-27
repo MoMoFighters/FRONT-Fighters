@@ -1,6 +1,6 @@
 export type ChatMemberRole = "STUDENT" | "TEACHER" | "ADMIN"
 
-export type ChatMemberStatus = "FREIND" | "SENT" | "BLOCK" | "none" | "me";
+export type ChatMemberStatus = "FRIEND" | "FREIND" | "SENT" | "BLOCK" | "none" | "me";
 
 export type ChatSystemMessageType = "INVITE" | "LEAVE" | "RENAME" | null;
 
@@ -29,15 +29,16 @@ export interface RoomInfo {
     roomId: number;
     roomTitle: string | null;
     inMemberCount: number;
-    content: string;
-    createdAt: string;
-    unreadCount: number;
-    memberInfo: ChatMemberResponse[];
+    content?: string;
+    createdAt?: string;
+    unreadCount?: number;
+    memberInfo?: ChatMemberResponse[];
 }
 
 export interface ChatRoomResponse {
     roomTitle: string | null;
     roomInfo: RoomInfo;
+    memberInfo: ChatMemberResponse[];
     messages: Message[];
 }
 

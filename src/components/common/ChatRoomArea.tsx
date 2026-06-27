@@ -1,95 +1,116 @@
-'use client'
+"use client";
 
-import { useEffect, useRef, useState } from "react";
-
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-
 import { usePathname, useRouter } from "next/navigation";
-
 import { X } from "lucide-react";
+import { toast } from "sonner";
 
 import ChatItem from "./ChatItem";
 import MessageInputBox from "@/features/phone/components/chat/MessageInputBox";
-import { ChatMessageData, getChatHistoryService } from "@/app/services/phone/chat/service";
-import { toast } from "sonner";
-import { leaveChatroomAction, readMessageAction } from "@/features/chat/action";
+import {
+    ChatHistoryData,
+    ChatMessageData,
+    ChatRoomInfoData,
+    ChatRoomMemberData,
+    getChatRoomSubscribeDestination,
+    normalizeChatHistoryData,
+} from "@/app/services/phone/chat/service";
+import {
+    getChatHistoryAction,
+    leaveChatroomAction,
+    readMessageAction,
+} from "@/features/chat/action";
 import { Button } from "../ui/button";
 import MyFriendListModal from "@/features/phone/components/friend/MyFriendListModal";
-import { getSocket } from "@/lib/socket";
-
+import { connectNoticeStomp } from "@/features/user/components/notification/stomp";
 
 interface ChatRoomAreaProps {
     currentRoomId: number | null;
     accessToken: string;
-    isMine?: boolean
+    isMine?: boolean;
 }
+
+const formatMessageTime = (createdAt: string) => {
+    const date = new Date(createdAt);
+
+    if (Number.isNaN(date.getTime())) {
+        return "";
+    }
+
+    return date.toLocaleTimeString("ko-KR", {
+        hour: "2-digit",
+        minute: "2-digit",
+    });
+};
 
 export default function ChatRoomArea({
     currentRoomId,
     accessToken,
-    isMine = false
+    isMine = false,
 }: ChatRoomAreaProps) {
-
     const pathname = usePathname();
     const router = useRouter();
-
-    // 채팅 전송 시 데이터 재fetching 요청용
-    const [reload, setReload] = useState(false);
-
-    // 스크롤바 위치, 위로 가면 새 채팅 내역 요청해야해서, isbottom은 나중에 웹소켓 구현시 버람
-    const [isBottom, setIsBottom] = useState(true);
-    const [isLoadingOld, setIsLoadingOld] = useState(false);
-
-
-    const [messages, setMessages] =
-        useState<ChatMessageData[]>([]);
-
-    const href =
-        pathname.startsWith('/teacher')
-            ? '/teacher/ask'
-            : '/student/phone/friends?status=chat';
-
     const scrollRef = useRef<HTMLDivElement>(null);
 
+    const [reload, setReload] = useState(false);
+    const [isBottom, setIsBottom] = useState(true);
+    const [isLoadingOld, setIsLoadingOld] = useState(false);
+    const [roomInfo, setRoomInfo] = useState<ChatRoomInfoData | null>(null);
+    const [memberInfo, setMemberInfo] = useState<ChatRoomMemberData[]>([]);
+    const [messages, setMessages] = useState<ChatMessageData[]>([]);
 
-    const handleLeaveRoom = async (currentRoomId: number) => {
-        const response = await leaveChatroomAction(currentRoomId);
+    const href = pathname.startsWith("/teacher")
+        ? "/teacher/ask"
+        : "/student/phone/friends?status=chat";
+
+    const applyChatHistory = useCallback((chatHistory?: ChatHistoryData) => {
+        setRoomInfo(chatHistory?.roomInfo ?? null);
+        setMemberInfo(chatHistory?.memberInfo ?? []);
+        setMessages(chatHistory?.messages ?? []);
+    }, []);
+
+    const handleLeaveRoom = async (roomId: number) => {
+        const response = await leaveChatroomAction(roomId);
+
         if (response.status !== 200) {
-            toast.error(response.message, { duration: 1000 })
-            return
+            toast.error(response.message, { duration: 1000 });
+            return;
         }
+
         toast(response.message);
         router.push(href);
-    }
+    };
 
     useEffect(() => {
         if (scrollRef.current && isBottom) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
         }
-    }, [currentRoomId, messages, isBottom])
+    }, [currentRoomId, messages, isBottom]);
 
     useEffect(() => {
         if (!currentRoomId) {
+            applyChatHistory();
             return;
         }
 
         const loadMessages = async () => {
             try {
-                const response =
-                    await getChatHistoryService(currentRoomId, accessToken);
-                setMessages(
-                    response.data?.messages ?? []
-                );
+                const response = await getChatHistoryAction(currentRoomId);
+
+                applyChatHistory(normalizeChatHistoryData(response.data));
+                void readMessageAction(currentRoomId);
             } catch {
-                setMessages([]);
+                applyChatHistory();
             }
         };
 
-        loadMessages();
+        void loadMessages();
     }, [
         currentRoomId,
         accessToken,
         reload,
+        applyChatHistory,
     ]);
 
     useEffect(() => {
@@ -97,177 +118,153 @@ export default function ChatRoomArea({
             return;
         }
 
-        const socket = getSocket(accessToken);
+        let subscription:
+            | ReturnType<ReturnType<typeof connectNoticeStomp>["subscribe"]>
+            | undefined;
+        const client = connectNoticeStomp({
+            accessToken,
+            onConnect: (stompClient) => {
+                subscription = stompClient.subscribe(
+                    getChatRoomSubscribeDestination(currentRoomId),
+                    (body) => {
+                        const payload = JSON.parse(body) as
+                            | ChatHistoryData[]
+                            | ChatHistoryData;
+                        const chatHistory = normalizeChatHistoryData(payload);
 
-        if (!socket.connected) {
-            socket.connect();
-        }
-
-        socket.emit("joinRoom", currentRoomId);
-        socket.emit("room:join", { roomId: currentRoomId });
-
-        const handleReceiveMessage = (payload: unknown) => {
-            const messagePayload = payload as {
-                roomId?: number;
-                data?: ChatMessageData;
-                message?: ChatMessageData;
-            } & Partial<ChatMessageData>;
-
-            if (
-                messagePayload.roomId &&
-                messagePayload.roomId !== currentRoomId
-            ) {
-                return;
-            }
-
-            const newMessage =
-                messagePayload.data ??
-                messagePayload.message ??
-                messagePayload;
-
-            if (!newMessage.messageId) {
-                return;
-            }
-
-            setMessages(prev => {
-                const alreadyExists = prev.some(
-                    message =>
-                        message.messageId ===
-                        newMessage.messageId
+                        applyChatHistory(chatHistory);
+                        void readMessageAction(currentRoomId);
+                    }
                 );
-
-                if (alreadyExists) {
-                    return prev;
-                }
-
-                return [
-                    ...prev,
-                    newMessage as ChatMessageData
-                ];
-            });
-
-            readMessageAction(currentRoomId);
-        };
-
-        const handleConnectError = () => {
-            toast.error(
-                '채팅 서버 연결에 실패했습니다.',
-                { duration: 1000 }
-            );
-        };
-
-        socket.on("receiveMessage", handleReceiveMessage);
-        socket.on("newMessage", handleReceiveMessage);
-        socket.on("message", handleReceiveMessage);
-        socket.on("chat:message", handleReceiveMessage);
-        socket.on("connect_error", handleConnectError);
+            },
+        });
 
         return () => {
-            socket.emit("leaveRoom", currentRoomId);
-            socket.emit("room:leave", { roomId: currentRoomId });
-
-            socket.off("receiveMessage", handleReceiveMessage);
-            socket.off("newMessage", handleReceiveMessage);
-            socket.off("message", handleReceiveMessage);
-            socket.off("chat:message", handleReceiveMessage);
-            socket.off("connect_error", handleConnectError);
+            subscription?.unsubscribe();
+            client.disconnect();
         };
     }, [
         currentRoomId,
         accessToken,
+        applyChatHistory,
     ]);
 
     const handleScroll = async (
         e: React.UIEvent<HTMLDivElement>
     ) => {
         if (!currentRoomId) {
-
-            setMessages([]);
+            applyChatHistory();
             return;
         }
 
-        if (isBottom) {
-            setIsBottom(false)
-        }
         const {
             scrollTop,
             scrollHeight,
-            clientHeight
+            clientHeight,
         } = e.currentTarget;
 
-        if (
-            scrollHeight -
-            scrollTop -
-            clientHeight <
-            10
-        ) {
-            setIsBottom(true)
+        if (isBottom) {
+            setIsBottom(false);
         }
-        if (e.currentTarget.scrollTop === 0 && !isLoadingOld) {
-            setIsLoadingOld(true);
-            try {
-                const oldestMessageId =
-                    messages[0]?.messageId;
-                const response = await getChatHistoryService(
-                    currentRoomId,
-                    accessToken,
-                    oldestMessageId,
-                );
-                const newdata: ChatMessageData[] = [
-                    ...(response.data?.messages ?? []),
-                    ...messages,
-                ];
-                setMessages(newdata);
 
-            } catch {
-                toast.error('메시지를 불러오는 중 오류가 발생했습니다.')
-            } finally {
-                setIsLoadingOld(false);
+        if (scrollHeight - scrollTop - clientHeight < 10) {
+            setIsBottom(true);
+        }
+
+        if (scrollTop !== 0 || isLoadingOld) {
+            return;
+        }
+
+        const oldestMessageId = messages[0]?.messageId;
+
+        if (!oldestMessageId) {
+            return;
+        }
+
+        setIsLoadingOld(true);
+
+        try {
+            const response = await getChatHistoryAction(
+                currentRoomId,
+                oldestMessageId
+            );
+
+            const chatHistory = normalizeChatHistoryData(response.data);
+
+            if (chatHistory?.roomInfo) {
+                setRoomInfo(chatHistory.roomInfo);
             }
-        };
-    }
 
+            if (chatHistory?.memberInfo) {
+                setMemberInfo(chatHistory.memberInfo);
+            }
+
+            setMessages((currentMessages) => {
+                const previousMessages = chatHistory?.messages ?? [];
+                const currentIds = new Set(
+                    currentMessages.map((message) => message.messageId)
+                );
+
+                return [
+                    ...previousMessages.filter(
+                        (message) => !currentIds.has(message.messageId)
+                    ),
+                    ...currentMessages,
+                ];
+            });
+        } catch {
+            toast.error("메시지를 불러오는 중 오류가 발생했습니다.");
+        } finally {
+            setIsLoadingOld(false);
+        }
+    };
 
     if (!currentRoomId) {
-
         return (
-            <div
-                className="flex justify-center items-center h-full flex-col gap-2"
-            >
+            <div className="flex justify-center items-center h-full flex-col gap-2">
                 <MyFriendListModal />
                 <p className="font-bold text-2xl">
-                    단체 채팅을 시작하려면 클릭하세요.
+                    단체 채팅을 시작하려면 클릭하세요
                 </p>
             </div>
         );
     }
 
-    const opponentName = messages.filter(item => !item.isMine)[0]?.nickname ?? '알수없음';
+    const opponent =
+        memberInfo.find((member) => member.status !== "me") ??
+        memberInfo[0];
+    const roomTitle =
+        roomInfo?.roomTitle ??
+        (
+            isMine ||
+                roomInfo?.inMemberCount === 1 ||
+                opponent?.status === "me"
+                ? "나와의 채팅"
+                : opponent?.nickname ?? "채팅방"
+        );
+    const roomSubTitle =
+        roomInfo?.roomTitle
+            ? `${roomInfo.inMemberCount}명`
+            : opponent?.role === "TEACHER"
+                ? "강사와의 대화"
+                : "";
 
     return (
         <>
             <div className="flex flex-col h-full min-h-0">
-                <div
-                    className="h-14 shrink-0 border-b border-slate-200 bg-slate-50 pl-2 py-2 flex flex-row items-center gap-2"
-                >
+                <div className="h-14 shrink-0 border-b border-slate-200 bg-slate-50 pl-2 py-2 flex flex-row items-center gap-2">
                     <div className="flex items-center">
-                        {isMine ? (
-                            <p className="ml-2 text-lg font-semibold text-slate-900">
-                                나와의 채팅
+                        <p className="ml-2 text-lg font-semibold text-slate-900">
+                            {roomTitle}
+                        </p>
+                        {roomSubTitle && (
+                            <p className="text-[12px] ml-1 font-semibold text-slate-500">
+                                {roomSubTitle}
                             </p>
-                        ) : (
-                            <>
-                                <p className="ml-2 text-lg font-semibold text-slate-900">
-                                    {opponentName}
-                                </p>
-                                <p className="text-[12px] ml-1 font-semibold text-slate-500">
-                                    님과의 대화
-                                </p>
-                            </>
                         )}
                     </div>
 
-                    {isMine ? "" : (
+                    {!isMine && (
                         <Button
                             className="px-2 py-1 bg-rose-400 hover:bg-rose-500"
                             onClick={() => handleLeaveRoom(currentRoomId)}
@@ -276,10 +273,13 @@ export default function ChatRoomArea({
                         </Button>
                     )}
 
-                    <div className="flex-1"></div>
+                    <div className="flex-1" />
 
                     <Link href={href} aria-label="닫기">
-                        <X className="mr-1 h-8 w-8 text-slate-700 hover:text-slate-950" aria-hidden="true" />
+                        <X
+                            className="mr-1 h-8 w-8 text-slate-700 hover:text-slate-950"
+                            aria-hidden="true"
+                        />
                     </Link>
                 </div>
 
@@ -297,24 +297,17 @@ export default function ChatRoomArea({
                     ) : (
                         messages.map((message) => (
                             <ChatItem
-                                key={message.messageId}
+                                key={`${message.type ?? "message"}-${message.messageId}`}
                                 id={message.messageId}
-                                isMine={message.isMine}
+                                isMine={message.type ? null : message.isMine}
                                 message={message.content}
-                                time={new Date(
-                                    message.createdAt
-                                ).toLocaleTimeString("ko-KR", {
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                })}
+                                time={formatMessageTime(message.createdAt)}
                             />
                         ))
                     )}
                 </div>
 
-                <div
-                    className="shrink-0 border-t border-slate-200 bg-white"
-                >
+                <div className="shrink-0 border-t border-slate-200 bg-white">
                     <MessageInputBox
                         key={currentRoomId}
                         chatRoomId={currentRoomId}

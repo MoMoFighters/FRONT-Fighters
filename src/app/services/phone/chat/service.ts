@@ -15,17 +15,143 @@ export type ChatRoomInfoData = ChatRoomResponse["roomInfo"];
 export type ChatRoomListData = ChatRoomListResponse;
 export type ChatMessageData = Message;
 export type ChatHistoryData = ChatRoomResponse;
+type ChatHistoryResponseData = ChatRoomResponse[];
+export type RawChatHistoryData =
+    | ChatHistoryResponseData
+    | ChatHistoryData
+    | {
+        roomInfo?: Partial<ChatRoomInfoData> & {
+            memberInfo?: ChatMemberResponse[];
+            messages?: Message[];
+        };
+        memberInfo?: ChatMemberResponse[];
+        messages?: Message[];
+        roomTitle?: string | null;
+    };
 export type SendMessageData = SendMessageResponse;
+type RawChatRoomListData = Partial<ChatRoomListData> & {
+    roomInfo?: Partial<ChatRoomListData> & {
+        memberInfo?: ChatMemberResponse[];
+    };
+    memberInfo?: ChatMemberResponse[];
+};
+export type RawChatRoomListResponseData =
+    | RawChatRoomListData[]
+    | { data?: RawChatRoomListData[] | null };
 
 export const getChatRoomSubscribeDestination = (
     roomId: number
 ) => `/user/sub/chat/room/${roomId}`;
 
+export const normalizeChatRoomListData = (
+    rooms?: RawChatRoomListResponseData | null
+): ChatRoomListData[] => {
+    const roomList =
+        Array.isArray(rooms)
+            ? rooms
+            : rooms?.data ?? [];
+
+    return roomList.map<ChatRoomListData>((room) => {
+        if ("roomInfo" in room && room.roomInfo) {
+            const roomMemberInfo =
+                "memberInfo" in room.roomInfo
+                    ? room.roomInfo.memberInfo
+                    : undefined;
+
+            return {
+                roomId: room.roomInfo.roomId ?? 0,
+                roomTitle: room.roomInfo.roomTitle ?? null,
+                inMemberCount: room.roomInfo.inMemberCount ?? 0,
+                content: room.roomInfo.content ?? "",
+                createdAt: room.roomInfo.createdAt ?? "",
+                unreadCount: room.roomInfo.unreadCount ?? 0,
+                memberInfo: room.memberInfo ?? roomMemberInfo ?? [],
+            };
+        }
+
+        return {
+            roomId: room.roomId ?? 0,
+            roomTitle: room.roomTitle ?? null,
+            inMemberCount: room.inMemberCount ?? 0,
+            content: room.content ?? "",
+            createdAt: room.createdAt ?? "",
+            unreadCount: room.unreadCount ?? 0,
+            memberInfo: room.memberInfo ?? [],
+        };
+    });
+};
+
+export const normalizeChatHistoryData = (
+    data?:
+        | RawChatHistoryData
+        | { data?: RawChatHistoryData | null }
+        | null
+): ChatHistoryData | undefined => {
+    if (!data) {
+        return undefined;
+    }
+
+    if (
+        !Array.isArray(data) &&
+        "data" in data &&
+        data.data !== undefined
+    ) {
+        return normalizeChatHistoryData(data.data);
+    }
+
+    if (Array.isArray(data)) {
+        return data[0];
+    }
+
+    if ("roomInfo" in data && data.roomInfo) {
+        const roomInfo = data.roomInfo;
+        const roomMemberInfo =
+            "memberInfo" in roomInfo
+                ? roomInfo.memberInfo
+                : undefined;
+        const roomMessages =
+            "messages" in roomInfo
+                ? roomInfo.messages
+                : undefined;
+        const memberInfo =
+            data.memberInfo ??
+            roomMemberInfo ??
+            [];
+        const messages =
+            data.messages ??
+            roomMessages ??
+            [];
+
+        if (
+            roomInfo.roomId === undefined ||
+            roomInfo.inMemberCount === undefined
+        ) {
+            return undefined;
+        }
+
+        return {
+            roomTitle: data.roomTitle ?? roomInfo.roomTitle ?? null,
+            roomInfo: {
+                roomId: roomInfo.roomId,
+                roomTitle: roomInfo.roomTitle ?? null,
+                inMemberCount: roomInfo.inMemberCount,
+                content: roomInfo.content,
+                createdAt: roomInfo.createdAt,
+                unreadCount: roomInfo.unreadCount,
+            },
+            memberInfo,
+            messages,
+        };
+    }
+
+    return undefined;
+};
+
 export const getChatRoomsService = async (
     accessToken: string
 ): Promise<ApiResponse<ChatRoomListData[]>> => {
     const response = await fetch(
-        `${BASE_SERVER_URL}/api/v1/messages/rooms`,
+        `${BASE_SERVER_URL}/api/v2/messages/chatrooms`,
         {
             method: "GET",
             headers: {
@@ -35,7 +161,7 @@ export const getChatRoomsService = async (
         }
     );
 
-    const result: ApiResponse<ChatRoomListData[]> =
+    const result: ApiResponse<RawChatRoomListData[]> =
         await response.json();
 
     if (!response.ok) {
@@ -45,26 +171,29 @@ export const getChatRoomsService = async (
         );
     }
 
-    return result;
+    return {
+        ...result,
+        data: normalizeChatRoomListData(result.data),
+    };
 };
 
 export function getChatHistoryService(
     accessToken: string,
     roomId: number,
     lastMessageId?: number
-): Promise<ApiResponse<ChatHistoryData>>;
+): Promise<ApiResponse<RawChatHistoryData>>;
 
 export function getChatHistoryService(
     roomId: number,
     accessToken: string,
     lastMessageId?: number
-): Promise<ApiResponse<ChatHistoryData>>;
+): Promise<ApiResponse<RawChatHistoryData>>;
 
 export async function getChatHistoryService(
     first: string | number,
     second: string | number,
     lastMessageId?: number
-): Promise<ApiResponse<ChatHistoryData>> {
+): Promise<ApiResponse<RawChatHistoryData>> {
     const accessToken =
         typeof first === "string" ? first : String(second);
 
@@ -72,10 +201,12 @@ export async function getChatHistoryService(
         typeof first === "number" ? first : Number(second);
 
     const queryString =
-        lastMessageId ? `?lastMessageId=${lastMessageId}` : "";
+        lastMessageId !== undefined
+            ? `?lastMessageId=${lastMessageId}`
+            : "";
 
     const response = await fetch(
-        `${BASE_SERVER_URL}/api/v1/messages/history/${roomId}${queryString}`,
+        `${BASE_SERVER_URL}/api/v2/messages/history/${roomId}${queryString}`,
         {
             method: "GET",
             headers: {
@@ -85,7 +216,7 @@ export async function getChatHistoryService(
         }
     );
 
-    const result: ApiResponse<ChatHistoryData> =
+    const result: ApiResponse<RawChatHistoryData> =
         await response.json();
 
     if (!response.ok) {
@@ -95,7 +226,10 @@ export async function getChatHistoryService(
         );
     }
 
-    return result;
+    return {
+        ...result,
+        data: result.data ?? [],
+    };
 }
 
 export const sendMessageService = async (
@@ -166,28 +300,58 @@ export const readMessageService = async (
 
 export interface CreateChatRoomData {
     roomId: number;
-    userId: number;
-    nickname: string;
-    role: string;
-    status: string;
+    roomInfo: {
+        roomId: number;
+        roomTitle: string | null;
+        inMemberCount: number;
+    };
+    memberInfo: ChatMemberResponse[];
+}
+
+interface CreateChatRoomRequest {
+    chatMember: number[];
+    roomTitle?: string | null;
 }
 
 export const createChatRoomService = async (
-    userId: number,
+    chatRoom: number | CreateChatRoomRequest,
     accessToken: string
 ): Promise<ApiResponse<CreateChatRoomData>> => {
+    const chatMember =
+        typeof chatRoom === "number"
+            ? [chatRoom]
+            : chatRoom.chatMember;
+
+    const roomTitle =
+        typeof chatRoom === "number"
+            ? null
+            : chatRoom.roomTitle ?? null;
+
+    const queryString =
+        roomTitle === null
+            ? "?roomTitle="
+            : `?roomTitle=${encodeURIComponent(roomTitle)}`;
+
     const response = await fetch(
-        `${BASE_SERVER_URL}/api/v1/messages/chatrooms/create/${userId}`,
+        `${BASE_SERVER_URL}/api/v2/messages/chatrooms/create${queryString}`,
         {
             method: "POST",
             headers: {
+                "Content-Type": "application/json",
                 Authorization: `Bearer ${accessToken}`,
             },
+            body: JSON.stringify({
+                chatMember,
+            }),
         }
     );
 
     const result: ApiResponse<CreateChatRoomData> =
         await response.json();
+
+    if (result.data?.roomInfo?.roomId) {
+        result.data.roomId = result.data.roomInfo.roomId;
+    }
 
     if (!response.ok) {
         throw new Error(
@@ -220,7 +384,7 @@ export const leaveChatroomService = async (
     accessToken: string
 ): Promise<ApiResponse<LeaveChatRoomData>> => {
     const response = await fetch(
-        `${BASE_SERVER_URL}/api/v1/messages/leave/${roomId}`,
+        `${BASE_SERVER_URL}/api/v1/messages/chatRooms/leave/${roomId}`,
         {
             method: "DELETE",
             headers: {
