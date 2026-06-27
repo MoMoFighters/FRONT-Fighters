@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 
 import { Category } from "@/features/lecture/type";
@@ -20,8 +19,7 @@ export default function MyLectureBuildingsOverviewCard() {
             </h2>
 
             <p className="mt-3 text-sm font-medium leading-6 text-slate-500">
-                수강 중인 강의는 각 카테고리 건물의 성장으로 이어집니다.
-                카테고리를 선택하면 건물별 학습 현황을 자세히 볼 수 있습니다.
+                카테고리를 선택하면 해당 분야에서 수강 중인 강의를 모아볼 수 있습니다.
             </p>
 
             <div className="mt-5 space-y-3">
@@ -33,27 +31,15 @@ export default function MyLectureBuildingsOverviewCard() {
                         <Link
                             key={category}
                             href={`/student/mypage/lectures?category=${categorySlug}`}
-                            className="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50 p-3 transition hover:border-indigo-200 hover:bg-indigo-50"
+                            className="block rounded-xl border border-slate-100 bg-slate-50 p-3 transition hover:border-indigo-200 hover:bg-indigo-50"
                         >
-                            <div className="relative h-12 w-12 shrink-0">
-                                <Image
-                                    src={categoryMeta.buildingImage}
-                                    alt={`${categoryMeta.buildingName} 이미지`}
-                                    fill
-                                    sizes="48px"
-                                    className="object-contain"
-                                />
-                            </div>
+                            <p className="text-sm font-bold text-slate-950">
+                                {categoryMeta.buildingName}
+                            </p>
 
-                            <div className="min-w-0">
-                                <p className="text-sm font-bold text-slate-950">
-                                    {categoryMeta.buildingName}
-                                </p>
-
-                                <p className="mt-1 text-xs font-semibold text-slate-500">
-                                    {categoryMeta.label} 강의 보기
-                                </p>
-                            </div>
+                            <p className="mt-1 text-xs font-semibold text-slate-500">
+                                {categoryMeta.label} 강의 보기
+                            </p>
                         </Link>
                     );
                 })}

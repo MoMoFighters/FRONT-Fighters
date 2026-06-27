@@ -60,9 +60,6 @@ export default async function LectureListByCategory({
         getLatestChapterInfo(categoryApiValue),
     ]);
 
-    console.log(responseData.content, '?');
-    console.log(progressInfo, '??');
-    console.log(latestChapterInfo, '???');
     const lectures = responseData.content;
     const currentPage = Number(page) || 1;
     const totalPages = responseData.totalPages;

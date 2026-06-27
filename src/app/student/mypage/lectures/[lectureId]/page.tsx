@@ -12,11 +12,10 @@ import StudentChapterList from "@/features/lecture/components/student/detail/Stu
 import StudentLectureDetailItem from "@/features/lecture/components/student/detail/StudentLectureDetailItem";
 import StudentLectureDetailTabs from "@/features/lecture/components/student/detail/StudentLectureDetailTabs";
 import StudentReviewList from "@/features/lecture/components/student/detail/StudentReviewList";
-import CategoryBuildingCard from "@/features/lecture/components/student/shared/CategoryBuildingCard";
+import MyLectureBuildingsOverviewCard from "@/features/lecture/components/student/list/MyLectureBuildingsOverviewCard";
 import getCategoryMeta from "@/features/lecture/components/student/shared/category";
 import LearningProgressCard from "@/features/lecture/components/student/shared/LearningProgressCard";
 import ResumeLectureCard from "@/features/lecture/components/student/shared/ResumeLectureCard";
-import { Category } from "@/features/lecture/type";
 import StudentPageHeader from "@/features/student/components/StudentPageHeader";
 
 interface MyLectureDetailPageProps {
@@ -46,8 +45,8 @@ export default async function MyLectureDetailPage({
     const category = lecture.category.toLowerCase();
     const categoryMeta = getCategoryMeta(lecture.category);
     const [progressInfo, latestChapterInfo] = await Promise.all([
-        getProgressByCategory(lecture.category as Category),
-        getLatestChapterInfo(lecture.category as Category),
+        getProgressByCategory(),
+        getLatestChapterInfo(),
     ]);
 
     const reviewResponseData = currentTab === "reviews"
@@ -124,18 +123,11 @@ export default async function MyLectureDetailPage({
             </section>
 
             <aside className="sticky top-10 self-start space-y-5">
-                <CategoryBuildingCard
-                    category={category}
-                    buildingName={categoryMeta.buildingName}
-                    buildingImage={progressInfo.buildingUrl}
-                    level={progressInfo.buildingLevel!}
-                    currentExp={progressInfo.buildingCurrentExp!}
-                    maxExp={progressInfo.buildingTotalExp!}
-                />
+                <MyLectureBuildingsOverviewCard />
 
                 <LearningProgressCard
-                    categoryLabel={categoryMeta.label}
-                    progress={progressInfo.progressByCategory!}
+                    categoryLabel="전체 강의"
+                    progress={progressInfo.MyTotalProgress ?? 0}
                 />
 
                 {latestChapterInfo ? (
