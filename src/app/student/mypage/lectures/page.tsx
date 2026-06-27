@@ -53,6 +53,7 @@ export default async function MyLecturesListPage({
         getLatestChapterInfo(),
     ]);
 
+    console.log(responseData.content);
     const totalPages = responseData.totalPages;
     const currentPage = Number(page) || 1;
     const lectures = responseData.content;
@@ -147,7 +148,7 @@ export default async function MyLecturesListPage({
 
                 <LearningProgressCard
                     categoryLabel="전체 강의"
-                    progress={progressInfo.MyTotalProgress ?? 0}
+                    progress={progressInfo.myTotalProgress ?? 0}
                 />
 
                 {latestChapterInfo ? (

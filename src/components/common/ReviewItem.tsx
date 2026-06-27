@@ -1,9 +1,18 @@
 import { Review } from "@/features/lecture/type";
+import CreateReportBtn from "@/features/report/components/buttons/CreateReportBtn";
 import { Star } from "lucide-react";
 
 export default function ReviewItem({ review }: { review: Review }) {
     return (
-        <div className="p-4 border border-slate-200 rounded-lg mb-4">
+        <div className="relative mb-4 rounded-lg border border-slate-200 p-4 pr-12">
+            <CreateReportBtn
+                triggerLabel="수강평 신고"
+                triggerVariant="icon"
+                triggerClassName="absolute right-3 top-3 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full text-slate-300 transition hover:bg-rose-50 hover:text-rose-500"
+                targetType="REVIEW"
+                targetId={review.reviewId}
+            />
+
             <div className="flex items-start gap-4">
                 <div className="w-12 h-12 rounded-full bg-slate-200 flex items-center justify-center text-2xl hrink-0">
                 </div>

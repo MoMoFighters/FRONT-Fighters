@@ -1,12 +1,12 @@
 import { Progress } from "@/components/ui/progress";
-import { Chapter } from "@/features/lecture/type";
+import { ChapterByMeta } from "@/features/lecture/type";
 import ChapterDetailListItem from "@/features/lecture/components/student/chapter-detail/ChapterDetailListItem";
 
 interface ChapterDetailListProps {
     category: string;
     lectureId: string;
     currentChapterId: number;
-    chapters: Chapter[];
+    chapters: ChapterByMeta[];
     completedCount: number;
     totalChapterCount: number;
     chapterBaseHref?: string;
