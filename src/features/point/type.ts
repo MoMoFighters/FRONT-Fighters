@@ -49,6 +49,21 @@ export interface ProfileOrderListData {
 export type ProfileOrderListResponse =
     ApiResponse<ProfileOrderListData>;
 
+export type PointOrderReason =
+    | "COMPLETE"
+    | "REVIEW"
+    | "PROFILE"
+    | "BUS"
+    | "GUESTBOOK";
+
+export interface CreatePointOrderRequest {
+    reason: PointOrderReason;
+    itemName: string;
+}
+
+export type CreatePointOrderResponse =
+    ApiResponse<null>;
+
 export interface MyPointItem {
     id: number;
     itemId: number;

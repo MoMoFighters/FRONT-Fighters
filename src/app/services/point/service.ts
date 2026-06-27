@@ -1,5 +1,7 @@
 import { fetchWithAuth } from "@/lib/api";
 import {
+    CreatePointOrderRequest,
+    CreatePointOrderResponse,
     PointStoreListResponse,
     ProfileOrderListResponse,
 } from "@/features/point/type";
@@ -43,3 +45,20 @@ export const getProfileOrderListService =
 
         return result;
     };
+
+export const createPointOrderService = async (
+    payload: CreatePointOrderRequest
+): Promise<CreatePointOrderResponse> => {
+    const response = await fetchWithAuth("/api/v1/order/new", {
+        method: "POST",
+        body: JSON.stringify(payload),
+    });
+
+    const result: CreatePointOrderResponse = await response.json();
+
+    if (!response.ok) {
+        throw new Error(result.message || "구매에 실패했습니다.");
+    }
+
+    return result;
+};
