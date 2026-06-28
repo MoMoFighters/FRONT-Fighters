@@ -13,6 +13,7 @@ import {
     type ChatRoomListData,
     type CreateChatRoomData,
     type LeaveChatRoomData,
+    type RawChatHistoryData,
     type ReadMessageData,
     type SendMessageData,
 } from "@/app/services/phone/chat/service";
@@ -59,12 +60,12 @@ export const getChatRoomsAction = async (): Promise<ApiResponse<ChatRoomListData
 export const getChatHistoryAction = async (
     roomId: number,
     lastMessageId?: number
-): Promise<ApiResponse<ChatHistoryData>> => {
+): Promise<ApiResponse<RawChatHistoryData>> => {
     try {
         const accessToken = await getAccessToken();
 
         if (!accessToken) {
-            return createUnauthorizedResponse<ChatHistoryData>();
+            return createUnauthorizedResponse<RawChatHistoryData>();
         }
 
         return await getChatHistoryService(
@@ -73,7 +74,7 @@ export const getChatHistoryAction = async (
             lastMessageId
         );
     } catch (error) {
-        return createErrorResponse<ChatHistoryData>(
+        return createErrorResponse<RawChatHistoryData>(
             error,
             "채팅 내역 조회에 실패했습니다."
         );

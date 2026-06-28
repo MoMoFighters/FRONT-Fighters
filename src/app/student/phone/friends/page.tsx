@@ -6,7 +6,7 @@ import FriendSearchList from "@/features/phone/components/friend/FriendSearchLis
 import MyProfileDropdown from "@/features/phone/components/friend/MyProfileDropdown";
 
 import ChatRoomArea from "@/components/common/ChatRoomArea";
-import ChatRoomItem from "@/components/common/ChatRoomItem";
+import ChatRoomListPanel from "@/components/common/ChatRoomListPanel";
 
 import { getChatRoomsService } from "@/app/services/phone/chat/service";
 
@@ -65,8 +65,6 @@ export default async function StudentChatPage({
     const sent = sentResponse.status === 200 ? sentResponse.data ?? [] : [];
 
     const myChatRoom = chatRoomData[0];
-    const otherChatRooms = chatRoomData.slice(1);
-
     const selectedFriend =
         friends.find(friend => friend.userId === currentFriendId) ?? null;
 
@@ -124,24 +122,10 @@ export default async function StudentChatPage({
                             </p>
                         </div>
 
-                        <div className="min-h-0 flex-1 overflow-y-auto scrollbar-none">
-                            {myChatRoom && (
-                                <ChatRoomItem data={myChatRoom} />
-                            )}
-
-                            {otherChatRooms.length > 0 ? (
-                                otherChatRooms.map(room => (
-                                    <ChatRoomItem
-                                        key={room.roomId}
-                                        data={room}
-                                    />
-                                ))
-                            ) : (
-                                <div className="flex h-full items-center justify-center p-5 text-center text-sm text-slate-400">
-                                    채팅방이 존재하지 않습니다.
-                                </div>
-                            )}
-                        </div>
+                        <ChatRoomListPanel
+                            accessToken={accessToken}
+                            initialRooms={chatRoomData}
+                        />
                     </div>
 
                     <div className="min-w-0 flex-1 bg-white">
