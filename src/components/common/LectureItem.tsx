@@ -42,12 +42,13 @@ export default function LectureItem({
     const lectureStatus = lecture.lectureStatus;
     const categoryLabel = categoryMap[lecture.category] ?? lecture.category;
     const categoryColor = categoryColors[lecture.category] ?? "bg-slate-200";
+    const averageRating = lecture.averageRating ?? 0;
 
     if (mode === "teacherList" && href) {
         return (
             <div className="relative cursor-pointer rounded-xl border border-slate-200 bg-white p-4 transition-all hover:bg-slate-50 hover:shadow-md">
                 <Link href={href}>
-                    <div className="flex items-center gap-3">
+                    <div className={`flex items-center gap-3 ${lectureStatus === "ACTIVE" || lectureStatus === "HOLD" ? "pr-8" : ""}`}>
                         <div
                             className="h-12 w-16 shrink-0 rounded-lg border border-slate-50 bg-cover bg-center"
                             style={{
@@ -66,7 +67,7 @@ export default function LectureItem({
                                 <div className="flex items-center gap-3 text-[10px] text-slate-500">
                                     <span className="flex items-center gap-1">
                                         <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                                        {lecture.averageRating} / 5
+                                        {averageRating} / 5
                                     </span>
                                 </div>
                             )}
@@ -85,6 +86,16 @@ export default function LectureItem({
                         </div>
                     </div>
                 </Link>
+
+                {(lectureStatus === "ACTIVE" || lectureStatus === "HOLD") && (
+                    <div className="absolute right-2 top-2 z-10">
+                        <DeleteLectureBtn
+                            mode="icon"
+                            id={lecture.lectureId}
+                            successHref="/teacher/lectures"
+                        />
+                    </div>
+                )}
 
                 {lectureStatus === "HOLD" && (
                     <button className="absolute bottom-3 right-3 ml-auto">
@@ -129,7 +140,7 @@ export default function LectureItem({
                             <div className="flex items-center gap-2 text-sm text-slate-600">
                                 <span className="font-bold">평점 :</span>
                                 <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
-                                <span className="font-bold">{lecture.averageRating}</span>
+                                <span className="font-bold">{averageRating}</span>
                                 <span className="text-slate-400">/ 5.0 점</span>
                             </div>
                         )}
@@ -158,14 +169,26 @@ export default function LectureItem({
                     <EnrollLectureBtn lectureId={lecture.lectureId} />
                 )}
 
-                {role === "teacher" && lectureStatus !== "WAITING" && (
+                {role === "teacher" && lectureStatus === "ACTIVE" && (
+                    <DeleteLectureBtn
+                        mode="text"
+                        id={lecture.lectureId}
+                        successHref="/teacher/lectures"
+                    />
+                )}
+
+                {role === "teacher" && lectureStatus === "HOLD" && (
                     <div>
                         <Link href={`/teacher/lectures/${lecture.lectureId}/edit`}>
                             <Button className="absolute bottom-6 right-36 cursor-pointer rounded-md! bg-blue-400 px-6 py-6 text-md font-semibold text-white hover:bg-blue-500">
                                 수정하기
                             </Button>
                         </Link>
-                        <DeleteLectureBtn mode="text" id={lecture.lectureId} />
+                        <DeleteLectureBtn
+                            mode="text"
+                            id={lecture.lectureId}
+                            successHref="/teacher/lectures"
+                        />
                     </div>
                 )}
             </div>
@@ -204,7 +227,7 @@ export default function LectureItem({
 
                         <div className={`flex shrink-0 items-center gap-2 text-slate-600 ${role === "student" ? "pr-4" : "pr-40"}`}>
                             <Star className="h-5 w-5 fill-amber-400 text-amber-400" />
-                            <span className="font-bold">{lecture.averageRating}</span>
+                            <span className="font-bold">{averageRating}</span>
                             <span className="text-slate-400">/ 5.0</span>
                         </div>
                     </div>
