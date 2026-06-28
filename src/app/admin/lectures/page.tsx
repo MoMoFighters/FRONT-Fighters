@@ -76,7 +76,6 @@ export default async function AdminLectureListPage({
                 <>
                     <AdminLectureList
                         lectures={responseData.content}
-                        isPendingView={status === "waiting"}
                     />
 
                     {totalPages > 1 && (

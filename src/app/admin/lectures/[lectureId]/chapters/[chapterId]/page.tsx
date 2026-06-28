@@ -41,6 +41,7 @@ export default async function AdminChapterDetailPage({
                 />
 
                 <AdminChapterVideo
+                    lectureId={lectureId}
                     lectureTitle={metaData.lectureTitle}
                     chapter={currentChapter}
                     presignedUrl={playerData.presignedUrl}
