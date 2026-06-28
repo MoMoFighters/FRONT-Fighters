@@ -1,9 +1,8 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { notFound } from "next/navigation";
 
+import { getNoticeById } from "@/app/services/notice/service";
 import AdminNoticeForm from "@/features/notice/components/admin/AdminNoticeForm";
-import { getDummyNoticeDetail } from "@/features/notice/constants/dummyNotices";
 
 interface AdminNoticeEditPageProps {
     params: Promise<{ noticeId: string }>;
@@ -13,9 +12,7 @@ export default async function AdminNoticeEditPage({
     params,
 }: AdminNoticeEditPageProps) {
     const { noticeId } = await params;
-    const notice = getDummyNoticeDetail(Number(noticeId));
-
-    if (!notice) notFound();
+    const notice = await getNoticeById(noticeId);
 
     return (
         <div className="mx-auto w-full max-w-300 pb-10">
@@ -36,7 +33,7 @@ export default async function AdminNoticeEditPage({
                 initialValues={{
                     noticeId: notice.noticeId,
                     title: notice.title,
-                    content: notice.content.join("\n\n"),
+                    content: notice.content ?? "",
                 }}
             />
         </div>
