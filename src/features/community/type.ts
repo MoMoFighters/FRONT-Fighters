@@ -2,7 +2,7 @@ import type { ApiResponse } from "@/lib/api";
 
 export type CommunityCategory =
     | "STUDY"
-    | "FASHION"
+    | "ART"
     | "BEAUTY"
     | "FITNESS"
     | "COOK"
@@ -79,6 +79,24 @@ export type GetCommunityPostDetailResponse =
 export type CommunityPostLikeResponse =
     ApiResponse<null>;
 
+export interface CommunityPostLikedUser {
+    userId: number;
+    userName: string;
+    profileImageUrl: string | null;
+    role: CommunityAuthorRole;
+}
+
+export interface CommunityPostLikeListData {
+    totalCount: number;
+    users: CommunityPostLikedUser[];
+}
+
+export type GetCommunityPostLikeListResponse =
+    ApiResponse<CommunityPostLikeListData> & {
+        statusCode?: number;
+        errors?: Record<string, unknown>;
+    };
+
 export interface CommunityPostListItem {
     postId: number;
     title: string;
@@ -96,13 +114,95 @@ export interface CommunityPostListItem {
 
 export interface CommunityPostListData {
     posts: CommunityPostListItem[];
-    totalElements: number;
-    totalPages: number;
-    currentPage: number;
+    totalCount: number;
+    nextCursor: number | null;
+    totalElements?: number;
+    totalPages?: number;
+    currentPage?: number;
 }
 
 export type GetCommunityPostListResponse =
     ApiResponse<CommunityPostListData> & {
+        statusCode?: number;
+        errors?: Record<string, unknown>;
+    };
+
+export type SearchCommunityPostResponse =
+    ApiResponse<CommunityPostListData> & {
+        statusCode?: number;
+        errors?: Record<string, unknown>;
+    };
+
+export interface CommunityRecommendedPostItem {
+    postId: number;
+    title: string;
+    category: CommunityCategory;
+    viewCount: number;
+    likeCount: number;
+    thumbnailUrl: string | null;
+    authorId: number;
+    authorName: string;
+    createdAt: string;
+}
+
+export interface CommunityPostRecommendationsData {
+    topPosts: CommunityRecommendedPostItem[];
+    authorPosts: CommunityRecommendedPostItem[];
+}
+
+export type GetCommunityPostRecommendationsResponse =
+    ApiResponse<CommunityPostRecommendationsData> & {
+        statusCode?: number;
+        errors?: Record<string, unknown>;
+    };
+
+export interface CommunityPostCommentItem {
+    commentId: number;
+    authorId: number;
+    content: string;
+    authorName: string;
+    authorProfileImageUrl: string;
+    authorRole: CommunityAuthorRole;
+    isMine: boolean;
+    isPostWriter: boolean;
+    createdAt: string;
+    replies?: CommunityPostReplyItem[];
+    hasMoreReplies?: boolean;
+    nextReplyCursor?: number | null;
+}
+
+export interface CommunityPostReplyItem {
+    commentId: number;
+    authorId: number;
+    content: string;
+    authorName: string;
+    authorProfileImageUrl: string;
+    authorRole: CommunityAuthorRole;
+    isMine: boolean;
+    isPostWriter: boolean;
+    createdAt: string;
+}
+
+export interface CommunityPostCommentsData {
+    totalCount: number;
+    comments: CommunityPostCommentItem[];
+    nextCursor: number | null;
+}
+
+export interface CommunityPostRepliesData {
+    totalCount: number;
+    replies: CommunityPostReplyItem[];
+    nextCursor: number | null;
+}
+
+export type GetCommunityPostCommentsResponse =
+    ApiResponse<CommunityPostCommentsData> & {
+        statusCode?: number;
+        errors?: Record<string, unknown>;
+    };
+
+export type GetCommunityPostRepliesResponse =
+    ApiResponse<CommunityPostRepliesData> & {
         statusCode?: number;
         errors?: Record<string, unknown>;
     };

@@ -6,20 +6,24 @@ import type { CommentInputBoxProps } from "./PostDetailSide";
 export default function CommentInputBox({
     postId,
     parentId,
+    onSubmitComment,
 }: CommentInputBoxProps) {
     const [content, setContent] = useState("");
 
-    const submitComment = (event: FormEvent<HTMLFormElement>) => {
+    const submitComment = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        // TODO: Connect comment/reply create action with postId, parentId, and content.
-        console.log({
-            postId,
-            parentId,
-            content,
-        });
+        const trimmedContent = content.trim();
 
-        setContent("");
+        if (!trimmedContent || !onSubmitComment) {
+            return;
+        }
+
+        const isSuccess = await onSubmitComment(trimmedContent);
+
+        if (isSuccess) {
+            setContent("");
+        }
     };
 
     return (
