@@ -4,6 +4,7 @@ import { Toaster } from 'sonner';
 import '../app/globals.css'
 import Script from 'next/script';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import ReactQueryProvider from '@/components/common/ReactQueryProvider';
 
 export default function RootLayout({
   children,
@@ -29,7 +30,9 @@ export default function RootLayout({
           }}
         />
 
-        <TooltipProvider>{children}</TooltipProvider>
+        <ReactQueryProvider>
+          <TooltipProvider>{children}</TooltipProvider>
+        </ReactQueryProvider>
 
         <Toaster
           position="top-center"
