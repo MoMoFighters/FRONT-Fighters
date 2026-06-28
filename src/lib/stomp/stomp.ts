@@ -63,8 +63,6 @@ const shouldUseSockJs = () =>
 
 const getAuthHeaders = (accessToken: string) => ({
     Authorization: `Bearer ${accessToken}`,
-    token: accessToken,
-    accessToken,
 });
 
 const deactivateSharedClient = () => {
@@ -167,7 +165,17 @@ export const connectNoticeStomp = ({
         createSharedStompClient(accessToken);
     }
 
-    const client = createClientProxy();
+    const client: MomoStompClient = {
+        subscribe: createClientProxy().subscribe,
+        disconnect: () => {
+            connectListeners.delete(onConnect);
+            referenceCount = Math.max(referenceCount - 1, 0);
+
+            if (referenceCount === 0) {
+                deactivateSharedClient();
+            }
+        },
+    };
 
     if (isConnected) {
         queueMicrotask(() => onConnect(client));
