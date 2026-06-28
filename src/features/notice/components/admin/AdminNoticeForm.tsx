@@ -80,6 +80,7 @@ export default function AdminNoticeForm({
     }, [state.errors, state.message, state.success]);
 
     const handleConfirmSubmit = () => {
+        // 확인 모달에서 승인한 뒤 실제 form action을 실행한다.
         setIsConfirmOpen(false);
         formRef.current?.requestSubmit();
     };

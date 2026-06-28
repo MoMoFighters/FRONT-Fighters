@@ -33,6 +33,7 @@ export default function AdminLectureDeleteButton({
 
     const handleDelete = () => {
         startTransition(async () => {
+            // 삭제 대상에 따라 강의, 챕터, 수강평 액션 중 하나를 선택한다.
             const result = target === "강의"
                 ? await deleteLectureAction(String(targetId))
                 : target === "챕터"

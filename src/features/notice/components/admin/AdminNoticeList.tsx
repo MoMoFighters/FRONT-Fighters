@@ -18,7 +18,7 @@ interface AdminNoticeListProps {
 
 export default function AdminNoticeList({ notices: initialNotices }: AdminNoticeListProps) {
     const router = useRouter();
-    const [notices] = useState(initialNotices);
+    const notices = initialNotices;
     const [selectedNoticeIds, setSelectedNoticeIds] = useState<number[]>([]);
     const [pinTarget, setPinTarget] = useState<Notice | null>(null);
     const [isDeleting, startDeleteTransition] = useTransition();
@@ -52,6 +52,7 @@ export default function AdminNoticeList({ notices: initialNotices }: AdminNotice
 
     const deleteSelectedNotices = () => {
         startDeleteTransition(async () => {
+            // 선택 개수에 따른 단건/일괄 삭제 분기는 서버 액션에서 처리한다.
             const result = await deleteNoticeAction(
                 selectedNoticeIds.map(String),
             );
@@ -77,6 +78,7 @@ export default function AdminNoticeList({ notices: initialNotices }: AdminNotice
     };
 
     const handleClickPin = (notice: Notice) => {
+        // 고정 API 연결 전까지 프론트에서 1개 고정 정책만 먼저 막아둔다.
         if (
             !notice.isPinned &&
             pinnedNotice !== undefined &&
@@ -106,6 +108,7 @@ export default function AdminNoticeList({ notices: initialNotices }: AdminNotice
     };
 
     const formatAdminDateTime = (dateTime: string) => {
+        // 관리자 공통 정책에 맞춰 T를 떼고 분 단위까지만 표시한다.
         return dateTime.replace("T", " ").slice(0, 16);
     };
 
