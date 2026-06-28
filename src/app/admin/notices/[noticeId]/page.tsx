@@ -1,9 +1,8 @@
 import Link from "next/link";
-import { ArrowLeft, CalendarDays, Eye } from "lucide-react";
-import { notFound } from "next/navigation";
+import { ArrowLeft, CalendarDays } from "lucide-react";
 
+import { getNoticeById } from "@/app/services/notice/service";
 import AdminNoticeDetailActions from "@/features/notice/components/admin/AdminNoticeDetailActions";
-import { getDummyNoticeDetail } from "@/features/notice/constants/dummyNotices";
 
 interface AdminNoticeDetailPageProps {
     params: Promise<{ noticeId: string }>;
@@ -13,9 +12,11 @@ export default async function AdminNoticeDetailPage({
     params,
 }: AdminNoticeDetailPageProps) {
     const { noticeId } = await params;
-    const notice = getDummyNoticeDetail(Number(noticeId));
+    const notice = await getNoticeById(noticeId);
 
-    if (!notice) notFound();
+    const formatAdminDateTime = (dateTime: string) => {
+        return dateTime.replace("T", " ").slice(0, 16);
+    };
 
     return (
         <div className="mx-auto w-full max-w-300 pb-10">
@@ -33,14 +34,14 @@ export default async function AdminNoticeDetailPage({
                         <span className="rounded-full bg-indigo-50 px-2.5 py-1 text-xs font-bold text-indigo-600">공지사항</span>
                         <h1 className="mt-4 text-2xl font-bold leading-9 text-slate-950">{notice.title}</h1>
                         <div className="mt-5 flex items-center gap-5 text-sm font-medium text-slate-400">
-                            <span className="flex items-center gap-1.5"><CalendarDays className="size-4" />{notice.createdAt}</span>
-                            <span className="flex items-center gap-1.5"><Eye className="size-4" />조회 {notice.viewCount.toLocaleString()}</span>
+                            <span className="flex items-center gap-1.5">
+                                <CalendarDays className="size-4" />
+                                {formatAdminDateTime(notice.createdAt)}
+                            </span>
                         </div>
                     </header>
                     <div className="min-h-96 space-y-6 px-7 py-8 text-sm font-medium leading-7 text-slate-700">
-                        {notice.content.map((paragraph, index) => (
-                            <p key={index} className="whitespace-pre-line">{paragraph}</p>
-                        ))}
+                        <p className="whitespace-pre-line">{notice.content}</p>
                     </div>
                 </article>
 

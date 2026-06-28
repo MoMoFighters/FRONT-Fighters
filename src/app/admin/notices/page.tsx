@@ -10,26 +10,22 @@ import {
     PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Button } from "@/components/ui/button";
+import { getNotices } from "@/app/services/notice/service";
 import AdminNoticeList from "@/features/notice/components/admin/AdminNoticeList";
-import { DUMMY_NOTICES } from "@/features/notice/constants/dummyNotices";
 
 interface AdminNoticesPageProps {
     searchParams: Promise<{ page?: string }>;
 }
 
-const NOTICES_PER_PAGE = 20;
-
 export default async function AdminNoticesPage({
     searchParams,
 }: AdminNoticesPageProps) {
     const { page } = await searchParams;
-    const totalPages = Math.ceil(DUMMY_NOTICES.length / NOTICES_PER_PAGE);
     const requestedPage = Number(page) || 1;
-    const currentPage = Math.min(Math.max(requestedPage, 1), totalPages);
-    const notices = DUMMY_NOTICES.slice(
-        (currentPage - 1) * NOTICES_PER_PAGE,
-        currentPage * NOTICES_PER_PAGE,
-    );
+    const noticeResponse = await getNotices(requestedPage);
+    const totalPages = noticeResponse.totalPages;
+    const currentPage = noticeResponse.currentPage || requestedPage;
+    const notices = noticeResponse.items;
 
     return (
         <div className="mx-auto w-full max-w-360 pb-10">
@@ -52,7 +48,7 @@ export default async function AdminNoticesPage({
             </div>
 
             <p className="mb-4 text-sm font-semibold text-slate-500">
-                전체 공지사항 <span className="text-indigo-500">{DUMMY_NOTICES.length}</span>개
+                전체 공지사항 <span className="text-indigo-500">{noticeResponse.totalElements}</span>개
             </p>
 
             <AdminNoticeList notices={notices} />

@@ -1,11 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Pencil, Trash2 } from "lucide-react";
+import { useTransition } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import DeleteModal from "@/features/modal/DeleteModal";
+import { deleteNoticeAction } from "@/features/notice/action";
 
 interface AdminNoticeDetailActionsProps {
     noticeId: number;
@@ -14,9 +17,22 @@ interface AdminNoticeDetailActionsProps {
 export default function AdminNoticeDetailActions({
     noticeId,
 }: AdminNoticeDetailActionsProps) {
+    const router = useRouter();
+    const [isPending, startTransition] = useTransition();
+
     const deleteNotice = () => {
-        // TODO: 공지사항 삭제 API가 준비되면 noticeId를 전달한 뒤 목록으로 이동한다.
-        toast.success("공지사항 삭제 요청이 처리되었습니다.");
+        startTransition(async () => {
+            const result = await deleteNoticeAction([String(noticeId)]);
+
+            if (!result.success) {
+                toast.error(result.message ?? "공지사항 삭제에 실패했습니다.");
+                return;
+            }
+
+            toast.success("공지사항이 삭제되었습니다.");
+            router.push("/admin/notices");
+            router.refresh();
+        });
     };
 
     return (
@@ -34,9 +50,14 @@ export default function AdminNoticeDetailActions({
                 </Button>
                 <DeleteModal
                     trigger={(
-                        <Button type="button" variant="outline" className="h-9 w-full rounded-md border-rose-200 px-3 text-sm font-bold text-rose-600 hover:bg-rose-50 hover:text-rose-700">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            disabled={isPending}
+                            className="h-9 w-full rounded-md border-rose-200 px-3 text-sm font-bold text-rose-600 hover:bg-rose-50 hover:text-rose-700 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
+                        >
                             <Trash2 className="size-4" />
-                            공지 삭제
+                            {isPending ? "삭제중..." : "공지 삭제"}
                         </Button>
                     )}
                     title="공지사항을 삭제하시겠습니까?"
