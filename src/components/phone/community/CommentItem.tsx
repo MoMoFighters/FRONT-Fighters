@@ -17,6 +17,7 @@ export default function CommentItem({
     isWriter,
     createdAt,
     parentId,
+    onSubmitReply,
 }: CommentItemProps) {
     const [replyOpen, setReplyOpen] = useState(false);
     const isReply = parentId !== null;
@@ -90,6 +91,11 @@ export default function CommentItem({
                     <CommentInputBox
                         postId={postId}
                         parentId={commentId}
+                        onSubmitComment={
+                            onSubmitReply
+                                ? (content) => onSubmitReply(commentId, content)
+                                : undefined
+                        }
                     />
                 </div>
             )}

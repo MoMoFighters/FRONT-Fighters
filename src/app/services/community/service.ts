@@ -9,6 +9,11 @@ import {
     CommunityCategory,
     GetCommunityPostDetailResponse,
     GetCommunityPostListResponse,
+    SearchCommunityPostResponse,
+    GetCommunityPostRecommendationsResponse,
+    GetCommunityPostCommentsResponse,
+    GetCommunityPostRepliesResponse,
+    GetCommunityPostLikeListResponse,
     UploadCommunityPostImageResponse,
 } from "@/features/community/type";
 
@@ -26,18 +31,25 @@ const parseApiResponse = async <T>(
             result.status = result.statusCode;
         }
 
-        if (!response.ok) {
-            console.error(`[community] ${context} failed`, result);
+        if (typeof result.status !== "number") {
+            result.status = response.status;
+        }
+
+        if (!result.timestamp) {
+            result.timestamp = new Date().toISOString();
+        }
+
+        if (!result.code) {
+            result.code = response.ok ? "COMMON-SUCCESS" : "COMMON-FAILED";
+        }
+
+        if (!result.message) {
+            result.message = response.ok
+                ? "요청에 성공했습니다."
+                : `${context} 요청에 실패했습니다.`;
         }
 
         return result;
-    }
-
-    if (!response.ok) {
-        console.error(`[community] ${context} failed`, {
-            status: response.status,
-            statusText: response.statusText,
-        });
     }
 
     return {
@@ -69,17 +81,157 @@ export const getCommunityPostDetailService = async (
     return parseApiResponse(response, "get post detail");
 };
 
+export const getCommunityPostRecommendationsService = async (
+    postId: number
+): Promise<GetCommunityPostRecommendationsResponse> => {
+    const response = await fetchWithAuth(`/api/v2/posts/${postId}/recommendations`, {
+        method: "GET",
+    });
+
+    return parseApiResponse(response, "get post recommendations");
+};
+
+export const getCommunityPostCommentsService = async ({
+    postId,
+    cursor,
+    size,
+}: {
+    postId: number;
+    cursor?: number | null;
+    size: number;
+}): Promise<GetCommunityPostCommentsResponse> => {
+    const params = new URLSearchParams({
+        size: String(size),
+    });
+
+    if (cursor !== undefined && cursor !== null) {
+        params.set("cursor", String(cursor));
+    }
+
+    const response = await fetchWithAuth(
+        `/api/v2/posts/${postId}/comments?${params.toString()}`,
+        {
+            method: "GET",
+        }
+    );
+
+    return parseApiResponse(response, "get post comments");
+};
+
+export const getCommunityPostRepliesService = async ({
+    postId,
+    commentId,
+    cursor,
+    size,
+}: {
+    postId: number;
+    commentId: number;
+    cursor?: number | null;
+    size: number;
+}): Promise<GetCommunityPostRepliesResponse> => {
+    const params = new URLSearchParams({
+        size: String(size),
+    });
+
+    if (cursor !== undefined && cursor !== null) {
+        params.set("cursor", String(cursor));
+    }
+
+    const response = await fetchWithAuth(
+        `/api/v2/posts/${postId}/comments/${commentId}/replies?${params.toString()}`,
+        {
+            method: "GET",
+        }
+    );
+
+    return parseApiResponse(response, "get post replies");
+};
+
+export const createCommunityPostCommentService = async ({
+    postId,
+    content,
+}: {
+    postId: number;
+    content: string;
+}): Promise<ApiResponse<null>> => {
+    const response = await fetchWithAuth(`/api/v2/posts/${postId}/comments`, {
+        method: "POST",
+        body: JSON.stringify({
+            content,
+        }),
+    });
+
+    return parseApiResponse(response, "create post comment");
+};
+
+export const createCommunityPostReplyService = async ({
+    postId,
+    commentId,
+    content,
+}: {
+    postId: number;
+    commentId: number;
+    content: string;
+}): Promise<ApiResponse<null>> => {
+    const response = await fetchWithAuth(
+        `/api/v2/posts/${postId}/comments/${commentId}/replies`,
+        {
+            method: "POST",
+            body: JSON.stringify({
+                content,
+            }),
+        }
+    );
+
+    return parseApiResponse(response, "create post reply");
+};
+
 export const getCommunityPostListService = async ({
     category,
-    page,
+    cursor,
     size,
 }: {
     category?: CommunityCategory;
-    page: number;
+    cursor?: number | null;
     size: number;
 }): Promise<GetCommunityPostListResponse> => {
+    const params = new URLSearchParams();
+
+    if (category) {
+        params.set("category", category);
+    }
+
+    if (cursor !== undefined && cursor !== null) {
+        params.set("cursor", String(cursor));
+    }
+
+    params.set("size", String(size));
+
+    const queryString = params.toString();
+    const response = await fetchWithAuth(
+        `/api/v2/posts?${queryString}`,
+        {
+            method: "GET",
+            cache: "no-store",
+        }
+    );
+
+    return parseApiResponse(response, "get post list");
+};
+
+export const searchCommunityPostService = async ({
+    keyword,
+    category,
+    cursor,
+    size,
+}: {
+    keyword: string;
+    category?: CommunityCategory;
+    cursor?: number | null;
+    size: number;
+}): Promise<SearchCommunityPostResponse> => {
     const params = new URLSearchParams({
-        page: String(page),
+        keyword,
         size: String(size),
     });
 
@@ -87,11 +239,19 @@ export const getCommunityPostListService = async ({
         params.set("category", category);
     }
 
-    const response = await fetchWithAuth(`/api/v2/posts?${params.toString()}`, {
-        method: "GET",
-    });
+    if (cursor !== undefined && cursor !== null) {
+        params.set("cursor", String(cursor));
+    }
 
-    return parseApiResponse(response, "get post list");
+    const response = await fetchWithAuth(
+        `/api/v2/posts/search?${params.toString()}`,
+        {
+            method: "GET",
+            cache: "no-store",
+        }
+    );
+
+    return parseApiResponse(response, "search post list");
 };
 
 export const likeCommunityPostService = async (
@@ -112,6 +272,17 @@ export const unlikeCommunityPostService = async (
     });
 
     return parseApiResponse(response, "unlike post");
+};
+
+export const getCommunityPostLikeListService = async (
+    postId: number
+): Promise<GetCommunityPostLikeListResponse> => {
+    const response = await fetchWithAuth(`/api/v2/posts/${postId}/likes`, {
+        method: "GET",
+        cache: "no-store",
+    });
+
+    return parseApiResponse(response, "get post like list");
 };
 
 export const uploadCommunityPostImageService = async (
