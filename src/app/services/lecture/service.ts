@@ -25,16 +25,29 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
  * @param response
  * @returns X -> 에러를 던짐
  */
-const handleErrorResponse = async (response: Response) => {
-  if (response.status === 404) {
+const handleErrorResponse = async (
+  response: Response,
+  options: { notFoundOn404?: boolean } = { notFoundOn404: true },
+) => {
+  if (response.status === 404 && options.notFoundOn404) {
     notFound();
   }
 
   if (!response.ok) {
-    const errorData = await response.json();
+    const errorText = await response.text();
+    let message = response.statusText || "요청 처리에 실패했습니다.";
+
+    if (errorText) {
+      try {
+        const errorData = JSON.parse(errorText) as { message?: string };
+        message = errorData.message ?? message;
+      } catch {
+        message = errorText;
+      }
+    }
 
     throw new Error(
-      `${errorData.status}|${errorData.message}`
+      `${response.status}|${message}`
     );
   }
 };
@@ -50,6 +63,16 @@ const assertApiData = <T>(result: ApiResponse<T>): T => {
   }
 
   return result.data;
+};
+
+const parseJsonOrNull = async <T>(response: Response): Promise<T | null> => {
+  const text = await response.text();
+
+  if (!text) {
+    return null;
+  }
+
+  return JSON.parse(text) as T;
 };
 
 
@@ -327,4 +350,50 @@ export const enrollLectureById = async (
   await handleErrorResponse(response);
 
   return response.json();
+};
+
+/**
+ * 강의 삭제 api
+ * @param id 삭제할 강의 id
+ * @returns 
+ */
+export const deleteLectureById = async (id: string) => {
+  const response = await fetchWithAuth(`/api/v1/lectures/${id}`, {
+    method: "DELETE",
+  });
+
+  await handleErrorResponse(response, { notFoundOn404: false });
+
+  return parseJsonOrNull(response);
+};
+
+/**
+ * 챕터 삭제 api
+ * @param lectureId 삭제할 챕터가 속한 강의 id
+ * @param chapterId 삭제할 챕터 id
+ * @returns 
+ */
+export const deleteChapterByIds = async (lectureId: string, chapterId: string) => {
+  const response = await fetchWithAuth(`/api/v1/lectures/${lectureId}/chapters/${chapterId}`, {
+    method: "DELETE",
+  });
+
+  await handleErrorResponse(response, { notFoundOn404: false });
+
+  return parseJsonOrNull(response);
+};
+
+/**
+ * 수강평 삭제 api
+ * @param id 삭제할 수강평 id
+ * @returns 
+ */
+export const deleteReviewById = async (id: string) => {
+  const response = await fetchWithAuth(`/api/v1/lectures/reviews/${id}`, {
+    method: "DELETE",
+  });
+
+  await handleErrorResponse(response, { notFoundOn404: false });
+
+  return parseJsonOrNull(response);
 };

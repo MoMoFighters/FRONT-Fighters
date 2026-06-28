@@ -64,7 +64,10 @@ export default async function AdminLectureDetailPage({
                     <AdminChapterList lectureId={lectureId} chapters={lecture.chapters} />
                 ) : reviewResponseData && (
                     <>
-                        <AdminReviewList reviews={reviewResponseData.content} />
+                        <AdminReviewList
+                            lectureId={lectureId}
+                            reviews={reviewResponseData.content}
+                        />
                         <div className="border-t border-slate-100 px-5 pb-5">
                             <ListPagination
                                 currentPage={currentPage}

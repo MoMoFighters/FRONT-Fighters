@@ -51,7 +51,11 @@ export default function AdminChapterList({
                                 {formatDuration(chapter.durationSec)}
                             </span>
                         </Link>
-                        <AdminLectureDeleteButton target="챕터" targetId={chapter.chapterId} />
+                        <AdminLectureDeleteButton
+                            target="챕터"
+                            targetId={chapter.chapterId}
+                            lectureId={lectureId}
+                        />
                     </div>
                 );
             })}

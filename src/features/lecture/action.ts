@@ -1,6 +1,15 @@
 'use server'
 
-import { createReviewByLectureId, enrollLectureById, updateLectureStatus, updateVideoProgress, updateVideoProgressByExit } from "@/app/services/lecture/service";
+import {
+    createReviewByLectureId,
+    deleteChapterByIds,
+    deleteLectureById,
+    deleteReviewById,
+    enrollLectureById,
+    updateLectureStatus,
+    updateVideoProgress,
+    updateVideoProgressByExit,
+} from "@/app/services/lecture/service";
 import { CreateReviewRequest, LectureStatus, UpdateVideoProgressByExitRequest, UpdateVideoProgressRequest } from "./type";
 import { revalidatePath } from "next/cache";
 
@@ -95,3 +104,85 @@ export const createReviewAction = async (
     revalidatePath(`/admin/lectures/${lectureId}`);
     revalidatePath(`/teacher/lectures/${lectureId}`);
 }
+
+export type LectureDeleteActionResult = {
+    success: boolean;
+    message?: string;
+};
+
+const getLectureActionErrorMessage = (error: unknown) => {
+    if (error instanceof Error) {
+        const [status, message] = error.message.split("|");
+
+        if (/^\d+$/.test(status) && message) {
+            return message;
+        }
+
+        return error.message;
+    }
+
+    return "요청 처리 중 오류가 발생했습니다.";
+};
+
+export const deleteLectureAction = async (
+    lectureId: string,
+): Promise<LectureDeleteActionResult> => {
+    try {
+        await deleteLectureById(lectureId);
+        revalidatePath("/admin/lectures");
+        revalidatePath(`/admin/lectures/${lectureId}`);
+
+        return {
+            success: true,
+            message: "강의를 삭제했습니다.",
+        };
+    } catch (error) {
+        return {
+            success: false,
+            message: getLectureActionErrorMessage(error),
+        };
+    }
+};
+
+export const deleteChapterAction = async (
+    lectureId: string,
+    chapterId: string,
+): Promise<LectureDeleteActionResult> => {
+    try {
+        await deleteChapterByIds(lectureId, chapterId);
+        revalidatePath("/admin/lectures");
+        revalidatePath(`/admin/lectures/${lectureId}`);
+        revalidatePath(`/admin/lectures/${lectureId}/chapters/${chapterId}`);
+
+        return {
+            success: true,
+            message: "챕터를 삭제했습니다.",
+        };
+    } catch (error) {
+        return {
+            success: false,
+            message: getLectureActionErrorMessage(error),
+        };
+    }
+};
+
+export const deleteReviewAction = async (
+    lectureId: string,
+    reviewId: string,
+): Promise<LectureDeleteActionResult> => {
+    try {
+        await deleteReviewById(reviewId);
+        revalidatePath("/admin/lectures");
+        revalidatePath(`/admin/lectures/${lectureId}`);
+
+        return {
+            success: true,
+            message: "수강평을 삭제했습니다.",
+        };
+    } catch (error) {
+        return {
+            success: false,
+            message: getLectureActionErrorMessage(error),
+        };
+    }
+};
