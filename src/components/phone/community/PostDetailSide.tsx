@@ -61,6 +61,7 @@ export interface CommunityComment {
     isWriter: boolean;
     hasMoreReplies?: boolean;
     nextReplyCursor?: number | null;
+    replies?: CommunityComment[];
 }
 
 export interface PostRecommentItemProps {
@@ -162,6 +163,19 @@ const mapComment = (
     isWriter: comment.isPostWriter,
     hasMoreReplies: Boolean(comment.hasMoreReplies),
     nextReplyCursor: comment.nextReplyCursor ?? null,
+    replies: comment.replies?.map((reply) => ({
+        commentId: reply.commentId,
+        content: reply.content,
+        authorName: reply.authorName,
+        authorProfileImageUrl:
+            reply.authorProfileImageUrl || DEFAULT_PROFILE_IMAGE_URL,
+        authorRole: reply.authorRole,
+        authorId: reply.authorId,
+        parentId: comment.commentId,
+        createdAt: reply.createdAt,
+        isMine: reply.isMine,
+        isWriter: reply.isPostWriter,
+    })) ?? [],
 });
 
 export default function PostDetailSide({
