@@ -27,9 +27,9 @@ export default function NotificationItem({
 
 
     const title =
-        type === "friend" ? "친구요청"
-            : type === "calendar" ? "일정 확인"
-                : type === "community" ? "새로운 댓글"
+        type === "calendar" ? "일정 확인"
+            : type === "community" ? "새로운 댓글"
+                : type === "friend" ? content.includes("친구 요청을 보냈습니다.") ? "새로운 요청" : "요청 수락됨"
                     : "기타"
 
 
@@ -44,9 +44,10 @@ export default function NotificationItem({
     }
 
     const href =
-        type === "friend" ? "/student/phone/friends?status=request"
-            : type === "calendar" ? `/student/phone/calendar?month=${targetId}`
-                : type === "community" ? `/student/phone/community/${targetId}`
+        type === "calendar" ? `/student/phone/calendar?month=${targetId}`
+            : type === "community" ? `/student/phone/community/${targetId}`
+                : type === "friend" ? content.includes("친구 요청을 보냈습니다.") ? "/student/phone/friends?status=request"
+                    : `/student/phone/friends?status=friend&friendId=${targetId}`
                     : "기타"
 
     return (

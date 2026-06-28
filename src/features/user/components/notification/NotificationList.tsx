@@ -40,6 +40,7 @@ export default function NotificationList({
 
         const loadNotifications = async () => {
             const response = await getNoticeNotificationListAction();
+            console.log(response, '목록')
 
             if (!isMounted) {
                 return;
