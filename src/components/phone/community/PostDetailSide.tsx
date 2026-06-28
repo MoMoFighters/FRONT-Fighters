@@ -1,21 +1,26 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
+import {
+    useInfiniteQuery,
+    useMutation,
+    useQuery,
+    useQueryClient,
+} from "@tanstack/react-query";
 import { List, MessageCircle } from "lucide-react";
-import PostCommentsPanel from "./PostCommentsPanel";
-import PostRecommandPanel from "./PostRecommandPanel";
+
 import {
     createCommunityPostCommentAction,
     createCommunityPostReplyAction,
     getCommunityPostCommentsAction,
     getCommunityPostRecommendationsAction,
-    getCommunityPostRepliesAction,
 } from "@/features/community/action";
 import type {
     CommunityPostCommentItem,
-    CommunityPostReplyItem,
     CommunityRecommendedPostItem,
 } from "@/features/community/type";
+import PostCommentsPanel from "./PostCommentsPanel";
+import PostRecommandPanel from "./PostRecommandPanel";
 
 export type SideMode = "posts" | "comment";
 
@@ -54,22 +59,8 @@ export interface CommunityComment {
     createdAt: string;
     isMine: boolean;
     isWriter: boolean;
-}
-
-export interface ReplyPageState {
-    totalCount: number;
-    nextCursor: number | null;
-    hasMore: boolean;
-}
-
-export interface CommentPageState {
-    totalElements: number;
-    totalPages: number;
-    currentPage: number;
-}
-
-export interface CommentPageResponse extends CommentPageState {
-    comments: CommunityComment[];
+    hasMoreReplies?: boolean;
+    nextReplyCursor?: number | null;
 }
 
 export interface PostRecommentItemProps {
@@ -118,9 +109,8 @@ export interface PostCommentsPanelProps {
     commentTotalCount: number;
     comments: CommunityComment[];
     hasNextCommentPage: boolean;
+    isFetchingNextComments: boolean;
     onLoadMoreComments: () => void;
-    repliesByCommentId: Record<number, ReplyPageState>;
-    onLoadMoreReplies: (commentId: number) => void;
     onCreateComment: (content: string) => Promise<boolean>;
     onCreateReply: (
         commentId: number,
@@ -133,162 +123,7 @@ interface PostDetailSideProps {
     commentTotalCount?: number;
 }
 
-const DUMMY_RECOMMENDED_POSTS: RecommendedPost[] = [
-    {
-        postId: 1,
-        title: "자바 스터디 후기",
-        category: "STUDY",
-        viewCount: 10,
-        likeCount: 5,
-        commentCount: 3,
-        thumbnailUrl: null,
-        authorName: "홍길동",
-        authorProfileImageUrl: "https://placehold.co/80x80/e0e7ff/4f46e5?text=홍",
-        authorRole: "STUDENT",
-        createdAt: "2026-06-18T13:00:00.000000Z",
-    },
-    {
-        postId: 2,
-        title: "첫 운동 루틴 기록",
-        category: "FITNESS",
-        viewCount: 32,
-        likeCount: 11,
-        commentCount: 4,
-        thumbnailUrl: "https://placehold.co/360x240/dbeafe/2563eb?text=운동",
-        authorName: "모모러너",
-        authorProfileImageUrl: "https://placehold.co/80x80/dbeafe/2563eb?text=러",
-        authorRole: "STUDENT",
-        createdAt: "2026-06-17T09:24:00.000000Z",
-    },
-    {
-        postId: 3,
-        title: "요리 수업에서 배운 작은 팁",
-        category: "COOK",
-        viewCount: 28,
-        likeCount: 9,
-        commentCount: 2,
-        thumbnailUrl: "https://placehold.co/360x240/fef3c7/d97706?text=요리",
-        authorName: "복숭아식탁",
-        authorProfileImageUrl: "https://placehold.co/80x80/fef3c7/d97706?text=요",
-        authorRole: "STUDENT",
-        createdAt: "2026-06-16T18:10:00.000000Z",
-    },
-    {
-        postId: 4,
-        title: "오늘의 짧은 기록",
-        category: "FREE",
-        viewCount: 14,
-        likeCount: 7,
-        commentCount: 5,
-        thumbnailUrl: null,
-        authorName: "도시산책",
-        authorProfileImageUrl: "https://placehold.co/80x80/e2e8f0/475569?text=산",
-        authorRole: "STUDENT",
-        createdAt: "2026-06-15T20:00:00.000000Z",
-    },
-];
-
-const DUMMY_COMMENT_PAGES: CommentPageResponse[] = [
-    {
-        totalElements: 7,
-        totalPages: 2,
-        currentPage: 0,
-        comments: [
-            {
-                commentId: 1,
-                content: "도움 되는 글 감사합니다.",
-                authorName: "홍길동",
-                authorProfileImageUrl: "https://placehold.co/80x80/e0e7ff/4f46e5?text=홍",
-                authorRole: "STUDENT",
-                authorId: 1,
-                parentId: null,
-                createdAt: "2026-06-18T13:20:00.000000Z",
-                isMine: false,
-                isWriter: false,
-            },
-            {
-                commentId: 2,
-                content: "저도 자바 공부 중이라서 정말 유용했어요.",
-                authorName: "코드피치",
-                authorProfileImageUrl: "https://placehold.co/80x80/fce7f3/be185d?text=피",
-                authorRole: "STUDENT",
-                authorId: 2,
-                parentId: null,
-                createdAt: "2026-06-18T13:30:00.000000Z",
-                isMine: false,
-                isWriter: false,
-            },
-            {
-                commentId: 3,
-                content: "감사합니다. 다음에는 예제 코드도 같이 정리해볼게요.",
-                authorName: "홍길동",
-                authorProfileImageUrl: "https://placehold.co/80x80/e0e7ff/4f46e5?text=홍",
-                authorRole: "STUDENT",
-                authorId: 3,
-                parentId: 2,
-                createdAt: "2026-06-18T13:35:00.000000Z",
-                isMine: true,
-                isWriter: true,
-            },
-            {
-                commentId: 4,
-                content: "저는 클래스랑 객체 부분이 제일 어렵더라구요.",
-                authorName: "스터디메이트",
-                authorProfileImageUrl: "https://placehold.co/80x80/dcfce7/16a34a?text=스",
-                authorRole: "STUDENT",
-                authorId: 4,
-                parentId: null,
-                createdAt: "2026-06-18T14:00:00.000000Z",
-                isMine: false,
-                isWriter: false,
-            },
-        ],
-    },
-    {
-        totalElements: 7,
-        totalPages: 2,
-        currentPage: 1,
-        comments: [
-            {
-                commentId: 5,
-                content: "이 글 보고 기본기부터 다시 복습하고 싶어졌어요.",
-                authorName: "모모학생",
-                authorProfileImageUrl: "https://placehold.co/80x80/fae8ff/a21caf?text=모",
-                authorRole: "STUDENT",
-                authorId: 5,
-                parentId: null,
-                createdAt: "2026-06-18T14:20:00.000000Z",
-                isMine: false,
-                isWriter: false,
-            },
-            {
-                commentId: 6,
-                content: "예제는 직접 따라 쳐보는 게 확실히 도움이 많이 됩니다.",
-                authorName: "홍길동",
-                authorProfileImageUrl: "https://placehold.co/80x80/e0e7ff/4f46e5?text=홍",
-                authorRole: "STUDENT",
-                authorId: 6,
-                parentId: 5,
-                createdAt: "2026-06-18T14:25:00.000000Z",
-                isMine: true,
-                isWriter: true,
-            },
-            {
-                commentId: 7,
-                content: "다음 후기글도 기다리고 있을게요.",
-                authorName: "새싹개발자",
-                authorProfileImageUrl: "https://placehold.co/80x80/dcfce7/15803d?text=새",
-                authorRole: "STUDENT",
-                authorId: 7,
-                parentId: null,
-                createdAt: "2026-06-18T15:00:00.000000Z",
-                isMine: false,
-                isWriter: false,
-            },
-        ],
-    },
-];
-
+const COMMENT_PAGE_SIZE = 10;
 const DEFAULT_PROFILE_IMAGE_URL =
     "https://placehold.co/80x80/e0e7ff/4f46e5?text=M";
 
@@ -322,190 +157,130 @@ const mapComment = (
     createdAt: comment.createdAt,
     isMine: comment.isMine,
     isWriter: comment.isPostWriter,
-});
-
-const mapReply = (
-    reply: CommunityPostReplyItem,
-    parentId: number
-): CommunityComment => ({
-    commentId: reply.commentId,
-    content: reply.content,
-    authorName: reply.authorName,
-    authorProfileImageUrl:
-        reply.authorProfileImageUrl || DEFAULT_PROFILE_IMAGE_URL,
-    authorRole: reply.authorRole,
-    authorId: reply.authorId,
-    parentId,
-    createdAt: reply.createdAt,
-    isMine: reply.isMine,
-    isWriter: reply.isPostWriter,
+    hasMoreReplies: Boolean(comment.hasMoreReplies),
+    nextReplyCursor: comment.nextReplyCursor ?? null,
 });
 
 export default function PostDetailSide({
     postId,
     commentTotalCount,
 }: PostDetailSideProps) {
+    const queryClient = useQueryClient();
     const [mode, setMode] = useState<SideMode>("posts");
-    const [recommendedPosts, setRecommendedPosts] = useState<RecommendedPost[] | null>(null);
-    const [comments, setComments] = useState<CommunityComment[]>([]);
-    const [commentPage, setCommentPage] = useState<CommentPageState | null>(null);
-    const [repliesByCommentId, setRepliesByCommentId] =
-        useState<Record<number, ReplyPageState>>({});
 
-    useEffect(() => {
-        if (mode === "posts" && recommendedPosts === null) {
-            fetchRecommendedPosts();
-        }
+    const recommendationsQuery = useQuery({
+        queryKey: ["community", "post", postId, "recommendations"],
+        queryFn: async () => {
+            const response =
+                await getCommunityPostRecommendationsAction(postId);
 
-        if (mode === "comment" && commentPage === null) {
-            fetchComments(null);
-        }
-    }, [mode, recommendedPosts, commentPage]);
+            return response.data
+                ? [
+                    ...response.data.topPosts,
+                    ...response.data.authorPosts,
+                ].map(mapRecommendedPost)
+                : [];
+        },
+        enabled: mode === "posts",
+    });
 
-    const fetchRecommendedPosts = async () => {
-        const response =
-            await getCommunityPostRecommendationsAction(postId);
-
-        const recommendations = response.data
-            ? [
-                ...response.data.topPosts,
-                ...response.data.authorPosts,
-            ].map(mapRecommendedPost)
-            : [];
-
-        setRecommendedPosts(recommendations);
-    };
-
-    const fetchComments = async (cursor: number | null) => {
-        const response = await getCommunityPostCommentsAction({
-            postId,
-            cursor,
-            size: 10,
-        });
-
-        if (!response.data) {
-            return;
-        }
-
-        const nextComments: CommunityComment[] = response.data.comments.flatMap(
-            (comment) => [
-                mapComment(comment),
-                ...(comment.replies ?? []).map((reply) =>
-                    mapReply(reply, comment.commentId)
-                ),
-            ]
-        );
-
-        setComments((prev) => [...prev, ...nextComments]);
-        setCommentPage({
-            totalElements: response.data.totalCount,
-            totalPages: response.data.nextCursor === null ? 0 : 1,
-            currentPage: response.data.nextCursor ?? -1,
-        });
-
-        setRepliesByCommentId((prev) => {
-            const next = { ...prev };
-
-            response.data?.comments.forEach((comment) => {
-                next[comment.commentId] = {
-                    totalCount: comment.replies?.length ?? 0,
-                    nextCursor: comment.nextReplyCursor ?? null,
-                    hasMore: Boolean(comment.hasMoreReplies),
-                };
+    const commentsQuery = useInfiniteQuery({
+        queryKey: ["community", "post", postId, "comments"],
+        queryFn: async ({ pageParam }) => {
+            return getCommunityPostCommentsAction({
+                postId,
+                cursor: pageParam,
+                size: COMMENT_PAGE_SIZE,
             });
+        },
+        initialPageParam: null as number | null,
+        getNextPageParam: (lastPage) =>
+            lastPage.data?.nextCursor ?? undefined,
+        enabled: mode === "comment",
+    });
 
-            return next;
-        });
-    };
+    const comments = useMemo(() => {
+        return commentsQuery.data?.pages
+            .flatMap((page) => page.data?.comments ?? [])
+            .map(mapComment) ?? [];
+    }, [commentsQuery.data]);
 
-    const handleLoadMoreComments = () => {
-        if (!commentPage) {
-            return;
-        }
+    const loadedCommentTotalCount =
+        commentsQuery.data?.pages.at(-1)?.data?.totalCount;
+    const displayCommentTotalCount =
+        loadedCommentTotalCount ?? commentTotalCount ?? 0;
 
-        fetchComments(commentPage.currentPage);
-    };
+    const createCommentMutation = useMutation({
+        mutationFn: (content: string) =>
+            createCommunityPostCommentAction({
+                postId,
+                content,
+            }),
+        onSuccess: async (response) => {
+            if (response.status === 201) {
+                await queryClient.invalidateQueries({
+                    queryKey: ["community", "post", postId, "comments"],
+                });
+            }
+        },
+    });
 
-    const handleLoadMoreReplies = async (commentId: number) => {
-        const replyState = repliesByCommentId[commentId];
-
-        if (!replyState?.hasMore) {
-            return;
-        }
-
-        const response = await getCommunityPostRepliesAction({
-            postId,
+    const createReplyMutation = useMutation({
+        mutationFn: ({
             commentId,
-            cursor: replyState.nextCursor,
-            size: 5,
-        });
-
-        if (!response.data) {
-            return;
-        }
-
-        const replyData = response.data;
-
-        setComments((prev) => [
-            ...prev,
-            ...replyData.replies.map((reply) =>
-                mapReply(reply, commentId)
-            ),
-        ]);
-
-        setRepliesByCommentId((prev) => ({
-            ...prev,
-            [commentId]: {
-                totalCount: replyData.totalCount,
-                nextCursor: replyData.nextCursor,
-                hasMore: replyData.nextCursor !== null,
-            },
-        }));
-    };
-
-    const resetComments = async () => {
-        setComments([]);
-        setCommentPage(null);
-        setRepliesByCommentId({});
-        await fetchComments(null);
-    };
+            content,
+        }: {
+            commentId: number;
+            content: string;
+        }) =>
+            createCommunityPostReplyAction({
+                postId,
+                commentId,
+                content,
+            }),
+        onSuccess: async (response, variables) => {
+            if (response.status === 201) {
+                await Promise.all([
+                    queryClient.invalidateQueries({
+                        queryKey: [
+                            "community",
+                            "post",
+                            postId,
+                            "comments",
+                        ],
+                    }),
+                    queryClient.invalidateQueries({
+                        queryKey: [
+                            "community",
+                            "post",
+                            postId,
+                            "comment",
+                            variables.commentId,
+                            "replies",
+                        ],
+                    }),
+                ]);
+            }
+        },
+    });
 
     const handleCreateComment = async (content: string) => {
-        const response = await createCommunityPostCommentAction({
-            postId,
-            content,
-        });
+        const response = await createCommentMutation.mutateAsync(content);
 
-        if (response.status !== 201) {
-            return false;
-        }
-
-        await resetComments();
-        return true;
+        return response.status === 201;
     };
 
     const handleCreateReply = async (
         commentId: number,
         content: string
     ) => {
-        const response = await createCommunityPostReplyAction({
-            postId,
+        const response = await createReplyMutation.mutateAsync({
             commentId,
             content,
         });
 
-        if (response.status !== 201) {
-            return false;
-        }
-
-        await resetComments();
-        return true;
+        return response.status === 201;
     };
-
-    const displayCommentTotalCount = commentPage?.totalElements ?? commentTotalCount ?? 0;
-    const hasNextCommentPage = commentPage
-        ? commentPage.currentPage !== -1
-        : false;
 
     return (
         <aside className="flex min-h-0 flex-col rounded-3xl bg-white/90 p-4 shadow-sm ring-1 ring-slate-100">
@@ -542,17 +317,18 @@ export default function PostDetailSide({
                     postId={postId}
                     commentTotalCount={displayCommentTotalCount}
                     comments={comments}
-                    hasNextCommentPage={hasNextCommentPage}
-                    onLoadMoreComments={handleLoadMoreComments}
-                    repliesByCommentId={repliesByCommentId}
-                    onLoadMoreReplies={handleLoadMoreReplies}
+                    hasNextCommentPage={Boolean(commentsQuery.hasNextPage)}
+                    isFetchingNextComments={commentsQuery.isFetchingNextPage}
+                    onLoadMoreComments={() => {
+                        void commentsQuery.fetchNextPage();
+                    }}
                     onCreateComment={handleCreateComment}
                     onCreateReply={handleCreateReply}
                 />
             ) : (
                 <PostRecommandPanel
                     currentPostId={postId}
-                    posts={recommendedPosts ?? []}
+                    posts={recommendationsQuery.data ?? []}
                 />
             )}
         </aside>
