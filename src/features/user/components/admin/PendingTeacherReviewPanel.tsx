@@ -1,19 +1,28 @@
 "use client";
 
-import { Check, Download, X } from "lucide-react";
+import Image from "next/image";
+import { Check, ExternalLink, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { updateTeacherStatusAction } from "@/features/user/action";
+import googleDriveLogo from "@/app/assets/img/Google_Drive_logo.png";
+import { approvePendingTeacherAction, rejectPendingTeacherAction } from "@/features/user/action";
 import AdminActionConfirmDialog from "./AdminActionConfirmDialog";
+
+const GOOGLE_DRIVE_FOLDER_URL = "https://drive.google.com/drive/u/3/folders/1gvVoAPBggUg0iQ6jQ2plvRFeVt-_Wxa2";
 
 interface PendingTeacherReviewPanelProps {
     userId: number;
-    proofUrl?: string;
+    successHref: string;
 }
 
-export default function PendingTeacherReviewPanel({ userId, proofUrl }: PendingTeacherReviewPanelProps) {
+export default function PendingTeacherReviewPanel({
+    userId,
+    successHref,
+}: PendingTeacherReviewPanelProps) {
+    const router = useRouter();
     const [reason, setReason] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [pendingAction, setPendingAction] = useState<"APPROVE" | "REJECT" | null>(null);
@@ -32,8 +41,18 @@ export default function PendingTeacherReviewPanel({ userId, proofUrl }: PendingT
         setIsSubmitting(true);
 
         try {
-            await updateTeacherStatusAction(String(userId), action, reason.trim() || undefined);
-            toast.success(action === "APPROVE" ? "강사를 승인했습니다." : "강사 승인을 거절했습니다.");
+            const result = action === "APPROVE"
+                ? await approvePendingTeacherAction([String(userId)])
+                : await rejectPendingTeacherAction(String(userId), reason);
+
+            if (!result.success) {
+                toast.error(result.message ?? "승인 처리에 실패했습니다.");
+                return;
+            }
+
+            toast.success(result.message ?? (action === "APPROVE" ? "강사를 승인했습니다." : "강사 승인을 거절했습니다."));
+            router.replace(successHref);
+            router.refresh();
         } catch (error) {
             toast.error(error instanceof Error ? error.message : "승인 처리에 실패했습니다.");
         } finally {
@@ -45,8 +64,26 @@ export default function PendingTeacherReviewPanel({ userId, proofUrl }: PendingT
     return (
         <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
             <div className="flex items-center justify-between gap-4">
-                <div><h2 className="text-base font-bold text-slate-950">승인 처리</h2><p className="mt-1 text-sm font-medium text-slate-500">증빙 서류를 확인한 뒤 승인 또는 거절을 진행합니다.</p></div>
-                {proofUrl && <a href={proofUrl} download className="inline-flex h-9 items-center gap-2 rounded-md border border-slate-200 px-3 text-xs font-bold text-slate-700 hover:bg-slate-50"><Download className="size-4" />서류 다운로드</a>}
+                <div>
+                    <h2 className="text-base font-bold text-slate-950">승인 처리</h2>
+                    <p className="mt-1 text-sm font-medium text-slate-500">증빙 서류를 확인한 뒤 승인 또는 거절을 진행합니다.</p>
+                </div>
+                <a
+                    href={GOOGLE_DRIVE_FOLDER_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex h-9 items-center gap-2 rounded-md border border-slate-200 bg-white px-3 text-xs font-bold text-slate-700 transition hover:bg-slate-50"
+                >
+                    <Image
+                        src={googleDriveLogo}
+                        alt=""
+                        width={18}
+                        height={18}
+                        className="size-[18px]"
+                    />
+                    구글 드라이브 확인
+                    <ExternalLink className="size-3.5 text-slate-400" />
+                </a>
             </div>
             <label className="mt-5 block text-sm font-bold text-slate-700" htmlFor="reject-reason">거절 사유</label>
             <textarea id="reject-reason" value={reason} onChange={(event) => setReason(event.target.value)} placeholder="승인 거절 시 강사에게 전달할 사유를 작성합니다." className="mt-2 min-h-24 w-full resize-y rounded-md border border-slate-200 bg-slate-50 p-3 text-sm text-slate-800 outline-none placeholder:text-slate-400 focus:border-indigo-300 focus:bg-white focus:ring-3 focus:ring-indigo-50" />

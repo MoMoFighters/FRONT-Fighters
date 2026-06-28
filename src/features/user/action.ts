@@ -5,14 +5,16 @@ import {
     editMyInfoService,
     nicknameCheckService,
     NicknameCheckResponse,
-    updateTeacherStatus
+    approvePendingTeacher,
+    rejectPendingTeacher,
+    plusReportCount,
+    minusReportCount,
 } from "@/app/services/user/service";
-import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
-import { UpdateTeacherStatusResponse } from "./type";
 import { ApiResponse } from "@/lib/api";
 import { Category } from "../lecture/type";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 /* 401 에러 페이지 및 회원탈퇴에서 사용할
    토큰 죽이고, 로그인페이지로 리다이렉트 시키는 함수 */
@@ -168,22 +170,166 @@ export const checkAndRegisterNickname = async (
 
 };
 
-// 강사 승인 액션 함수
+
+// ==========================================
+// 관리자 회원 관리
+// ==========================================
+
+export type AdminUserActionResult = {
+    success: boolean;
+    message?: string;
+};
+
+const getAdminActionErrorMessage = (error: unknown) => {
+    if (error instanceof Error) {
+        const [status, message] = error.message.split("|");
+
+        if (/^\d+$/.test(status) && message) {
+            return message;
+        }
+
+        return error.message;
+    }
+
+    return "요청 처리 중 오류가 발생했습니다.";
+};
+
+export const approvePendingTeacherAction = async (
+    ids: string[],
+): Promise<AdminUserActionResult> => {
+    try {
+        if (ids.length === 0) {
+            return {
+                success: false,
+                message: "승인할 강사를 선택해주세요.",
+            };
+        }
+
+        await approvePendingTeacher(ids);
+        revalidatePath("/admin/users");
+
+        ids.forEach((id) => {
+            revalidatePath(`/admin/users/${id}`);
+        });
+
+        return {
+            success: true,
+            message: ids.length === 1
+                ? "강사를 승인했습니다."
+                : `${ids.length}명의 강사를 승인했습니다.`,
+        };
+    } catch (error) {
+        return {
+            success: false,
+            message: getAdminActionErrorMessage(error),
+        };
+    }
+};
+
+export const rejectPendingTeacherAction = async (
+    id: string,
+    reason: string,
+): Promise<AdminUserActionResult> => {
+    try {
+        const trimmedReason = reason.trim();
+
+        if (!trimmedReason) {
+            return {
+                success: false,
+                message: "거절 사유를 입력해주세요.",
+            };
+        }
+
+        await rejectPendingTeacher(id, { reason: trimmedReason });
+        revalidatePath("/admin/users");
+        revalidatePath(`/admin/users/${id}`);
+
+        return {
+            success: true,
+            message: "강사 승인을 거절했습니다.",
+        };
+    } catch (error) {
+        return {
+            success: false,
+            message: getAdminActionErrorMessage(error),
+        };
+    }
+};
+
+export const increaseReportCountAction = async (
+    id: string,
+): Promise<AdminUserActionResult> => {
+    try {
+        await plusReportCount(id);
+        revalidatePath("/admin/users");
+        revalidatePath(`/admin/users/${id}`);
+
+        return {
+            success: true,
+            message: "제재 누적 횟수를 올렸습니다.",
+        };
+    } catch (error) {
+        return {
+            success: false,
+            message: getAdminActionErrorMessage(error),
+        };
+    }
+};
+
+export const decreaseReportCountAction = async (
+    id: string,
+): Promise<AdminUserActionResult> => {
+    try {
+        await minusReportCount(id);
+        revalidatePath("/admin/users");
+        revalidatePath(`/admin/users/${id}`);
+
+        return {
+            success: true,
+            message: "제재 누적 횟수를 내렸습니다.",
+        };
+    } catch (error) {
+        return {
+            success: false,
+            message: getAdminActionErrorMessage(error),
+        };
+    }
+};
 
 export const updateTeacherStatusAction = async (
     id: string,
-    status: string,
+    action: string,
     reason?: string,
-): Promise<UpdateTeacherStatusResponse> => {
-    const payload = {
-        action: status,
-        reason: reason ?? ((status === "APPROVE" || status === "APPROVED")
-            ? "증빙서류가 확인되어 강사 승인이 완료되었습니다."
-            : "증빙서류 확인 결과 승인이 거절되었습니다. 다시 제출해주세요."),
+) => {
+    if (action === "APPROVE") {
+        const result = await approvePendingTeacherAction([id]);
+
+        if (!result.success) {
+            throw new Error(result.message ?? "강사 승인에 실패했습니다.");
+        }
+
+        return {
+            userId: Number(id),
+            status: "ACTIVE",
+            reason: null,
+            processedAt: new Date().toISOString(),
+        };
     }
-    const result = await updateTeacherStatus(id, payload);
 
-    revalidatePath('/admin/users');
+    if (action === "REJECT") {
+        const result = await rejectPendingTeacherAction(id, reason ?? "");
 
-    return result;
-}
+        if (!result.success) {
+            throw new Error(result.message ?? "강사 승인 거절에 실패했습니다.");
+        }
+
+        return {
+            userId: Number(id),
+            status: "REJECTED",
+            reason: reason ?? null,
+            processedAt: new Date().toISOString(),
+        };
+    }
+
+    throw new Error("지원하지 않는 처리 방식입니다.");
+};

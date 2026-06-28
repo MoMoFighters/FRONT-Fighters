@@ -1,4 +1,10 @@
-// 🍑🍑🍑 홍근 민섭 상의 후 결정 🍑🍑🍑
+// 신고 대상 타입 정의
+export type TargetType = "LECTURE" | "CHAPTER" | "POST" | "REVIEW" | "COMMENT" | "CHAT" | "PAGE";
+
+// 신고 사유 타입 정의
+export type ReasonRequest = "ABUSE" | "SPAM" | "INAPPROPRIATE" | "COPYLIGHT" | "OTHER";
+
+export type ReasonResponse = "스팸/광고" | "욕설/혐오 표현" | "부적절한 내용" | "저작권 침해" | "기타";
 
 export interface Report {
     reportId: number,

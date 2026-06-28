@@ -6,12 +6,12 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { updateTeacherStatusAction } from "@/features/user/action";
-import { UserResponse } from "@/features/user/type";
+import { approvePendingTeacherAction, rejectPendingTeacherAction } from "@/features/user/action";
+import { PendingTeacherList } from "@/features/user/type";
 import AdminActionConfirmDialog from "./AdminActionConfirmDialog";
 
 interface PendingTeacherTableProps {
-    users: UserResponse[];
+    users: PendingTeacherList[];
 }
 
 export default function PendingTeacherTable({ users }: PendingTeacherTableProps) {
@@ -35,18 +35,22 @@ export default function PendingTeacherTable({ users }: PendingTeacherTableProps)
         setIsSubmitting(true);
 
         try {
-            if (pendingAction.type === "bulk") {
-                await Promise.all(pendingAction.userIds.map((id) => updateTeacherStatusAction(String(id), "APPROVE")));
-                toast.success(`${pendingAction.userIds.length}명의 강사를 승인했습니다.`);
-                setSelectedIds([]);
-            } else {
-                await updateTeacherStatusAction(
-                    String(pendingAction.userId),
-                    pendingAction.action,
-                    pendingAction.action === "REJECT" ? rejectReason.trim() : undefined,
-                );
-                toast.success(pendingAction.action === "APPROVE" ? "강사를 승인했습니다." : "강사 승인을 거절했습니다.");
+            const result = pendingAction.type === "bulk"
+                ? await approvePendingTeacherAction(pendingAction.userIds.map(String))
+                : pendingAction.action === "APPROVE"
+                    ? await approvePendingTeacherAction([String(pendingAction.userId)])
+                    : await rejectPendingTeacherAction(
+                        String(pendingAction.userId),
+                        rejectReason,
+                    );
+
+            if (!result.success) {
+                toast.error(result.message ?? "처리에 실패했습니다.");
+                return;
             }
+
+            toast.success(result.message ?? "처리되었습니다.");
+            setSelectedIds([]);
         } catch (error) {
             toast.error(error instanceof Error ? error.message : "처리에 실패했습니다.");
         } finally {
@@ -80,7 +84,7 @@ export default function PendingTeacherTable({ users }: PendingTeacherTableProps)
                     type="checkbox"
                     aria-label="전체 선택"
                     checked={allSelected}
-                    onChange={() => setSelectedIds(allSelected ? [] : users.map((user) => user.id))}
+                    onChange={() => setSelectedIds(allSelected ? [] : users.map((user) => user.userId))}
                     className="size-4 rounded border-slate-300 accent-indigo-600"
                 />
                 <span>이름</span>
@@ -96,24 +100,24 @@ export default function PendingTeacherTable({ users }: PendingTeacherTableProps)
             ) : (
                 <div className="divide-y divide-slate-100">
                     {users.map((user) => (
-                        <div key={user.id} className="grid min-w-[820px] grid-cols-[48px_1fr_1.6fr_.9fr_220px] items-center px-5 py-4 text-sm text-slate-600 hover:bg-slate-50">
+                        <div key={user.userId} className="grid min-w-[820px] grid-cols-[48px_1fr_1.6fr_.9fr_220px] items-center px-5 py-4 text-sm text-slate-600 hover:bg-slate-50">
                             <input
                                 type="checkbox"
                                 aria-label={`${user.name} 선택`}
-                                checked={selectedIds.includes(user.id)}
-                                onChange={() => toggleUser(user.id)}
+                                checked={selectedIds.includes(user.userId)}
+                                onChange={() => toggleUser(user.userId)}
                                 className="size-4 rounded border-slate-300 accent-indigo-600"
                             />
-                            <Link href={`/admin/users/${user.id}?status=pending`} className="w-fit font-bold text-slate-900 hover:text-indigo-600">
+                            <Link href={`/admin/users/${user.userId}?source=pending-teacher`} className="w-fit font-bold text-slate-900 hover:text-indigo-600">
                                 {user.name}
                             </Link>
                             <span className="truncate pr-4">{user.email ?? "이메일 정보 없음"}</span>
-                            <span>{user.createdAt?.split("T")[0] ?? "-"}</span>
+                            <span>{user.createdAt?.replace("T", " ").slice(0, 10) ?? "-"}</span>
                             <div className="flex justify-start gap-2">
                                 <Button
                                     type="button"
                                     variant="outline"
-                                    onClick={() => setPendingAction({ type: "single", userId: user.id, action: "REJECT" })}
+                                    onClick={() => setPendingAction({ type: "single", userId: user.userId, action: "REJECT" })}
                                     disabled={isSubmitting}
                                     className="h-8 rounded-md border-slate-200 px-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100"
                                 >
@@ -122,13 +126,13 @@ export default function PendingTeacherTable({ users }: PendingTeacherTableProps)
                                 </Button>
                                 <Button
                                     type="button"
-                                    onClick={() => setPendingAction({ type: "single", userId: user.id, action: "APPROVE" })}
+                                    onClick={() => setPendingAction({ type: "single", userId: user.userId, action: "APPROVE" })}
                                     disabled={isSubmitting}
                                     className="h-8 rounded-md bg-indigo-600 px-2.5 text-xs font-bold text-white hover:bg-indigo-700"
                                 >
                                     승인
                                 </Button>
-                                <Link href={`/admin/users/${user.id}?status=pending`} aria-label={`${user.name} 증빙 서류 보기`} className="inline-flex size-8 items-center justify-center rounded-md border border-slate-200 text-slate-500 hover:bg-slate-100">
+                                <Link href={`/admin/users/${user.userId}?source=pending-teacher`} aria-label={`${user.name} 증빙 서류 보기`} className="inline-flex size-8 items-center justify-center rounded-md border border-slate-200 text-slate-500 hover:bg-slate-100">
                                     <FileText className="size-4" />
                                 </Link>
                             </div>
@@ -150,7 +154,7 @@ export default function PendingTeacherTable({ users }: PendingTeacherTableProps)
                 description={pendingAction?.type === "bulk"
                     ? `선택한 ${pendingAction.userIds.length}명의 강사를 승인합니다.`
                     : pendingAction?.type === "single" && pendingAction.action === "REJECT"
-                        ? "승인 요청을 거절합니다. 상세 페이지에서는 거절 사유를 작성할 수 있습니다."
+                        ? "승인 요청을 거절합니다. 거절 사유를 작성해주세요."
                         : "선택한 강사의 활동을 승인합니다."}
                 confirmLabel={pendingAction?.type === "single" && pendingAction.action === "REJECT" ? "거절하기" : "승인하기"}
                 tone={pendingAction?.type === "single" && pendingAction.action === "REJECT" ? "rose" : "indigo"}

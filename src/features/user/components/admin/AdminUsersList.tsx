@@ -1,10 +1,10 @@
 import { SearchX } from "lucide-react";
 
-import { UserResponse } from "@/features/user/type";
+import { UserList } from "@/features/user/type";
 import AdminUserItem from "./AdminUserItem";
 
 interface AdminUsersListProps {
-    users: UserResponse[];
+    users: UserList[];
     view: "all" | "deleted";
 }
 
@@ -32,7 +32,7 @@ export default function AdminUsersList({ users, view }: AdminUsersListProps) {
                 <div className="divide-y divide-slate-100">
                     {users.map((user) => (
                         <AdminUserItem
-                            key={user.id}
+                            key={user.userId}
                             user={user}
                             view={view}
                         />

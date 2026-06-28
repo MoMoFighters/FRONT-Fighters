@@ -1,4 +1,4 @@
-import { UserResponse } from "@/features/user/type";
+import { UserStatus } from "@/features/user/type";
 
 const STATUS_LABEL: Record<string, string> = {
     ACTIVE: "활동 중",
@@ -10,7 +10,7 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 interface AdminUserStatusBadgeProps {
-    status?: UserResponse["status"];
+    status?: UserStatus;
 }
 
 export default function AdminUserStatusBadge({
