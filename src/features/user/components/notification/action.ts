@@ -1,9 +1,13 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import {
+    deleteNoticeService,
     getNoticeAppCountsService,
     getNoticeNotificationListService,
     getNoticeTotalCountsService,
+    readNoticeService,
+    type NoticeMutationResponse,
 } from "@/app/services/notification/service";
 import {
     NoticeAppCountsResponse,
@@ -31,7 +35,9 @@ export const getNoticeTotalCountsAction =
 export const getNoticeNotificationListAction =
     async (): Promise<NoticeNotificationListResponse> => {
         try {
-            return await getNoticeNotificationListService();
+            const a = await getNoticeNotificationListService();
+            console.log(a)
+            return a
         } catch (error) {
             return {
                 timestamp: new Date().toISOString(),
@@ -61,5 +67,46 @@ export const getNoticeAppCountsAction =
                         : "앱별 알림 개수를 불러오지 못했습니다.",
                 data: null,
             };
+        }
+    };
+
+const createNoticeMutationErrorResponse = (
+    error: unknown,
+    message: string
+): NoticeMutationResponse => ({
+    timestamp: new Date().toISOString(),
+    status: 500,
+    code: "NOTICE-MUTATION-FAILED",
+    message: error instanceof Error ? error.message : message,
+    data: [],
+});
+
+export const readNoticeAction =
+    async (targetId: number[]): Promise<NoticeMutationResponse> => {
+        try {
+            const result = await readNoticeService(targetId);
+            revalidatePath("/student");
+            revalidatePath("/teacher");
+            return result;
+        } catch (error) {
+            return createNoticeMutationErrorResponse(
+                error,
+                "알림 읽음 처리에 실패했습니다."
+            );
+        }
+    };
+
+export const deleteNoticeAction =
+    async (targetId: number[]): Promise<NoticeMutationResponse> => {
+        try {
+            const result = await deleteNoticeService(targetId);
+            revalidatePath("/student");
+            revalidatePath("/teacher");
+            return result;
+        } catch (error) {
+            return createNoticeMutationErrorResponse(
+                error,
+                "알림 삭제에 실패했습니다."
+            );
         }
     };

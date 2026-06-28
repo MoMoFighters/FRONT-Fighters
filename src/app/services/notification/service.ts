@@ -1,9 +1,12 @@
 import { fetchWithAuth } from "@/lib/api";
+import type { ApiResponse } from "@/lib/api";
 import {
     NoticeAppCountsResponse,
     NoticeNotificationListResponse,
     NoticeTotalCountsResponse,
 } from "@/features/user/components/notification/type";
+
+export type NoticeMutationResponse = ApiResponse<[]>;
 
 export const getNoticeTotalCountsService =
     async (): Promise<NoticeTotalCountsResponse> => {
@@ -49,3 +52,34 @@ export const getNoticeAppCountsService =
 
         return result;
     };
+
+const updateNoticeTargetsService = async (
+    endpoint: string,
+    targetId: number[],
+    method: "PATCH" | "DELETE" = "PATCH"
+): Promise<NoticeMutationResponse> => {
+    const response = await fetchWithAuth(endpoint, {
+        method,
+        body: JSON.stringify({
+            targetId,
+        }),
+    });
+
+    const result: NoticeMutationResponse = await response.json();
+
+    if (!response.ok) {
+        throw new Error(result.message || "알림 처리에 실패했습니다.");
+    }
+
+    return result;
+};
+
+export const readNoticeService = async (
+    targetId: number[]
+): Promise<NoticeMutationResponse> =>
+    updateNoticeTargetsService("/api/v2/notice/read", targetId);
+
+export const deleteNoticeService = async (
+    targetId: number[]
+): Promise<NoticeMutationResponse> =>
+    updateNoticeTargetsService("/api/v2/notice/remove", targetId, "DELETE");

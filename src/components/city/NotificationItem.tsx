@@ -1,54 +1,64 @@
 import DeleteModal from "@/features/modal/DeleteModal";
+import {
+    deleteNoticeAction,
+    readNoticeAction,
+} from "@/features/user/components/notification/action";
 import { X } from "lucide-react"
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface NotificationItemProps {
-    type: 'friend' | 'calendar' | 'community';
+    id: number;
+    type: 'friend' | 'calendar' | 'community' | 'message';
     content: string;
     onClose: () => void;
     isRead: boolean;
     targetId: number;
 }
 
-const titleList = {
-    friend: '친구 요청',
-    calendar: '일정 확인',
-    community: '새로운 댓글'
-}
-
 export default function NotificationItem({
+    id,
     type,
     onClose,
     content,
     isRead,
     targetId
 }: NotificationItemProps) {
+    const router = useRouter();
 
-
+    const isFriendRequest =
+        content.includes("친구 요청") ||
+        content.includes("移쒓뎄");
 
     const title =
-        type === "calendar" ? "일정 확인"
-            : type === "community" ? "새로운 댓글"
-                : type === "friend" ? content.includes("친구 요청을 보냈습니다.") ? "새로운 요청" : "요청 수락됨"
-                    : "기타"
-
-
-
+        type === 'message' ? "메시지 확인" :
+            type === "calendar" ? "일정 확인"
+                : type === "community" ? "새로운 댓글"
+                    : type === "friend" ? isFriendRequest ? "새로운 요청" : "요청 수락"
+                        : "기타"
 
     const handleDelete = async () => {
-        console.log(title)
-    }
-
-    const handleClick = async () => {
-        onClose();
+        await deleteNoticeAction([id]);
     }
 
     const href =
-        type === "calendar" ? `/student/phone/calendar?month=${targetId}`
-            : type === "community" ? `/student/phone/community/${targetId}`
-                : type === "friend" ? content.includes("친구 요청을 보냈습니다.") ? "/student/phone/friends?status=request"
-                    : `/student/phone/friends?status=friend&friendId=${targetId}`
-                    : "기타"
+        type === 'message' ? `/student/phone/friends?status=friend&roomId=${targetId}` :
+            type === "calendar" ? `/student/phone/calendar?month=${targetId}`
+                : type === "community" ? `/student/phone/community/${targetId}`
+                    : type === "friend" ? isFriendRequest ? "/student/phone/friends?status=request"
+                        : `/student/phone/friends?status=friend&friendId=${targetId}`
+                        : "/student"
+
+    const handleClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+        e.preventDefault();
+
+        if (!isRead) {
+            await readNoticeAction([id]);
+        }
+
+        onClose();
+        router.push(href);
+    }
 
     return (
         <Link

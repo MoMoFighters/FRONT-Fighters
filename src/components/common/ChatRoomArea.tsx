@@ -23,7 +23,7 @@ import {
 } from "@/features/chat/action";
 import { Button } from "../ui/button";
 import MyFriendListModal from "@/features/phone/components/friend/MyFriendListModal";
-import { connectNoticeStomp } from "@/features/user/components/notification/stomp";
+import { connectNoticeStomp } from "@/lib/stomp/stomp";
 
 interface ChatRoomAreaProps {
     currentRoomId: number | null;

@@ -15,7 +15,7 @@ export type NoticeNotificationType =
     | string;
 
 export interface NoticeNotification {
-    id: number;
+    notificationId: number;
     type: NoticeNotificationType;
     message: string;
     isRead: boolean;

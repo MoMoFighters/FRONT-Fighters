@@ -4,7 +4,7 @@ import NotificationItem from "@/components/city/NotificationItem";
 import { useEffect, useState } from "react";
 
 import { getNoticeNotificationListAction } from "./action";
-import { connectNoticeStomp } from "./stomp";
+import { connectNoticeStomp } from "../../../../lib/stomp/stomp";
 import { NoticeNotification } from "./type";
 
 interface NotificationListProps {
@@ -14,9 +14,10 @@ interface NotificationListProps {
 
 const getNotificationType = (
     notification: NoticeNotification
-): "friend" | "calendar" | "community" => {
+): "friend" | "calendar" | "community" | "message" => {
     switch (notification.type) {
         case "MESSAGE":
+            return 'message'
         case "FRIEND_REQUEST":
             return "friend";
         case "CALENDAR":
@@ -40,7 +41,6 @@ export default function NotificationList({
 
         const loadNotifications = async () => {
             const response = await getNoticeNotificationListAction();
-            console.log(response, '목록')
 
             if (!isMounted) {
                 return;
@@ -110,7 +110,8 @@ export default function NotificationList({
                     ) : notifications.length > 0 ? (
                         notifications.map((notification) => (
                             <NotificationItem
-                                key={notification.id}
+                                key={notification.notificationId}
+                                id={notification.notificationId}
                                 type={getNotificationType(notification)}
                                 content={notification.message}
                                 onClose={onClose}
