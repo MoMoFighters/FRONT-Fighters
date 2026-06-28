@@ -4,45 +4,47 @@ import Link from "next/link";
 import { FilePlus2, Home, UserRound } from "lucide-react";
 import { usePathname } from "next/navigation";
 
-const COMMUNITY_NAV_ITEMS = [
-    {
-        label: "홈",
-        description: "추천",
-        href: "/student/phone/community",
-        icon: Home,
-    },
-    // { 모듈5때 인기글 기능 생기면 위에꺼랑 교체 하기
-    //     label: "전체",
-    //     description: "검색",
-    //     href: "/student/phone/community",
-    //     icon: LayoutGrid,
-    // },
-    {
-        label: "내 글",
-        description: "마이",
-        href: "/student/phone/community/mypage",
-        icon: UserRound,
-    },
-    {
-        label: "작성",
-        description: "새 글",
-        href: "/student/phone/community/create",
-        icon: FilePlus2,
-    },
-];
 
-export default function CommunitySideBar() {
+
+export default function CommunitySideBar({ role }: { role?: "TEACHER" | "ADMIN" }) {
+
     const pathname = usePathname();
+
+    const COMMUNITY_NAV_ITEMS = [
+        {
+            label: "홈",
+            description: "추천",
+            href: role === "TEACHER" ? "/teacher/community" : role === "ADMIN" ? "/admin/community" : "/student/phone/community",
+            icon: Home,
+        },
+        // { 모듈5때 인기글 기능 생기면 위에꺼랑 교체 하기
+        //     label: "전체",
+        //     description: "검색",
+        //     href: "/student/phone/community",
+        //     icon: LayoutGrid,
+        // },
+        {
+            label: "내 글",
+            description: "마이",
+            href: role === "TEACHER" ? "/teacher/community/mypage" : role === "ADMIN" ? "/admin/community/mypage" : "/student/phone/community/mypage",
+            icon: UserRound,
+        },
+        {
+            label: "작성",
+            description: "새 글",
+            href: role === "TEACHER" ? "/teacher/community/create" : role === "ADMIN" ? "/admin/community/create" : "/student/phone/community/create",
+            icon: FilePlus2,
+        },
+    ];
 
     return (
         <aside className="h-full w-[76px] shrink-0 border-r border-slate-200/70 bg-white/70 backdrop-blur">
             <nav className="flex h-full flex-col gap-1 px-1.5 py-2">
                 {COMMUNITY_NAV_ITEMS.map((item, index) => {
                     const Icon = item.icon;
-                    const isActive =
-                        item.href === "/student/phone/community"
-                            ? pathname === item.href && index === 0
-                            : pathname.startsWith(item.href);
+                    const isActive = index === 0
+                        ? pathname === item.href
+                        : pathname.startsWith(item.href);
 
                     return (
                         <Link

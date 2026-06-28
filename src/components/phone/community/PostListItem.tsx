@@ -27,6 +27,7 @@ export default function PostListItem({
     viewCount,
     authorNickname,
     authorProfileImageUrl,
+    role,
 }: {
     id: number;
     thumbnailUrl: string | null;
@@ -36,11 +37,18 @@ export default function PostListItem({
     viewCount: number;
     authorNickname: string;
     authorProfileImageUrl?: string | null;
+    role?: "TEACHER" | 'ADMIN';
 }) {
+
+    const getBaseUrl = () => {
+        if (role === "TEACHER") return "/teacher/community";
+        if (role === "ADMIN") return "/admin/community";
+        return "/student/phone/community"; // 기본값(학생)
+    };
     return (
         <Link
             key={id}
-            href={`/student/phone/community/${id}`}
+            href={`${getBaseUrl()}/${id}`}
             className="group flex h-50 flex-col overflow-hidden rounded-2xl border border-white/70 bg-white/90 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
         >
             <div className="relative h-32.5 bg-slate-100">
