@@ -35,7 +35,7 @@ interface PostContentBlock {
 
 const CATEGORY_OPTIONS: { value: CommunityCategory; label: string; }[] = [
     { value: "STUDY", label: "학습", },
-    { value: "FASHION", label: "패션", },
+    { value: "ART", label: "예술", },
     { value: "BEAUTY", label: "뷰티", },
     { value: "FITNESS", label: "피트니스", },
     { value: "COOK", label: "요리", },

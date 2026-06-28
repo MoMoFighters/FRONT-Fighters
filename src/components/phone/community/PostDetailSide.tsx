@@ -4,12 +4,24 @@ import { useEffect, useState } from "react";
 import { List, MessageCircle } from "lucide-react";
 import PostCommentsPanel from "./PostCommentsPanel";
 import PostRecommandPanel from "./PostRecommandPanel";
+import {
+    createCommunityPostCommentAction,
+    createCommunityPostReplyAction,
+    getCommunityPostCommentsAction,
+    getCommunityPostRecommendationsAction,
+    getCommunityPostRepliesAction,
+} from "@/features/community/action";
+import type {
+    CommunityPostCommentItem,
+    CommunityPostReplyItem,
+    CommunityRecommendedPostItem,
+} from "@/features/community/type";
 
 export type SideMode = "posts" | "comment";
 
 export type CommunityPostCategory =
     | "STUDY"
-    | "FASHION"
+    | "ART"
     | "BEAUTY"
     | "FITNESS"
     | "COOK"
@@ -44,6 +56,12 @@ export interface CommunityComment {
     isWriter: boolean;
 }
 
+export interface ReplyPageState {
+    totalCount: number;
+    nextCursor: number | null;
+    hasMore: boolean;
+}
+
 export interface CommentPageState {
     totalElements: number;
     totalPages: number;
@@ -75,6 +93,7 @@ export interface PostRecommandPanelProps {
 export interface CommentInputBoxProps {
     postId: number;
     parentId?: number;
+    onSubmitComment?: (content: string) => Promise<boolean> | boolean;
 }
 
 export interface CommentItemProps {
@@ -88,6 +107,10 @@ export interface CommentItemProps {
     isWriter: boolean;
     createdAt: string;
     parentId: number | null;
+    onSubmitReply?: (
+        commentId: number,
+        content: string
+    ) => Promise<boolean> | boolean;
 }
 
 export interface PostCommentsPanelProps {
@@ -96,6 +119,13 @@ export interface PostCommentsPanelProps {
     comments: CommunityComment[];
     hasNextCommentPage: boolean;
     onLoadMoreComments: () => void;
+    repliesByCommentId: Record<number, ReplyPageState>;
+    onLoadMoreReplies: (commentId: number) => void;
+    onCreateComment: (content: string) => Promise<boolean>;
+    onCreateReply: (
+        commentId: number,
+        content: string
+    ) => Promise<boolean>;
 }
 
 interface PostDetailSideProps {
@@ -259,6 +289,58 @@ const DUMMY_COMMENT_PAGES: CommentPageResponse[] = [
     },
 ];
 
+const DEFAULT_PROFILE_IMAGE_URL =
+    "https://placehold.co/80x80/e0e7ff/4f46e5?text=M";
+
+const mapRecommendedPost = (
+    post: CommunityRecommendedPostItem
+): RecommendedPost => ({
+    postId: post.postId,
+    title: post.title,
+    category: post.category,
+    viewCount: post.viewCount,
+    likeCount: post.likeCount,
+    commentCount: 0,
+    thumbnailUrl: post.thumbnailUrl,
+    authorName: post.authorName,
+    authorProfileImageUrl: DEFAULT_PROFILE_IMAGE_URL,
+    authorRole: "STUDENT",
+    createdAt: post.createdAt,
+});
+
+const mapComment = (
+    comment: CommunityPostCommentItem
+): CommunityComment => ({
+    commentId: comment.commentId,
+    content: comment.content,
+    authorName: comment.authorName,
+    authorProfileImageUrl:
+        comment.authorProfileImageUrl || DEFAULT_PROFILE_IMAGE_URL,
+    authorRole: comment.authorRole,
+    authorId: comment.authorId,
+    parentId: null,
+    createdAt: comment.createdAt,
+    isMine: comment.isMine,
+    isWriter: comment.isPostWriter,
+});
+
+const mapReply = (
+    reply: CommunityPostReplyItem,
+    parentId: number
+): CommunityComment => ({
+    commentId: reply.commentId,
+    content: reply.content,
+    authorName: reply.authorName,
+    authorProfileImageUrl:
+        reply.authorProfileImageUrl || DEFAULT_PROFILE_IMAGE_URL,
+    authorRole: reply.authorRole,
+    authorId: reply.authorId,
+    parentId,
+    createdAt: reply.createdAt,
+    isMine: reply.isMine,
+    isWriter: reply.isPostWriter,
+});
+
 export default function PostDetailSide({
     postId,
     commentTotalCount,
@@ -267,6 +349,8 @@ export default function PostDetailSide({
     const [recommendedPosts, setRecommendedPosts] = useState<RecommendedPost[] | null>(null);
     const [comments, setComments] = useState<CommunityComment[]>([]);
     const [commentPage, setCommentPage] = useState<CommentPageState | null>(null);
+    const [repliesByCommentId, setRepliesByCommentId] =
+        useState<Record<number, ReplyPageState>>({});
 
     useEffect(() => {
         if (mode === "posts" && recommendedPosts === null) {
@@ -274,28 +358,63 @@ export default function PostDetailSide({
         }
 
         if (mode === "comment" && commentPage === null) {
-            fetchComments(0);
+            fetchComments(null);
         }
     }, [mode, recommendedPosts, commentPage]);
 
     const fetchRecommendedPosts = async () => {
-        // TODO: Connect recommended post API.
-        setRecommendedPosts(DUMMY_RECOMMENDED_POSTS);
+        const response =
+            await getCommunityPostRecommendationsAction(postId);
+
+        const recommendations = response.data
+            ? [
+                ...response.data.topPosts,
+                ...response.data.authorPosts,
+            ].map(mapRecommendedPost)
+            : [];
+
+        setRecommendedPosts(recommendations);
     };
 
-    const fetchComments = async (page: number) => {
-        // TODO: Connect comment list API.
-        const response = DUMMY_COMMENT_PAGES[page];
+    const fetchComments = async (cursor: number | null) => {
+        const response = await getCommunityPostCommentsAction({
+            postId,
+            cursor,
+            size: 10,
+        });
 
-        if (!response) {
+        if (!response.data) {
             return;
         }
 
-        setComments((prev) => [...prev, ...response.comments]);
+        const nextComments: CommunityComment[] = response.data.comments.flatMap(
+            (comment) => [
+                mapComment(comment),
+                ...(comment.replies ?? []).map((reply) =>
+                    mapReply(reply, comment.commentId)
+                ),
+            ]
+        );
+
+        setComments((prev) => [...prev, ...nextComments]);
         setCommentPage({
-            totalElements: response.totalElements,
-            totalPages: response.totalPages,
-            currentPage: response.currentPage,
+            totalElements: response.data.totalCount,
+            totalPages: response.data.nextCursor === null ? 0 : 1,
+            currentPage: response.data.nextCursor ?? -1,
+        });
+
+        setRepliesByCommentId((prev) => {
+            const next = { ...prev };
+
+            response.data?.comments.forEach((comment) => {
+                next[comment.commentId] = {
+                    totalCount: comment.replies?.length ?? 0,
+                    nextCursor: comment.nextReplyCursor ?? null,
+                    hasMore: Boolean(comment.hasMoreReplies),
+                };
+            });
+
+            return next;
         });
     };
 
@@ -304,12 +423,88 @@ export default function PostDetailSide({
             return;
         }
 
-        fetchComments(commentPage.currentPage + 1);
+        fetchComments(commentPage.currentPage);
+    };
+
+    const handleLoadMoreReplies = async (commentId: number) => {
+        const replyState = repliesByCommentId[commentId];
+
+        if (!replyState?.hasMore) {
+            return;
+        }
+
+        const response = await getCommunityPostRepliesAction({
+            postId,
+            commentId,
+            cursor: replyState.nextCursor,
+            size: 5,
+        });
+
+        if (!response.data) {
+            return;
+        }
+
+        const replyData = response.data;
+
+        setComments((prev) => [
+            ...prev,
+            ...replyData.replies.map((reply) =>
+                mapReply(reply, commentId)
+            ),
+        ]);
+
+        setRepliesByCommentId((prev) => ({
+            ...prev,
+            [commentId]: {
+                totalCount: replyData.totalCount,
+                nextCursor: replyData.nextCursor,
+                hasMore: replyData.nextCursor !== null,
+            },
+        }));
+    };
+
+    const resetComments = async () => {
+        setComments([]);
+        setCommentPage(null);
+        setRepliesByCommentId({});
+        await fetchComments(null);
+    };
+
+    const handleCreateComment = async (content: string) => {
+        const response = await createCommunityPostCommentAction({
+            postId,
+            content,
+        });
+
+        if (response.status !== 201) {
+            return false;
+        }
+
+        await resetComments();
+        return true;
+    };
+
+    const handleCreateReply = async (
+        commentId: number,
+        content: string
+    ) => {
+        const response = await createCommunityPostReplyAction({
+            postId,
+            commentId,
+            content,
+        });
+
+        if (response.status !== 201) {
+            return false;
+        }
+
+        await resetComments();
+        return true;
     };
 
     const displayCommentTotalCount = commentPage?.totalElements ?? commentTotalCount ?? 0;
     const hasNextCommentPage = commentPage
-        ? commentPage.currentPage + 1 < commentPage.totalPages
+        ? commentPage.currentPage !== -1
         : false;
 
     return (
@@ -349,6 +544,10 @@ export default function PostDetailSide({
                     comments={comments}
                     hasNextCommentPage={hasNextCommentPage}
                     onLoadMoreComments={handleLoadMoreComments}
+                    repliesByCommentId={repliesByCommentId}
+                    onLoadMoreReplies={handleLoadMoreReplies}
+                    onCreateComment={handleCreateComment}
+                    onCreateReply={handleCreateReply}
                 />
             ) : (
                 <PostRecommandPanel

@@ -1,4 +1,8 @@
-'use client'
+"use client";
+
+import { useState } from "react";
+import { Heart } from "lucide-react";
+import { toast } from "sonner";
 
 import {
     Dialog,
@@ -8,40 +12,12 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import {
+    getCommunityPostLikeListAction,
     likeCommunityPostAction,
     unlikeCommunityPostAction,
 } from "@/features/community/action";
-import { Heart } from "lucide-react";
-import { useState } from "react";
-import { toast } from "sonner";
-
-interface PostLikedUser {
-    userId: number;
-    nickname: string;
-    role: "STUDENT" | "TEACHER";
-    profileImageUrl: string | null;
-}
-
-const likedUserDummyData: PostLikedUser[] = [
-    {
-        userId: 1,
-        nickname: "모모학생",
-        role: "STUDENT",
-        profileImageUrl: null,
-    },
-    {
-        userId: 2,
-        nickname: "멋쟁이러너",
-        role: "STUDENT",
-        profileImageUrl: null,
-    },
-    {
-        userId: 3,
-        nickname: "요가쌤",
-        role: "TEACHER",
-        profileImageUrl: null,
-    },
-];
+import type { CommunityPostLikedUser } from "@/features/community/type";
+import PostLikedUserItem from "@/features/post/PostLikedUserItem";
 
 interface PostLikeBtnProps {
     postId: number;
@@ -55,10 +31,40 @@ export default function PostLikeBtn({
     initialIsLiked = false,
 }: PostLikeBtnProps) {
     const [isModal, setIsModal] = useState(false);
-    const [likedUsers] = useState<PostLikedUser[]>(likedUserDummyData);
+    const [likedUsers, setLikedUsers] = useState<CommunityPostLikedUser[]>([]);
+    const [isLikeListLoaded, setIsLikeListLoaded] = useState(false);
+    const [isLikeListLoading, setIsLikeListLoading] = useState(false);
     const [isLiked, setIsLiked] = useState(initialIsLiked);
     const [likeCount, setLikeCount] = useState(postLikeCount);
     const [isPending, setIsPending] = useState(false);
+
+    const loadLikedUsers = async () => {
+        if (isLikeListLoading || isLikeListLoaded) {
+            return;
+        }
+
+        setIsLikeListLoading(true);
+
+        const response = await getCommunityPostLikeListAction(postId);
+
+        if (response.status < 200 || response.status >= 300) {
+            toast.error(response.message || "좋아요 목록 조회에 실패했습니다.");
+            setIsLikeListLoading(false);
+            return;
+        }
+
+        setLikedUsers(response.data?.users ?? []);
+        setIsLikeListLoaded(true);
+        setIsLikeListLoading(false);
+    };
+
+    const handleOpenChange = (open: boolean) => {
+        setIsModal(open);
+
+        if (open) {
+            void loadLikedUsers();
+        }
+    };
 
     const handleToggleLike = async () => {
         if (isPending) {
@@ -87,6 +93,7 @@ export default function PostLikeBtn({
             return;
         }
 
+        setIsLikeListLoaded(false);
         toast.success(nextIsLiked ? "좋아요를 눌렀습니다." : "좋아요를 취소했습니다.");
         setIsPending(false);
     };
@@ -104,7 +111,7 @@ export default function PostLikeBtn({
                 <button
                     type="button"
                     className={`cursor-pointer ${isLiked ? "text-rose-500" : "text-slate-600"}`}
-                    onClick={() => setIsModal(true)}
+                    onClick={() => handleOpenChange(true)}
                 >
                     {likeCount}
                 </button>
@@ -112,9 +119,9 @@ export default function PostLikeBtn({
 
             <Dialog
                 open={isModal}
-                onOpenChange={setIsModal}
+                onOpenChange={handleOpenChange}
             >
-                <DialogContent className="w-md overflow-hidden rounded-3xl border border-rose-100 bg-white p-0 shadow-2xl">
+                <DialogContent className="w-md overflow-hidden rounded-3xl bg-white p-0 shadow-2xl">
                     <DialogHeader className="border-b border-slate-100 px-6 pb-4 pt-6">
                         <DialogTitle className="flex items-center gap-2 text-lg font-black text-slate-900">
                             <span className="flex size-8 items-center justify-center rounded-full bg-rose-50 text-rose-500">
@@ -124,43 +131,26 @@ export default function PostLikeBtn({
                         </DialogTitle>
 
                         <DialogDescription className="text-sm font-semibold text-slate-400">
-                            이 게시글을 좋아요한 사람 목록입니다.
+                            이 게시글을 좋아한 사람 목록입니다.
                         </DialogDescription>
                     </DialogHeader>
 
-                    <div className="max-h-[360px] overflow-y-auto px-3 py-3 scrollbar-hidden">
-                        {likedUsers.length === 0 ? (
+                    <div className="max-h-[360px] overflow-y-auto px-3 pb-3 scrollbar-hidden">
+                        {isLikeListLoading ? (
+                            <div className="flex h-32 items-center justify-center rounded-2xl bg-slate-50 text-sm font-bold text-slate-400">
+                                좋아요 목록을 불러오는 중입니다.
+                            </div>
+                        ) : likedUsers.length === 0 ? (
                             <div className="flex h-32 items-center justify-center rounded-2xl bg-slate-50 text-sm font-bold text-slate-400">
                                 아직 좋아요를 누른 사람이 없습니다.
                             </div>
                         ) : (
                             <div className="space-y-2">
                                 {likedUsers.map((user) => (
-                                    <div
+                                    <PostLikedUserItem
                                         key={user.userId}
-                                        className="flex items-center gap-3 rounded-2xl px-3 py-2.5 transition hover:bg-rose-50/70"
-                                    >
-                                        <div className="flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-rose-100 to-indigo-100 text-sm font-black text-rose-500">
-                                            {user.profileImageUrl ? (
-                                                <img
-                                                    src={user.profileImageUrl}
-                                                    alt={`${user.nickname} 프로필`}
-                                                    className="h-full w-full object-cover"
-                                                />
-                                            ) : (
-                                                user.nickname.slice(0, 1)
-                                            )}
-                                        </div>
-
-                                        <div className="min-w-0 flex-1">
-                                            <p className="truncate text-sm font-black text-slate-800">
-                                                {user.nickname}
-                                            </p>
-                                            <p className="mt-0.5 text-xs font-bold text-slate-400">
-                                                {user.role === "TEACHER" ? "강사" : "수강생"}
-                                            </p>
-                                        </div>
-                                    </div>
+                                        user={user}
+                                    />
                                 ))}
                             </div>
                         )}

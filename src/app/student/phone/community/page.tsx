@@ -1,4 +1,4 @@
-import { Search } from "lucide-react";
+﻿import { Search } from "lucide-react";
 
 import CommunitySideBar from "@/components/phone/community/CommunitySideBar";
 import PostListItem from "@/components/phone/community/PostListItem";
@@ -17,22 +17,26 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { getCommunityPostListAction } from "@/features/community/action";
+import {
+    getCommunityPostListAction,
+    searchCommunityPostAction,
+} from "@/features/community/action";
 import type { CommunityCategory } from "@/features/community/type";
 
 interface CommunityPageProps {
     searchParams: Promise<{
         category?: CommunityCategory | "ALL";
-        page?: string;
+        cursor?: string;
+        keyword?: string;
     }>;
 }
 
-const PAGE_SIZE = 8;
+const PAGE_SIZE = 12;
 
 const CATEGORY_OPTIONS: { value: CommunityCategory | "ALL"; label: string; }[] = [
     { value: "ALL", label: "전체" },
+    { value: "ART", label: "예술" },
     { value: "STUDY", label: "학습" },
-    { value: "FASHION", label: "패션" },
     { value: "BEAUTY", label: "뷰티" },
     { value: "FITNESS", label: "피트니스" },
     { value: "COOK", label: "요리" },
@@ -48,21 +52,31 @@ const isCommunityCategory = (
 };
 
 const createPageHref = ({
-    pageNumber,
+    page,
     category,
+    keyword,
 }: {
-    pageNumber: number;
+    page: number;
     category: CommunityCategory | "ALL";
+    keyword?: string;
 }) => {
     const params = new URLSearchParams();
+
+    if (keyword) {
+        params.set("keyword", keyword);
+    }
 
     if (category !== "ALL") {
         params.set("category", category);
     }
 
-    params.set("page", String(pageNumber));
+    if (page > 1) {
+        params.set("cursor", String((page - 1) * PAGE_SIZE));
+    }
 
-    return `/student/phone/community?${params.toString()}`;
+    const queryString = params.toString();
+
+    return `/student/phone/community${queryString ? `?${queryString}` : ""}`;
 };
 
 export default async function CommunityPage({
@@ -70,22 +84,35 @@ export default async function CommunityPage({
 }: CommunityPageProps) {
     const {
         category = "ALL",
-        page,
+        cursor,
+        keyword,
     } = await searchParams;
 
     const selectedCategory =
         isCommunityCategory(category)
             ? category
             : "ALL";
-    const requestedPage =
-        Math.max(Number(page) || 0, 0);
+    const requestedCursor =
+        cursor !== undefined && cursor !== ""
+            ? Number(cursor)
+            : null;
+    const validCursor =
+        typeof requestedCursor === "number" && Number.isFinite(requestedCursor)
+            ? requestedCursor
+            : null;
+    const searchKeyword = keyword?.trim() ?? "";
 
-    const response =
-        await getCommunityPostListAction({
-            category: selectedCategory === "ALL" ? undefined : selectedCategory,
-            page: requestedPage,
-            size: PAGE_SIZE,
-        });
+    const requestParams = {
+        category: selectedCategory === "ALL" ? undefined : selectedCategory,
+        cursor: validCursor,
+        size: PAGE_SIZE,
+    };
+    const response = searchKeyword
+        ? await searchCommunityPostAction({
+            ...requestParams,
+            keyword: searchKeyword,
+        })
+        : await getCommunityPostListAction(requestParams);
 
     if (response.status >= 400) {
         console.warn("[community] post list failed", response);
@@ -93,12 +120,24 @@ export default async function CommunityPage({
 
     const pageData = response.data ?? {
         posts: [],
-        totalElements: 0,
-        totalPages: 0,
-        currentPage: requestedPage,
+        totalCount: 0,
+        nextCursor: null,
     };
-    const totalPages = Math.max(pageData.totalPages, 1);
-    const currentPage = Math.min(pageData.currentPage, totalPages - 1);
+    const posts = pageData.posts ?? [];
+    const totalCount =
+        pageData.totalCount ?? pageData.totalElements ?? 0;
+    const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+    const currentPage =
+        validCursor !== null
+            ? Math.floor(validCursor / PAGE_SIZE) + 1
+            : 1;
+    const pageGroupStart =
+        Math.floor((currentPage - 1) / 5) * 5 + 1;
+    const pageGroupEnd = Math.min(pageGroupStart + 4, totalPages);
+    const pageNumbers = Array.from(
+        { length: pageGroupEnd - pageGroupStart + 1 },
+        (_, index) => pageGroupStart + index
+    );
 
     return (
         <div className="flex h-full min-h-0 flex-row overflow-hidden bg-white/80 shadow-sm ring-1 ring-slate-200/80 backdrop-blur">
@@ -117,7 +156,7 @@ export default async function CommunityPage({
                         </div>
 
                         <p className="text-xs font-bold text-slate-400">
-                            게시글 {pageData.totalElements}개
+                            게시글 {totalCount}개
                         </p>
                     </div>
 
@@ -129,8 +168,8 @@ export default async function CommunityPage({
                             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                             <input
                                 name="keyword"
-                                placeholder="검색 API 확인 중"
-                                disabled
+                                placeholder="검색어를 입력하세요"
+                                defaultValue={searchKeyword}
                                 className="h-9 w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-3 text-sm font-semibold text-slate-400 outline-none"
                             />
                         </div>
@@ -164,9 +203,9 @@ export default async function CommunityPage({
                 </header>
 
                 <div className="mt-4 min-h-0 flex-1 overflow-y-auto border-b border-slate-300 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                    {pageData.posts.length > 0 ? (
+                    {posts.length > 0 ? (
                         <div className="grid grid-cols-4 gap-8">
-                            {pageData.posts.map((post) => (
+                            {posts.map((post) => (
                                 <PostListItem
                                     key={post.postId}
                                     id={post.postId}
@@ -189,63 +228,63 @@ export default async function CommunityPage({
                         </div>
                     )}
 
-                    {totalPages > 1 && (
-                        <div className="mr-[63px] mt-5">
-                            <Pagination>
-                                <PaginationContent>
-                                    {currentPage > 0 && (
-                                        <PaginationItem>
-                                            <PaginationPrevious
-                                                href={createPageHref({
-                                                    pageNumber: currentPage - 1,
-                                                    category: selectedCategory,
-                                                })}
-                                                text=""
-                                                className="h-8 w-8 border border-slate-200 bg-white p-0 text-slate-500 hover:text-slate-900"
-                                            />
-                                        </PaginationItem>
-                                    )}
+                    <div className="mr-[63px] mt-5">
+                        <Pagination>
+                            <PaginationContent>
+                                {currentPage > 1 && (
+                                    <PaginationItem>
+                                        <PaginationPrevious
+                                            href={createPageHref({
+                                                page: currentPage - 1,
+                                                category: selectedCategory,
+                                                keyword: searchKeyword,
+                                            })}
+                                            text=""
+                                            className="h-8 w-8 border border-slate-200 bg-white p-0 text-slate-500 hover:text-slate-900"
+                                        />
+                                    </PaginationItem>
+                                )}
 
-                                    {Array.from(
-                                        { length: totalPages },
-                                        (_, index) => index
-                                    ).map((pageNumber) => (
-                                        <PaginationItem key={pageNumber}>
-                                            <PaginationLink
-                                                href={createPageHref({
-                                                    pageNumber,
-                                                    category: selectedCategory,
-                                                })}
-                                                isActive={currentPage === pageNumber}
-                                                className={
-                                                    currentPage === pageNumber
-                                                        ? "h-8 w-8 border-indigo-300 bg-indigo-50 text-indigo-500 hover:bg-indigo-50"
-                                                        : "h-8 w-8 text-slate-500 hover:border-slate-200 hover:bg-white hover:text-slate-900"
-                                                }
-                                            >
-                                                {pageNumber + 1}
-                                            </PaginationLink>
-                                        </PaginationItem>
-                                    ))}
+                                {pageNumbers.map((pageNumber) => (
+                                    <PaginationItem key={pageNumber}>
+                                        <PaginationLink
+                                            href={createPageHref({
+                                                page: pageNumber,
+                                                category: selectedCategory,
+                                                keyword: searchKeyword,
+                                            })}
+                                            isActive={pageNumber === currentPage}
+                                            className={
+                                                pageNumber === currentPage
+                                                    ? "h-8 w-8 border-indigo-300 bg-indigo-50 p-0 text-xs font-black text-indigo-500 hover:bg-indigo-50"
+                                                    : "h-8 w-8 border border-slate-200 p-0 text-xs font-black text-slate-500 hover:bg-white hover:text-slate-900"
+                                            }
+                                        >
+                                            {pageNumber}
+                                        </PaginationLink>
+                                    </PaginationItem>
+                                ))}
 
-                                    {currentPage < totalPages - 1 && (
-                                        <PaginationItem>
-                                            <PaginationNext
-                                                href={createPageHref({
-                                                    pageNumber: currentPage + 1,
-                                                    category: selectedCategory,
-                                                })}
-                                                text=""
-                                                className="h-8 w-8 border border-slate-200 bg-white p-0 text-slate-500 hover:text-slate-900"
-                                            />
-                                        </PaginationItem>
-                                    )}
-                                </PaginationContent>
-                            </Pagination>
-                        </div>
-                    )}
+                                {currentPage < totalPages && (
+                                    <PaginationItem>
+                                        <PaginationNext
+                                            href={createPageHref({
+                                                page: currentPage + 1,
+                                                category: selectedCategory,
+                                                keyword: searchKeyword,
+                                            })}
+                                            text=""
+                                            className="h-8 w-8 border border-slate-200 bg-white p-0 text-slate-500 hover:text-slate-900"
+                                        />
+                                    </PaginationItem>
+                                )}
+                            </PaginationContent>
+                        </Pagination>
+                    </div>
                 </div>
             </section>
         </div>
     );
 }
+
+

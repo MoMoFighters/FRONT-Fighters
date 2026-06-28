@@ -169,7 +169,7 @@ export const getUsers = async (
             ])
       ).toString();
 
-   const response = await fetchWithAuth(`/api/v1/users?${queryString}`);
+   const response = await fetchWithAuth(`/api/v1/user/list?${queryString}`);
 
    if (!response.ok) {
 

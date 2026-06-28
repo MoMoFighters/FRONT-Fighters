@@ -1,9 +1,9 @@
-import { Eye, Heart, ImageIcon, UserRound } from "lucide-react";
+﻿import { Eye, Heart, ImageIcon, UserRound } from "lucide-react";
 import Link from "next/link";
 
 type CommunityCategory =
     | "STUDY"
-    | "FASHION"
+    | "ART"
     | "BEAUTY"
     | "FITNESS"
     | "COOK"
@@ -11,7 +11,7 @@ type CommunityCategory =
 
 const CATEGORY_LABEL: Record<CommunityCategory, string> = {
     STUDY: "학습",
-    FASHION: "패션",
+    ART: "예술",
     BEAUTY: "뷰티",
     FITNESS: "피트니스",
     COOK: "요리",
@@ -47,7 +47,7 @@ export default function PostListItem({
                 {thumbnailUrl ? (
                     <img
                         src={thumbnailUrl}
-                        alt={`${title} 썸네일`}
+                        alt={`${title} thumbnail`}
                         className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                     />
                 ) : (
@@ -80,7 +80,7 @@ export default function PostListItem({
                         {authorProfileImageUrl ? (
                             <img
                                 src={authorProfileImageUrl}
-                                alt={`${authorNickname} 프로필`}
+                                alt={`${authorNickname} profile`}
                                 className="h-full w-full object-cover"
                             />
                         ) : (
@@ -95,3 +95,4 @@ export default function PostListItem({
         </Link>
     );
 }
+

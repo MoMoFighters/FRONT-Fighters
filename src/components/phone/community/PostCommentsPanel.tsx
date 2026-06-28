@@ -14,6 +14,10 @@ export default function PostCommentsPanel({
     comments,
     hasNextCommentPage,
     onLoadMoreComments,
+    repliesByCommentId,
+    onLoadMoreReplies,
+    onCreateComment,
+    onCreateReply,
 }: PostCommentsPanelProps) {
     const parentComments = useMemo(
         () => comments.filter((item) => item.parentId === null),
@@ -39,7 +43,10 @@ export default function PostCommentsPanel({
                 </h2>
 
                 <div className="mt-2">
-                    <CommentInputBox postId={postId} />
+                    <CommentInputBox
+                        postId={postId}
+                        onSubmitComment={onCreateComment}
+                    />
                 </div>
             </div>
 
@@ -55,6 +62,7 @@ export default function PostCommentsPanel({
                             className="space-y-2"
                         >
                             <CommentItem
+                                key={parentComment.commentId}
                                 postId={postId}
                                 commentId={parentComment.commentId}
                                 content={parentComment.content}
@@ -65,6 +73,7 @@ export default function PostCommentsPanel({
                                 isWriter={parentComment.isWriter}
                                 createdAt={parentComment.createdAt}
                                 parentId={parentComment.parentId}
+                                onSubmitReply={onCreateReply}
                             />
 
                             {replies.length > 0 && (
@@ -82,9 +91,20 @@ export default function PostCommentsPanel({
                                             isWriter={reply.isWriter}
                                             createdAt={reply.createdAt}
                                             parentId={reply.parentId}
+                                            onSubmitReply={onCreateReply}
                                         />
                                     ))}
                                 </div>
+                            )}
+
+                            {repliesByCommentId[parentComment.commentId]?.hasMore && (
+                                <button
+                                    type="button"
+                                    onClick={() => onLoadMoreReplies(parentComment.commentId)}
+                                    className="ml-3 rounded-2xl border border-indigo-100 bg-white px-3 py-1.5 text-[11px] font-black text-indigo-500 transition hover:bg-indigo-50"
+                                >
+                                    ?듦? ??蹂닿린
+                                </button>
                             )}
                         </div>
                     );
