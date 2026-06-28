@@ -150,12 +150,6 @@ export default function ChatRoomArea({
                 const chatHistory = normalizeChatHistoryData(response.data);
 
                 applyChatHistory(chatHistory);
-
-                if (lastEnteredRoomIdRef.current !== currentRoomId) {
-                    lastEnteredRoomIdRef.current = currentRoomId;
-                    lastReadRequestedMessageIdRef.current = null;
-                    void readCurrentRoomMessage(currentRoomId);
-                }
             } catch {
                 applyChatHistory();
             }
@@ -166,7 +160,6 @@ export default function ChatRoomArea({
         currentRoomId,
         accessToken,
         applyChatHistory,
-        readCurrentRoomMessage,
     ]);
 
     useEffect(() => {
@@ -199,13 +192,25 @@ export default function ChatRoomArea({
                         );
                     }
                 );
+
+                if (lastEnteredRoomIdRef.current !== currentRoomId) {
+                    lastEnteredRoomIdRef.current = currentRoomId;
+                    lastReadRequestedMessageIdRef.current = null;
+                    void readCurrentRoomMessage(currentRoomId);
+                }
             },
         });
         return () => {
             subscription?.unsubscribe();
             client.disconnect();
         };
-    }, [currentRoomId, accessToken, applyChatHistory, requestReadMessage,]);
+    }, [
+        currentRoomId,
+        accessToken,
+        applyChatHistory,
+        requestReadMessage,
+        readCurrentRoomMessage,
+    ]);
 
     useEffect(() => {
         return () => {
