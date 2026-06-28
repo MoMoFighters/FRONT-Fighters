@@ -8,7 +8,7 @@ import {
     normalizeChatRoomListData,
     RawChatRoomListResponseData,
 } from "@/app/services/phone/chat/service";
-import { connectNoticeStomp } from "@/features/user/components/notification/stomp";
+import { connectNoticeStomp } from "@/lib/stomp/stomp";
 
 interface ChatRoomListPanelProps {
     accessToken: string;

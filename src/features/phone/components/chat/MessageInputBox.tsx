@@ -35,7 +35,7 @@ export default function MessageInputBox({ chatRoomId }: { chatRoomId: number | n
 
 'use client'
 
-import { type Dispatch, type SetStateAction, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { sendMessageAction } from "../../../chat/action";
 import { toast } from "sonner";
@@ -43,13 +43,9 @@ import { Send } from "lucide-react";
 
 interface Props {
     chatRoomId: number | null;
-    reload: {
-        reload: boolean;
-        setReload: Dispatch<SetStateAction<boolean>>;
-    }
 }
 
-export default function MessageInputBox({ chatRoomId, reload }: Props) {
+export default function MessageInputBox({ chatRoomId }: Props) {
 
     const inputRef = useRef<HTMLInputElement>(null);
     const [isSending, setIsSending] = useState(false);
@@ -76,7 +72,6 @@ export default function MessageInputBox({ chatRoomId, reload }: Props) {
         }
 
         setContent('');
-        reload.setReload(!reload.reload);
         setIsSending(false);
         focusInput();
     };

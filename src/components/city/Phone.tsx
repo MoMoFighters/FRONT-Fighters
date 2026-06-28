@@ -16,7 +16,7 @@ import calendar from "@/app/assets/img/phone-calendar.png";
 import tutorial from "@/app/assets/img/phone-tutorial.png";
 import community from "@/app/assets/img/phone-community.png";
 import { getNoticeAppCountsAction } from "@/features/user/components/notification/action";
-import { connectNoticeStomp } from "@/features/user/components/notification/stomp";
+import { connectNoticeStomp } from "@/lib/stomp/stomp";
 import { NoticeAppCountsData } from "@/features/user/components/notification/type";
 
 interface PhoneProps {

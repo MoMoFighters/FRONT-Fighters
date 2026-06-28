@@ -23,7 +23,7 @@ import {
 } from "@/features/chat/action";
 import { Button } from "../ui/button";
 import MyFriendListModal from "@/features/phone/components/friend/MyFriendListModal";
-import { connectNoticeStomp } from "@/features/user/components/notification/stomp";
+import { connectNoticeStomp } from "@/lib/stomp/stomp";
 
 interface ChatRoomAreaProps {
     currentRoomId: number | null;
@@ -52,8 +52,10 @@ export default function ChatRoomArea({
     const pathname = usePathname();
     const router = useRouter();
     const scrollRef = useRef<HTMLDivElement>(null);
+    const readMessageTimerRef = useRef<number | null>(null);
+    const isReadMessagePendingRef = useRef(false);
+    const lastReadRequestedMessageIdRef = useRef<number | null>(null);
 
-    const [reload, setReload] = useState(false);
     const [isBottom, setIsBottom] = useState(true);
     const [isLoadingOld, setIsLoadingOld] = useState(false);
     const [roomInfo, setRoomInfo] = useState<ChatRoomInfoData | null>(null);
@@ -68,6 +70,37 @@ export default function ChatRoomArea({
         setRoomInfo(chatHistory?.roomInfo ?? null);
         setMemberInfo(chatHistory?.memberInfo ?? []);
         setMessages(chatHistory?.messages ?? []);
+    }, []);
+
+    const requestReadMessage = useCallback((
+        roomId: number,
+        messageId?: number
+    ) => {
+        if (
+            messageId !== undefined &&
+            lastReadRequestedMessageIdRef.current === messageId
+        ) {
+            return;
+        }
+
+        if (messageId !== undefined) {
+            lastReadRequestedMessageIdRef.current = messageId;
+        }
+
+        if (readMessageTimerRef.current !== null || isReadMessagePendingRef.current) {
+            return;
+        }
+
+        readMessageTimerRef.current = window.setTimeout(async () => {
+            readMessageTimerRef.current = null;
+            isReadMessagePendingRef.current = true;
+
+            try {
+                await readMessageAction(roomId);
+            } finally {
+                isReadMessagePendingRef.current = false;
+            }
+        }, 700);
     }, []);
 
     const handleLeaveRoom = async (roomId: number) => {
@@ -97,9 +130,13 @@ export default function ChatRoomArea({
         const loadMessages = async () => {
             try {
                 const response = await getChatHistoryAction(currentRoomId);
+                const chatHistory = normalizeChatHistoryData(response.data);
 
-                applyChatHistory(normalizeChatHistoryData(response.data));
-                void readMessageAction(currentRoomId);
+                applyChatHistory(chatHistory);
+                requestReadMessage(
+                    currentRoomId,
+                    chatHistory?.messages.at(-1)?.messageId
+                );
             } catch {
                 applyChatHistory();
             }
@@ -109,8 +146,8 @@ export default function ChatRoomArea({
     }, [
         currentRoomId,
         accessToken,
-        reload,
         applyChatHistory,
+        requestReadMessage,
     ]);
 
     useEffect(() => {
@@ -131,23 +168,33 @@ export default function ChatRoomArea({
                             | ChatHistoryData[]
                             | ChatHistoryData;
                         const chatHistory = normalizeChatHistoryData(payload);
+                        const newestIncomingMessageId =
+                            chatHistory?.messages
+                                .filter((message) => !message.isMine)
+                                .at(-1)?.messageId;
 
                         applyChatHistory(chatHistory);
-                        void readMessageAction(currentRoomId);
+                        requestReadMessage(
+                            currentRoomId,
+                            newestIncomingMessageId
+                        );
                     }
                 );
             },
         });
-
         return () => {
             subscription?.unsubscribe();
             client.disconnect();
         };
-    }, [
-        currentRoomId,
-        accessToken,
-        applyChatHistory,
-    ]);
+    }, [currentRoomId, accessToken, applyChatHistory, requestReadMessage,]);
+
+    useEffect(() => {
+        return () => {
+            if (readMessageTimerRef.current !== null) {
+                window.clearTimeout(readMessageTimerRef.current);
+            }
+        };
+    }, []);
 
     const handleScroll = async (
         e: React.UIEvent<HTMLDivElement>
@@ -311,7 +358,6 @@ export default function ChatRoomArea({
                     <MessageInputBox
                         key={currentRoomId}
                         chatRoomId={currentRoomId}
-                        reload={{ reload, setReload }}
                     />
                 </div>
             </div>
