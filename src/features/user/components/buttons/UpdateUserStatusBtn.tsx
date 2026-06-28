@@ -38,7 +38,7 @@ export default function UpdateUserStatusBtn({ user }: { user: UserResponse }) {
 
 
             const result = await updateTeacherStatusAction(
-                String(user.id),
+                String(user.userId),
                 status
             );
 

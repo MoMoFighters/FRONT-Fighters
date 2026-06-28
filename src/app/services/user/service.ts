@@ -1,36 +1,44 @@
-﻿// 학생, 강사 - 마이페이지 기능
-
-import { Category } from "@/features/lecture/type";
-import { GetUsersRequest, GetUsersResponse, UpdateTeacherStatusRequest, UpdateTeacherStatusResponse } from "@/features/user/type";
+﻿import { Category } from "@/features/lecture/type";
+import { PendingTeacherDetail, PendingTeacherListRequest, PendingTeacherListResponse, userDetail, UserList, UserListRequest, UserListResponse } from "@/features/user/type";
 import { ApiResponse, fetchWithAuth } from "@/lib/api";
+import { notFound } from "next/navigation";
 
-/*
- - 내 상세 정보 조회
- - 내 정보 수정
-*/
-
-// 회원관련
-
-/*
- - 회원목록 전체조회 (페이지네이션)
- - 학생 목록 전체 조회? (쿼리파라미터 넘기고, 페이지네이션)
- - 강사 목록 전체 조회? (쿼리파라미터 넘기고, 페이지네이션)
- - 탈퇴 회원 전체 조회? (쿼리파라미터 넘기고, 페이지네이션)
-
- - 강사 증빙자료 조회
-                ㄴ> 유저 정보 불러올때 증빙자료 한번에 같이 넘어오는가? 확인하고, 위쪽으로 합칠수도 있음
-
-
- - 회원 상태 변경
-    ㄴ> 영구정지, 일시정지, 승인, 미승인, 정지해제
- 
-
- - 회원 영구 삭제 - m4 ????????????
- */
 const BASE_SERVER_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
+/**
+ * 에러핸들링을 진행하는 공통 함수
+ * @param response
+ * @returns X -> 에러를 던짐
+ */
+const handleErrorResponse = async (
+   response: Response,
+   options: { notFoundOn404?: boolean } = { notFoundOn404: true }
+) => {
+   if (response.status === 404 && options.notFoundOn404) {
+      notFound();
+   }
 
+   if (!response.ok) {
+      const errorData = await response.json();
 
+      throw new Error(
+         `${errorData.status}|${errorData.message}`
+      );
+   }
+};
+
+/**
+ * 에러가 나지 않았을 때 돌려주는 응답값을 정의하는 공통 함수
+ * @param result
+ * @returns result.data
+ */
+const assertApiData = <T>(result: ApiResponse<T>): T => {
+   if (!result.data) {
+      throw new Error(result.message);
+   }
+
+   return result.data;
+};
 
 // ==========================================
 // [SY-12] 내 상세 정보 조회 관련 타입 및 서비스
@@ -150,17 +158,24 @@ export const nicknameCheckService = async (
    return result;
 };
 
-// 관리자 - 회원 전체 조회
+// ==========================================
+// 관리자 회원 관리
+// ==========================================
 
+/**
+ * 회원 전체 조회 api
+ * @param payload 필터, 검색, 페이지네이션
+ * @returns UserListResponse
+ */
 export const getUsers = async (
-   payload: GetUsersRequest
-): Promise<GetUsersResponse> => {
+   payload: UserListRequest
+): Promise<UserListResponse> => {
 
    const queryString =
       new URLSearchParams(
          Object.entries(payload)
             .filter(
-               ([_, value]) =>
+               ([, value]) =>
                   value !== undefined
             )
             .map(([key, value]) => [
@@ -169,41 +184,133 @@ export const getUsers = async (
             ])
       ).toString();
 
-   const response = await fetchWithAuth(`/api/v1/users?${queryString}`);
+   const response = await fetchWithAuth(`/api/v1/user/list?${queryString}`);
+   await handleErrorResponse(response);
+   const result: ApiResponse<Omit<UserListResponse, "users"> & {
+      users: Array<Omit<UserList, "userId"> & { id: number }>;
+   }> = await response.json();
+   const data = assertApiData(result);
 
-   if (!response.ok) {
-
-      const errorData =
-         await response.json();
-
-      throw new Error(
-         `${errorData.status}|${errorData.message}`
-      );
-   }
-
-   const result =
-      await response.json();
-
-
-   return result.data;
+   return {
+      ...data,
+      users: data.users.map(({ id, ...user }) => ({
+         ...user,
+         userId: id,
+      })),
+   };
 }
 
-// 관리자 - 강사 승인
+/**
+ * 유저 상세 조회 api
+ * @param id 상세 조회할 유저의 id
+ * @returns userDetail
+ */
+export const getUserById = async (id: string): Promise<userDetail> => {
 
-export const updateTeacherStatus = async (userId: string, payload: UpdateTeacherStatusRequest): Promise<UpdateTeacherStatusResponse> => {
-   const response = await fetchWithAuth(`/api/v1/users/${userId}/role`, {
-      method: 'PATCH',
-      body: JSON.stringify(payload),
+   const response = await fetchWithAuth(`/api/v1/user/list/detail/${id}`);
+   await handleErrorResponse(response);
+   const result: ApiResponse<userDetail> = await response.json();
+   return assertApiData(result);
+}
+
+/**
+ * 승인 대기 강사 전체 조회 api
+ * @param payload 검색, 페이지네이션
+ * @returns PendingTeacherListResponse
+ */
+export const getPendingTeachers = async (
+   payload: PendingTeacherListRequest
+): Promise<PendingTeacherListResponse> => {
+
+   const queryString =
+      new URLSearchParams(
+         Object.entries(payload)
+            .filter(
+               ([, value]) =>
+                  value !== undefined
+            )
+            .map(([key, value]) => [
+               key,
+               String(value)
+            ])
+      ).toString();
+
+   const response = await fetchWithAuth(`/api/v1/teacher-applications?${queryString}`);
+   await handleErrorResponse(response);
+   const result: ApiResponse<PendingTeacherListResponse> = await response.json();
+   return assertApiData(result);
+}
+
+/**
+ * 승인 대기 강사 상세 조회 api
+ * @param id 상세 조회할 강사의 id
+ * @returns PendingTeacherDetail
+ */
+export const getPendingTeacherById = async (id: string): Promise<PendingTeacherDetail> => {
+
+   const response = await fetchWithAuth(`/api/v1/teacher-application-detail/${id}`);
+   await handleErrorResponse(response);
+   const result: ApiResponse<PendingTeacherDetail> = await response.json();
+   return assertApiData(result);
+}
+
+/**
+ * 강사 개별 및 일괄 승인 api
+ * @param ids 승인할 강사의 id 들
+ * @returns 
+ */
+export const approvePendingTeacher = async (ids: string[]) => {
+   const response = await fetchWithAuth('/api/v1/application-approve', {
+      method: "PATCH",
+      body: JSON.stringify({
+         userId: ids.map(Number),
+      })
    });
 
-   if (!response.ok) {
-      const errorData = await response.json();
+   await handleErrorResponse(response, { notFoundOn404: false });
+   return response.json();
+}
 
-      throw new Error(
-         `${errorData.status}|${errorData.message}`
-      );
-   }
+/**
+ * 강사 승인 거절 api
+ * @param id 승인 거절할 강사의 id
+ * @param reason 거절 사유
+ * @returns 
+ */
+export const rejectPendingTeacher = async (id: string, reason: { reason: string }) => {
+   const response = await fetchWithAuth(`/api/v1/application-reject/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(reason)
+   });
 
-   const result = await response.json();
-   return result.data;
+   await handleErrorResponse(response, { notFoundOn404: false });
+   return response.json();
+}
+
+/**
+ * 유저 제재 횟수 늘리는 api
+ * @param id 제재 횟수 늘릴 유저의 id
+ * @returns 
+ */
+export const plusReportCount = async (id: string) => {
+   const response = await fetchWithAuth(`/api/v1/user/plus/report-count/${id}`, {
+      method: "PATCH",
+   });
+
+   await handleErrorResponse(response, { notFoundOn404: false });
+   return response.json();
+}
+
+/**
+ * 유저 제재 횟수 늘리는 api
+ * @param id 제재 횟수 줄일 유저의 id
+ * @returns 
+ */
+export const minusReportCount = async (id: string) => {
+   const response = await fetchWithAuth(`/api/v1/user/minus/report-count/${id}`, {
+      method: "PATCH",
+   });
+
+   await handleErrorResponse(response, { notFoundOn404: false });
+   return response.json();
 }

@@ -1,4 +1,4 @@
-﻿import { getUsers } from "@/app/services/user/service";
+import { getPendingTeachers, getUsers } from "@/app/services/user/service";
 import {
     Pagination,
     PaginationContent,
@@ -22,45 +22,9 @@ interface UserManagePageProps {
     }>
 }
 
-const DUMMY_PENDING_TEACHERS = [
-    // TODO: 승인 대기 강사 조회 API 또는 회원 전체 조회 응답에 PENDING 강사가 포함되면 제거한다.
-    {
-        id: -101,
-        name: "김하나",
-        role: "TEACHER",
-        email: "hana.teacher@momocity.com",
-        createdAt: "2026-06-18",
-        status: "PENDING",
-        proof: "/dummy-teacher-proof.pdf",
-    },
-    {
-        id: -102,
-        name: "이준호",
-        role: "TEACHER",
-        email: "junho.teacher@momocity.com",
-        createdAt: "2026-06-17",
-        status: "PENDING",
-        proof: "/dummy-teacher-proof.pdf",
-    },
-];
-
-const DUMMY_DELETED_USERS = [
-    // TODO: 탈퇴 회원 조회 API 응답이 준비되면 제거한다.
-    {
-        id: -201,
-        name: "탈퇴회원 예시",
-        role: "STUDENT",
-        email: "deleted.member@momocity.com",
-        createdAt: "2026-04-18",
-        deletedAt: "2026-06-19",
-        status: "DELETED",
-    },
-];
-
 export default async function UserManagePage({
     searchParams
 }: UserManagePageProps) {
-
     const { role, status, keyword, page } = await searchParams;
     const currentView = status === "pending"
         ? "pending"
@@ -68,53 +32,37 @@ export default async function UserManagePage({
             ? "deleted"
             : "all";
 
-    const payload = {
-        role: currentView === "all" ? role?.toUpperCase() : undefined,
-        status: undefined,
-        keyword,
-        page
-    };
+    const usersData = currentView === "pending"
+        ? undefined
+        : await getUsers({
+            role: currentView === "all" ? role?.toUpperCase() : undefined,
+            status: currentView === "deleted" ? "DELETED" : undefined,
+            keyword,
+            page,
+        });
 
-    const usersData = await getUsers(payload);
+    const pendingTeachersData = currentView === "pending"
+        ? await getPendingTeachers({
+            keyword,
+            page,
+        })
+        : undefined;
 
-    const currentPage =
-        usersData.page;
-
-    // 현재 회원 목록 API가 상태 필터를 지원하지 않아, 응답 데이터를 탭 목적에 맞게 화면에서 분리한다.
-    const displayedUsers = usersData.users.filter((user) => {
-        if (currentView === "pending") {
-            return user.role === "TEACHER" && user.status === "PENDING";
-        }
-
-        if (currentView === "deleted") {
-            return user.status === "DELETED";
-        }
-
-        return user.status !== "PENDING" && user.status !== "DELETED";
-    });
-    const pendingUsers = currentView === "pending" && displayedUsers.length === 0
-        ? DUMMY_PENDING_TEACHERS
-        : displayedUsers;
-    const deletedUsers = currentView === "deleted" && displayedUsers.length === 0
-        ? DUMMY_DELETED_USERS
-        : displayedUsers;
-
-    const totalPages =
-        usersData.totalPages;
+    const currentPage = pendingTeachersData?.page ?? usersData?.page ?? 1;
+    const totalPages = pendingTeachersData?.totalPages ?? usersData?.totalPages ?? 1;
     const currentViewUsers = currentView === "pending"
-        ? pendingUsers
-        : currentView === "deleted"
-            ? deletedUsers
-            : displayedUsers;
+        ? pendingTeachersData?.applications ?? []
+        : usersData?.users ?? [];
+    console.log(currentViewUsers);
+    const currentPageSize = pendingTeachersData?.size ?? usersData?.size ?? 0;
     const shouldShowPagination = totalPages > 1 && (
         currentPage > 1 ||
-        currentViewUsers.length >= usersData.size
+        currentViewUsers.length >= currentPageSize
     );
 
     const createPageHref = (
         pageNumber: number
     ) => {
-
         const params =
             new URLSearchParams();
 
@@ -168,10 +116,10 @@ export default async function UserManagePage({
             />
 
             {currentView === "pending" ? (
-                <PendingTeacherTable users={pendingUsers} />
+                <PendingTeacherTable users={pendingTeachersData?.applications ?? []} />
             ) : (
                 <AdminUsersList
-                    users={currentView === "deleted" ? deletedUsers : displayedUsers}
+                    users={usersData?.users ?? []}
                     view={currentView === "deleted" ? "deleted" : "all"}
                 />
             )}
