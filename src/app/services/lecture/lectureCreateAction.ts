@@ -54,6 +54,7 @@ export const createLectureWithChaptersAction = async (
             orderNo: number;
             durationSec: number;
             videoFile: File;
+            thumbnailFile?: File;
         }> = [];
 
         for (
@@ -72,6 +73,11 @@ export const createLectureWithChaptersAction = async (
                     `video_${i}`
                 ) as File;
 
+            const thumbnailFile =
+                formData.get(
+                    `chapterThumbnail_${i}`
+                ) as File;
+
             const durationSec =
                 Number(
                     formData.get(
@@ -86,6 +92,11 @@ export const createLectureWithChaptersAction = async (
                     orderNo: i,
                     durationSec,
                     videoFile,
+                    thumbnailFile:
+                        thumbnailFile &&
+                            thumbnailFile.size > 0
+                            ? thumbnailFile
+                            : undefined,
                 });
             }
         }
@@ -132,6 +143,9 @@ export const createLectureWithChaptersAction = async (
 
                         orderNo:
                             chapter.orderNo,
+
+                        thumbnailFile:
+                            chapter.thumbnailFile,
                     },
                     accessToken
                 );
