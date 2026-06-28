@@ -2,6 +2,7 @@ import { Chapter } from "@/features/lecture/type";
 import AdminLectureDeleteButton from "./AdminLectureDeleteButton";
 
 interface AdminChapterVideoProps {
+    lectureId: string;
     lectureTitle: string;
     chapter: Chapter;
     presignedUrl: string;
@@ -15,6 +16,7 @@ const formatDuration = (durationSec: number) => {
 };
 
 export default function AdminChapterVideo({
+    lectureId,
     lectureTitle,
     chapter,
     presignedUrl,
@@ -42,7 +44,13 @@ export default function AdminChapterVideo({
                         <p className="mt-1 font-bold text-slate-950">{formatDuration(chapter.durationSec)}</p>
                     </div>
                 </div>
-                <AdminLectureDeleteButton target="챕터" targetId={chapter.chapterId} variant="button" />
+                <AdminLectureDeleteButton
+                    target="챕터"
+                    targetId={chapter.chapterId}
+                    lectureId={lectureId}
+                    variant="button"
+                    successHref={`/admin/lectures/${lectureId}`}
+                />
             </div>
         </section>
     );

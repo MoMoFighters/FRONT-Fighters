@@ -4,10 +4,14 @@ import { Review } from "@/features/lecture/type";
 import AdminLectureDeleteButton from "./AdminLectureDeleteButton";
 
 interface AdminReviewListProps {
+    lectureId: string;
     reviews: Review[];
 }
 
-export default function AdminReviewList({ reviews }: AdminReviewListProps) {
+export default function AdminReviewList({
+    lectureId,
+    reviews,
+}: AdminReviewListProps) {
     if (reviews.length === 0) {
         return (
             <div className="flex h-72 flex-col items-center justify-center gap-4 text-slate-400">
@@ -39,7 +43,11 @@ export default function AdminReviewList({ reviews }: AdminReviewListProps) {
                         </div>
                         <p className="mt-3 text-sm font-medium leading-6 text-slate-500">{review.content}</p>
                     </div>
-                    <AdminLectureDeleteButton target="수강평" targetId={review.reviewId} />
+                    <AdminLectureDeleteButton
+                        target="수강평"
+                        targetId={review.reviewId}
+                        lectureId={lectureId}
+                    />
                 </article>
             ))}
         </div>

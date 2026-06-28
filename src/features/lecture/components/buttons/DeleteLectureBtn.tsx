@@ -3,7 +3,9 @@
 import { Button } from "@/components/ui/button";
 import DeleteModal from "@/features/modal/DeleteModal";
 import { Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { deleteLectureAction } from "../../action";
 
 interface DeleteLectureBtnProps {
     id: number;
@@ -14,24 +16,22 @@ export default function DeleteLectureBtn({
     id,
     mode,
 }: DeleteLectureBtnProps) {
+    const router = useRouter();
 
     const handleDeleteLecture = async () => {
+        const result = await deleteLectureAction(String(id));
 
-        try {
-
-
-            // await deleteLectureAction(id);
-
-            toast.success('성공적으로 삭제되었습니다.', {
+        if (!result.success) {
+            toast.error(result.message ?? '강의 삭제에 실패했습니다.', {
                 duration: 1000
             });
-
-        } catch {
-
-            toast.error('강의 삭제에 실패했습니다.', {
-                duration: 1000
-            });
+            return;
         }
+
+        toast.success(result.message ?? '강의를 삭제했습니다.', {
+            duration: 1000
+        });
+        router.refresh();
     };
 
     return (
