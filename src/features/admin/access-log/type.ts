@@ -1,13 +1,23 @@
-export type AccessLogRole = "STUDENT" | "TEACHER" | "ADMIN";
+// 접근 로그 타입 정의
 
-export interface AdminAccessLog {
-    id: number;
-    country: string;
-    ipAddress: string;
+import { UserRole } from "@/features/user/type";
+
+export type Action = "LOGIN" | "LOGOUT" | "FORBIDDEN";
+
+export interface AccessLog {
+    logId: number;
+    userId?: number;
+    userName?: string;
+    userRole?: UserRole;
+    ip: string;
+    action: Action;
     accessedAt: string;
-    isSuccess: boolean;
-    user?: {
-        name: string;
-        role: AccessLogRole;
-    };
+}
+
+export interface AccessLogResponse {
+    items: AccessLog[];
+    page: number;
+    size: number;
+    totalElements: number;
+    totalPages: number;
 }

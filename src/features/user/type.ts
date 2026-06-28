@@ -4,6 +4,12 @@ export type UserRole = 'STUDENT' | 'TEACHER' | 'ADMIN';
 export type UserStatus = 'ACTIVE' | 'PENDING' | 'REJECTED' | 'BANNED' | 'BLACK' | 'DELETED';
 export type UserCategory = 'FITNESS' | 'STUDY' | 'COOK' | 'BEAUTY' | 'ART';
 
+export const USER_ROLE_LABEL: Record<UserRole, string> = {
+    STUDENT: "수강생",
+    TEACHER: "강사",
+    ADMIN: "관리자",
+};
+
 export interface User {
     id: number;
     name: string;
