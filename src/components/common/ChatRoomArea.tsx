@@ -55,6 +55,7 @@ export default function ChatRoomArea({
     const readMessageTimerRef = useRef<number | null>(null);
     const isReadMessagePendingRef = useRef(false);
     const lastReadRequestedMessageIdRef = useRef<number | null>(null);
+    const lastEnteredRoomIdRef = useRef<number | null>(null);
 
     const [isBottom, setIsBottom] = useState(true);
     const [isLoadingOld, setIsLoadingOld] = useState(false);
@@ -103,6 +104,20 @@ export default function ChatRoomArea({
         }, 700);
     }, []);
 
+    const readCurrentRoomMessage = useCallback(async (roomId: number) => {
+        if (isReadMessagePendingRef.current) {
+            return;
+        }
+
+        isReadMessagePendingRef.current = true;
+
+        try {
+            await readMessageAction(roomId);
+        } finally {
+            isReadMessagePendingRef.current = false;
+        }
+    }, []);
+
     const handleLeaveRoom = async (roomId: number) => {
         const response = await leaveChatroomAction(roomId);
 
@@ -123,6 +138,8 @@ export default function ChatRoomArea({
 
     useEffect(() => {
         if (!currentRoomId) {
+            lastEnteredRoomIdRef.current = null;
+            lastReadRequestedMessageIdRef.current = null;
             applyChatHistory();
             return;
         }
@@ -133,10 +150,12 @@ export default function ChatRoomArea({
                 const chatHistory = normalizeChatHistoryData(response.data);
 
                 applyChatHistory(chatHistory);
-                requestReadMessage(
-                    currentRoomId,
-                    chatHistory?.messages.at(-1)?.messageId
-                );
+
+                if (lastEnteredRoomIdRef.current !== currentRoomId) {
+                    lastEnteredRoomIdRef.current = currentRoomId;
+                    lastReadRequestedMessageIdRef.current = null;
+                    void readCurrentRoomMessage(currentRoomId);
+                }
             } catch {
                 applyChatHistory();
             }
@@ -147,7 +166,7 @@ export default function ChatRoomArea({
         currentRoomId,
         accessToken,
         applyChatHistory,
-        requestReadMessage,
+        readCurrentRoomMessage,
     ]);
 
     useEffect(() => {
