@@ -1,6 +1,6 @@
 import AdminPageHeader from "@/features/admin/components/AdminPageHeader";
-import { DUMMY_ACCESS_LOGS } from "@/features/admin/access-log/constants/dummyAccessLogs";
 import AdminAccessLogList from "@/features/admin/access-log/components/AdminAccessLogList";
+import { getAccessLogs } from "@/app/services/access-log/service";
 import {
     Pagination,
     PaginationContent,
@@ -14,19 +14,15 @@ interface AdminAccessLogsPageProps {
     searchParams: Promise<{ page?: string }>;
 }
 
-const ACCESS_LOGS_PER_PAGE = 20;
-
 export default async function AdminAccessLogsPage({
     searchParams,
 }: AdminAccessLogsPageProps) {
     const { page } = await searchParams;
-    const totalPages = Math.ceil(DUMMY_ACCESS_LOGS.length / ACCESS_LOGS_PER_PAGE);
     const requestedPage = Number(page) || 1;
-    const currentPage = Math.min(Math.max(requestedPage, 1), totalPages);
-    const logs = DUMMY_ACCESS_LOGS.slice(
-        (currentPage - 1) * ACCESS_LOGS_PER_PAGE,
-        currentPage * ACCESS_LOGS_PER_PAGE,
-    );
+    const accessLogResponse = await getAccessLogs(requestedPage);
+    const totalPages = accessLogResponse.totalPages;
+    const currentPage = accessLogResponse.page || requestedPage;
+    const logs = accessLogResponse.items;
 
     return (
         <div className="mx-auto w-full max-w-360 pb-10">
@@ -36,7 +32,7 @@ export default async function AdminAccessLogsPage({
             />
 
             <p className="mb-4 text-sm font-semibold text-slate-500">
-                전체 접근 기록 <span className="text-indigo-500">{DUMMY_ACCESS_LOGS.length}</span>건
+                전체 접근 기록 <span className="text-indigo-500">{accessLogResponse.totalElements}</span>건
             </p>
 
             <AdminAccessLogList logs={logs} />

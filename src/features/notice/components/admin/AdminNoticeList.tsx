@@ -76,27 +76,26 @@ export default function AdminNoticeList({ notices: initialNotices }: AdminNotice
         setPinTarget(null);
     };
 
-    const isBlockedPinChange =
-        pinTarget !== null &&
-        !pinTarget.isPinned &&
-        pinnedNotice !== undefined &&
-        pinnedNotice.noticeId !== pinTarget.noticeId;
+    const handleClickPin = (notice: Notice) => {
+        if (
+            !notice.isPinned &&
+            pinnedNotice !== undefined &&
+            pinnedNotice.noticeId !== notice.noticeId
+        ) {
+            toast.info("이미 고정되어 있는 공지사항이 존재합니다.");
+            return;
+        }
+
+        setPinTarget(notice);
+    };
 
     const pinModalTitle = pinTarget?.isPinned
         ? "공지 고정을 해제할까요?"
-        : isBlockedPinChange
-            ? "이미 고정된 공지가 있습니다."
-            : "공지사항을 고정할까요?";
+        : "공지사항을 고정할까요?";
 
     const pinModalDescription = pinTarget?.isPinned
         ? "고정을 해제하면 해당 공지는 더 이상 상단 고정으로 표시되지 않습니다."
-        : isBlockedPinChange
-            ? `고정 공지는 1개만 설정할 수 있습니다.\n현재 고정된 "${pinnedNotice?.title}" 공지를 먼저 해제해주세요.`
-            : "고정 공지는 1개만 설정할 수 있으며, 관리자 공지 목록에서 강조 표시됩니다.";
-
-    const pinModalConfirm = isBlockedPinChange
-        ? () => setPinTarget(null)
-        : handleConfirmPin;
+        : "고정 공지는 1개만 설정할 수 있으며, 관리자 공지 목록에서 강조 표시됩니다.";
 
     const getPinLabel = (notice: Notice) => {
         if (notice.isPinned) {
@@ -180,7 +179,7 @@ export default function AdminNoticeList({ notices: initialNotices }: AdminNotice
 
                             <button
                                 type="button"
-                                onClick={() => setPinTarget(notice)}
+                                onClick={() => handleClickPin(notice)}
                                 aria-label={getPinLabel(notice)}
                                 title={getPinLabel(notice)}
                                 className="mx-auto flex size-8 cursor-pointer items-center justify-center rounded-full text-slate-300 transition hover:bg-indigo-50 hover:text-indigo-500"
@@ -202,7 +201,7 @@ export default function AdminNoticeList({ notices: initialNotices }: AdminNotice
                 onOpenChange={(open) => !open && setPinTarget(null)}
                 title={pinModalTitle}
                 description={pinModalDescription}
-                onConfirm={pinModalConfirm}
+                onConfirm={handleConfirmPin}
             />
         </section>
     );
