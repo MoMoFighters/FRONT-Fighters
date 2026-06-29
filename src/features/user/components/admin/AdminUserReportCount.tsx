@@ -30,6 +30,7 @@ export default function AdminUserReportCount({
         setIsSubmitting(true);
 
         try {
+            // 모달에서 확정한 증감 방향에 맞춰 서버 액션을 호출한다.
             const result = pendingDelta === 1
                 ? await increaseReportCountAction(String(userId))
                 : await decreaseReportCountAction(String(userId));

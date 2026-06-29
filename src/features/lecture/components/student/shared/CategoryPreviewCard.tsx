@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 import { Category } from "@/features/lecture/type";
 import getCategoryMeta from "@/features/lecture/components/student/shared/category";
 

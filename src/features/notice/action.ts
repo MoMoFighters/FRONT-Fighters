@@ -20,6 +20,7 @@ export type NoticeActionState = {
 };
 
 const getNoticeFormValues = (formData: FormData) => {
+    // 유효성 실패 시 입력값을 폼에 다시 돌려주기 위해 값을 한곳에서 정리한다.
     const title = String(formData.get("title") ?? "").trim();
     const content = String(formData.get("content") ?? "").trim();
 
@@ -50,6 +51,7 @@ const validateNoticeForm = ({
 };
 
 const getActionErrorMessage = (error: unknown) => {
+    // 서비스 함수에서 던진 status|message 형식은 관리자에게 message 위주로 보여준다.
     if (error instanceof Error) {
         const [status, message] = error.message.split("|");
 
@@ -165,6 +167,7 @@ export const deleteNoticeAction = async (ids: string[]): Promise<NoticeActionSta
     }
 
     try {
+        // 1개 선택은 단건 삭제 API, 2개 이상은 일괄 삭제 API를 호출한다.
         if (ids.length === 1) {
             await deleteNoticeById(ids[0]);
         } else {

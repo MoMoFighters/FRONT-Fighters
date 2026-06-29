@@ -47,6 +47,7 @@ export default function VideoPlayer({
     const router = useRouter();
     const videoRef = useRef<HTMLVideoElement>(null);
     const isSavingRef = useRef(false);
+    const hasSaveErrorToastShownRef = useRef(false);
     const savePromiseRef = useRef<Promise<UpdateVideoProgressResponse | undefined> | null>(null);
     const playbackSecondsRef = useRef(lastPositionSec);
     const isCompletedRef = useRef(chapter.isCompleted ?? false);
@@ -76,6 +77,7 @@ export default function VideoPlayer({
     const saveProgress = useCallback(async (
         playbackSeconds = playbackSecondsRef.current
     ): Promise<UpdateVideoProgressResponse | undefined> => {
+        // 중복 저장 요청을 막고 진행 중인 저장 요청이 있으면 같은 Promise를 재사용한다.
         if (isSavingRef.current) {
             return savePromiseRef.current ?? undefined;
         }
@@ -97,8 +99,12 @@ export default function VideoPlayer({
                 }
 
                 return result;
-            } catch (error) {
-                console.error(error);
+            } catch {
+                if (!hasSaveErrorToastShownRef.current) {
+                    hasSaveErrorToastShownRef.current = true;
+                    toast.error("학습 기록 저장에 실패했습니다.");
+                }
+
                 return undefined;
             } finally {
                 isSavingRef.current = false;

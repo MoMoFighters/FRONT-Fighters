@@ -10,11 +10,13 @@ import { deleteLectureAction } from "../../action";
 interface DeleteLectureBtnProps {
     id: number;
     mode: 'icon' | 'text';
+    successHref?: string;
 }
 
 export default function DeleteLectureBtn({
     id,
     mode,
+    successHref,
 }: DeleteLectureBtnProps) {
     const router = useRouter();
 
@@ -31,6 +33,12 @@ export default function DeleteLectureBtn({
         toast.success(result.message ?? '강의를 삭제했습니다.', {
             duration: 1000
         });
+
+        if (successHref) {
+            router.replace(successHref);
+            return;
+        }
+
         router.refresh();
     };
 

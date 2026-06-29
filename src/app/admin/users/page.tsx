@@ -53,7 +53,6 @@ export default async function UserManagePage({
     const currentViewUsers = currentView === "pending"
         ? pendingTeachersData?.applications ?? []
         : usersData?.users ?? [];
-    console.log(currentViewUsers);
     const currentPageSize = pendingTeachersData?.size ?? usersData?.size ?? 0;
     const shouldShowPagination = totalPages > 1 && (
         currentPage > 1 ||
@@ -63,6 +62,7 @@ export default async function UserManagePage({
     const createPageHref = (
         pageNumber: number
     ) => {
+        // 현재 검색/탭 조건은 유지하고 페이지 번호만 교체한다.
         const params =
             new URLSearchParams();
 

@@ -30,7 +30,7 @@ export default async function TeacherMainPage() {
     const averageRating =
         activeLectures.length > 0
             ? activeLectures.reduce(
-                (sum, lecture) => sum + lecture.averageRating,
+                (sum, lecture) => sum + (lecture.averageRating ?? 0),
                 0
             ) / activeLectures.length
             : 0;

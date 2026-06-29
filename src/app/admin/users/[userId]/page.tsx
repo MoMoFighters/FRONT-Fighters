@@ -18,6 +18,7 @@ interface AdminUserDetailPageProps {
 }
 
 const formatAdminDateTime = (dateTime?: string | null) => {
+    // 관리자 화면의 날짜는 T를 공백으로 바꾸고 분 단위까지만 보여준다.
     if (!dateTime) {
         return "-";
     }
@@ -80,7 +81,6 @@ export default async function AdminUserDetailPage({ params, searchParams }: Admi
     }
 
     const user = await getUserById(userId);
-    console.log(user);
     const categoryMeta = user.category ? getCategoryMeta(user.category) : null;
 
     return (
