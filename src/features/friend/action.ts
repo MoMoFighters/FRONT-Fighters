@@ -6,6 +6,7 @@ import type { ApiResponse } from "@/lib/api";
 import {
     searchUserService,
     getFriendsService,
+    getStudentFriendsService,
     getBlockedFriendsService,
     sendFriendRequestService,
     cancelFriendRequestService,
@@ -15,6 +16,7 @@ import {
     unblockFriendService,
     deleteFriendService,
 } from "@/app/services/phone/friend/service";
+import type { StudentFriendData, StudentFriendListResponse } from "./type";
 
 type FriendStatus = "none" | "SENT" | "RECEIVED" | "FRIEND" | "BLOCK";
 
@@ -147,3 +149,27 @@ export const updateFriendStatus = async (
         );
     }
 };
+
+export const getStudentFriendListAction =
+    async (): Promise<StudentFriendListResponse> => {
+        try {
+            const accessToken = await getAccessToken();
+
+            if (!accessToken) {
+                return {
+                    timestamp: new Date().toISOString(),
+                    status: 401,
+                    code: "UNAUTHORIZED",
+                    message: "로그인이 필요합니다.",
+                    data: [],
+                };
+            }
+
+            return await getStudentFriendsService(accessToken);
+        } catch (error) {
+            return createErrorResponse<StudentFriendData[]>(
+                error,
+                "강사 제외 친구 목록 조회에 실패했습니다."
+            );
+        }
+    };

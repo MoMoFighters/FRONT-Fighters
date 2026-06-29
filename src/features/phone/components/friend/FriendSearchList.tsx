@@ -7,7 +7,7 @@ import { searchUserAction } from "@/features/friend/action";
 
 interface FriendInfo {
     userId: number;
-    name: string;
+    nickname: string;
     status: "none" | "SENT" | "FRIEND" | "RECEIVED" | "BLOCK";
     role: "STUDENT" | "TEACHER";
     profileImageUrl: string;
@@ -23,6 +23,7 @@ export default function FriendSearchList() {
         e.preventDefault();
 
         const response = await searchUserAction(searchValue);
+        console.log(response, "?")
 
         if (response.status < 200 || response.status >= 300) {
             setUsers([]);
@@ -36,7 +37,7 @@ export default function FriendSearchList() {
             .filter(user => user.role === "STUDENT")
             .map(user => ({
                 userId: user.userId,
-                name: user.name ?? "이름 없음",
+                nickname: user.nickname ?? "이름 없음",
                 status: user.status,
                 role: user.role,
                 profileImageUrl: user.profileImageUrl ?? "",
@@ -90,7 +91,7 @@ export default function FriendSearchList() {
                                     key={user.userId}
                                     friendInfo={{
                                         userId: user.userId,
-                                        name: user.name,
+                                        name: user.nickname,
                                         status: user.status,
                                         profile: user.profileImageUrl,
                                     }}

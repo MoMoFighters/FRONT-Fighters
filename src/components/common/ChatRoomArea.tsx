@@ -368,6 +368,8 @@ export default function ChatRoomArea({
                     ) : (
                         messages.map((message) => (
                             <ChatItem
+                                profileImg={message.profileImageUrl || ""}
+                                nickname={message?.nickname || message?.name || "알 수 없음"}
                                 key={`${message.type ?? "message"}-${message.messageId}`}
                                 id={message.messageId}
                                 isMine={message.type ? null : message.isMine}
