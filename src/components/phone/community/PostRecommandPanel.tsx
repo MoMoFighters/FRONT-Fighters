@@ -5,6 +5,7 @@ import type { PostRecommandPanelProps } from "./PostDetailSide";
 export default function PostRecommandPanel({
     currentPostId,
     posts,
+    role
 }: PostRecommandPanelProps) {
     return (
         <>
@@ -30,6 +31,7 @@ export default function PostRecommandPanel({
                         likeCount={item.likeCount}
                         commentCount={item.commentCount}
                         isActive={item.postId === currentPostId}
+                        role={role}
                     />
                 ))}
                 {/* TODO: Extract recommended post item later. */}

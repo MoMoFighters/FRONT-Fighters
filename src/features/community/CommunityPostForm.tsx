@@ -24,6 +24,7 @@ interface CommunityPostFormProps {
     data?: {
         postId?: number | string;
     };
+    role?: "TEACHER" | "ADMIN"
 }
 
 interface PostContentBlock {
@@ -61,7 +62,7 @@ const mergeContent = (prevContent: string, nextContent: string) => {
         .join("\n");
 };
 
-export default function CommunityPostForm({ mode, data, }: CommunityPostFormProps) {
+export default function CommunityPostForm({ mode, data, role }: CommunityPostFormProps) {
     const router = useRouter();
 
     const [title, setTitle] = useState("");
@@ -81,10 +82,22 @@ export default function CommunityPostForm({ mode, data, }: CommunityPostFormProp
         isSubmitting ||
         title.trim().length === 0 ||
         (hasImage && thumbnailId === null);
-    const backHref =
-        mode === "EDIT" && data?.postId
-            ? `/student/phone/community/${data.postId}`
-            : "/student/phone/community";
+    const backHref = (() => {
+        const getBaseUrl = () => {
+            // role이 'TEACHER'나 'ADMIN'이 아니면(undefined 포함) 학생 경로 반환
+            if (role === "TEACHER") return "/teacher/community";
+            if (role === "ADMIN") return "/admin/community";
+            return "/student/phone/community";
+        };
+
+        const baseUrl = getBaseUrl();
+
+        if (mode === "EDIT" && data?.postId) {
+            return `${baseUrl}/${data.postId}`;
+        }
+
+        return baseUrl;
+    })();
 
     useEffect(() => {
         mainContentRef.current = mainContent;
@@ -338,7 +351,7 @@ export default function CommunityPostForm({ mode, data, }: CommunityPostFormProp
     return (
         <form
             onSubmit={handleSubmit}
-            className="flex h-full min-h-0 flex-col rounded-3xl bg-white/85 p-5 shadow-sm ring-1 ring-slate-200/80 backdrop-blur"
+            className={`flex h-full min-h-0 flex-col rounded-3xl bg-white/85 p-5 shadow-sm ring-1 ring-slate-200/80 backdrop-blur ${role === 'TEACHER' || role === 'ADMIN' ? "min-h-[calc(100vh-170px)]" : ""}`}
         >
             <input
                 type="hidden"

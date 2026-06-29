@@ -43,6 +43,9 @@ function CommentRepliesBlock({
     onCreateReply: PostCommentsPanelProps["onCreateReply"];
 }) {
     const [isOpen, setIsOpen] = useState(false);
+    const initialReplies = parentComment.replies ?? [];
+    const initialReplyCursor =
+        initialReplies.length > 0 ? parentComment.nextReplyCursor ?? null : null;
 
     const repliesQuery = useInfiniteQuery({
         queryKey: [
@@ -61,20 +64,33 @@ function CommentRepliesBlock({
                 size: REPLY_PAGE_SIZE,
             });
         },
-        initialPageParam: null as number | null,
+        initialPageParam: initialReplyCursor,
         getNextPageParam: (lastPage) =>
             lastPage.data?.nextCursor ?? undefined,
         enabled: false,
     });
 
-    const replies = repliesQuery.data?.pages
+    const fetchedReplies = repliesQuery.data?.pages
         .flatMap((page) => page.data?.replies ?? [])
         .map((reply) => mapReply(reply, parentComment.commentId)) ?? [];
+    const replies = [
+        ...initialReplies,
+        ...fetchedReplies.filter(
+            (reply) =>
+                !initialReplies.some(
+                    (initialReply) => initialReply.commentId === reply.commentId
+                )
+        ),
+    ];
 
     const handleOpenReplies = async () => {
         setIsOpen(true);
 
-        if (!repliesQuery.data) {
+        if (
+            initialReplies.length === 0 &&
+            !repliesQuery.data &&
+            parentComment.hasMoreReplies
+        ) {
             await repliesQuery.fetchNextPage();
         }
     };
@@ -102,7 +118,7 @@ function CommentRepliesBlock({
                 </div>
             )}
 
-            {!isOpen && parentComment.hasMoreReplies && (
+            {!isOpen && (parentComment.hasMoreReplies || initialReplies.length > 0) && (
                 <button
                     type="button"
                     onClick={handleOpenReplies}
@@ -112,7 +128,7 @@ function CommentRepliesBlock({
                 </button>
             )}
 
-            {isOpen && repliesQuery.hasNextPage && (
+            {isOpen && (repliesQuery.hasNextPage || (!repliesQuery.data && parentComment.hasMoreReplies)) && (
                 <button
                     type="button"
                     disabled={repliesQuery.isFetchingNextPage}

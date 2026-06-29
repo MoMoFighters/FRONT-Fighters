@@ -61,6 +61,7 @@ export interface CommunityComment {
     isWriter: boolean;
     hasMoreReplies?: boolean;
     nextReplyCursor?: number | null;
+    replies?: CommunityComment[];
 }
 
 export interface PostRecommentItemProps {
@@ -74,11 +75,13 @@ export interface PostRecommentItemProps {
     likeCount: number;
     commentCount: number;
     isActive?: boolean;
+    role: "ADMIN" | "TEACHER" | "STUDENT"
 }
 
 export interface PostRecommandPanelProps {
     currentPostId: number;
     posts: RecommendedPost[];
+    role: "TEACHER" | "ADMIN" | "STUDENT"
 }
 
 export interface CommentInputBoxProps {
@@ -121,6 +124,7 @@ export interface PostCommentsPanelProps {
 interface PostDetailSideProps {
     postId: number;
     commentTotalCount?: number;
+    role: "TEACHER" | 'ADMIN' | 'STUDENT'
 }
 
 const COMMENT_PAGE_SIZE = 10;
@@ -159,11 +163,25 @@ const mapComment = (
     isWriter: comment.isPostWriter,
     hasMoreReplies: Boolean(comment.hasMoreReplies),
     nextReplyCursor: comment.nextReplyCursor ?? null,
+    replies: comment.replies?.map((reply) => ({
+        commentId: reply.commentId,
+        content: reply.content,
+        authorName: reply.authorName,
+        authorProfileImageUrl:
+            reply.authorProfileImageUrl || DEFAULT_PROFILE_IMAGE_URL,
+        authorRole: reply.authorRole,
+        authorId: reply.authorId,
+        parentId: comment.commentId,
+        createdAt: reply.createdAt,
+        isMine: reply.isMine,
+        isWriter: reply.isPostWriter,
+    })) ?? [],
 });
 
 export default function PostDetailSide({
     postId,
     commentTotalCount,
+    role = "STUDENT"
 }: PostDetailSideProps) {
     const queryClient = useQueryClient();
     const [mode, setMode] = useState<SideMode>("posts");
@@ -329,6 +347,7 @@ export default function PostDetailSide({
                 <PostRecommandPanel
                     currentPostId={postId}
                     posts={recommendationsQuery.data ?? []}
+                    role={role}
                 />
             )}
         </aside>
