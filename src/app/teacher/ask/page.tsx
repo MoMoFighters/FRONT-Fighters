@@ -57,7 +57,8 @@ export default async function TeacherAskPage({
         roomResponse.data;
 
     return (
-        <div className="flex flex-col p-12 h-148.5 max-w-6xl mx-auto">
+        <div className="flex flex-col h-160 max-w-6xl mx-auto my-3 w-full">
+            <h2>채팅</h2>
 
             <div
                 className="

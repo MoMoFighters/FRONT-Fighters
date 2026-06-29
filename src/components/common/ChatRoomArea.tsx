@@ -348,7 +348,7 @@ export default function ChatRoomArea({
 
                     <Link href={href} aria-label="닫기">
                         <X
-                            className="mr-1 h-8 w-8 text-slate-700 hover:text-slate-950"
+                            className="mr-3 h-6 w-6 text-slate-700 hover:text-slate-950"
                             aria-hidden="true"
                         />
                     </Link>

@@ -1,9 +1,7 @@
-﻿import Link from "next/link";
 import { SearchX } from "lucide-react";
 
 import { getLecturesWithAuth } from "@/app/services/lecture/service";
 import LectureItem from "@/components/common/LectureItem";
-import { Button } from "@/components/ui/button";
 import { Lecture } from "@/features/lecture/type";
 
 export default async function TeacherLectureList() {
@@ -21,18 +19,12 @@ export default async function TeacherLectureList() {
     );
 
     return (
-        <div className="p-12">
+        <div className="p-12 w-full ">
             <div className="mb-10">
                 <h2 className="text-2xl font-bold text-slate-900">내 강의</h2>
             </div>
 
             <div className="relative grid min-h-0 flex-1 grid-cols-3 gap-6">
-                <div className="absolute -top-12 right-0">
-                    <Button className="cursor-pointer rounded-lg bg-blue-400 px-5 py-5 font-semibold text-white transition-colors hover:bg-blue-500">
-                        <Link href="/teacher/lectures/create">+ 강의 등록</Link>
-                    </Button>
-                </div>
-
                 <LectureColumn
                     title="진행중"
                     colorClassName="bg-emerald-400"

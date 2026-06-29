@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { UploadCloud } from "lucide-react";
 
 type Chapter = {
@@ -108,10 +109,13 @@ export default function LectureFormChapterItem({ chapter, mode, onDelete }: Lect
 
                 <label className="flex min-h-32 max-w-80 cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-indigo-200 bg-white p-4 transition hover:bg-indigo-50/60">
                     {thumbnailPreviewUrl ? (
-                        <img
+                        <Image
                             src={thumbnailPreviewUrl}
                             alt={`챕터 ${index} 썸네일 미리보기`}
+                            width={320}
+                            height={160}
                             className="h-40 w-full rounded-xl object-cover"
+                            unoptimized
                         />
                     ) : (
                         <div className="flex flex-col items-center">
@@ -125,7 +129,6 @@ export default function LectureFormChapterItem({ chapter, mode, onDelete }: Lect
                         accept="image/*"
                         name={`chapterThumbnail_${index}`}
                         className="hidden"
-                        required={mode === 'create'}
                         onChange={handleThumbnailChange}
                     />
                 </label>
@@ -141,7 +144,6 @@ export default function LectureFormChapterItem({ chapter, mode, onDelete }: Lect
                         accept="video/*"
                         name={`video_${index}`}
                         className="hidden"
-                        required={mode === 'create' && !videoFile}
                         onChange={handleVideoChange}
                     />
 
