@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import DeleteModal from "@/features/modal/DeleteModal";
 import TwoButtonModal from "@/features/modal/TwoButtonModal";
-import { deleteNoticeAction } from "@/features/notice/action";
+import { deleteNoticeAction, updateNoticePinAction } from "@/features/notice/action";
 import { Notice } from "@/features/notice/type";
 
 interface AdminNoticeListProps {
@@ -22,6 +22,7 @@ export default function AdminNoticeList({ notices: initialNotices }: AdminNotice
     const [selectedNoticeIds, setSelectedNoticeIds] = useState<number[]>([]);
     const [pinTarget, setPinTarget] = useState<Notice | null>(null);
     const [isDeleting, startDeleteTransition] = useTransition();
+    const [isPinning, startPinTransition] = useTransition();
 
     const isAllSelected =
         notices.length > 0 && selectedNoticeIds.length === notices.length;
@@ -73,8 +74,30 @@ export default function AdminNoticeList({ notices: initialNotices }: AdminNotice
     };
 
     const handleConfirmPin = () => {
-        toast.info("공지 고정 API가 준비되면 연결할 예정입니다.");
-        setPinTarget(null);
+        if (!pinTarget || isPinning) {
+            return;
+        }
+
+        startPinTransition(async () => {
+            const shouldPin = !pinTarget.isPinned;
+            const result = await updateNoticePinAction(
+                String(pinTarget.noticeId),
+                shouldPin,
+            );
+
+            if (!result.success) {
+                toast.error(result.message ?? "공지사항 고정 상태 변경에 실패했습니다.");
+                return;
+            }
+
+            toast.success(
+                shouldPin
+                    ? "공지사항을 고정했습니다."
+                    : "공지사항 고정을 해제했습니다.",
+            );
+            setPinTarget(null);
+            router.refresh();
+        });
     };
 
     const handleClickPin = (notice: Notice) => {
@@ -183,9 +206,10 @@ export default function AdminNoticeList({ notices: initialNotices }: AdminNotice
                             <button
                                 type="button"
                                 onClick={() => handleClickPin(notice)}
+                                disabled={isPinning}
                                 aria-label={getPinLabel(notice)}
                                 title={getPinLabel(notice)}
-                                className="mx-auto flex size-8 cursor-pointer items-center justify-center rounded-full text-slate-300 transition hover:bg-indigo-50 hover:text-indigo-500"
+                                className="mx-auto flex size-8 cursor-pointer items-center justify-center rounded-full text-slate-300 transition hover:bg-indigo-50 hover:text-indigo-500 disabled:cursor-not-allowed disabled:opacity-60"
                             >
                                 <Pin
                                     className={`size-4 ${notice.isPinned

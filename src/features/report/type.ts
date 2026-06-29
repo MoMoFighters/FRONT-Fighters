@@ -24,7 +24,8 @@ export interface ReportList {
     targetId?: number;
     targetContent?: string;
     isResolved: boolean;
-    reportedAt: string;
+    reportedAt?: string;
+    createdAt?: string;
 }
 
 export interface ReportListRequest {

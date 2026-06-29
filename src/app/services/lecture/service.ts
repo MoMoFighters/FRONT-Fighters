@@ -95,7 +95,11 @@ export const getLectures = async (
         ])
     ).toString();
 
-  const response = await fetch(`${BASE_URL}/api/v1/lectures?${queryString}`);
+  const response = await fetch(`${BASE_URL}/api/v1/lectures?${queryString}`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
   await handleErrorResponse(response);
   const result: ApiResponse<LectureListResponse> = await response.json();
   return assertApiData(result);

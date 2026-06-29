@@ -122,9 +122,37 @@ export const updateNoticeById = async (id: string, payload: UpdateNoticeRequest)
 };
 
 /**
+ * 공지사항 고정 api
+ * @param id 고정하고 싶은 공지사항 id
+ * @returns
+ */
+export const pinNoticeById = async (id: string) => {
+    const response = await fetchWithAuth(`/api/v1/admin-notices/${id}/pin`, {
+        method: "PATCH"
+    });
+
+    await handleErrorResponse(response);
+    return parseJsonOrNull(response);
+};
+
+/**
+ * 공지사항 고정 해제 api
+ * @param id 고정 해제하고 싶은 공지사항 id
+ * @returns
+ */
+export const unPinNoticeById = async (id: string) => {
+    const response = await fetchWithAuth(`/api/v1/admin-notices/${id}/unpin`, {
+        method: "PATCH"
+    });
+
+    await handleErrorResponse(response);
+    return parseJsonOrNull(response);
+};
+
+/**
  * 공지사항 단건 삭제 api
  * @param id 삭제하려는 공지사항 id
- * @returns 
+ * @returns
  */
 export const deleteNoticeById = async (id: string) => {
     const response = await fetchWithAuth(`/api/v1/admin-notices/${id}`, {

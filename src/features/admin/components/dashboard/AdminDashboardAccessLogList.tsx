@@ -1,7 +1,7 @@
 export interface AdminDashboardAccessLog {
     id: number;
     ip: string;
-    account: string;
+    action: "로그인 시도" | "로그아웃" | "접근 거부";
     accessedAt: string;
     status: "성공" | "실패";
 }
@@ -29,7 +29,7 @@ export default function AdminDashboardAccessLogList({
                     </span>
 
                     <span className="min-w-20 font-semibold text-slate-500">
-                        {log.account}
+                        {log.action}
                     </span>
 
                     <span className="min-w-32 font-semibold text-slate-400">
