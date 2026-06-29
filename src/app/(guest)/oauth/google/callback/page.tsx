@@ -5,12 +5,17 @@ import { useSearchParams } from 'next/navigation';
 
 import { googleLoginAction } from '@/features/auth/action';
 import LoginResultModal from '@/features/auth/components/LoginResultModal';
+import { UserRole, UserStatus } from '@/features/user/type';
+import { ApiResponse } from '@/lib/api';
 
-interface LoginResult {
-    timestamp: string;
-    status: number;
-    code: string;
-    message: string;
+interface LoginData {
+    accessToken: string;
+    refreshToken: string;
+    status: UserStatus;
+    role: UserRole;
+    isTempPwd: boolean;
+    nickname: string | null;
+    expiresIn: number;
 }
 
 function GoogleCallbackContent() {
@@ -19,7 +24,7 @@ function GoogleCallbackContent() {
     const hasCalled = useRef(false);
 
     const [isModal, setIsModal] = useState(false);
-    const [loginResult, setLoginResult] = useState<LoginResult>({
+    const [loginResult, setLoginResult] = useState<ApiResponse<LoginData>>({
         timestamp: '',
         status: 0,
         code: '',
@@ -46,12 +51,7 @@ function GoogleCallbackContent() {
             try {
                 const response = await googleLoginAction(authorizationCode);
 
-                setLoginResult({
-                    timestamp: response.timestamp,
-                    status: response.status,
-                    code: response.code,
-                    message: response.message,
-                });
+                setLoginResult(response);
             } catch (error) {
                 setLoginResult({
                     timestamp: new Date().toISOString(),
@@ -78,7 +78,7 @@ function GoogleCallbackContent() {
             {isModal && (
                 <LoginResultModal
                     setIsModal={setIsModal}
-                    state={loginResult}
+                    result={loginResult}
                 />
             )}
         </>
