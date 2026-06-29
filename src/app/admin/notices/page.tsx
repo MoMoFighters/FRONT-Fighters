@@ -24,7 +24,7 @@ export default async function AdminNoticesPage({
     const requestedPage = Number(page) || 1;
     const noticeResponse = await getNotices(requestedPage);
     const totalPages = noticeResponse.totalPages;
-    const currentPage = noticeResponse.currentPage || requestedPage;
+    const currentPage = noticeResponse.page || requestedPage;
     const notices = noticeResponse.items;
 
     return (

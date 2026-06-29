@@ -101,6 +101,7 @@ export interface CommentItemProps {
     isWriter: boolean;
     createdAt: string;
     parentId: number | null;
+    role?: "TEACHER" | "ADMIN" | "STUDENT";
     onSubmitReply?: (
         commentId: number,
         content: string
@@ -119,12 +120,13 @@ export interface PostCommentsPanelProps {
         commentId: number,
         content: string
     ) => Promise<boolean>;
+    role?: "TEACHER" | "ADMIN" | "STUDENT";
 }
 
 interface PostDetailSideProps {
     postId: number;
     commentTotalCount?: number;
-    role: "TEACHER" | 'ADMIN' | 'STUDENT'
+    role?: "TEACHER" | 'ADMIN' | 'STUDENT'
 }
 
 const COMMENT_PAGE_SIZE = 10;
@@ -342,6 +344,7 @@ export default function PostDetailSide({
                     }}
                     onCreateComment={handleCreateComment}
                     onCreateReply={handleCreateReply}
+                    role={role}
                 />
             ) : (
                 <PostRecommandPanel

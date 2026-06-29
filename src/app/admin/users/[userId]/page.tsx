@@ -42,6 +42,7 @@ export default async function AdminUserDetailPage({ params, searchParams }: Admi
         const user = await getPendingTeacherById(userId);
         const categoryMeta = getCategoryMeta(user.category);
 
+        console.log(user);
         return (
             <div className="mx-auto w-full max-w-300 pb-10">
                 <Link href={backHref} className="inline-flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-slate-950"><ArrowLeft className="size-4" />회원 관리로 돌아가기</Link>

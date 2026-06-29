@@ -15,9 +15,14 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import {
+    deleteReportedReviewAction,
+    resolveReportAction,
+    sanctionReportedUserAction,
+} from "@/features/report/action";
 import { AdminReportDetail } from "@/features/report/type";
 
-type ReportAction = "SANCTION" | "DISMISS" | "DELETE" | "OPEN_PAGE";
+type ReportAction = "SANCTION" | "DISMISS" | "DELETE" | "OPEN_ADMIN" | "OPEN_ORIGINAL";
 
 interface AdminReportActionPanelProps {
     report: AdminReportDetail;
@@ -42,10 +47,16 @@ const actionCopy: Record<ReportAction, { title: string; description: string; lab
         label: "콘텐츠 삭제",
         tone: "rose",
     },
-    OPEN_PAGE: {
+    OPEN_ADMIN: {
         title: "관리자 화면으로 이동할까요?",
-        description: "이 신고를 처리 완료로 표시한 뒤 관련 관리자 화면으로 이동합니다.",
-        label: "화면 열기",
+        description: "관련 관리자 화면을 열고 이 신고를 처리 완료로 표시합니다.",
+        label: "관리자 화면 열기",
+        tone: "indigo",
+    },
+    OPEN_ORIGINAL: {
+        title: "원본 사용자 화면으로 이동할까요?",
+        description: "원본 사용자 화면을 열고 이 신고를 처리 완료로 표시합니다.",
+        label: "원본 화면 열기",
         tone: "indigo",
     },
 };
@@ -54,21 +65,70 @@ export default function AdminReportActionPanel({
     report,
 }: AdminReportActionPanelProps) {
     const [pendingAction, setPendingAction] = useState<ReportAction | null>(null);
-    const isPageReport = report.targetType === "PAGE";
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const isPageReport = ["LECTURE", "CHAPTER", "POST", "PAGE"].includes(report.targetType);
+    const canDeleteContent = report.targetType === "REVIEW" || report.targetType === "COMMENT";
     const isDeleted = Boolean(report.targetDeleted);
     const action = pendingAction ? actionCopy[pendingAction] : null;
 
-    const confirmAction = () => {
+    const confirmAction = async () => {
         if (!pendingAction) return;
 
-        // TODO: 신고 처리 API와 콘텐츠/회원 제재 API가 준비되면 액션별 요청을 연결한다.
-        if (pendingAction === "OPEN_PAGE" && report.adminTargetPath) {
-            window.location.assign(report.adminTargetPath);
-            return;
-        }
+        setIsSubmitting(true);
 
-        toast.info("신고 처리 API가 준비되면 이 작업이 저장됩니다.");
-        setPendingAction(null);
+        try {
+            if (pendingAction === "OPEN_ADMIN" && report.adminTargetPath) {
+                window.open(report.adminTargetPath, "_blank", "noopener,noreferrer");
+                const result = await resolveReportAction(String(report.id));
+                result.success ? toast.success(result.message) : toast.error(result.message);
+                return;
+            }
+
+            if (pendingAction === "OPEN_ORIGINAL" && report.originalPath) {
+                window.open(report.originalPath, "_blank", "noopener,noreferrer");
+                const result = await resolveReportAction(String(report.id));
+                result.success ? toast.success(result.message) : toast.error(result.message);
+                return;
+            }
+
+            if (pendingAction === "SANCTION") {
+                if (!report.reportedUserId) {
+                    toast.error("제재 처리할 사용자 정보가 없습니다.");
+                    return;
+                }
+
+                const result = await sanctionReportedUserAction({
+                    reportId: String(report.id),
+                    reportedUserId: String(report.reportedUserId),
+                });
+
+                result.success ? toast.success(result.message) : toast.error(result.message);
+                return;
+            }
+
+            if (pendingAction === "DISMISS") {
+                const result = await resolveReportAction(String(report.id));
+                result.success ? toast.success(result.message) : toast.error(result.message);
+                return;
+            }
+
+            if (pendingAction === "DELETE") {
+                if (report.targetType === "REVIEW" && report.targetId) {
+                    const result = await deleteReportedReviewAction({
+                        reportId: String(report.id),
+                        reviewId: String(report.targetId),
+                    });
+
+                    result.success ? toast.success(result.message) : toast.error(result.message);
+                    return;
+                }
+
+                toast.error("해당 콘텐츠 삭제 API가 아직 연결되어 있지 않습니다.");
+            }
+        } finally {
+            setIsSubmitting(false);
+            setPendingAction(null);
+        }
     };
 
     return (
@@ -84,7 +144,7 @@ export default function AdminReportActionPanel({
                         {report.adminTargetPath && (
                             <Button
                                 type="button"
-                                onClick={() => setPendingAction("OPEN_PAGE")}
+                                onClick={() => setPendingAction("OPEN_ADMIN")}
                                 className="h-9 w-full rounded-md bg-indigo-600 px-3 text-sm font-bold text-white hover:bg-indigo-700"
                             >
                                 <ExternalLink className="size-4" />
@@ -92,31 +152,20 @@ export default function AdminReportActionPanel({
                             </Button>
                         )}
                         {report.originalPath && (
-                            <a
-                                href={report.originalPath}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="flex h-9 w-full items-center justify-center gap-1.5 rounded-md border border-slate-200 px-3 text-sm font-bold text-slate-700 transition-colors hover:bg-slate-50"
-                            >
-                                <ExternalLink className="size-4" />
-                                원본 사용자 화면 열기
-                            </a>
-                        )}
-                        {!report.adminTargetPath && (
                             <Button
                                 type="button"
                                 variant="outline"
-                                onClick={() => setPendingAction("DISMISS")}
+                                onClick={() => setPendingAction("OPEN_ORIGINAL")}
                                 className="h-9 w-full rounded-md border-slate-200 px-3 text-sm font-bold text-slate-700 hover:bg-slate-50"
                             >
-                                <XCircle className="size-4" />
-                                제재하지 않음
+                                <ExternalLink className="size-4" />
+                                원본 사용자 화면 열기
                             </Button>
                         )}
                     </>
                 ) : (
                     <>
-                        {!isDeleted && (
+                        {!isDeleted && report.reportedUserId && (
                             <Button
                                 type="button"
                                 onClick={() => setPendingAction("SANCTION")}
@@ -135,7 +184,7 @@ export default function AdminReportActionPanel({
                             <XCircle className="size-4" />
                             제재하지 않음
                         </Button>
-                        {!isDeleted && (
+                        {!isDeleted && canDeleteContent && report.targetType !== "CHAT" && (
                             <Button
                                 type="button"
                                 variant="outline"
@@ -169,6 +218,7 @@ export default function AdminReportActionPanel({
                         </AlertDialogCancel>
                         <AlertDialogAction
                             variant="outline"
+                            disabled={isSubmitting}
                             onClick={confirmAction}
                             className={action?.tone === "rose"
                                 ? "h-9 rounded-md !border-rose-600 !bg-rose-600 px-4 text-sm font-bold !text-white hover:!bg-rose-700 hover:!text-white"

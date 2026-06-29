@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Reply } from "lucide-react";
+import { Reply, Trash2 } from "lucide-react";
 import CreateReportBtn from "@/features/report/components/buttons/CreateReportBtn";
 import CommentInputBox from "./CommentInputBox";
 import type { CommentItemProps } from "./PostDetailSide";
@@ -17,6 +17,7 @@ export default function CommentItem({
     isWriter,
     createdAt,
     parentId,
+    role = "STUDENT",
     onSubmitReply,
 }: CommentItemProps) {
     const [replyOpen, setReplyOpen] = useState(false);
@@ -61,8 +62,22 @@ export default function CommentItem({
                         </div>
                     </div>
 
-                    {!isMine && (
-                        <CreateReportBtn triggerClassName={`${isReply ? "text-[11px]" : "text-xs"} cursor-pointer px-2 font-bold text-slate-400 hover:text-red-500`} />
+                    {role === "ADMIN" ? (
+                        <button
+                            type="button"
+                            className={`${isReply ? "h-6 w-6" : "h-7 w-7"} flex shrink-0 cursor-pointer items-center justify-center rounded-md border border-rose-200 text-rose-500 transition hover:bg-rose-50`}
+                            aria-label="댓글 삭제"
+                            title="댓글 삭제"
+                        >
+                            <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                    ) : !isMine && (
+                        <CreateReportBtn
+                            triggerClassName={`${isReply ? "text-[11px]" : "text-xs"} cursor-pointer px-2 font-bold text-slate-400 hover:text-red-500`}
+                            targetType="COMMENT"
+                            targetId={commentId}
+                            reportedUserId={authorId}
+                        />
                     )}
                 </div>
 

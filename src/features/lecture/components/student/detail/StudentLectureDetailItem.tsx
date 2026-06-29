@@ -4,6 +4,7 @@ import { Star } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import EnrollLectureBtn from "@/features/lecture/components/buttons/EnrollLectureBtn";
 import { LectureDetailResponse } from "@/features/lecture/type";
+import CreateReportBtn from "@/features/report/components/buttons/CreateReportBtn";
 
 interface StudentLectureDetailItemProps {
     lecture: LectureDetailResponse;
@@ -38,9 +39,18 @@ export default function StudentLectureDetailItem({
                 </div>
 
                 <div className="flex min-w-0 flex-col">
-                    <span className="w-fit rounded-full bg-indigo-50 px-3 py-1 text-sm font-bold text-indigo-500">
-                        {categoryLabel} 강의
-                    </span>
+                    <div className="flex items-center justify-between gap-3">
+                        <span className="w-fit rounded-full bg-indigo-50 px-3 py-1 text-sm font-bold text-indigo-500">
+                            {categoryLabel} 강의
+                        </span>
+
+                        <CreateReportBtn
+                            triggerLabel="강의 신고"
+                            triggerClassName="cursor-pointer rounded-md border border-slate-200 px-2.5 py-1 text-xs font-bold text-slate-500 transition hover:bg-slate-100"
+                            targetType="LECTURE"
+                            targetId={lecture.lectureId}
+                        />
+                    </div>
 
                     <h2 className="mt-4 text-3xl font-bold tracking-tight text-slate-950">
                         {lecture.title}

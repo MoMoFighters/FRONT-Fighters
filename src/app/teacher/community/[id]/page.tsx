@@ -60,7 +60,11 @@ export default async function CommunityPostDetailPage({
                         </Link>
 
                         {!post.isMine ? (
-                            <CreateReportBtn triggerClassName="cursor-pointer rounded-md border border-slate-200 px-2.5 py-1 text-xs font-bold text-slate-500 transition hover:bg-slate-100" />
+                            <CreateReportBtn
+                                triggerClassName="cursor-pointer rounded-md border border-slate-200 px-2.5 py-1 text-xs font-bold text-slate-500 transition hover:bg-slate-100"
+                                targetType="POST"
+                                targetId={post.postId}
+                            />
                         ) : (
                             <Link
                                 className="cursor-pointer rounded-md border border-slate-200 px-2.5 py-1 text-xs font-bold text-slate-500 transition hover:bg-slate-100"

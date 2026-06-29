@@ -27,13 +27,17 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import TwoButtonModal from "@/features/modal/TwoButtonModal";
-import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { CreateReportAction } from "../../action";
-import { CreateReportRequest } from "../../type";
+import {
+    CreateReportRequest,
+    ReasonRequest,
+    REPORT_REASON_OPTIONS,
+    TargetType,
+} from "../../type";
 
 interface ReportFormData {
-    reason: string;
+    reason: ReasonRequest | "";
     reasonDetail: string;
 }
 
@@ -41,16 +45,20 @@ interface CreateReportBtnProps {
     triggerLabel?: string;
     triggerClassName?: string;
     triggerVariant?: "button" | "text" | "icon";
-    targetType?: string;
+    targetType?: TargetType;
     targetId?: number;
+    targetPath?: string;
+    reportedUserId?: number;
 }
 
 export default function CreateReportBtn({
     triggerLabel = "신고",
     triggerClassName,
     triggerVariant = "button",
-    targetType = "LECTURE",
-    targetId = 1,
+    targetType = "PAGE",
+    targetId,
+    targetPath,
+    reportedUserId,
 }: CreateReportBtnProps) {
 
     // 신고 작성 모달
@@ -89,11 +97,35 @@ export default function CreateReportBtn({
     const handleCreateReport = async () => {
 
         try {
+            if (!formData.reason) {
+                toast.error('신고 사유를 선택해주세요.', {
+                    duration: 1000
+                });
+                return;
+            }
+
+            const currentPath =
+                targetPath ??
+                (typeof window !== "undefined"
+                    ? `${window.location.pathname}${window.location.search}`
+                    : undefined);
+
             const payload: CreateReportRequest = {
                 targetType,
-                targetId,
                 reason: formData.reason,
                 detail: formData.reasonDetail
+            }
+
+            if (targetId !== undefined) {
+                payload.targetId = targetId;
+            }
+
+            if (currentPath) {
+                payload.targetPath = currentPath;
+            }
+
+            if (reportedUserId !== undefined) {
+                payload.reportedUserId = reportedUserId;
             }
 
             await CreateReportAction(payload);
@@ -138,7 +170,7 @@ export default function CreateReportBtn({
                         aria-label={triggerLabel}
                         title={triggerLabel}
                     >
-                        <Trash2 className="h-3.5 w-3.5" />
+                        {triggerLabel}
                     </button>
                 ) : triggerClassName ? (
                     <button
@@ -189,7 +221,7 @@ export default function CreateReportBtn({
                                     onValueChange={(value) =>
                                         setFormData((prev) => ({
                                             ...prev,
-                                            reason: value,
+                                            reason: value as ReasonRequest,
                                         }))}
                                 >
 
@@ -205,21 +237,14 @@ export default function CreateReportBtn({
                                                 신고 사유
                                             </SelectLabel>
 
-                                            <SelectItem value="SPAM">
-                                                홍보성 컨텐츠
-                                            </SelectItem>
-
-                                            <SelectItem value="ABUSE">
-                                                도배성 컨텐츠
-                                            </SelectItem>
-
-                                            <SelectItem value="INAPPROPRIATE">
-                                                부적절한 컨텐츠
-                                            </SelectItem>
-
-                                            <SelectItem value="OTHER">
-                                                기타
-                                            </SelectItem>
+                                            {REPORT_REASON_OPTIONS.map((option) => (
+                                                <SelectItem
+                                                    key={option.value}
+                                                    value={option.value}
+                                                >
+                                                    {option.label}
+                                                </SelectItem>
+                                            ))}
 
                                         </SelectGroup>
 

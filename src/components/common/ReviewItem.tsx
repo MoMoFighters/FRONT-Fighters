@@ -6,11 +6,11 @@ export default function ReviewItem({ review }: { review: Review }) {
     return (
         <div className="relative mb-4 rounded-lg border border-slate-200 p-4 pr-12">
             <CreateReportBtn
-                triggerLabel="수강평 신고"
-                triggerVariant="icon"
-                triggerClassName="absolute right-3 top-3 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full text-slate-300 transition hover:bg-rose-50 hover:text-rose-500"
+                triggerLabel="신고"
+                triggerClassName="absolute right-3 top-3 cursor-pointer rounded-md px-2 py-1 text-xs font-bold text-slate-400 transition hover:bg-rose-50 hover:text-rose-500"
                 targetType="REVIEW"
                 targetId={review.reviewId}
+                reportedUserId={review.userId}
             />
 
             <div className="flex items-start gap-4">
