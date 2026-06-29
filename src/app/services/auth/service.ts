@@ -455,7 +455,10 @@ export const nicknameRegistService = async (
 export interface KakaoLoginData {
     accessToken: string;
     refreshToken: string;
-    status: string;
+    status: UserStatus;
+    role: UserRole;
+    isTempPwd: boolean;
+    nickname: string | null;
     expiresIn: number;
 }
 
@@ -491,7 +494,10 @@ export const kakaoLoginService = async (
 export interface GoogleLoginTokenData {
     accessToken: string;
     refreshToken: string;
-    status: string;
+    status: UserStatus;
+    role: UserRole;
+    isTempPwd: boolean;
+    nickname: string | null;
     expiresIn: number;
 }
 
@@ -528,7 +534,10 @@ export const googleLoginService = async (
 export interface NaverLoginTokenData {
     accessToken: string;
     refreshToken: string;
-    status: string;
+    status: UserStatus;
+    role: UserRole;
+    isTempPwd: boolean;
+    nickname: string | null;
     expiresIn: number;
 }
 

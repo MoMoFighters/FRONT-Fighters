@@ -21,7 +21,7 @@ export default function AdminDashboardReportList({
     return (
         <div className="divide-y divide-slate-100 px-5">
             {reports.map((report) => (
-                <div key={report.id} className="grid grid-cols-[24px_minmax(0,1fr)_92px_112px_54px] items-center gap-3 py-4">
+                <div key={report.id} className="grid grid-cols-[24px_minmax(0,1fr)_92px_112px_54px] items-center gap-3 py-3">
                     <ShieldAlert className="h-5 w-5 text-rose-500" />
 
                     <p className="truncate text-xs font-black text-slate-800">
