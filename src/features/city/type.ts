@@ -13,7 +13,7 @@ export interface Building {
 
 // 잔디 정보에 대한 타입 정의
 export interface Streak {
-    streakData: string;
+    date: string;
     level: string;
 }
 

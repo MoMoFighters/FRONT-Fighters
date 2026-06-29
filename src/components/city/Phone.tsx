@@ -258,7 +258,7 @@ export default function Phone({
                             <HoverCard openDelay={200} closeDelay={100}>
                                 <HoverCardTrigger asChild>
                                     <Link
-                                        href="/student/phone/friends?status=chat"
+                                        href="/student/phone/friends"
                                         aria-label="메신저"
                                         className="h-14 w-14 rounded-2xl shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md relative"
                                     >

@@ -6,10 +6,11 @@ import Image from "next/image";
 import Link from 'next/link';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 
-import { getFriendListAction } from '@/features/friend/action';
+import { getStudentFriendListAction } from '@/features/friend/action';
 
 import { Button } from '../ui/button';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '../ui/hover-card';
+import { UserRole } from '@/features/user/type';
 
 interface BusStationProps {
     mode: 'MY' | "FRIEND";
@@ -18,7 +19,7 @@ interface BusStationProps {
 interface CityFriend {
     userId: number;
     nickname: string;
-    role: "STUDENT" | "TEACHER";
+    role: UserRole;
     profileImageUrl?: string;
 }
 
@@ -38,18 +39,14 @@ export default function BusStation({ mode }: BusStationProps) {
             setIsLoading(true);
             setErrorMessage("");
 
-            const response = await getFriendListAction("FRIEND");
+            const response = await getStudentFriendListAction();
 
             if (ignore) {
                 return;
             }
 
             if (response.status === 200 && response.data) {
-                setFriends(
-                    response.data.filter(
-                        (friend) => friend.role !== "TEACHER"
-                    )
-                );
+                setFriends(response.data);
             } else {
                 setFriends([]);
                 setErrorMessage(response.message || "친구 목록을 불러오지 못했습니다.");

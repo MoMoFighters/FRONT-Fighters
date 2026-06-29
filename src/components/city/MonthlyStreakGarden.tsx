@@ -1,20 +1,22 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import streakDate from "@/app/assets/img/streak-date.png";
+import { StreakResponse } from "@/features/city/type";
+import { getFriendStreakAction, getMyStreakAction } from "@/features/city/action";
+import { toast } from "sonner";
 
 interface StreakDay {
   date: string;
   level: 0 | 1 | 2 | 3 | 4;
 }
 
-interface MonthlyStreakResponse {
-  year: number;
-  month: number;
-  streaks: StreakDay[];
+interface MonthlyStreakGardenProps {
+  initialStreak?: StreakResponse;
+  userId?: string;
 }
 
 const levelStyle: Record<StreakDay["level"], string> = {
@@ -30,44 +32,96 @@ const pad = (value: number) => String(value).padStart(2, "0");
 const getMonthKey = (date: Date) =>
   `${date.getFullYear()}-${pad(date.getMonth() + 1)}`;
 
-const createDummyStreakData = (year: number, month: number): MonthlyStreakResponse => {
-  const daysInMonth = new Date(year, month, 0).getDate();
+const normalizeLevel = (level: string | number | undefined): StreakDay["level"] => {
+  const parsedLevel = typeof level === "string"
+    ? Number(level.replace(/\D/g, ""))
+    : Number(level ?? 0);
 
-  return {
-    year,
-    month,
-    streaks: Array.from({ length: daysInMonth }, (_, index) => {
-      const day = index + 1;
-      const level = ((day * 7 + month) % 5) as StreakDay["level"];
+  if (parsedLevel >= 0 && parsedLevel <= 4) {
+    return parsedLevel as StreakDay["level"];
+  }
 
-      return {
-        date: `${year}-${pad(month)}-${pad(day)}`,
-        level,
-      };
-    }),
-  };
+  return 0;
 };
 
-export default function MonthlyStreakGarden() {
-  const today = new Date();
-  const [selectedMonth, setSelectedMonth] = useState(
-    () => new Date(today.getFullYear(), today.getMonth(), 1),
+const normalizeStreakData = ({ year, month, streaks }: StreakResponse): StreakDay[] => {
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const streakLevelByDate = new Map(
+    streaks
+      .map((streak) => {
+        const legacyStreak = streak as { streakData?: string; streakDate?: string };
+        const date = streak.date ?? legacyStreak.streakData ?? legacyStreak.streakDate;
+
+        return date
+          ? [date.slice(0, 10), normalizeLevel(streak.level)] as const
+          : undefined;
+      })
+      .filter((streak): streak is readonly [string, StreakDay["level"]] => Boolean(streak)),
   );
+
+  return Array.from({ length: daysInMonth }, (_, index) => {
+    const date = `${year}-${pad(month)}-${pad(index + 1)}`;
+
+    return {
+      date,
+      level: streakLevelByDate.get(date) ?? 0,
+    };
+  });
+};
+
+export default function MonthlyStreakGarden({
+  initialStreak,
+  userId,
+}: MonthlyStreakGardenProps) {
+  const today = new Date();
+  const currentMonthStreak = initialStreak ?? {
+    year: today.getFullYear(),
+    month: today.getMonth() + 1,
+    streaks: [],
+  };
+  const [selectedMonth, setSelectedMonth] = useState(
+    () => new Date(currentMonthStreak.year, currentMonthStreak.month - 1, 1),
+  );
+  const [monthlyStreak, setMonthlyStreak] = useState(currentMonthStreak);
+  const [isPending, startTransition] = useTransition();
 
   const year = selectedMonth.getFullYear();
   const month = selectedMonth.getMonth() + 1;
-  const monthlyStreak = createDummyStreakData(year, month);
   const isCurrentMonth = getMonthKey(selectedMonth) === getMonthKey(today);
+  const streakDays = useMemo(
+    () => normalizeStreakData(monthlyStreak),
+    [monthlyStreak],
+  );
 
   const moveMonth = (offset: -1 | 1) => {
-    setSelectedMonth((current) => {
-      const next = new Date(current.getFullYear(), current.getMonth() + offset, 1);
+    const nextMonth = new Date(
+      selectedMonth.getFullYear(),
+      selectedMonth.getMonth() + offset,
+      1,
+    );
 
-      if (next > new Date(today.getFullYear(), today.getMonth(), 1)) {
-        return current;
+    if (nextMonth > new Date(today.getFullYear(), today.getMonth(), 1)) {
+      return;
+    }
+
+    startTransition(async () => {
+      const nextYear = nextMonth.getFullYear();
+      const nextMonthNumber = nextMonth.getMonth() + 1;
+      const payload = {
+        year: nextYear,
+        month: nextMonthNumber,
+      };
+      const result = userId
+        ? await getFriendStreakAction(userId, payload)
+        : await getMyStreakAction(payload);
+
+      if (!result.success || !result.data) {
+        toast.error(result.message ?? "잔디 정보를 불러오지 못했습니다.");
+        return;
       }
 
-      return next;
+      setSelectedMonth(nextMonth);
+      setMonthlyStreak(result.data);
     });
   };
 
@@ -87,9 +141,10 @@ export default function MonthlyStreakGarden() {
             <button
               type="button"
               onClick={() => moveMonth(-1)}
+              disabled={isPending}
               aria-label="이전 달"
             >
-              <ChevronLeft className="size-[1.33cqw] cursor-pointer text-slate-900 hover:scale-110" />
+              <ChevronLeft className={`size-[1.33cqw] ${isPending ? "text-slate-300" : "cursor-pointer text-slate-900 hover:scale-110"}`} />
             </button>
 
             <span className="min-w-[4.4cqw] text-center tracking-wide">
@@ -99,10 +154,10 @@ export default function MonthlyStreakGarden() {
             <button
               type="button"
               onClick={() => moveMonth(1)}
-              disabled={isCurrentMonth}
+              disabled={isCurrentMonth || isPending}
               aria-label="다음 달"
             >
-              <ChevronRight className={`size-[1.33cqw] ${!isCurrentMonth && "cursor-pointer  hover:scale-110"} ${isCurrentMonth ? "text-slate-300" : "text-slate-900"}`} />
+              <ChevronRight className={`size-[1.33cqw] ${!isCurrentMonth && !isPending && "cursor-pointer  hover:scale-110"} ${isCurrentMonth || isPending ? "text-slate-300" : "text-slate-900"}`} />
             </button>
           </div>
         </div>
@@ -115,7 +170,7 @@ export default function MonthlyStreakGarden() {
           transformOrigin: "center",
         }}
       >
-        {monthlyStreak.streaks.map(({ date, level }) => (
+        {streakDays.map(({ date, level }) => (
           <HoverCard key={date} openDelay={80} closeDelay={80}>
             <HoverCardTrigger asChild>
               <div
