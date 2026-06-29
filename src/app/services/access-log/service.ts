@@ -28,6 +28,6 @@ export const getAccessLogs = async (page: number): Promise<AccessLogResponse> =>
     if (!result.data) {
         throw new Error(result.message);
     }
-    return result.data;
 
-}
+    return result.data;
+};

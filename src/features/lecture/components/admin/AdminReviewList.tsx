@@ -8,6 +8,10 @@ interface AdminReviewListProps {
     reviews: Review[];
 }
 
+const formatAdminDateTime = (dateTime: string) => {
+    return dateTime.replace("T", " ").slice(0, 16);
+};
+
 export default function AdminReviewList({
     lectureId,
     reviews,
@@ -31,7 +35,7 @@ export default function AdminReviewList({
                     <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between gap-4">
                             <p className="text-sm font-bold text-slate-950">{review.nickname}</p>
-                            <span className="text-xs font-medium text-slate-400">{review.createdAt}</span>
+                            <span className="text-xs font-medium text-slate-400">{formatAdminDateTime(review.createdAt)}</span>
                         </div>
                         <div className="mt-2 flex items-center gap-1">
                             {Array.from({ length: 5 }, (_, index) => (

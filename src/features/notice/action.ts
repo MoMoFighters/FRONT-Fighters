@@ -4,6 +4,8 @@ import {
     createNotice,
     deleteNoticeById,
     deleteNoticeByIds,
+    pinNoticeById,
+    unPinNoticeById,
     updateNoticeById,
 } from "@/app/services/notice/service";
 import { revalidatePath } from "next/cache";
@@ -181,6 +183,32 @@ export const deleteNoticeAction = async (ids: string[]): Promise<NoticeActionSta
     }
 
     revalidatePath("/admin/notices");
+
+    return {
+        success: true,
+    };
+};
+
+// 공지사항 고정/고정 해제 액션 함수
+export const updateNoticePinAction = async (
+    id: string,
+    shouldPin: boolean,
+): Promise<NoticeActionState> => {
+    try {
+        if (shouldPin) {
+            await pinNoticeById(id);
+        } else {
+            await unPinNoticeById(id);
+        }
+    } catch (error) {
+        return {
+            success: false,
+            message: getActionErrorMessage(error),
+        };
+    }
+
+    revalidatePath("/admin/notices");
+    revalidatePath(`/admin/notices/${id}`);
 
     return {
         success: true,

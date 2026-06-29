@@ -10,10 +10,19 @@ interface AdminLectureItemProps {
     lecture: Lecture;
 }
 
+const formatAdminDateTime = (dateTime: string) => {
+    return dateTime.replace("T", " ").slice(0, 16);
+};
+
 export default function AdminLectureItem({
     lecture,
 }: AdminLectureItemProps) {
     const categoryMeta = getCategoryMeta(lecture.category);
+    const chapterCount =
+        lecture.chapterCount ??
+        lecture.totalChapterCount ??
+        lecture.chapters?.length ??
+        0;
     const statusLabel = {
         ACTIVE: "운영 중",
         WAITING: "승인 대기",
@@ -59,7 +68,7 @@ export default function AdminLectureItem({
                     {lecture.description}
                 </p>
                 <p className="mt-2 text-xs font-semibold text-slate-400">
-                    총 {lecture.chapterCount}개 챕터 · {lecture.createdAt}
+                    총 {chapterCount}개 챕터 · {formatAdminDateTime(lecture.createdAt)}
                 </p>
             </Link>
 

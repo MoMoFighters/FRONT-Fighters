@@ -10,6 +10,10 @@ interface AdminLectureDetailHeroProps {
     reviewCount: number;
 }
 
+const formatAdminDateTime = (dateTime: string) => {
+    return dateTime.replace("T", " ").slice(0, 16);
+};
+
 export default function AdminLectureDetailHero({
     lecture,
     reviewCount,
@@ -52,7 +56,7 @@ export default function AdminLectureDetailHero({
                     </div>
                     <div className="mt-auto flex items-center justify-between border-t border-slate-100 pt-5">
                         <span className="text-sm font-semibold text-slate-400">
-                            등록일 {lecture.createdAt}
+                            등록일 {formatAdminDateTime(lecture.createdAt)}
                         </span>
                         <AdminLectureDeleteButton
                             target="강의"

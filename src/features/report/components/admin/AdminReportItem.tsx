@@ -6,6 +6,10 @@ interface AdminReportItemProps {
     report: AdminReportListItem;
 }
 
+const formatAdminDateTime = (dateTime: string) => {
+    return dateTime.replace("T", " ").slice(0, 16);
+};
+
 export default function AdminReportItem({ report }: AdminReportItemProps) {
     return (
         <Link
@@ -27,7 +31,7 @@ export default function AdminReportItem({ report }: AdminReportItemProps) {
                 {report.reporterName}
             </span>
 
-            <time className="text-slate-500">{report.createdAt}</time>
+            <time className="text-slate-500">{formatAdminDateTime(report.createdAt)}</time>
 
             <div className="flex items-center justify-center">
                 <span

@@ -16,6 +16,10 @@ interface SequenceItemProps {
     icon?: "up" | "down";
 }
 
+const formatAdminDateTime = (dateTime: string) => {
+    return dateTime.replace("T", " ").slice(0, 16);
+};
+
 function SequenceItem({ label, report, isCurrent = false, icon }: SequenceItemProps) {
     return (
         <Link
@@ -39,7 +43,7 @@ function SequenceItem({ label, report, isCurrent = false, icon }: SequenceItemPr
                 {report.detail}
             </span>
             <time className="text-right text-xs font-medium text-slate-400">
-                {report.createdAt}
+                {formatAdminDateTime(report.createdAt)}
             </time>
         </Link>
     );

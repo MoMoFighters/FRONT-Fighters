@@ -14,7 +14,9 @@ export interface Lecture {
     lectureStatus: LectureStatus;
     averageRating: number;
     reviewCount: number;
-    chapterCount: number;
+    chapterCount?: number;
+    totalChapterCount?: number;
+    chapters?: Chapter[];
     createdAt: string;
     updatedAt: string;
 

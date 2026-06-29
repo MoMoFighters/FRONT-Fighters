@@ -3,7 +3,6 @@ import { Pin } from "lucide-react";
 export interface AdminDashboardNotice {
     id: number;
     title: string;
-    writer: string;
     date: string;
     pinned?: boolean;
     isNew?: boolean;
@@ -19,7 +18,7 @@ export default function AdminDashboardNoticeList({
             {notices.map((notice) => (
                 <div
                     key={notice.id}
-                    className="grid grid-cols-[minmax(0,1fr)_80px_92px_20px] items-center border-b border-slate-100 py-3 last:border-b-0"
+                    className="grid grid-cols-[minmax(0,1fr)_92px_20px] items-center border-b border-slate-100 py-3 last:border-b-0"
                 >
                     <div className="flex min-w-0 items-center gap-3">
                         <span className={`h-1.5 w-1.5 rounded-full ${notice.pinned ? "bg-indigo-500" : "bg-slate-300"}`} />
@@ -28,10 +27,6 @@ export default function AdminDashboardNoticeList({
                             {notice.title}
                         </p>
                     </div>
-
-                    <span className="text-xs font-semibold text-slate-500">
-                        {notice.writer}
-                    </span>
 
                     <span className="text-xs font-semibold text-slate-400">
                         {notice.date}

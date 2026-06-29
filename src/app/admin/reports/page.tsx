@@ -28,7 +28,7 @@ const mapReportListItem = (report: ReportList): AdminReportListItem => ({
     reason: report.reason,
     detail: report.detail,
     reporterName: report.reporterName,
-    createdAt: report.reportedAt,
+    createdAt: report.reportedAt ?? report.createdAt ?? "",
     isResolved: report.isResolved,
     targetType: report.targetType,
     targetId: report.targetId,
@@ -46,21 +46,6 @@ export default async function AdminReportsPage({
         size: REPORTS_PER_PAGE,
         isResolved: currentView === "unread" ? false : undefined,
     });
-
-    console.log("[MS-1 신고 목록 조회] request", {
-        page: requestedPage,
-        size: REPORTS_PER_PAGE,
-        isResolved: currentView === "unread" ? false : undefined,
-        view: currentView,
-    });
-    console.log("[MS-1 신고 목록 조회] pagination", {
-        page: reportResponse.page,
-        size: reportResponse.size,
-        totalElements: reportResponse.totalElements,
-        totalPages: reportResponse.totalPages,
-        itemCount: reportResponse.items.length,
-    });
-    console.log("[MS-1 신고 목록 조회] items", reportResponse.items);
 
     const reports = reportResponse.items.map(mapReportListItem);
     const currentPage = reportResponse.page;

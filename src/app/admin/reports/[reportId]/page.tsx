@@ -38,6 +38,10 @@ const pageReportTypes: ReportTargetType[] = [
     "PAGE",
 ];
 
+const formatAdminDateTime = (dateTime?: string) => {
+    return dateTime ? dateTime.replace("T", " ").slice(0, 16) : "-";
+};
+
 const createAdminTargetPath = (report: ReportDetail) => {
     if (!report.targetId) {
         return undefined;
@@ -90,19 +94,6 @@ export default async function AdminReportDetailPage({
     }
 
     const rawReport = await getReportDetail(reportId);
-    console.log("[MS-2 신고 상세 조회] raw", rawReport);
-    console.log("[MS-2 신고 상세 조회] target content check", {
-        reportId: rawReport.reportId,
-        targetType: rawReport.targetType,
-        targetId: rawReport.targetId,
-        parentId: rawReport.parentId,
-        targetPath: rawReport.targetPath,
-        reportedUserId: rawReport.reportedUserId,
-        reportedName: rawReport.reportedName,
-        targetContent: rawReport.targetContent,
-        targetContentLength: rawReport.targetContent?.length ?? 0,
-    });
-
     const report = mapReportDetail(rawReport);
     const isPageReport = pageReportTypes.includes(report.targetType);
 
@@ -127,7 +118,7 @@ export default async function AdminReportDetailPage({
                 </span>
                 {report.isResolved && report.resolvedAt && (
                     <time className="text-sm font-medium text-slate-400">
-                        처리 완료 {report.resolvedAt}
+                        처리 완료 {formatAdminDateTime(report.resolvedAt)}
                     </time>
                 )}
             </div>
@@ -147,7 +138,7 @@ export default async function AdminReportDetailPage({
                             <dt className="font-bold text-slate-400">신고자</dt>
                             <dd className="font-medium text-slate-700">{report.reporterName}</dd>
                             <dt className="font-bold text-slate-400">접수일</dt>
-                            <dd className="font-medium text-slate-700">{report.createdAt}</dd>
+                            <dd className="font-medium text-slate-700">{formatAdminDateTime(report.createdAt)}</dd>
                         </dl>
                     </section>
 
@@ -200,7 +191,7 @@ export default async function AdminReportDetailPage({
                                 </dd>
                                 <dt className="font-bold text-slate-400">콘텐츠 내용</dt>
                                 <dd className="rounded-md bg-slate-50 p-4 leading-7 text-slate-700">
-                                    {report.targetContent ?? "백엔드에서 신고 콘텐츠 내용을 내려주지 않았습니다."}
+                                    {report.targetContent?.trim() ? report.targetContent : "표시할 수 있는 콘텐츠 내용이 없습니다."}
                                 </dd>
                             </dl>
                         </section>
