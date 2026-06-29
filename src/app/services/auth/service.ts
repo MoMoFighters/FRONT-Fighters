@@ -1,4 +1,5 @@
-import { ApiResponse } from "@/lib/api";
+import { UserRole, UserStatus } from "@/features/user/type";
+import { ApiResponse, fetchWithAuth } from "@/lib/api";
 
 const BASE_SERVER_URL =
     process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -55,7 +56,7 @@ export const studentSignupService = async (
     if (!response.ok) {
         throw new Error(
             result.message ||
-            "학생 회원가입에 실패하였습니다."
+            "회원가입에 실패하였습니다."
         );
     }
 
@@ -64,39 +65,55 @@ export const studentSignupService = async (
 
 
 // ==========================================
-// 1-2. 강사 전환
-// POST /api/v1/auth/signup/teacher
+// 1-2-1. 강사 전환
+// POST /api/v1/teacherApply
 // ==========================================
 
 export type TeacherSignupData = null;
 
 export const teacherSignupService = async (
-    formData: FormData,
-    accessToken: string
+    formData: FormData
 ): Promise<ApiResponse<TeacherSignupData>> => {
-    const response = await fetch(
-        `${BASE_SERVER_URL}/api/v1/teacherApply`,
-        {
-            method: "POST",
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-            body: formData,
-        }
-    );
-
-    const result: ApiResponse<TeacherSignupData> =
-        await response.json();
+    const response = await fetchWithAuth("/api/v1/teacherApply", {
+        method: 'POST',
+        body: formData
+    })
 
     if (!response.ok) {
+        const result = await response.json()
         throw new Error(
             result.message ||
             "강사 전환에 실패하였습니다."
         );
     }
 
+    const result: ApiResponse<TeacherSignupData> =
+        await response.json();
+
+
+
     return result;
 };
+
+// ==========================================
+// 1-2-2. 강사 포기하기
+// POST /api/v1/application-giveup
+// ==========================================
+
+export const teacherGiveupService = async (): Promise<ApiResponse<null>> => {
+    const response = await fetchWithAuth("/api/v1/application-giveup", {
+        method: 'POST'
+    });
+    if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(
+            errorData.message ||
+            "알 수 없는 문제가 발생했습니다."
+        );
+    }
+    return response.json();
+}
+
 
 
 // ==========================================
@@ -185,7 +202,10 @@ export const emailVerifyService = async (
 export interface LoginData {
     accessToken: string;
     refreshToken: string;
-    status: string;
+    status: UserStatus;
+    role: UserRole;
+    isTempPwd: boolean;
+    nickname: string | null;
     expiresIn: number;
 }
 
@@ -218,46 +238,6 @@ export const loginService = async (
 
     return result;
 };
-
-
-// ==========================================
-// 2-2. 로그인 완료 정보 조회
-// GET /api/v1/auth/login/completed
-// ==========================================
-
-export interface LoginCompletedData {
-    role: "STUDENT" | "TEACHER" | "ADMIN";
-    is_tempPwd: boolean;
-    nickname: string | null;
-}
-
-export const loginSuccessService = async (
-    accessToken: string
-): Promise<ApiResponse<LoginCompletedData>> => {
-    const response = await fetch(
-        `${BASE_SERVER_URL}/api/v1/auth/login/completed`,
-        {
-            method: "GET",
-            headers: {
-                Authorization:
-                    `Bearer ${accessToken}`,
-            },
-        }
-    );
-
-    const result: ApiResponse<LoginCompletedData> =
-        await response.json();
-
-    if (!response.ok) {
-        throw new Error(
-            result.message ||
-            "로그인 정보를 불러오지 못했습니다."
-        );
-    }
-
-    return result;
-};
-
 
 // ==========================================
 // 3. 비밀번호 변경

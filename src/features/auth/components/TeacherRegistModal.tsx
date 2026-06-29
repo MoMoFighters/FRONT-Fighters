@@ -12,16 +12,16 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { killTokenAction } from "@/features/user/action";
 import { redirect } from "next/navigation";
 
 interface TeacherRegistModalProps {
     isModal: boolean;
     setIsModal: React.Dispatch<React.SetStateAction<boolean>>;
     nickName: string;
+    isReApply?: boolean;
 }
 
-export default function TeacherRegistModal({ isModal, setIsModal, nickName }: TeacherRegistModalProps) {
+export default function TeacherRegistModal({ isModal, setIsModal, nickName, isReApply }: TeacherRegistModalProps) {
 
     const [category, setCategory] = useState("");
     const [previewFile, setPreviewFile] = useState<File | null>(null);
@@ -69,7 +69,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName }: Te
 
         const formData = new FormData(event.currentTarget);
         const currentNickname = String(
-            formData.get("currnetNickname") ?? nickName
+            formData.get("currentNickname") ?? nickName
         ).trim();
         const nickname = String(formData.get("teacherName") ?? "").trim();
 
@@ -79,7 +79,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName }: Te
         }
 
         const requestFormData = new FormData();
-        requestFormData.append("currnetNickname", currentNickname);
+        requestFormData.append("currentNickname", currentNickname);
         requestFormData.append("nickname", nickname);
         requestFormData.append("category", category);
         requestFormData.append("proof", previewFile);
@@ -132,12 +132,14 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName }: Te
                             강사 등록
                         </h2>
                         <div className="flex-1" />
-                        <button
-                            type="button"
-                            className="text-slate-500 hover:text-slate-900 cursor-pointer"
-                            onClick={() => setIsModal(false)}>
-                            <X />
-                        </button>
+                        {!isReApply &&
+                            <button
+                                type="button"
+                                className="text-slate-500 hover:text-slate-900 cursor-pointer"
+                                onClick={() => setIsModal(false)}>
+                                <X />
+                            </button>}
+
                     </div>
 
                     <p className="mt-2 text-sm leading-6 text-slate-500">
@@ -149,7 +151,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName }: Te
                     >
                         <input
                             type="hidden"
-                            name="currnetNickname"
+                            name="currentNickname"
                             value={nickName}
                         />
                         <div className="grid grid-cols-2 gap-4">
