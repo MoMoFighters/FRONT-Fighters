@@ -5,19 +5,10 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import FriendItem from "@/components/phone/friends/FriendItem";
 import { MessageCirclePlus, UserPlus, X } from "lucide-react";
-import { getFriendListAction } from "@/features/friend/action";
+import { getStudentFriendListAction } from "@/features/friend/action";
 import { createChatRoomAction } from "@/features/chat/action";
 import { Button } from "@/components/ui/button";
-
-interface friendInfo {
-    userId: number;
-    name?: string;
-    nickname: string;
-    status: "none" | "SENT" | "FRIEND" | "RECEIVED" | "BLOCK";
-    role: "STUDENT" | "TEACHER";
-    profileImageUrl?: string;
-    lectureTitle?: string;
-}
+import type { StudentFriendData } from "@/features/friend/type";
 
 const DEFAULT_EMPTY_MESSAGE = "\uC544\uC9C1 \uCE5C\uAD6C\uAC00 \uC5C6\uC5B4\uC694.";
 const ADD_FRIEND_LABEL = "\uCE5C\uAD6C \uCD94\uAC00";
@@ -31,13 +22,12 @@ const SUBMITTING_LABEL = "\uC0DD\uC131 \uC911";
 export default function MyFriendListModal() {
     const router = useRouter();
     const [isModal, setIsModal] = useState(false);
-    const [friendList, setFriendList] = useState<friendInfo[]>([]);
+    const [friendList, setFriendList] = useState<StudentFriendData[]>([]);
     const [message, setMessage] = useState(DEFAULT_EMPTY_MESSAGE);
     const [selectedFriendIds, setSelectedFriendIds] = useState<number[]>([]);
     const [roomTitle, setRoomTitle] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const friends = friendList.filter((friend) => friend.status === "FRIEND");
     const canCreateGroupChat =
         selectedFriendIds.length >= 2 && roomTitle.trim().length > 0;
 
@@ -45,7 +35,7 @@ export default function MyFriendListModal() {
         if (!isModal) return;
 
         const getFriends = async () => {
-            const response = await getFriendListAction("FRIEND");
+            const response = await getStudentFriendListAction();
 
             setMessage(response.message);
 
@@ -154,8 +144,8 @@ export default function MyFriendListModal() {
                     </div>
 
                     <div className="overflow-y-scroll h-full scrollbar-none mt-2 gap-1 flex flex-col py-2">
-                        {friends.length !== 0 ? (
-                            friends.map((friend) => {
+                        {friendList.length !== 0 ? (
+                            friendList.map((friend) => {
                                 const isSelected = selectedFriendIds.includes(friend.userId);
 
                                 return (
@@ -170,7 +160,7 @@ export default function MyFriendListModal() {
                                         <FriendItem
                                             friendInfo={{
                                                 status: friend.status,
-                                                name: friend.name ?? friend.nickname,
+                                                name: friend.nickname,
                                                 profile: friend.profileImageUrl ?? "",
                                                 userId: friend.userId,
                                             }}

@@ -1,4 +1,5 @@
 import type { ApiResponse } from "@/lib/api";
+import type { StudentFriendData } from "@/features/friend/type";
 
 const BASE_SERVER_URL =
     process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -92,6 +93,21 @@ export const getFriendsService = async (
             },
         },
         "친구 목록을 불러오지 못했습니다."
+    );
+};
+
+export const getStudentFriendsService = async (
+    accessToken: string
+): Promise<ApiResponse<StudentFriendData[]>> => {
+    return requestApi<StudentFriendData[]>(
+        `${BASE_SERVER_URL}/api/v2/studentfriends`,
+        {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        },
+        "강사 제외 친구 목록을 불러오지 못했습니다."
     );
 };
 
