@@ -21,8 +21,15 @@ interface LoginData {
 
 interface LoginResultModalProps {
     setIsModal: React.Dispatch<React.SetStateAction<boolean>>;
-    result: ApiResponse<LoginData>;
+    result?: ApiResponse<LoginData>;
 }
+
+const fallbackResult: ApiResponse<LoginData> = {
+    timestamp: new Date().toISOString(),
+    status: 500,
+    code: "LOGIN_RESULT_NOT_FOUND",
+    message: "로그인 결과를 확인할 수 없습니다.",
+};
 
 const getRoleRootHref = (role: UserRole) => {
     if (role === "TEACHER") return "/teacher";
@@ -37,8 +44,10 @@ export default function LoginResultModal({
     const router = useRouter();
     const [isGiveupPending, setIsGiveupPending] = useState(false);
     const [mutationMessage, setMutationMessage] = useState("");
-    const userInfo = result.data;
-    const isHttpSuccess = result.status === 200 || result.status === 201;
+    const [isApplyModal, setIsApplyModal] = useState(false);
+    const safeResult = result ?? fallbackResult;
+    const userInfo = safeResult.data;
+    const isHttpSuccess = safeResult.status === 200 || safeResult.status === 201;
     const isActiveUser = isHttpSuccess && userInfo?.status === "ACTIVE";
     const isPendingTeacher =
         isHttpSuccess &&
@@ -52,10 +61,8 @@ export default function LoginResultModal({
     const title = isActiveUser
         ? "로그인 성공"
         : isRejectedTeacherApplication
-            ? "강사 승인 거절됨"
+            ? "강사 승인 거절"
             : "로그인 실패";
-
-    const [isApplyModal, setIsApplyModal] = useState(false);
 
     const handleCloseFailModal = () => {
         setIsModal(false);
@@ -101,10 +108,6 @@ export default function LoginResultModal({
         }
     };
 
-    const handleReapply = () => {
-        setIsApplyModal(true);
-    }
-
     return (
         <>
             <div
@@ -113,14 +116,15 @@ export default function LoginResultModal({
             >
                 <div
                     className="flex w-[420px] flex-col items-center gap-4 rounded-xl border border-slate-200 bg-white p-8 shadow-2xl"
-                    onClick={(e) => e.stopPropagation()}
+                    onClick={(event) => event.stopPropagation()}
                 >
-                    {isRejectedTeacherApplication ? <AlertCircleIcon className="h-14 w-14 text-red-500" />
-                        : isLoginSuccess ? (
-                            <CheckCircle2 className="h-14 w-14 text-green-500" />
-                        ) : (
-                            <XCircle className="h-14 w-14 text-red-500" />
-                        )}
+                    {isRejectedTeacherApplication ? (
+                        <AlertCircleIcon className="h-14 w-14 text-red-500" />
+                    ) : isLoginSuccess ? (
+                        <CheckCircle2 className="h-14 w-14 text-green-500" />
+                    ) : (
+                        <XCircle className="h-14 w-14 text-red-500" />
+                    )}
 
                     <p className="text-2xl font-bold text-slate-900">
                         {title}
@@ -128,9 +132,9 @@ export default function LoginResultModal({
 
                     <div className="text-center">
                         <p className="text-slate-600">
-                            {!isRejectedTeacherApplication
-                                ? mutationMessage || result.message
-                                : "거절 사유는 이메일을 통해 확인해주세요."}
+                            {isRejectedTeacherApplication
+                                ? "거절 사유는 이메일을 통해 확인해주세요."
+                                : mutationMessage || safeResult.message}
                         </p>
                     </div>
 
@@ -139,7 +143,7 @@ export default function LoginResultModal({
                             <Button
                                 type="button"
                                 className="h-11 cursor-pointer rounded-sm bg-indigo-500 font-bold text-white hover:bg-indigo-600"
-                                onClick={handleReapply}
+                                onClick={() => setIsApplyModal(true)}
                             >
                                 강사 다시 신청
                             </Button>
@@ -169,7 +173,8 @@ export default function LoginResultModal({
                     setIsModal={setIsApplyModal}
                     nickName={userInfo?.nickname || ""}
                     isReApply={true}
-                />)}
+                />
+            )}
         </>
     );
 }

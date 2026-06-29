@@ -1,67 +1,71 @@
-'use client';
+"use client";
 
-import { Suspense, useEffect, useRef, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { handleKakaoLoginCallback } from "@/features/auth/action";
+import LoginResultModal from "@/features/auth/components/LoginResultModal";
+import { UserRole, UserStatus } from "@/features/user/type";
+import { ApiResponse } from "@/lib/api";
 
-import { handleKakaoLoginCallback } from '@/features/auth/action';
-import LoginResultModal from '@/features/auth/components/LoginResultModal';
-
-interface LoginResult {
-    timestamp: string;
-    status: number;
-    code: string;
-    message: string;
+interface LoginData {
+    accessToken: string;
+    refreshToken: string;
+    status: UserStatus;
+    role: UserRole;
+    isTempPwd: boolean;
+    nickname: string | null;
+    expiresIn: number;
 }
+
+const createOAuthErrorResult = (
+    code: string,
+    message: string,
+    status = 500
+): ApiResponse<LoginData> => ({
+    timestamp: new Date().toISOString(),
+    status,
+    code,
+    message,
+});
 
 function KakaoCallbackContent() {
     const searchParams = useSearchParams();
-    const authorizationCode = searchParams.get('code');
+    const authorizationCode = searchParams.get("code");
     const hasCalled = useRef(false);
-
     const [isModal, setIsModal] = useState(false);
-    const [loginResult, setLoginResult] = useState<LoginResult>({
-        timestamp: '',
-        status: 0,
-        code: '',
-        message: '',
-    });
+    const [loginResult, setLoginResult] = useState<ApiResponse<LoginData>>(
+        createOAuthErrorResult("", "")
+    );
 
     useEffect(() => {
         if (hasCalled.current) return;
-
         hasCalled.current = true;
 
         const login = async () => {
             if (!authorizationCode) {
-                setLoginResult({
-                    timestamp: new Date().toISOString(),
-                    status: 400,
-                    code: 'AUTHORIZATION_CODE_NOT_FOUND',
-                    message: '카카오 인가 코드가 없습니다.',
-                });
+                setLoginResult(
+                    createOAuthErrorResult(
+                        "AUTHORIZATION_CODE_NOT_FOUND",
+                        "카카오 인가 코드가 없습니다.",
+                        400
+                    )
+                );
                 setIsModal(true);
                 return;
             }
 
             try {
-                const response =
-                    await handleKakaoLoginCallback(authorizationCode);
-
-                setLoginResult({
-                    timestamp: response.timestamp,
-                    status: response.status,
-                    code: response.code,
-                    message: response.message,
-                });
+                const response = await handleKakaoLoginCallback(authorizationCode);
+                setLoginResult(response);
             } catch (error) {
-                setLoginResult({
-                    timestamp: new Date().toISOString(),
-                    status: 500,
-                    code: 'KAKAO_LOGIN_FAILED',
-                    message: error instanceof Error
-                        ? error.message
-                        : '카카오 로그인 처리에 실패했습니다.',
-                });
+                setLoginResult(
+                    createOAuthErrorResult(
+                        "KAKAO_LOGIN_FAILED",
+                        error instanceof Error
+                            ? error.message
+                            : "카카오 로그인 처리에 실패했습니다."
+                    )
+                );
             }
 
             setIsModal(true);
@@ -79,7 +83,7 @@ function KakaoCallbackContent() {
             {isModal && (
                 <LoginResultModal
                     setIsModal={setIsModal}
-                    state={loginResult}
+                    result={loginResult}
                 />
             )}
         </>
