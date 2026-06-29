@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
@@ -30,6 +30,22 @@ type LectureCreateTokenPayload = {
     userCategory?: string;
 };
 
+type LectureCategory = "STUDY" | "BEAUTY" | "FITNESS" | "COOK" | "ART";
+
+const LECTURE_CATEGORY_OPTIONS: {
+    value: LectureCategory;
+    label: string;
+}[] = [
+        { value: "STUDY", label: "학습" },
+        { value: "BEAUTY", label: "뷰티" },
+        { value: "FITNESS", label: "피트니스" },
+        { value: "COOK", label: "요리" },
+        { value: "ART", label: "예술" },
+    ];
+
+const isLectureCategory = (value: string): value is LectureCategory =>
+    LECTURE_CATEGORY_OPTIONS.some((category) => category.value === value);
+
 const isSelectedFile = (value: FormDataEntryValue | null): value is File =>
     value instanceof File && value.size > 0;
 
@@ -39,7 +55,7 @@ export default function LectureForm({ mode, onUploadStart }: LectureFormProps) {
     const [statusMessage, setStatusMessage] = useState("");
     const [statusCode, setStatusCode] = useState<number | null>(null);
     const [isPending, setIsPending] = useState(false);
-    const [category, setCategory] = useState("");
+    const [category, setCategory] = useState<LectureCategory | "">("");
     const [isCategoryLocked, setIsCategoryLocked] = useState(false);
     const { startUpload } = useLectureCreateUpload();
 
@@ -89,7 +105,7 @@ export default function LectureForm({ mode, onUploadStart }: LectureFormProps) {
                 const tokenCategory =
                     decoded.category ?? decoded.Category ?? decoded.userCategory;
 
-                if (tokenCategory) {
+                if (tokenCategory && isLectureCategory(tokenCategory)) {
                     setCategory(tokenCategory);
                     setIsCategoryLocked(true);
                 }
@@ -165,8 +181,6 @@ export default function LectureForm({ mode, onUploadStart }: LectureFormProps) {
                     </div>
                 </div>
 
-                {/* ⚠️ [핵심 수정]: encType="multipart/form-data"를 추가하여 하위 비디오 파일 스트림이 온전히 전송되도록 보정합니다. */}
-                {/* encType을 지워도 React가 내부적으로 자동으로 처리해 줍니다! */}
                 <form className="flex flex-col gap-6 p-8" onSubmit={handleSubmit}>
 
                     {/* 챕터 수 hidden input */}
@@ -212,17 +226,30 @@ export default function LectureForm({ mode, onUploadStart }: LectureFormProps) {
                         <select
                             name="category"
                             value={category}
-                            onChange={(event) => setCategory(event.target.value)}
+                            onChange={(event) => {
+                                if (isCategoryLocked) {
+                                    return;
+                                }
+
+                                const nextCategory = event.target.value;
+
+                                if (isLectureCategory(nextCategory)) {
+                                    setCategory(nextCategory);
+                                }
+                            }}
                             disabled={isCategoryLocked}
                             className="h-11 w-44 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 outline-none transition focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100 disabled:bg-slate-100 disabled:text-slate-500"
                             required
                         >
                             <option value="" disabled hidden>카테고리 선택</option>
-                            <option value="STUDY">학습</option>
-                            <option value="BEAUTY">뷰티</option>
-                            <option value="FITNESS">헬스케어</option>
-                            <option value="COOK">요리</option>
-                            <option value="ART">예술</option>
+                            {LECTURE_CATEGORY_OPTIONS.map((category) => (
+                                <option
+                                    key={category.value}
+                                    value={category.value}
+                                >
+                                    {category.label}
+                                </option>
+                            ))}
                         </select>
                     </div>
 
