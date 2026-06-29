@@ -9,6 +9,10 @@ import {
     getCommunityPostDetailService,
     getCommunityPostLikeListService,
     getCommunityPostListService,
+    getMyCommunityDashboardService,
+    getMyCommunityPostListService,
+    getUserCommunityDashboardService,
+    getUserCommunityPostListService,
     getCommunityPostRecommendationsService,
     getCommunityPostRepliesService,
     likeCommunityPostService,
@@ -30,6 +34,7 @@ import {
     GetCommunityPostCommentsResponse,
     GetCommunityPostRepliesResponse,
     GetCommunityPostLikeListResponse,
+    GetCommunityPostDashboardResponse,
     UploadCommunityPostImageResponse,
 } from "./type";
 
@@ -194,6 +199,62 @@ export const searchCommunityPostAction = async ({
             cursor,
             size,
         });
+    } catch (error) {
+        return createFailureResponse(error);
+    }
+};
+
+export const getMyCommunityPostListAction = async ({
+    cursor,
+    size = 8,
+}: {
+    cursor?: number | null;
+    size?: number;
+}): Promise<GetCommunityPostListResponse> => {
+    try {
+        return await getMyCommunityPostListService({
+            cursor,
+            size,
+        });
+    } catch (error) {
+        return createFailureResponse(error);
+    }
+};
+
+export const getUserCommunityPostListAction = async ({
+    userId,
+    cursor,
+    size = 8,
+}: {
+    userId: number;
+    cursor?: number | null;
+    size?: number;
+}): Promise<GetCommunityPostListResponse> => {
+    try {
+        return await getUserCommunityPostListService({
+            userId,
+            cursor,
+            size,
+        });
+    } catch (error) {
+        return createFailureResponse(error);
+    }
+};
+
+export const getMyCommunityDashboardAction =
+    async (): Promise<GetCommunityPostDashboardResponse> => {
+        try {
+            return await getMyCommunityDashboardService();
+        } catch (error) {
+            return createFailureResponse(error);
+        }
+    };
+
+export const getUserCommunityDashboardAction = async (
+    userId: number
+): Promise<GetCommunityPostDashboardResponse> => {
+    try {
+        return await getUserCommunityDashboardService(userId);
     } catch (error) {
         return createFailureResponse(error);
     }

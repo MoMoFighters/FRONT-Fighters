@@ -124,6 +124,7 @@ export default async function CommunityPage({
         nextCursor: null,
     };
     const posts = pageData.posts ?? [];
+    console.log(posts, '글목록')
     const totalCount =
         pageData.totalCount ?? pageData.totalElements ?? 0;
     const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));

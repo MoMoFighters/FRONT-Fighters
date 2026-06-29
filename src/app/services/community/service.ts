@@ -14,6 +14,7 @@ import {
     GetCommunityPostCommentsResponse,
     GetCommunityPostRepliesResponse,
     GetCommunityPostLikeListResponse,
+    GetCommunityPostDashboardResponse,
     UploadCommunityPostImageResponse,
 } from "@/features/community/type";
 
@@ -252,6 +253,84 @@ export const searchCommunityPostService = async ({
     );
 
     return parseApiResponse(response, "search post list");
+};
+
+export const getMyCommunityPostListService = async ({
+    cursor,
+    size,
+}: {
+    cursor?: number | null;
+    size: number;
+}): Promise<GetCommunityPostListResponse> => {
+    const params = new URLSearchParams({
+        size: String(size),
+    });
+
+    if (cursor !== undefined && cursor !== null) {
+        params.set("cursor", String(cursor));
+    }
+
+    const response = await fetchWithAuth(
+        `/api/v2/posts/me?${params.toString()}`,
+        {
+            method: "GET",
+            cache: "no-store",
+        }
+    );
+
+    return parseApiResponse(response, "get my post list");
+};
+
+export const getUserCommunityPostListService = async ({
+    userId,
+    cursor,
+    size,
+}: {
+    userId: number;
+    cursor?: number | null;
+    size: number;
+}): Promise<GetCommunityPostListResponse> => {
+    const params = new URLSearchParams({
+        size: String(size),
+    });
+
+    if (cursor !== undefined && cursor !== null) {
+        params.set("cursor", String(cursor));
+    }
+
+    const response = await fetchWithAuth(
+        `/api/v2/posts/users/${userId}?${params.toString()}`,
+        {
+            method: "GET",
+            cache: "no-store",
+        }
+    );
+
+    return parseApiResponse(response, "get user post list");
+};
+
+export const getMyCommunityDashboardService =
+    async (): Promise<GetCommunityPostDashboardResponse> => {
+        const response = await fetchWithAuth("/api/v2/posts/me/dashboard", {
+            method: "GET",
+            cache: "no-store",
+        });
+
+        return parseApiResponse(response, "get my post dashboard");
+    };
+
+export const getUserCommunityDashboardService = async (
+    userId: number
+): Promise<GetCommunityPostDashboardResponse> => {
+    const response = await fetchWithAuth(
+        `/api/v2/posts/users/${userId}/dashboard`,
+        {
+            method: "GET",
+            cache: "no-store",
+        }
+    );
+
+    return parseApiResponse(response, "get user post dashboard");
 };
 
 export const likeCommunityPostService = async (

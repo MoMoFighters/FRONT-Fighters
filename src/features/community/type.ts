@@ -32,7 +32,7 @@ export interface CreateCommunityPostContentItem {
 }
 
 export interface CreateCommunityPostContentsRequest {
-    thumbnailImageUrl: string | null;
+    thumbnailUrl: string | null;
     contents: CreateCommunityPostContentItem[];
 }
 
@@ -129,6 +129,19 @@ export type GetCommunityPostListResponse =
 
 export type SearchCommunityPostResponse =
     ApiResponse<CommunityPostListData> & {
+        statusCode?: number;
+        errors?: Record<string, unknown>;
+    };
+
+export interface CommunityPostDashboardData {
+    totalPostCount: number;
+    totalViewCount: number;
+    totalLikeCount: number;
+    totalCommentCount: number;
+}
+
+export type GetCommunityPostDashboardResponse =
+    ApiResponse<CommunityPostDashboardData> & {
         statusCode?: number;
         errors?: Record<string, unknown>;
     };

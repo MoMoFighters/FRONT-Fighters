@@ -275,13 +275,13 @@ export default function CommunityPostForm({ mode, data, role }: CommunityPostFor
             }
         });
 
-        const thumbnailImageUrl =
+        const thumbnailUrl =
             thumbnailId
                 ? imageUrlById.get(thumbnailId) ?? null
                 : null;
 
         return {
-            thumbnailImageUrl,
+            thumbnailUrl,
             contents,
         };
     };
