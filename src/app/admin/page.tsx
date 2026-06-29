@@ -26,243 +26,102 @@ import AdminDashboardSystemStatusList, {
 import AdminDashboardTaskTable, {
     AdminDashboardTask,
 } from "@/features/admin/components/dashboard/AdminDashboardTaskTable";
+import { getDashboardSummary, getMonthlyState } from "@/app/services/admin-dashboard/service";
+import { DashboardRecentAccessLogs, DashboardSystemHealth, MonthlyCount } from "@/features/admin/components/dashboard/type";
+import { USER_ROLE_LABEL } from "@/features/user/type";
 
-export default function AdminDashboardPage() {
-    // TODO: 추후 관리자 대시보드 월별 집계 API 응답으로 교체 예정입니다.
-    const dashboardYear = 2026;
+const formatAdminDateTime = (dateTime: string) => {
+    return dateTime.replace("T", " ").slice(0, 16);
+};
+
+const createMonthlyCountMap = (counts: MonthlyCount[]) => {
+    return new Map(counts.map((item) => [item.month, item.count]));
+};
+
+const getLastDataMonth = (...monthlyCounts: MonthlyCount[][]) => {
+    const months = monthlyCounts.flat().map((item) => item.month);
+
+    return Math.max(1, ...months);
+};
+
+const formatAccessUser = (log: DashboardRecentAccessLogs) => {
+    if (!log.userName || !log.role) {
+        return "외부 접근";
+    }
+
+    return `${log.userName}(${USER_ROLE_LABEL[log.role]})`;
+};
+
+const mapSystemHealth = (systemHealth: DashboardSystemHealth): AdminDashboardSystemStatus[] => [
+    { id: 1, name: "웹 서비스", status: systemHealth.webService },
+    { id: 2, name: "DB", status: systemHealth.database },
+    { id: 3, name: "파일 스토리지", status: systemHealth.fileStorage },
+    { id: 4, name: "메일 서비스", status: systemHealth.mailService },
+];
+
+export default async function AdminDashboardPage() {
+    const [monthlyState, dashboardSummary] = await Promise.all([
+        getMonthlyState(),
+        getDashboardSummary(),
+    ]);
+
+    const dashboardYear = new Date().getFullYear();
+    const memberCountMap = createMonthlyCountMap(monthlyState.memberCounts);
+    const lectureCountMap = createMonthlyCountMap(monthlyState.lectureCounts);
+    const postCountMap = createMonthlyCountMap(monthlyState.postCounts);
+    const lastDataMonth = getLastDataMonth(
+        monthlyState.memberCounts,
+        monthlyState.lectureCounts,
+        monthlyState.postCounts,
+    );
 
     const monthlyDashboardData: AdminDashboardMonthlyDatum[] = [
-        {
-            month: "1월",
-            totalLectures: 82,
-            totalUsers: 8320,
-            totalPosts: 1240,
-        },
-        {
-            month: "2월",
-            totalLectures: 104,
-            totalUsers: 8940,
-            totalPosts: 1510,
-        },
-        {
-            month: "3월",
-            totalLectures: 127,
-            totalUsers: 9560,
-            totalPosts: 1785,
-        },
-        {
-            month: "4월",
-            totalLectures: 151,
-            totalUsers: 10180,
-            totalPosts: 2045,
-        },
-        {
-            month: "5월",
-            totalLectures: 188,
-            totalUsers: 10960,
-            totalPosts: 2380,
-        },
-        {
-            month: "6월",
-            totalLectures: 216,
-            totalUsers: 11720,
-            totalPosts: 2670,
-        },
-        {
-            month: "7월",
-            totalLectures: 232,
-            totalUsers: 12080,
-            totalPosts: 2810,
-        },
-        {
-            month: "8월",
-            totalLectures: 248,
-            totalUsers: 12340,
-            totalPosts: 2950,
-        },
-        {
-            month: "9월",
-            totalLectures: 265,
-            totalUsers: 12890,
-            totalPosts: 3180,
-        },
-        {
-            month: "10월",
-            totalLectures: 284,
-            totalUsers: 13420,
-            totalPosts: 3420,
-        },
-        {
-            month: "11월",
-            totalLectures: 306,
-            totalUsers: 13940,
-            totalPosts: 3665,
-        },
-        {
-            month: "12월",
-            totalLectures: 328,
-            totalUsers: 14580,
-            totalPosts: 3920,
-        },
+        ...Array.from({ length: lastDataMonth }, (_, index) => {
+            const month = index + 1;
+
+            return {
+                month: `${month}월`,
+                totalLectures: lectureCountMap.get(month) ?? 0,
+                totalUsers: memberCountMap.get(month) ?? 0,
+                totalPosts: postCountMap.get(month) ?? 0,
+            };
+        }),
     ];
 
-    // TODO: 승인/신고 요청을 최신순으로 5~6개만 조회하는 관리자 작업 큐 API로 교체 예정입니다.
-    // 예: GET /api/v1/admin/dashboard/pending-tasks?size=5
-    const pendingTasks: AdminDashboardTask[] = [
-        {
-            id: 1,
-            type: "강사 승인",
-            title: "김하나 강사 가입 승인 요청",
-            requester: "김하나",
-            requestedAt: "2026-06-14 14:32",
-            status: "대기",
-        },
-        {
-            id: 2,
-            type: "강사 승인",
-            title: "이준호 강사 가입 승인 요청",
-            requester: "이준호",
-            requestedAt: "2026-06-14 13:58",
-            status: "대기",
-        },
-        {
-            id: 3,
-            type: "신고",
-            title: "부적절한 강의 콘텐츠 신고",
-            requester: "user_9281",
-            requestedAt: "2026-06-14 13:10",
-            status: "긴급",
-        },
-        {
-            id: 4,
-            type: "신고",
-            title: "강사 부적절 언행 신고",
-            requester: "user_7743",
-            requestedAt: "2026-06-14 12:47",
-            status: "대기",
-        },
-        {
-            id: 5,
-            type: "신고",
-            title: "저작권 침해 의심 신고",
-            requester: "user_5120",
-            requestedAt: "2026-06-14 11:22",
-            status: "대기",
-        },
-    ];
+    const pendingTasks: AdminDashboardTask[] = dashboardSummary.pendingTasks.map((task, index) => ({
+        id: index + 1,
+        type: task.type === "TEACHER" ? "강사 승인" : "신고",
+        title: task.title,
+        requester: task.requester,
+        requestedAt: formatAdminDateTime(task.requestedAt),
+        status: "대기",
+    }));
 
-    // TODO: 공지사항 전체 조회 API 구현 후 최근 공지 데이터로 교체 예정입니다.
-    const notices: AdminDashboardNotice[] = [
-        {
-            id: 1,
-            title: "[안내] 시스템 정기 점검 안내 (6/15)",
-            date: "2026-06-14",
-            pinned: true,
-            isNew: true,
-        },
-        {
-            id: 2,
-            title: "[안내] 서비스 이용 약관 업데이트 안내",
-            date: "2026-06-12",
-        },
-        {
-            id: 3,
-            title: "[안내] MoMoCITY 커뮤니티 가이드 개정",
-            date: "2026-06-10",
-        },
-        {
-            id: 4,
-            title: "[안내] 강의 검수 기준 업데이트",
-            date: "2026-06-08",
-        },
-        {
-            id: 5,
-            title: "[안내] 신고 처리 정책 변경 안내",
-            date: "2026-06-05",
-        },
-        {
-            id: 6,
-            title: "[안내] 관리자 접근 로그 보관 정책 안내",
-            date: "2026-06-01",
-        },
-        {
-            id: 7,
-            title: "[안내] 강사 승인 심사 절차 변경 안내",
-            date: "2026-05-29",
-        },
-    ];
+    const notices: AdminDashboardNotice[] = dashboardSummary.recentNotices.map((notice) => ({
+        id: notice.noticeId,
+        title: notice.title,
+        date: formatAdminDateTime(notice.createdAt),
+        pinned: notice.isPinned,
+    }));
 
-    // TODO: 신고 관리 API의 최근 신고 조회 응답으로 교체 예정입니다.
-    const reports: AdminDashboardReport[] = [
-        {
-            id: 1,
-            title: "강의 내 부적절한 표현",
-            reporter: "user_9281",
-            reportedAt: "2026-06-14 13:10",
-            status: "처리",
-        },
-        {
-            id: 2,
-            title: "강사 부적절 언행",
-            reporter: "user_7743",
-            reportedAt: "2026-06-14 12:47",
-            status: "미처리",
-        },
-        {
-            id: 3,
-            title: "저작권 침해 의심",
-            reporter: "user_5120",
-            reportedAt: "2026-06-14 11:22",
-            status: "미처리",
-        },
-    ];
+    const reports: AdminDashboardReport[] = dashboardSummary.recentReports.map((report) => ({
+        id: report.reportId,
+        title: report.reason,
+        reporter: report.reporterName,
+        reportedAt: formatAdminDateTime(report.createdAt),
+        status: report.isResolved ? "처리" : "미처리",
+    }));
 
-    // TODO: 접근 로그 전체 조회 API 구현 후 최근 24시간 데이터로 교체 예정입니다.
-    const accessLogs: AdminDashboardAccessLog[] = [
-        {
-            id: 1,
-            ip: "211.234.56.78",
-            action: "로그인 시도",
-            accessedAt: "2026-06-14 14:21:32",
-            status: "성공",
-        },
-        {
-            id: 2,
-            ip: "211.234.56.78",
-            action: "로그아웃",
-            accessedAt: "2026-06-14 14:18:05",
-            status: "성공",
-        },
-        {
-            id: 3,
-            ip: "93.184.216.34",
-            action: "로그인 시도",
-            accessedAt: "2026-06-14 13:02:11",
-            status: "성공",
-        },
-        {
-            id: 4,
-            ip: "211.234.56.78",
-            action: "로그아웃",
-            accessedAt: "2026-06-14 09:11:47",
-            status: "성공",
-        },
-        {
-            id: 5,
-            ip: "150.95.120.15",
-            action: "접근 거부",
-            accessedAt: "2026-06-14 08:43:23",
-            status: "실패",
-        },
-    ];
+    const accessLogs: AdminDashboardAccessLog[] = dashboardSummary.recentAccessLogs.map((log) => ({
+        id: log.logId,
+        ip: log.ip,
+        user: formatAccessUser(log),
+        accessedAt: formatAdminDateTime(log.accessedAt),
+        status: log.isSuccess ? "성공" : "실패",
+    }));
 
-    // TODO: 시스템 헬스 체크 API 구현 후 실시간 상태로 교체 예정입니다.
-    const systemStatuses: AdminDashboardSystemStatus[] = [
-        { id: 1, name: "웹 서비스", status: "정상" },
-        { id: 2, name: "DB", status: "정상" },
-        { id: 3, name: "파일 스토리지", status: "정상" },
-        { id: 4, name: "메일 서비스", status: "정상" },
-    ];
+    const systemStatuses = mapSystemHealth(dashboardSummary.systemHealth);
+    const isSystemHealthy = systemStatuses.every((status) => status.status === "정상");
 
     return (
         <div className="pb-10">
@@ -282,9 +141,9 @@ export default function AdminDashboardPage() {
 
                 <div className="flex items-center gap-3">
 
-                    <div className="flex h-10 items-center gap-2 rounded-md border border-slate-200 bg-white px-4 text-sm font-black text-emerald-600">
+                    <div className={`flex h-10 items-center gap-2 rounded-md border border-slate-200 bg-white px-4 text-sm font-black ${isSystemHealthy ? "text-emerald-600" : "text-rose-500"}`}>
                         <CheckCircle2 className="h-4 w-4" />
-                        시스템 정상
+                        {isSystemHealthy ? "시스템 정상" : "시스템 확인 필요"}
                     </div>
                 </div>
             </div>

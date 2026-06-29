@@ -12,11 +12,6 @@ const TYPE_CLASS = {
     "신고": "bg-rose-50 text-rose-500",
 };
 
-const STATUS_CLASS = {
-    "대기": "bg-amber-50 text-amber-600",
-    "긴급": "bg-rose-50 text-rose-500",
-};
-
 // 처리 대기 작업은 대시보드에서 최신순으로 받은 일부 항목만 미리보기로 노출합니다.
 export default function AdminDashboardTaskTable({
     tasks,

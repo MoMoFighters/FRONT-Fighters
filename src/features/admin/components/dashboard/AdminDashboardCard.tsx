@@ -18,7 +18,7 @@ export default function AdminDashboardCard({
     children,
 }: AdminDashboardCardProps) {
     return (
-        <section className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+        <section className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm ">
             <div className="flex h-14 items-center justify-between border-b border-slate-100 px-5">
                 <div className="flex items-center gap-2">
                     {Icon && <Icon className="h-5 w-5 text-slate-700" />}
