@@ -42,3 +42,10 @@ export interface NoticeAppCountsResponse {
     data?: NoticeAppCountsData | null;
     errors?: Record<string, unknown>;
 }
+
+export interface ToggleNotificationResponse {
+    do_not_disturb: boolean
+}
+
+export type ToggleNotificationApiResponse =
+    ApiResponse<ToggleNotificationResponse>;

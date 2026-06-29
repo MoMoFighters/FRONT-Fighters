@@ -15,9 +15,10 @@ import message from "@/app/assets/img/phone-message.png";
 import calendar from "@/app/assets/img/phone-calendar.png";
 import tutorial from "@/app/assets/img/phone-tutorial.png";
 import community from "@/app/assets/img/phone-community.png";
-import { getNoticeAppCountsAction } from "@/features/user/components/notification/action";
+import { getNoticeAppCountsAction, toggleNotificationAction } from "@/features/user/components/notification/action";
 import { connectNoticeStomp } from "@/lib/stomp/stomp";
 import { NoticeAppCountsData } from "@/features/user/components/notification/type";
+import { toast } from "sonner";
 
 interface PhoneProps {
     accessToken?: string;
@@ -53,6 +54,24 @@ export default function Phone({
         !isHovered &&
         !isInteractionLocked &&
         notificationActive;
+
+
+    const handleNotificationOnoff = async () => {
+        const result = await toggleNotificationAction()
+        console.log(result);
+        if (result.status >= 400) {
+            toast.error("알림 상태 변경 실패", {
+                duration: 1000
+            })
+            return;
+        }
+        toast.success("알림 상태 변경 성공", {
+            duration: 1000
+        })
+        keepPhoneStable();
+        lockInteraction();
+        setNotificationEnabled(result.data?.do_not_disturb === true);
+    }
 
     useEffect(() => {
         let isMounted = true;
@@ -204,11 +223,7 @@ export default function Phone({
                                     type="button"
                                     aria-pressed={notificationEnabled}
                                     aria-label={notificationEnabled ? "알림 끄기" : "알림 켜기"}
-                                    onClick={() => {
-                                        keepPhoneStable();
-                                        lockInteraction();
-                                        setNotificationEnabled((previous) => !previous);
-                                    }}
+                                    onClick={handleNotificationOnoff}
                                     className="relative flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-full border border-white/0 bg-white/0 text-slate-50 shadow-sm backdrop-blur-md transition-colors hover:bg-white hover:text-slate-900"
                                 >
                                     {notificationEnabled ? (

@@ -7,12 +7,14 @@ import {
     getNoticeNotificationListService,
     getNoticeTotalCountsService,
     readNoticeService,
+    toggleNotification,
     type NoticeMutationResponse,
 } from "@/app/services/notification/service";
 import {
     NoticeAppCountsResponse,
     NoticeNotificationListResponse,
     NoticeTotalCountsResponse,
+    ToggleNotificationApiResponse,
 } from "./type";
 
 export const getNoticeTotalCountsAction =
@@ -110,3 +112,27 @@ export const deleteNoticeAction =
             );
         }
     };
+
+const createToggleNotificationErrorResponse = (
+    error: unknown,
+    message: string
+): ToggleNotificationApiResponse => ({
+    timestamp: new Date().toISOString(),
+    status: 500,
+    code: "NOTICE-TOGGLE-FAILED",
+    message: error instanceof Error ? error.message : message,
+    data: null,
+});
+
+export const toggleNotificationAction = async (): Promise<ToggleNotificationApiResponse> => {
+    try {
+        const result = await toggleNotification();
+        revalidatePath("/student");
+        return result;
+    } catch (error) {
+        return createToggleNotificationErrorResponse(
+            error,
+            "알림 상태 변경에 실패했습니다."
+        );
+    }
+};
