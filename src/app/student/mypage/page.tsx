@@ -5,7 +5,7 @@ import MyPageNav from "@/components/mypage/MyPageNav";
 import DeleteAccountBtn from "@/features/auth/components/DeleteAccountBtn";
 import StudentPageHeader from "@/features/student/components/StudentPageHeader";
 import { getMyInfo } from "@/features/user/action";
-import { BadgeCheck, ChevronRight, Landmark, PencilLine, UserRound } from "lucide-react";
+import { PencilLine, UserRound } from "lucide-react";
 import Link from "next/link";
 
 export default async function MyPage() {
@@ -19,9 +19,8 @@ export default async function MyPage() {
         profileImageUrl: DATA.data?.profileImageUrl || "",
         isTempPwd: DATA.data?.isTempPwd || false,
         createdAt: DATA.data?.createdAt || new Date().toISOString(),
-        points: 3200,
-        buildings: 5,
-        isPaid: DATA.data?.isPaid,
+        points: DATA.data?.points ?? 0,
+        buildings: DATA.data?.buildingInfos.length ?? 0,
     };
 
     return (
@@ -40,7 +39,10 @@ export default async function MyPage() {
                 title="마이페이지"
             />
 
-            <MyPageNav isPaid={USER_DATA.isPaid} />
+            <MyPageNav
+                nickname={USER_DATA.nickname}
+                buildingCount={USER_DATA.buildings}
+            />
 
             <section className="mt-12 rounded-[2rem] border border-indigo-100 bg-gradient-to-br from-indigo-50 via-white to-slate-50 p-6 shadow-sm">
                 <div className="mb-6 flex items-center justify-between gap-4">

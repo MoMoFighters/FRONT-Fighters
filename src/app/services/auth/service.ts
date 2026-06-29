@@ -39,7 +39,7 @@ export const studentSignupService = async (
     }
 ): Promise<ApiResponse<StudentSignupData>> => {
     const response = await fetch(
-        `${BASE_SERVER_URL}/api/v1/auth/signup/student`,
+        `${BASE_SERVER_URL}/api/v1/auth/signup`,
         {
             method: "POST",
             headers: {
@@ -68,23 +68,19 @@ export const studentSignupService = async (
 // POST /api/v1/auth/signup/teacher
 // ==========================================
 
-export interface TeacherSignupData {
-    userId: number;
-    email: string;
-    name: string;
-    role: string;
-    category: string;
-    proof: string | null;
-    status: string;
-}
+export type TeacherSignupData = null;
 
 export const teacherSignupService = async (
-    formData: FormData
+    formData: FormData,
+    accessToken: string
 ): Promise<ApiResponse<TeacherSignupData>> => {
     const response = await fetch(
-        `${BASE_SERVER_URL}/api/v1/auth/signup/teacher`,
+        `${BASE_SERVER_URL}/api/v1/teacherApply`,
         {
             method: "POST",
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
             body: formData,
         }
     );
@@ -95,7 +91,7 @@ export const teacherSignupService = async (
     if (!response.ok) {
         throw new Error(
             result.message ||
-            "강사 회원가입에 실패하였습니다."
+            "강사 전환에 실패하였습니다."
         );
     }
 

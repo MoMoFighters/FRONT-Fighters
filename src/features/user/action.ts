@@ -65,7 +65,7 @@ export const getMyInfo = async (): Promise<MomoUserInfoResponse> => {
         const result = await getMyInfoService(accessToken);
         const userDetail = result.data.userDetail;
         const buildings = result.data.buildings ?? [];
-        const points = result.data.points ?? result.data.point ?? userDetail.points ?? userDetail.point ?? 0;
+        const points = userDetail.point ?? userDetail.points ?? result.data.point ?? result.data.points ?? 0;
 
         return {
             timestamp: result.timestamp,

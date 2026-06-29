@@ -2,6 +2,8 @@
 
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { logoutAction, teacherSignupAction } from "@/features/auth/action";
 
 import {
     Select,
@@ -10,12 +12,21 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { killTokenAction } from "@/features/user/action";
+import { redirect } from "next/navigation";
 
-export default function TeacherRegistModal({ isModal, setIsModal, nickName }: { isModal: boolean, setIsModal: any, nickName: string }) {
+interface TeacherRegistModalProps {
+    isModal: boolean;
+    setIsModal: React.Dispatch<React.SetStateAction<boolean>>;
+    nickName: string;
+}
+
+export default function TeacherRegistModal({ isModal, setIsModal, nickName }: TeacherRegistModalProps) {
 
     const [category, setCategory] = useState("");
     const [previewFile, setPreviewFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -49,6 +60,49 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName }: { 
         };
     }, [previewUrl]);
 
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
+        if (isSubmitting) {
+            return;
+        }
+
+        const formData = new FormData(event.currentTarget);
+        const currentNickname = String(
+            formData.get("currnetNickname") ?? nickName
+        ).trim();
+        const nickname = String(formData.get("teacherName") ?? "").trim();
+
+        if (!currentNickname || !nickname || !category || !previewFile) {
+            toast.error("필수 값을 모두 입력해주세요.", { duration: 1000 });
+            return;
+        }
+
+        const requestFormData = new FormData();
+        requestFormData.append("currnetNickname", currentNickname);
+        requestFormData.append("nickname", nickname);
+        requestFormData.append("category", category);
+        requestFormData.append("proof", previewFile);
+
+        setIsSubmitting(true);
+
+        try {
+            const response = await teacherSignupAction(requestFormData);
+
+            if (response.status !== 200) {
+                toast.error(response.message, { duration: 1000 });
+                return;
+            }
+
+            toast.success(response.message, { duration: 1000 });
+            setIsModal(false);
+            logoutAction();
+            redirect("/auth/login");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
     if (!isModal) return (
         <div
             className='pr-2 px-1 pb-4 text-sm font-bold transition border-transparent text-slate-500 hover:text-slate-900 cursor-pointer'
@@ -70,7 +124,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName }: { 
                 onClick={() => setIsModal(false)}
             >
                 <div
-                    className="flex flex-col w-[60vw] h-[55vw] rounded-2xl border border-slate-200 bg-white px-6 pt-7 shadow-2xl"
+                    className="flex flex-col w-[60vw] h-[85vh] rounded-2xl border border-slate-200 bg-white px-6 pt-7 shadow-2xl"
                     onClick={(e) => e.stopPropagation()}
                 >
                     <div className="flex flex-row items-center">
@@ -89,26 +143,34 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName }: { 
                     <p className="mt-2 text-sm leading-6 text-slate-500">
                         강사 활동에 사용할 이름과 강의 분야, 인증 자료를 등록해 주세요.
                     </p>
-                    <form className="mt-7 flex min-h-0 flex-1 flex-col overflow-hidden">
+                    <form
+                        className="mt-7 flex min-h-0 flex-1 flex-col overflow-hidden"
+                        onSubmit={handleSubmit}
+                    >
+                        <input
+                            type="hidden"
+                            name="currnetNickname"
+                            value={nickName}
+                        />
                         <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
+                            <div className="flex flex-col justify-between gap-1">
                                 <label
                                     htmlFor="teacherName"
                                     className="text-sm font-semibold text-slate-700"
                                 >
                                     강사 활동명
                                 </label>
-
                                 <input
                                     type="text"
                                     id="teacherName"
                                     name="teacherName"
+                                    defaultValue={nickName}
                                     placeholder="예: 모모쌤"
                                     className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm text-slate-700 outline-none transition-colors placeholder:text-slate-400 focus:border-mauve-400 focus:bg-white focus:ring-4 focus:ring-mauve-100"
                                 />
                             </div>
 
-                            <div className="space-y-2">
+                            <div className="flex flex-col justify-between gap-1">
                                 <label
                                     htmlFor="category"
                                     className="text-sm font-semibold text-slate-700"
@@ -148,7 +210,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName }: { 
                             className="hidden"
                         />
 
-                        <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden">
+                        <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden mt-2">
                             <label className="text-sm font-semibold text-slate-700">
                                 인증 파일
                             </label>
@@ -217,10 +279,10 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName }: { 
 
                         <button
                             type="submit"
+                            disabled={isSubmitting}
                             className="my-4 h-12 w-full shrink-0 rounded-xl bg-indigo-500 text-base font-bold text-white shadow-sm transition-colors hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
-                        // disabled={pending || notCompleted}
                         >
-                            등록 요청하기
+                            {isSubmitting ? "신청 중" : "등록 요청하기"}
                         </button>
                     </form>
                 </div>
