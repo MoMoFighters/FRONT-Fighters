@@ -89,7 +89,6 @@ export const deleteNoticeService = async (
 export const toggleNotification = async (): Promise<ApiResponse<ToggleNotificationResponse>> => {
     const response = await fetchWithAuth("/api/v1/user/settings/alarm", { method: "PATCH" });
     const result = await response.json();
-    console.log(result)
 
     if (!response.ok) {
         throw new Error(result.message || "알림 상태 변경 처리에 실패했습니다.");

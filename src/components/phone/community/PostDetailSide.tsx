@@ -124,7 +124,7 @@ export interface PostCommentsPanelProps {
 interface PostDetailSideProps {
     postId: number;
     commentTotalCount?: number;
-    role: "TEACHER" | 'ADMIN' | 'STUDENT'
+    role?: "TEACHER" | 'ADMIN' | 'STUDENT'
 }
 
 const COMMENT_PAGE_SIZE = 10;

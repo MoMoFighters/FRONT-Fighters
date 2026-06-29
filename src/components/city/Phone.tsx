@@ -58,7 +58,6 @@ export default function Phone({
 
     const handleNotificationOnoff = async () => {
         const result = await toggleNotificationAction()
-        console.log(result);
         if (result.status >= 400) {
             toast.error("알림 상태 변경 실패", {
                 duration: 1000
@@ -84,6 +83,7 @@ export default function Phone({
             }
 
             setNotification(response.data ?? EMPTY_COUNTS);
+            console.log(notification);
         };
 
         void loadAppCounts();

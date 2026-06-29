@@ -1,14 +1,18 @@
 'use client'
 
 import { Button } from "@/components/ui/button";
-import { useActionState, useState } from "react";
+import { useEffect, useState } from "react";
+import Image from "next/image";
 import LectureFormChapterItem from "./LectureFormChapterItem";
 import { UploadCloud } from "lucide-react";
 import Link from "next/link";
-import { createLectureWithChaptersAction } from "@/app/services/lecture/lectureCreateAction";
+import { jwtDecode } from "jwt-decode";
+import { useLectureCreateUpload } from "./LectureCreateUploadContext";
+import { getLectureCreateAccessTokenAction } from "./action";
 
 type LectureFormProps = {
-    mode: 'create' | 'edit'
+    mode: 'create' | 'edit';
+    onUploadStart?: () => void;
 }
 
 type Chapter = {
@@ -20,9 +24,24 @@ type Chapter = {
 
 const MAX_CHAPTER_COUNT = 10;
 
-export default function LectureForm({ mode }: LectureFormProps) {
+type LectureCreateTokenPayload = {
+    category?: string;
+    Category?: string;
+    userCategory?: string;
+};
+
+const isSelectedFile = (value: FormDataEntryValue | null): value is File =>
+    value instanceof File && value.size > 0;
+
+export default function LectureForm({ mode, onUploadStart }: LectureFormProps) {
     const [chapters, setChapters] = useState<Chapter[]>([]);
     const [preview, setPreview] = useState<string | null>(null);
+    const [statusMessage, setStatusMessage] = useState("");
+    const [statusCode, setStatusCode] = useState<number | null>(null);
+    const [isPending, setIsPending] = useState(false);
+    const [category, setCategory] = useState("");
+    const [isCategoryLocked, setIsCategoryLocked] = useState(false);
+    const { startUpload } = useLectureCreateUpload();
 
     const addChapterItem = () => {
         if (chapters.length >= MAX_CHAPTER_COUNT) {
@@ -58,10 +77,75 @@ export default function LectureForm({ mode }: LectureFormProps) {
 
     const preventUpload = chapters.length === 0;
 
-    const [status, formAction, isPending] = useActionState(
-        createLectureWithChaptersAction,
-        { timestamp: '', status: 404, code: "", message: "", data: undefined }
-    );
+    useEffect(() => {
+        if (mode !== "create") {
+            return;
+        }
+
+        const applyTokenCategory = async () => {
+            try {
+                const accessToken = await getLectureCreateAccessTokenAction();
+                const decoded = jwtDecode<LectureCreateTokenPayload>(accessToken);
+                const tokenCategory =
+                    decoded.category ?? decoded.Category ?? decoded.userCategory;
+
+                if (tokenCategory) {
+                    setCategory(tokenCategory);
+                    setIsCategoryLocked(true);
+                }
+            } catch {
+                setCategory("");
+                setIsCategoryLocked(false);
+            }
+        };
+
+        void applyTokenCategory();
+    }, [mode]);
+
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
+        if (preventUpload || isPending || mode !== "create") {
+            return;
+        }
+
+        const formData = new FormData(event.currentTarget);
+
+        if (category) {
+            formData.set("category", category);
+        }
+
+        if (!isSelectedFile(formData.get("thumbnail"))) {
+            setStatusMessage("강의 썸네일을 등록해주세요.");
+            setStatusCode(null);
+            return;
+        }
+
+        for (const chapter of chapters) {
+            if (!isSelectedFile(formData.get(`chapterThumbnail_${chapter.index}`))) {
+                setStatusMessage(`${chapter.index}번 챕터 썸네일을 등록해주세요.`);
+                setStatusCode(null);
+                return;
+            }
+
+            if (!isSelectedFile(formData.get(`video_${chapter.index}`))) {
+                setStatusMessage(`${chapter.index}번 챕터 동영상을 등록해주세요.`);
+                setStatusCode(null);
+                return;
+            }
+        }
+
+        setIsPending(true);
+        setStatusMessage("강의 등록을 시작했습니다.");
+        setStatusCode(202);
+        onUploadStart?.();
+
+        try {
+            await startUpload(formData);
+        } finally {
+            setIsPending(false);
+        }
+    };
 
     return (
         <div className="mx-auto w-full max-w-300">
@@ -83,7 +167,7 @@ export default function LectureForm({ mode }: LectureFormProps) {
 
                 {/* ⚠️ [핵심 수정]: encType="multipart/form-data"를 추가하여 하위 비디오 파일 스트림이 온전히 전송되도록 보정합니다. */}
                 {/* encType을 지워도 React가 내부적으로 자동으로 처리해 줍니다! */}
-                <form className="flex flex-col gap-6 p-8" action={formAction}>
+                <form className="flex flex-col gap-6 p-8" onSubmit={handleSubmit}>
 
                     {/* 챕터 수 hidden input */}
                     <input type="hidden" name="chapterCount" value={chapters.length} />
@@ -95,10 +179,13 @@ export default function LectureForm({ mode }: LectureFormProps) {
                         </label>
                         <label className="flex h-52 max-w-110 cursor-pointer flex-col items-center justify-center overflow-hidden rounded-3xl border border-dashed border-indigo-200 bg-indigo-50/40 transition-colors hover:bg-indigo-50">
                             {preview ? (
-                                <img
+                                <Image
                                     src={preview}
                                     alt="썸네일 미리보기"
+                                    width={440}
+                                    height={208}
                                     className="h-full w-full object-cover"
+                                    unoptimized
                                 />
                             ) : (
                                 <>
@@ -122,7 +209,14 @@ export default function LectureForm({ mode }: LectureFormProps) {
                         <label className="text-sm font-black text-slate-700">
                             카테고리 *
                         </label>
-                        <select name="category" className="h-11 w-44 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 outline-none transition focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100" required>
+                        <select
+                            name="category"
+                            value={category}
+                            onChange={(event) => setCategory(event.target.value)}
+                            disabled={isCategoryLocked}
+                            className="h-11 w-44 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 outline-none transition focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100 disabled:bg-slate-100 disabled:text-slate-500"
+                            required
+                        >
                             <option value="" disabled hidden>카테고리 선택</option>
                             <option value="STUDY">학습</option>
                             <option value="BEAUTY">뷰티</option>
@@ -206,9 +300,9 @@ export default function LectureForm({ mode }: LectureFormProps) {
                     )}
 
                     {/* 알림 메시지 분기 처리 */}
-                    {status?.message && (
-                        <p className={`text-center text-sm font-bold ${status.status === 201 ? 'text-green-600' : 'text-red-500'}`}>
-                            {status.message}
+                    {statusMessage && (
+                        <p className={`text-center text-sm font-bold ${statusCode === 202 ? 'text-green-600' : 'text-red-500'}`}>
+                            {statusMessage}
                         </p>
                     )}
 

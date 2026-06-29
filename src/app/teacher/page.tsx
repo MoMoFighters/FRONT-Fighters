@@ -111,14 +111,6 @@ export default async function TeacherMainPage() {
                             새로운 강의를 빠르게 개설할 수 있습니다.
                         </p>
                     </div>
-
-                    <Link
-                        href="/teacher/lectures/create"
-                        className="flex shrink-0 items-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-black text-indigo-600 shadow-lg shadow-indigo-950/10 transition hover:-translate-y-0.5 hover:bg-indigo-50"
-                    >
-                        <Plus className="h-4 w-4" />
-                        강의 등록
-                    </Link>
                 </div>
             </section>
 
@@ -140,12 +132,12 @@ export default async function TeacherMainPage() {
 
                             <div
                                 className={`flex h-11 w-11 items-center justify-center rounded-2xl ${metric.tone === "indigo"
-                                        ? "bg-indigo-50 text-indigo-500"
-                                        : metric.tone === "amber"
-                                            ? "bg-amber-50 text-amber-500"
-                                            : metric.tone === "emerald"
-                                                ? "bg-emerald-50 text-emerald-500"
-                                                : "bg-rose-50 text-rose-500"
+                                    ? "bg-indigo-50 text-indigo-500"
+                                    : metric.tone === "amber"
+                                        ? "bg-amber-50 text-amber-500"
+                                        : metric.tone === "emerald"
+                                            ? "bg-emerald-50 text-emerald-500"
+                                            : "bg-rose-50 text-rose-500"
                                     }`}
                             >
                                 <metric.icon className="h-5 w-5" />
@@ -232,8 +224,8 @@ export default async function TeacherMainPage() {
                                     <div className="flex items-center justify-between gap-3">
                                         <span
                                             className={`rounded-full px-2 py-0.5 text-[11px] font-black ${question.status === "대기"
-                                                    ? "bg-amber-50 text-amber-600"
-                                                    : "bg-emerald-50 text-emerald-600"
+                                                ? "bg-amber-50 text-amber-600"
+                                                : "bg-emerald-50 text-emerald-600"
                                                 }`}
                                         >
                                             {question.status}

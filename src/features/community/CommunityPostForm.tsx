@@ -62,6 +62,12 @@ const mergeContent = (prevContent: string, nextContent: string) => {
         .join("\n");
 };
 
+const getCommunityListHref = (role?: CommunityPostFormProps["role"]) => {
+    if (role === "TEACHER") return "/teacher/community";
+    if (role === "ADMIN") return "/admin/community";
+    return "/student/phone/community";
+};
+
 export default function CommunityPostForm({ mode, data, role }: CommunityPostFormProps) {
     const router = useRouter();
 
@@ -335,7 +341,7 @@ export default function CommunityPostForm({ mode, data, role }: CommunityPostFor
             }
 
             toast.success("게시글이 등록되었습니다.");
-            router.push(`/student/phone/community/${postId}`);
+            router.push(getCommunityListHref(role));
         } catch (error) {
             const message =
                 error instanceof Error
