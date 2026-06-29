@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import ChatReportModal from "@/features/chat/ChatReportModal";
-import { TriangleAlertIcon } from "lucide-react";
+import CreateReportBtn from "@/features/report/components/buttons/CreateReportBtn";
 
 interface MessageData {
     id: number;
@@ -12,6 +11,7 @@ interface MessageData {
     time: string;
     nickname?: string;
     profileImg?: string;
+    senderId?: number | null;
 }
 
 export default function ChatItem({
@@ -20,10 +20,10 @@ export default function ChatItem({
     time,
     id,
     nickname,
-    profileImg
+    profileImg,
+    senderId,
 }: MessageData) {
     const [isHover, setIsHover] = useState(false);
-    const [isModal, setIsModal] = useState(false);
 
     if (isMine === null) {
         return (
@@ -79,23 +79,12 @@ export default function ChatItem({
                     </p>
 
                     {isHover && (
-                        <button
-                            type="button"
-                            className="p-0.5 rounded-sm select-none mt-auto text-xs font-semibold text-rose-400 transition-colors hover:text-rose-500 cursor-pointer"
-                            onClick={() => {
-                                setIsModal(true);
-                                setIsHover(false);
-                            }}
-                        >
-                            <TriangleAlertIcon className="w-3 h-3" />
-                        </button>
-                    )}
-
-                    {isModal && (
-                        <ChatReportModal
-                            id={id}
-                            message={message}
-                            setIsModal={setIsModal}
+                        <CreateReportBtn
+                            triggerLabel="신고"
+                            triggerClassName="mt-auto cursor-pointer rounded-sm px-1.5 py-0.5 text-xs font-semibold text-rose-400 transition-colors hover:bg-rose-50 hover:text-rose-500"
+                            targetType="CHAT"
+                            targetId={id}
+                            reportedUserId={senderId ?? undefined}
                         />
                     )}
                 </>

@@ -15,6 +15,7 @@ import {
     UpdateVideoProgressResponse,
 } from "@/features/lecture/type";
 import TwoButtonModal from "@/features/modal/TwoButtonModal";
+import CreateReportBtn from "@/features/report/components/buttons/CreateReportBtn";
 
 interface VideoPlayerProps {
     lectureId: string;
@@ -258,7 +259,7 @@ export default function VideoPlayer({
                 </video>
             </div>
 
-            <div className="grid grid-cols-[1fr_1fr_140px] gap-6 p-5">
+            <div className="grid grid-cols-[1fr_1fr_140px_auto] gap-6 p-5">
                 <div>
                     <p className="text-xs font-bold text-slate-400">
                         강의명
@@ -287,6 +288,15 @@ export default function VideoPlayer({
                     <p className="mt-2 text-sm font-bold text-slate-950">
                         {formatDuration(chapter.durationSec)}
                     </p>
+                </div>
+
+                <div className="flex items-start justify-end">
+                    <CreateReportBtn
+                        triggerLabel="챕터 신고"
+                        triggerClassName="cursor-pointer rounded-md border border-slate-200 px-2.5 py-1 text-xs font-bold text-slate-500 transition hover:bg-slate-100"
+                        targetType="CHAPTER"
+                        targetId={chapter.chapterId}
+                    />
                 </div>
             </div>
         </section>

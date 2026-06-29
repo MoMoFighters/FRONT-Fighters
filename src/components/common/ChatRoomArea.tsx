@@ -375,6 +375,7 @@ export default function ChatRoomArea({
                                 isMine={message.type ? null : message.isMine}
                                 message={message.content}
                                 time={formatMessageTime(message.createdAt)}
+                                senderId={message.senderId}
                             />
                         ))
                     )}

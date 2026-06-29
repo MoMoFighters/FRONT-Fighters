@@ -1,10 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ChevronLeft, Eye } from "lucide-react";
+import { ChevronLeft, Eye, Trash2 } from "lucide-react";
 
 import PostDetailSide from "@/components/phone/community/PostDetailSide";
-import CreateReportBtn from "@/features/report/components/buttons/CreateReportBtn";
 import PostLikeBtn from "@/features/post/PostLikeBtn";
 import { getCommunityPostDetailAction } from "@/features/community/action";
 import type { CommunityAuthorRole } from "@/features/community/type";
@@ -60,7 +59,14 @@ export default async function CommunityPostDetailPage({
                         </Link>
 
                         {!post.isMine ? (
-                            <CreateReportBtn triggerClassName="cursor-pointer rounded-md border border-slate-200 px-2.5 py-1 text-xs font-bold text-slate-500 transition hover:bg-slate-100" />
+                            <button
+                                type="button"
+                                className="cursor-pointer rounded-md border border-rose-200 px-2.5 py-1 text-xs font-bold text-rose-500 transition hover:bg-rose-50"
+                                aria-label="게시글 삭제"
+                                title="게시글 삭제"
+                            >
+                                <Trash2 className="h-3.5 w-3.5" />
+                            </button>
                         ) : (
                             <Link
                                 className="cursor-pointer rounded-md border border-slate-200 px-2.5 py-1 text-xs font-bold text-slate-500 transition hover:bg-slate-100"

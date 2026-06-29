@@ -11,8 +11,8 @@ export interface Notice {
 
 export interface NoticeListResponse {
     items: Notice[];
-    currentPage: number;
-    pageSize: number;
+    page: number;
+    size: number;
     totalElements: number;
     totalPages: number;
 }

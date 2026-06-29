@@ -26,11 +26,11 @@ export default function StudentReviewList({
             {reviews.map((review) => (
                 <article key={review.reviewId} className="relative p-5 pr-14">
                     <CreateReportBtn
-                        triggerLabel="수강평 신고"
-                        triggerVariant="icon"
-                        triggerClassName="absolute right-5 top-5 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full text-slate-300 transition hover:bg-rose-50 hover:text-rose-500"
+                        triggerLabel="신고"
+                        triggerClassName="absolute right-5 top-5 cursor-pointer rounded-md px-2 py-1 text-xs font-bold text-slate-400 transition hover:bg-rose-50 hover:text-rose-500"
                         targetType="REVIEW"
                         targetId={review.reviewId}
+                        reportedUserId={review.userId}
                     />
 
                     <div className="flex items-start gap-4">

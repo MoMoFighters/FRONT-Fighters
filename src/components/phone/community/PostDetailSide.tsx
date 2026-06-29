@@ -101,6 +101,7 @@ export interface CommentItemProps {
     isWriter: boolean;
     createdAt: string;
     parentId: number | null;
+    role?: "TEACHER" | "ADMIN" | "STUDENT";
     onSubmitReply?: (
         commentId: number,
         content: string
@@ -119,6 +120,7 @@ export interface PostCommentsPanelProps {
         commentId: number,
         content: string
     ) => Promise<boolean>;
+    role?: "TEACHER" | "ADMIN" | "STUDENT";
 }
 
 interface PostDetailSideProps {
@@ -342,6 +344,7 @@ export default function PostDetailSide({
                     }}
                     onCreateComment={handleCreateComment}
                     onCreateReply={handleCreateReply}
+                    role={role}
                 />
             ) : (
                 <PostRecommandPanel

@@ -2,56 +2,116 @@
 export type TargetType = "LECTURE" | "CHAPTER" | "POST" | "REVIEW" | "COMMENT" | "CHAT" | "PAGE";
 
 // 신고 사유 타입 정의
-export type ReasonRequest = "ABUSE" | "SPAM" | "INAPPROPRIATE" | "COPYLIGHT" | "OTHER";
+export type ReasonRequest = "SPAM" | "ABUSE" | "INAPPROPRIATE" | "COPYRIGHT" | "OTHER";
 
 export type ReasonResponse = "스팸/광고" | "욕설/혐오 표현" | "부적절한 내용" | "저작권 침해" | "기타";
 
-export interface Report {
-    reportId: number,
-    reporterUserId: number,
-    targetType: string,
-    targetId: number,
-    reason: string,
-    detail: string,
-    status: string,
-    reportedAt: string
+export const REPORT_REASON_OPTIONS: { value: ReasonRequest; label: ReasonResponse }[] = [
+    { value: "SPAM", label: "스팸/광고" },
+    { value: "ABUSE", label: "욕설/혐오 표현" },
+    { value: "INAPPROPRIATE", label: "부적절한 내용" },
+    { value: "COPYRIGHT", label: "저작권 침해" },
+    { value: "OTHER", label: "기타" },
+];
+
+export interface ReportList {
+    reportId: number;
+    reporterUserId: number;
+    reporterName: string;
+    reason: ReasonResponse;
+    detail: string;
+    targetType?: TargetType;
+    targetId?: number;
+    targetContent?: string;
+    isResolved: boolean;
+    reportedAt: string;
+}
+
+export interface ReportListRequest {
+    page: number;
+    size?: number;
+    isResolved?: boolean;
+}
+
+export interface ReportListResponse {
+    items: ReportList[];
+    page: number;
+    size: number;
+    totalElements: number;
+    totalPages: number;
+}
+
+export interface ReportDetail {
+    reportId: number;
+    reporterUserId: number;
+    reporterName: string;
+    reportedUserId?: number;
+    reportedName?: string;
+    targetType: TargetType;
+    parentId?: number;  // targetType 이 CHAPTER 인 경우에만 lectureId를 추가로 받아오기 위함.
+    targetId?: number;
+    targetPath?: string;
+    targetContent?: string;
+    createdAt: string;  // 신고 접수 시각
+    reason: ReasonResponse;
+    detail: string;
+    isResolved: boolean;
+    resolvedAt?: string; // 신고 처리 시각
 }
 
 export interface CreateReportRequest {
-    targetType: string,
-    targetId: number,
-    reason: string,
-    detail: string
+    targetType: TargetType;
+    targetId?: number;
+    targetPath?: string;
+    reportedUserId?: number;
+    reason: ReasonRequest;
+    detail: string;
 }
 
 export interface CreateReportApiResponse {
-    timestamp: string,
-    status: number,
-    code: string,
-    message: string,
+    timestamp: string;
+    status: number;
+    code: string;
+    message: string;
+    data?: null;
 }
 
-// TODO: 신고 목록 조회 API 명세가 확정되면 이 목록 전용 응답 타입으로 교체한다.
+export type Report = ReportList;
+
+export type ReportTargetType = TargetType;
+
 export interface AdminReportListItem {
     id: number;
-    reason: string;
+    reason: ReasonResponse;
     detail: string;
     reporterName: string;
     createdAt: string;
     isResolved: boolean;
+    targetType?: TargetType;
+    targetId?: number;
 }
 
-export type ReportTargetType = "COMMENT" | "REVIEW" | "CHAT" | "PAGE";
-
-// TODO: 신고 상세 조회 API 명세가 확정되면 이 타입을 실제 응답 구조에 맞춰 조정한다.
 export interface AdminReportDetail extends AdminReportListItem {
-    resolvedAt?: string;
-    targetType: ReportTargetType;
+    reporterUserId?: number;
+    reportedUserId?: number;
+    reportedName?: string;
+    targetType: TargetType;
+    parentId?: number;
     targetId?: number;
+    targetPath?: string;
+    originalPath?: string;
+    adminTargetPath?: string;
     targetAuthorName?: string;
     targetContent?: string;
     targetDeleted?: boolean;
     targetDeletedAt?: string;
-    adminTargetPath?: string;
-    originalPath?: string;
+    resolvedAt?: string;
 }
+
+export type AdminReportListResponse = ReportListResponse;
+
+export type ReportActionResult = {
+    success: boolean;
+    message?: string;
+};
+
