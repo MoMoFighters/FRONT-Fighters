@@ -20,12 +20,17 @@ import {
 
 import LoginResultModal from "./LoginResultModal";
 import EmailInputModal from "./EmailInputModal";
+import { UserRole, UserStatus } from "@/features/user/type";
+import { ApiResponse } from "@/lib/api";
 
-interface LoginActionState {
-    timestamp: string;
-    status: number;
-    code: string;
-    message: string;
+interface LoginData {
+    accessToken: string;
+    refreshToken: string;
+    status: UserStatus;
+    role: UserRole;
+    isTempPwd: boolean;
+    nickname: string | null;
+    expiresIn: number;
 }
 
 export default function LoginForm() {
@@ -43,8 +48,8 @@ export default function LoginForm() {
     const [isModal, setIsModal] =
         useState(false);
 
-    const [state, setState] =
-        useState<LoginActionState>({
+    const [loginResult, setLoginResult] =
+        useState<ApiResponse<LoginData>>({
             timestamp: '',
             status: 0,
             code: '',
@@ -93,7 +98,9 @@ export default function LoginForm() {
                     password
                 );
 
-            setState(result);
+
+            setLoginResult(result);
+            console.log(result, '로그인 ');
             setIsModal(true);
         } finally {
             setIsPending(false);
@@ -248,7 +255,7 @@ export default function LoginForm() {
                         setIsModal={
                             setIsModal
                         }
-                        state={state}
+                        result={loginResult}
                     />
                 )
             }

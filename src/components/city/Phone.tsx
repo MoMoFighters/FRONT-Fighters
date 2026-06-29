@@ -81,9 +81,8 @@ export default function Phone({
             if (!isMounted) {
                 return;
             }
-
             setNotification(response.data ?? EMPTY_COUNTS);
-            console.log(notification);
+            console.log(notification, "!!!");
         };
 
         void loadAppCounts();

@@ -9,7 +9,6 @@ import {
     sendEmailCodeService,
     emailVerifyService,
     loginService,
-    loginSuccessService,
     changePasswordService,
     tempPwService,
     authRefresh,
@@ -18,7 +17,10 @@ import {
     kakaoLoginService,
     googleLoginService,
     naverLoginService,
+    teacherGiveupService,
 } from "@/app/services/auth/service";
+import { UserRole, UserStatus } from "../user/type";
+import { killTokenAction } from "../user/action";
 
 
 const createErrorResponse = <T>(
@@ -38,12 +40,12 @@ const createUnauthorizedResponse = <T>(): ApiResponse<T> => ({
     timestamp: new Date().toISOString(),
     status: 401,
     code: "UNAUTHORIZED",
-    message: "濡쒓렇?몄씠 ?꾩슂?⑸땲??",
+    message: "다시 로그인 해주세요.",
 });
 
 
 // ==========================================
-// 1-1. ?숈깮 ?뚯썝媛??
+// 1-1. 회원가입
 // ==========================================
 
 interface StudentSignupData {
@@ -66,14 +68,14 @@ export const studentSignupAction = async (
     } catch (error) {
         return createErrorResponse<StudentSignupData>(
             error,
-            "?숈깮 ?뚯썝媛?낆뿉 ?ㅽ뙣?섏??듬땲??"
+            "알 수 없는 문제가 발생했습니다."
         );
     }
 };
 
 
 // ==========================================
-// 1-2. 媛뺤궗 ?뚯썝媛??
+// 1-2. 강사 전환
 // ==========================================
 
 type TeacherSignupData = null;
@@ -82,26 +84,42 @@ export const teacherSignupAction = async (
     formData: FormData
 ): Promise<ApiResponse<TeacherSignupData>> => {
     try {
+        const result = await teacherSignupService(formData);
+        return result;
+    } catch (error) {
+        return createErrorResponse<TeacherSignupData>(
+            error,
+            "알 수 없는 문제가 발생했습니다."
+        );
+    }
+};
+
+// ==========================================
+// 1-3. 강사 포기
+// ==========================================
+
+export const teacherGiveupAction = async (): Promise<ApiResponse<null>> => {
+    try {
         const cookieStore = await cookies();
         const accessToken =
             cookieStore.get("accessToken")?.value;
 
         if (!accessToken) {
-            return createUnauthorizedResponse<TeacherSignupData>();
+            return createUnauthorizedResponse<null>();
         }
 
-        return await teacherSignupService(formData, accessToken);
+        return await teacherGiveupService();
     } catch (error) {
-        return createErrorResponse<TeacherSignupData>(
+        return createErrorResponse<null>(
             error,
-            "媛뺤궗 ?뚯썝媛?낆뿉 ?ㅽ뙣?섏??듬땲??"
+            "강사 전환 포기에 실패했습니다."
         );
     }
 };
 
 
 // ==========================================
-// 1-n-1. ?대찓???몄쬆肄붾뱶 諛쒖넚
+// 1-n-1. 이메일 인증코드 발송
 // ==========================================
 
 interface SendEmailCodeData {
@@ -119,14 +137,14 @@ export const sendEmailCodeAction = async (
     } catch (error) {
         return createErrorResponse<SendEmailCodeData>(
             error,
-            "?대찓???몄쬆肄붾뱶 諛쒖넚???ㅽ뙣?섏??듬땲??"
+            "알 수 없는 문제가 발생했습니다."
         );
     }
 };
 
 
 // ==========================================
-// 1-n-2. ?대찓???몄쬆?섍린
+// 1-n-2. 이메일 인증
 // ==========================================
 
 type EmailVerifyData = null;
@@ -143,21 +161,23 @@ export const verifyEmailAction = async (
     } catch (error) {
         return createErrorResponse<EmailVerifyData>(
             error,
-            "?대찓???몄쬆???ㅽ뙣?섏??듬땲??"
+            "알 수 없는 문제가 발생했습니다."
         );
     }
 };
 
 
 // ==========================================
-// 2-1. 濡쒓렇??
-// ?깃났 ???좏겙??荑좏궎?????
+// 2-1. 로그인
 // ==========================================
 
 interface LoginData {
     accessToken: string;
     refreshToken: string;
-    status: string;
+    status: UserStatus;
+    role: UserRole;
+    isTempPwd: boolean;
+    nickname: string | null;
     expiresIn: number;
 }
 
@@ -203,47 +223,13 @@ export const loginAction = async (
     } catch (error) {
         return createErrorResponse<LoginData>(
             error,
-            "濡쒓렇?몄뿉 ?ㅽ뙣?섏??듬땲??"
+            "알 수 없는 문제가 발생했습니다."
         );
     }
 };
 
-
 // ==========================================
-// 2-2. 濡쒓렇???꾨즺 ?뺣낫 議고쉶
-// ==========================================
-
-interface LoginCompletedData {
-    role: "STUDENT" | "TEACHER" | "ADMIN";
-    is_tempPwd: boolean;
-    nickname: string | null;
-}
-
-export const loginSuccessAction = async (): Promise<
-    ApiResponse<LoginCompletedData>
-> => {
-    try {
-        const cookieStore = await cookies();
-
-        const accessToken =
-            cookieStore.get("accessToken")?.value;
-
-        if (!accessToken) {
-            return createUnauthorizedResponse<LoginCompletedData>();
-        }
-
-        return await loginSuccessService(accessToken);
-    } catch (error) {
-        return createErrorResponse<LoginCompletedData>(
-            error,
-            "濡쒓렇???뺣낫瑜?遺덈윭?ㅼ? 紐삵뻽?듬땲??"
-        );
-    }
-};
-
-
-// ==========================================
-// 3. 鍮꾨?踰덊샇 蹂寃?
+// 3. 비번 변경
 // ==========================================
 
 interface ChangePasswordData {
@@ -272,14 +258,14 @@ export const changePasswordAction = async (
     } catch (error) {
         return createErrorResponse<ChangePasswordData>(
             error,
-            "鍮꾨?踰덊샇 蹂寃쎌뿉 ?ㅽ뙣?섏??듬땲??"
+            "알 수 없는 문제가 발생했습니다."
         );
     }
 };
 
 
 // ==========================================
-// 4. ?꾩떆 鍮꾨?踰덊샇 諛쒓툒
+// 4. 임시 비번 발송
 // ==========================================
 
 type TempPasswordData = null;
@@ -292,15 +278,14 @@ export const tempPwAction = async (
     } catch (error) {
         return createErrorResponse<TempPasswordData>(
             error,
-            "?꾩떆 鍮꾨?踰덊샇 諛쒓툒???ㅽ뙣?섏??듬땲??"
+            "알 수 없는 문제가 발생했습니다."
         );
     }
 };
 
 
 // ==========================================
-// 5. ?먮룞 濡쒓렇?꾩썐 ?곗옣
-// ??accessToken??荑좏궎?????
+// 5. 토큰 재발급
 // ==========================================
 
 interface AuthRefreshData {
@@ -346,15 +331,14 @@ export const authRefreshAction = async (): Promise<
     } catch (error) {
         return createErrorResponse<AuthRefreshData>(
             error,
-            "濡쒓렇???곗옣???ㅽ뙣?섏??듬땲??"
+            "알 수 없는 문제가 발생했습니다."
         );
     }
 };
 
 
 // ==========================================
-// 6. 濡쒓렇?꾩썐
-// ?깃났 ???몄쬆 荑좏궎 ??젣
+// 6. 로그아웃
 // ==========================================
 
 type LogoutData = null;
@@ -380,22 +364,20 @@ export const logoutAction = async (): Promise<
             refreshToken
         );
 
-        cookieStore.delete("accessToken");
-        cookieStore.delete("refreshToken");
+        killTokenAction()
 
         return result;
     } catch (error) {
         return createErrorResponse<LogoutData>(
             error,
-            "濡쒓렇?꾩썐???ㅽ뙣?섏??듬땲??"
+            "알 수 없는 문제가 발생했습니다."
         );
     }
 };
 
 
 // ==========================================
-// 7. ?됰꽕???깅줉
-// accessToken? 荑좏궎?먯꽌 議고쉶
+// 7. 닉네임 등록
 // ==========================================
 
 interface NicknameRegistData {
@@ -416,7 +398,7 @@ export const nicknameRegistAction = async (
                 timestamp: new Date().toISOString(),
                 status: 401,
                 code: "UNAUTHORIZED",
-                message: "濡쒓렇?몄씠 ?꾩슂?⑸땲??",
+                message: "다시 로그인해주세요.",
             };
         }
 
@@ -432,14 +414,13 @@ export const nicknameRegistAction = async (
             message:
                 error instanceof Error
                     ? error.message
-                    : "?됰꽕???깅줉???ㅽ뙣?섏??듬땲??",
+                    : "알 수 없는 문제가 발생했습니다.",
         };
     }
 };
 
 // ==========================================
-// 8. 移댁뭅?? 援ш? 濡쒓렇??api
-// accessToken? 荑좏궎?먯꽌 議고쉶
+// 8. 외부 api 로그인
 // ==========================================
 
 interface OAuthLoginData {
@@ -471,7 +452,7 @@ export const handleKakaoLoginCallback = async (
     code: string
 ): Promise<ApiResponse<OAuthLoginData>> => {
     if (!code) {
-        throw new Error("移댁뭅???멸? 肄붾뱶媛 ?놁뒿?덈떎.");
+        throw new Error("코드가 존재하지 않습니다.");
     }
 
     const result = await kakaoLoginService(code);
@@ -487,7 +468,7 @@ export const googleLoginAction = async (
     code: string
 ): Promise<ApiResponse<OAuthLoginData>> => {
     if (!code) {
-        throw new Error("援ш? ?멸? 肄붾뱶媛 ?놁뒿?덈떎.");
+        throw new Error("코드가 존재하지 않습니다.");
     }
 
     const result = await googleLoginService(code);
