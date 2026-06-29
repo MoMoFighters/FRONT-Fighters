@@ -308,7 +308,7 @@ export interface CreateChatRoomData {
     memberInfo: ChatMemberResponse[];
 }
 
-interface CreateChatRoomRequest {
+export interface CreateChatRoomRequest {
     chatMember: number[];
     roomTitle?: string | null;
 }

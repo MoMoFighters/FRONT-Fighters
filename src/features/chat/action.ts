@@ -9,14 +9,15 @@ import {
     leaveChatroomService,
     readMessageService,
     sendMessageService,
-    type ChatHistoryData,
     type ChatRoomListData,
+    type CreateChatRoomRequest,
     type CreateChatRoomData,
     type LeaveChatRoomData,
     type RawChatHistoryData,
     type ReadMessageData,
     type SendMessageData,
 } from "@/app/services/phone/chat/service";
+import { revalidatePath } from "next/cache";
 
 const getAccessToken = async () => {
     const cookieStore = await cookies();
@@ -106,7 +107,7 @@ export const sendMessageAction = async (
 };
 
 export const createChatRoomAction = async (
-    userId: number
+    chatRoom: number | CreateChatRoomRequest
 ): Promise<ApiResponse<CreateChatRoomData>> => {
     try {
         const accessToken = await getAccessToken();
@@ -114,9 +115,9 @@ export const createChatRoomAction = async (
         if (!accessToken) {
             return createUnauthorizedResponse<CreateChatRoomData>();
         }
-
+        revalidatePath("/student/phone/friends?status=chat")
         return await createChatRoomService(
-            userId,
+            chatRoom,
             accessToken
         );
     } catch (error) {
