@@ -14,11 +14,11 @@ export default function AdminDashboardNoticeList({
     notices: AdminDashboardNotice[];
 }) {
     return (
-        <div className="px-5 pb-7 pt-3">
+        <div className="px-5 pb-5 pt-2">
             {notices.map((notice) => (
                 <div
                     key={notice.id}
-                    className="grid grid-cols-[minmax(0,1fr)_92px_20px] items-center border-b border-slate-100 py-3 last:border-b-0"
+                    className="grid grid-cols-[minmax(0,1fr)_124px_20px] items-center border-b border-slate-100 py-2.5 last:border-b-0"
                 >
                     <div className="flex min-w-0 items-center gap-3">
                         <span className={`h-1.5 w-1.5 rounded-full ${notice.pinned ? "bg-indigo-500" : "bg-slate-300"}`} />
@@ -28,7 +28,7 @@ export default function AdminDashboardNoticeList({
                         </p>
                     </div>
 
-                    <span className="text-xs font-semibold text-slate-400">
+                    <span className="whitespace-nowrap text-xs font-semibold text-slate-400">
                         {notice.date}
                     </span>
 
