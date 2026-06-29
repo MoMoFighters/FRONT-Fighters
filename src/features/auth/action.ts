@@ -76,21 +76,21 @@ export const studentSignupAction = async (
 // 1-2. 媛뺤궗 ?뚯썝媛??
 // ==========================================
 
-interface TeacherSignupData {
-    userId: number;
-    email: string;
-    name: string;
-    role: string;
-    category: string;
-    proof: string | null;
-    status: string;
-}
+type TeacherSignupData = null;
 
 export const teacherSignupAction = async (
     formData: FormData
 ): Promise<ApiResponse<TeacherSignupData>> => {
     try {
-        return await teacherSignupService(formData);
+        const cookieStore = await cookies();
+        const accessToken =
+            cookieStore.get("accessToken")?.value;
+
+        if (!accessToken) {
+            return createUnauthorizedResponse<TeacherSignupData>();
+        }
+
+        return await teacherSignupService(formData, accessToken);
     } catch (error) {
         return createErrorResponse<TeacherSignupData>(
             error,

@@ -1,4 +1,5 @@
-'use client'
+"use client";
+
 import TeacherRegistModal from "@/features/auth/components/TeacherRegistModal";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -22,10 +23,17 @@ const NAV_ITEMS = [
     },
 ];
 
-export default function MyPageNav({ isPaid }: { isPaid?: boolean | undefined }) {
+interface MyPageNavProps {
+    nickname?: string | null;
+    buildingCount?: number;
+}
+
+export default function MyPageNav({
+    nickname,
+    buildingCount,
+}: MyPageNavProps) {
     const pathName = usePathname();
     const currentPage = pathName.split("/").pop() || "mypage";
-
     const [isModal, setIsModal] = useState(false);
 
     return (
@@ -51,10 +59,14 @@ export default function MyPageNav({ isPaid }: { isPaid?: boolean | undefined }) 
                     );
                 })}
             </nav>
-            {isPaid === false && (
-                <TeacherRegistModal isModal={isModal} setIsModal={setIsModal} nickName="모모쌤" />
-            )
-            }
-        </div >
+
+            {buildingCount === 0 && (
+                <TeacherRegistModal
+                    isModal={isModal}
+                    setIsModal={setIsModal}
+                    nickName={nickname ?? ""}
+                />
+            )}
+        </div>
     );
 }

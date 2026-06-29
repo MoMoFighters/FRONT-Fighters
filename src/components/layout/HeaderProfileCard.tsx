@@ -52,7 +52,7 @@ export default function HeaderProfileCard({
             icon: Users,
         },
         {
-            label: "채팅",
+            label: "메신저",
             href: "/student/phone/friends",
             icon: MessageSquare,
         },
@@ -60,11 +60,6 @@ export default function HeaderProfileCard({
             label: "일정",
             href: "/student/phone/calendar",
             icon: CalendarDays,
-        },
-        {
-            label: "친구",
-            href: "/student/phone/friends",
-            icon: UserRoundPlus,
         },
         {
             label: "방명록",

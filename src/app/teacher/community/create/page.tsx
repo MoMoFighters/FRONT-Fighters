@@ -1,4 +1,3 @@
-import CommunitySideBar from "@/components/phone/community/CommunitySideBar";
 import CommunityPostForm from "@/features/community/CommunityPostForm";
 
 export default function CommunityPostCreatePage() {
