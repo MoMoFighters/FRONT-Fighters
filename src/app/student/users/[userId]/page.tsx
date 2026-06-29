@@ -3,22 +3,11 @@ import MonthlyStreakGarden from "@/components/city/MonthlyStreakGarden";
 import BusStation from "@/components/city/BusStation";
 import PostBoard from "@/components/city/PostBoard";
 import CityCanvas from "@/components/city/CityCanvas";
-import { Building } from "@/features/city/type";
-import BuildingItem from "@/components/city/BuildingItem";
 import Image from "next/image";
-
-// 임의로 로컬에 이미지 저장해놓고 사용, 실제로는 api 응답값에 있는 이미지 사용
-import study from "@/app/assets/img/study.png"
-import fitness from "@/app/assets/img/fitness.png"
-import art from "@/app/assets/img/art.png"
-import beauty from "@/app/assets/img/beauty.png"
-import cook from "@/app/assets/img/cook.png"
 import mypage from "@/app/assets/img/mypage.png";
 import point from "@/app/assets/img/point.png";
 import { cookies } from "next/headers";
-
-// 추후 api 연동 시 임포트 구문
-// import { getMyBuildings } from "../services/city/service";
+import { getFriendBuildings, getFriendStreak } from "@/app/services/city/service";
 
 const buildingSlots = [
     {
@@ -61,49 +50,25 @@ export default async function StudentMainPage({ params }: {
     const { userId } = await params;
     const cookieStore = await cookies();
     const accessToken = cookieStore.get("accessToken")?.value;
+    const today = new Date();
+    const monthlyStreak = await getFriendStreak(userId, {
+        year: today.getFullYear(),
+        month: today.getMonth() + 1,
+    });
 
-    // 추후 api 연동 - 친구 껄로
-    // const buildings = await getFriendBuildings(userId);
+    const buildings = await getFriendBuildings(userId);
 
-    const buildings: Building[] = [
-        {
-            position: 1,
-            category: "STUDY",
-            level: 1,
-            buildingUrl: study
-        },
-        {
-            position: 2,
-            category: "ART",
-            level: 2,
-            buildingUrl: art
-        },
-        {
-            position: 3,
-            category: "FITNESS",
-            level: 1,
-            buildingUrl: fitness
-        },
-        {
-            position: 4,
-            category: "COOK",
-            level: 3,
-            buildingUrl: cook
-        },
-        {
-            position: 5,
-            category: "BEAUTY",
-            level: 3,
-            buildingUrl: beauty
-        },
-    ]
+
 
     return (
         <CityCanvas>
             <BusStation mode='FRIEND' />
             <PostBoard mode="FRIEND" />
             <Phone accessToken={accessToken} />
-            <MonthlyStreakGarden />
+            <MonthlyStreakGarden
+                initialStreak={monthlyStreak}
+                userId={userId}
+            />
 
             {/* 친구 도시의 경우 각 아이템들은 그저 볼 수 있는 고정 이미지로 */}
             {buildingSlots.map((slot) => {

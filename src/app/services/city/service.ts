@@ -13,10 +13,11 @@ const handleErrorResponse = async (response: Response) => {
     }
 
     if (!response.ok) {
-        const errorData = await response.json();
+        const errorData: { status?: number; statusCode?: number; message?: string } =
+            await response.json();
 
         throw new Error(
-            `${errorData.status}|${errorData.message}`
+            `${errorData.statusCode ?? errorData.status}|${errorData.message}`
         );
     }
 };
@@ -39,7 +40,7 @@ const assertApiData = <T>(result: ApiResponse<T>): T => {
  * @returns Building[]
  */
 export const getMyBuildings = async () => {
-    const response = await fetchWithAuth("api/v1/user/buildings");
+    const response = await fetchWithAuth("/api/v1/user/buildings");
     await handleErrorResponse(response);
     const result: ApiResponse<Building[]> = await response.json();
     return assertApiData(result);
@@ -50,7 +51,7 @@ export const getMyBuildings = async () => {
  * @returns Building[]
  */
 export const getFriendBuildings = async (id: string) => {
-    const response = await fetchWithAuth(`api/v1/user/${id}/buildings`);
+    const response = await fetchWithAuth(`/api/v1/user/${id}/buildings`);
     await handleErrorResponse(response);
     const result: ApiResponse<Building[]> = await response.json();
     return assertApiData(result);
@@ -78,6 +79,12 @@ export const getMyStreak = async (payload: StreakRequest): Promise<StreakRespons
     return assertApiData(result);
 }
 
+/**
+ * 친구 도시의 친구 잔디 정보 조회 api
+ * @param id 조회할 친구 id
+ * @param payload 조회할 잔디 연/월
+ * @returns StreakResponse
+ */
 export const getFriendStreak = async (id: string, payload: StreakRequest): Promise<StreakResponse> => {
     const queryString =
         new URLSearchParams(

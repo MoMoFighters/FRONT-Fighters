@@ -1,23 +1,13 @@
-import { getMyInfo, killTokenAction } from "@/features/user/action";
+import { getMyInfo } from "@/features/user/action";
 import NicknameInputModal from "@/features/auth/components/NicknameInputModal";
 import Phone from "@/components/city/Phone";
 import MonthlyStreakGarden from "@/components/city/MonthlyStreakGarden";
 import BusStation from "@/components/city/BusStation";
 import PostBoard from "@/components/city/PostBoard";
 import CityCanvas from "@/components/city/CityCanvas";
-import { Building } from "@/features/city/type";
 import BuildingItem from "@/components/city/BuildingItem";
 import { cookies } from "next/headers";
-
-// 임의로 로컬에 이미지 저장해놓고 사용, 실제로는 api 응답값에 있는 이미지 사용
-import study from "@/app/assets/img/study.png"
-import fitness from "@/app/assets/img/fitness.png"
-import art from "@/app/assets/img/art.png"
-import beauty from "@/app/assets/img/beauty.png"
-import cook from "@/app/assets/img/cook.png"
-
-// 추후 api 연동 시 임포트 구문
-// import { getMyBuildings } from "../services/city/service";
+import { getMyBuildings, getMyStreak } from "../services/city/service";
 
 const buildingSlots = [
     {
@@ -59,40 +49,12 @@ export default async function StudentMainPage() {
     const myInfo = await getMyInfo();
 
     // 추후 api 연동
-    // const buildings = await getMyBuildings();
-
-    const buildings: Building[] = [
-        {
-            position: 1,
-            category: "STUDY",
-            level: 1,
-            buildingUrl: study
-        },
-        {
-            position: 2,
-            category: "ART",
-            level: 2,
-            buildingUrl: art
-        },
-        {
-            position: 3,
-            category: "FITNESS",
-            level: 1,
-            buildingUrl: fitness
-        },
-        {
-            position: 4,
-            category: "COOK",
-            level: 3,
-            buildingUrl: cook
-        },
-        {
-            position: 5,
-            category: "BEAUTY",
-            level: 3,
-            buildingUrl: beauty
-        },
-    ]
+    const buildings = await getMyBuildings();
+    const today = new Date();
+    const monthlyStreak = await getMyStreak({
+        year: today.getFullYear(),
+        month: today.getMonth() + 1,
+    });
 
     return (
         <CityCanvas>
@@ -100,11 +62,7 @@ export default async function StudentMainPage() {
             <BusStation mode='MY' />
             <PostBoard mode="MY" />
             <Phone accessToken={accessToken} />
-            <MonthlyStreakGarden />
-            <button
-                className="bg-red-500 w-20 h-20"
-                onClick={killTokenAction}
-            >asdfasdf</button>
+            <MonthlyStreakGarden initialStreak={monthlyStreak} />
 
             {buildingSlots.map((slot) => {
                 const building = buildings.find((building) => building.position === slot.position);
