@@ -3,12 +3,24 @@ import MyBuildingInfo from "@/components/mypage/MyBuildingInfo";
 import MyInfoTable from "@/components/mypage/MyInfoTable";
 import MyPageNav from "@/components/mypage/MyPageNav";
 import DeleteAccountBtn from "@/features/auth/components/DeleteAccountBtn";
+import NicknameInputModal from "@/features/auth/components/NicknameInputModal";
 import StudentPageHeader from "@/features/student/components/StudentPageHeader";
 import { getMyInfo } from "@/features/user/action";
+import { jwtDecode } from "jwt-decode";
 import { PencilLine, UserRound } from "lucide-react";
+import { cookies } from "next/headers";
 import Link from "next/link";
 
+interface StudentTokenPayload {
+    nickname?: string | null;
+}
+
 export default async function MyPage() {
+    const cookie = await cookies();
+    const token = cookie.get("accessToken")?.value;
+    const tokenNickname = token
+        ? jwtDecode<StudentTokenPayload>(token).nickname ?? null
+        : null;
     const DATA = await getMyInfo();
     console.log(DATA);
 
@@ -25,6 +37,7 @@ export default async function MyPage() {
 
     return (
         <div className="p-12">
+            <NicknameInputModal nickIsNull={tokenNickname === null} />
             <StudentPageHeader
                 backHref="/student"
                 breadcrumbs={[

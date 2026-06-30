@@ -1,5 +1,3 @@
-import { getMyInfo } from "@/features/user/action";
-import NicknameInputModal from "@/features/auth/components/NicknameInputModal";
 import Phone from "@/components/city/Phone";
 import MonthlyStreakGarden from "@/components/city/MonthlyStreakGarden";
 import BusStation from "@/components/city/BusStation";
@@ -46,7 +44,6 @@ export default async function StudentMainPage() {
 
     const cookieStore = await cookies();
     const accessToken = cookieStore.get("accessToken")?.value;
-    const myInfo = await getMyInfo();
 
     // 추후 api 연동
     const buildings = await getMyBuildings();
@@ -58,7 +55,6 @@ export default async function StudentMainPage() {
 
     return (
         <CityCanvas>
-            <NicknameInputModal nickIsNull={myInfo.data?.nickname === null ? true : false} />
             <BusStation mode='MY' />
             <PostBoard mode="MY" />
             <Phone accessToken={accessToken} />

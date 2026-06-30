@@ -1,6 +1,7 @@
 'use client'
 
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { nicknameRegistAction } from "../action";
 
@@ -11,6 +12,7 @@ interface NicknameInputModalProps {
 export default function NicknameInputModal({
     nickIsNull
 }: NicknameInputModalProps) {
+    const router = useRouter();
 
     const [isModal, setIsModal] =
         useState(nickIsNull);
@@ -25,12 +27,15 @@ export default function NicknameInputModal({
         useState('닉네임을 입력해주세요.');
 
     const handleSubmit = async () => {
+        setLoading(true);
         const result = await nicknameRegistAction(nickname);
 
         setMessage(result.message);
+        setLoading(false);
 
         if (result.status === 200) {
             setIsModal(false);
+            router.refresh();
         }
     };
 
