@@ -51,7 +51,7 @@ const parseGuestbookResponse = async <T>(
 export const getGuestbooksService = async (
     accessToken: string
 ): Promise<GuestbookApiResponse<GuestbookListItemResponse[]>> => {
-    const response = await fetch(`${BASE_SERVER_URL}/api/v2/friends/guests`, {
+    const response = await fetch(`${BASE_SERVER_URL}/api/v2/friends/guest`, {
         method: "GET",
         headers: {
             Authorization: `Bearer ${accessToken}`,
