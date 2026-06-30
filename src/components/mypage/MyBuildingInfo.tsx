@@ -1,43 +1,38 @@
-import { Building2, Sparkles } from "lucide-react";
+import { BuildingInfo } from "@/app/services/user/service";
+import { Building2 } from "lucide-react";
+
+const CATEGORY_META: Record<
+    BuildingInfo["category"],
+    {
+        label: string;
+        color: string;
+    }
+> = {
+    STUDY: {
+        label: "STUDY",
+        color: "border-emerald-200 bg-emerald-50 text-emerald-700",
+    },
+    FITNESS: {
+        label: "FITNESS",
+        color: "border-cyan-200 bg-cyan-50 text-cyan-700",
+    },
+    COOK: {
+        label: "COOK",
+        color: "border-orange-200 bg-orange-50 text-orange-700",
+    },
+    BEAUTY: {
+        label: "BEAUTY",
+        color: "border-fuchsia-200 bg-fuchsia-50 text-fuchsia-700",
+    },
+    ART: {
+        label: "ART",
+        color: "border-violet-200 bg-violet-50 text-violet-700",
+    },
+};
 
 interface MyBuildingInfoProps {
-    data: {
-        buildings: number;
-    }
+    data: BuildingInfo[];
 }
-
-const buildingStats = [
-    {
-        label: "FITNESS",
-        name: "피트니스",
-        level: 1,
-        color: "bg-sky-50 text-sky-600 ring-sky-100",
-    },
-    {
-        label: "BEAUTY",
-        name: "뷰티",
-        level: 3,
-        color: "bg-pink-50 text-pink-600 ring-pink-100",
-    },
-    {
-        label: "COOK",
-        name: "요리",
-        level: 3,
-        color: "bg-amber-50 text-amber-600 ring-amber-100",
-    },
-    {
-        label: "STUDY",
-        name: "학습",
-        level: 2,
-        color: "bg-emerald-50 text-emerald-600 ring-emerald-100",
-    },
-    {
-        label: "ART",
-        name: "예술",
-        level: 2,
-        color: "bg-violet-50 text-violet-600 ring-violet-100",
-    },
-];
 
 export default function MyBuildingInfo({ data }: MyBuildingInfoProps) {
     return (
@@ -52,7 +47,7 @@ export default function MyBuildingInfo({ data }: MyBuildingInfoProps) {
                             보유 건물 현황
                         </p>
                         <p className="mt-0.5 text-xs font-bold text-slate-400">
-                            최대 레벨은 3단계입니다.
+                            현재 도시에 배치된 건물 정보입니다.
                         </p>
                     </div>
                 </div>
@@ -62,30 +57,36 @@ export default function MyBuildingInfo({ data }: MyBuildingInfoProps) {
                         전체
                     </p>
                     <p className="text-xl font-black text-slate-900">
-                        {data.buildings}개
+                        {data.length}개
                     </p>
                 </div>
             </div>
 
-            <div className="grid grid-cols-5 gap-2">
-                {buildingStats.map((building) => (
-                    <div
-                        key={building.label}
-                        className="rounded-2xl border border-slate-100 bg-slate-50/70 p-3 text-center transition hover:-translate-y-0.5 hover:bg-white hover:shadow-sm"
-                    >
-                        <div className={`mx-auto mb-2 flex h-8 min-w-8 items-center justify-center rounded-full px-2 text-[10px] font-black ring-1 ${building.color}`}>
-                            {building.label}
-                        </div>
-                        <p className="text-sm font-black text-slate-800">
-                            {building.name}
-                        </p>
-                        <p className="mt-1 flex items-center justify-center gap-1 text-[11px] font-bold text-slate-400">
-                            <Sparkles className="h-3 w-3 text-indigo-300" />
-                            Lv.{building.level}
-                        </p>
-                    </div>
-                ))}
-            </div>
+            {data.length === 0 ? (
+                <div className="flex h-30 items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 text-sm font-bold text-slate-400">
+                    아직 보유한 건물이 없습니다.
+                </div>
+            ) : (
+                <div className="grid grid-cols-5 gap-2">
+                    {data.map((building) => {
+                        const meta = CATEGORY_META[building.category];
+
+                        return (
+                            <div
+                                key={`${building.category}-${building.position}`}
+                                className={`rounded-2xl border p-3 text-center transition hover:-translate-y-0.5 hover:shadow-sm ${meta.color}`}
+                            >
+                                <p className="truncate text-[11px] font-black">
+                                    {meta.label}
+                                </p>
+                                <p className="mt-1 text-sm font-black">
+                                    Lv.{building.level}
+                                </p>
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
         </section>
     );
 }
