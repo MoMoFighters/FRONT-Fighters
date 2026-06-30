@@ -1,27 +1,55 @@
-'use client'
+"use client";
 
 import { FormEvent, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { createGuestbookAction } from "./action";
+import { CreateGuestbookResponse } from "@/app/services/guestbook/service";
 
 interface GuestbookFormProps {
+    ownerId?: number;
     onCancel: () => void;
-    onSubmitSuccess?: () => void;
+    onSubmitSuccess?: (guestbook: CreateGuestbookResponse) => void;
 }
 
 export default function GuestbookForm({
+    ownerId,
     onCancel,
     onSubmitSuccess,
 }: GuestbookFormProps) {
-
     const [content, setContent] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        // TODO: 방명록 작성 API 연결 지점
-        // payload 예시: { content }
-        // 성공 후 onSubmitSuccess?.() 호출하고 목록을 다시 조회하면 됨.
-        onSubmitSuccess?.();
+        const trimmedContent = content.trim();
+
+        if (!ownerId || !trimmedContent || isSubmitting) {
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        try {
+            const response = await createGuestbookAction({
+                ownerId,
+                content: trimmedContent,
+            });
+
+            const status = response.statusCode ?? response.status ?? 500;
+
+            if (status >= 400) {
+                alert(response.message);
+                return;
+            }
+
+            setContent("");
+            if (response.data) {
+                onSubmitSuccess?.(response.data);
+            }
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -41,7 +69,7 @@ export default function GuestbookForm({
             <textarea
                 value={content}
                 onChange={(event) => setContent(event.target.value)}
-                placeholder="따뜻한 방명록을 남겨보세요."
+                placeholder="방명록을 남겨보세요."
                 className="min-h-0 flex-1 resize-none rounded-2xl border border-indigo-100 bg-white p-4 text-sm font-semibold leading-6 text-slate-700 outline-none transition placeholder:text-slate-300 focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100"
                 maxLength={500}
             />
@@ -63,10 +91,10 @@ export default function GuestbookForm({
 
                     <Button
                         type="submit"
-                        disabled={!content.trim()}
+                        disabled={!ownerId || !content.trim() || isSubmitting}
                         className="cursor-pointer rounded-xl bg-indigo-500 font-black text-white hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                        등록하기
+                        {isSubmitting ? "등록 중" : "등록하기"}
                     </Button>
                 </div>
             </div>
