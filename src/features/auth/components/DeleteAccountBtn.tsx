@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { logoutAction } from "../action";
+import { clearLectureUploadTasksStorage } from "@/features/lecture/components/teacher/LectureCreateUploadContext";
 
 export default function DeleteAccountBtn({ userName }: { userName: string }) {
     const [isConfirmModal, setIsConfirmModal] = useState(false);
@@ -22,7 +23,8 @@ export default function DeleteAccountBtn({ userName }: { userName: string }) {
         // 1. 회원탈퇴
         // 2. 쿠키 삭제
         // 3. redirect 루트
-        logoutAction();
+        await logoutAction();
+        clearLectureUploadTasksStorage();
         router.push("/");
     };
 

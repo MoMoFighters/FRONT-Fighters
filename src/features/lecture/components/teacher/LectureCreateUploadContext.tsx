@@ -25,6 +25,7 @@ export interface LectureUploadTask {
     status: "uploading" | "completed" | "failed";
     lectureId?: number;
     errorMessage?: string;
+    completedAt?: number;
 }
 
 interface LectureCreateUploadContextValue {
@@ -38,11 +39,20 @@ const LectureCreateUploadContext =
     createContext<LectureCreateUploadContextValue | null>(null);
 
 const LECTURE_UPLOAD_TASKS_STORAGE_KEY = "momo-lecture-upload-tasks";
+const LECTURE_UPLOAD_TASK_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+
+export const clearLectureUploadTasksStorage = () => {
+    if (typeof window === "undefined") {
+        return;
+    }
+
+    window.localStorage.removeItem(LECTURE_UPLOAD_TASKS_STORAGE_KEY);
+};
 
 const createUploadTaskId = () =>
     `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
-const normalizeStoredTasks = (tasks: LectureUploadTask[]) =>
+const markInterruptedStoredTasks = (tasks: LectureUploadTask[]) =>
     tasks.map((task) =>
         task.status === "uploading"
             ? {
@@ -52,6 +62,36 @@ const normalizeStoredTasks = (tasks: LectureUploadTask[]) =>
             }
             : task
     );
+
+const normalizeStoredTasks = (tasks: LectureUploadTask[]) => {
+    const now = Date.now();
+
+    return markInterruptedStoredTasks(tasks)
+        .map((task) => {
+            if (
+                (task.status === "completed" || task.status === "failed") &&
+                !task.completedAt
+            ) {
+                return {
+                    ...task,
+                    completedAt: now,
+                };
+            }
+
+            return task;
+        })
+        .filter((task) => {
+            if (task.status !== "completed" && task.status !== "failed") {
+                return true;
+            }
+
+            if (!task.completedAt) {
+                return true;
+            }
+
+            return now - task.completedAt <= LECTURE_UPLOAD_TASK_TTL_MS;
+        });
+};
 
 const loadStoredTasks = () => {
     if (typeof window === "undefined") {
@@ -145,6 +185,7 @@ export function LectureCreateUploadProvider({
                             progress: 100,
                             status: "completed",
                             lectureId,
+                            completedAt: Date.now(),
                         }
                         : task
                 )
@@ -168,6 +209,7 @@ export function LectureCreateUploadProvider({
                             ...task,
                             status: "failed",
                             errorMessage: message,
+                            completedAt: Date.now(),
                         }
                         : task
                 )

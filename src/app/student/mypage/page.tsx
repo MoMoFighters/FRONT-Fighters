@@ -18,9 +18,7 @@ interface StudentTokenPayload {
 export default async function MyPage() {
     const cookie = await cookies();
     const token = cookie.get("accessToken")?.value;
-    const tokenNickname = token
-        ? jwtDecode<StudentTokenPayload>(token).nickname ?? null
-        : null;
+    const tokenValue = token ? jwtDecode<StudentTokenPayload>(token) : {};
     const DATA = await getMyInfo();
     console.log(DATA);
 
@@ -37,7 +35,7 @@ export default async function MyPage() {
 
     return (
         <div className="p-12">
-            <NicknameInputModal nickIsNull={tokenNickname === null} />
+            <NicknameInputModal nickIsNull={tokenValue?.nickname === null} />
             <StudentPageHeader
                 backHref="/student"
                 breadcrumbs={[

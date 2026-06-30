@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { logoutAction, teacherSignupAction } from "@/features/auth/action";
+import { clearLectureUploadTasksStorage } from "@/features/lecture/components/teacher/LectureCreateUploadContext";
 
 import {
     Select,
@@ -96,7 +97,8 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
 
             toast.success(response.message, { duration: 1000 });
             setIsModal(false);
-            logoutAction();
+            await logoutAction();
+            clearLectureUploadTasksStorage();
             redirect("/auth/login");
         } finally {
             setIsSubmitting(false);

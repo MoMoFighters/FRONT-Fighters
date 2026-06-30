@@ -5,6 +5,7 @@ import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils/utils";
 import { LogOut } from "lucide-react";
+import { clearLectureUploadTasksStorage } from "@/features/lecture/components/teacher/LectureCreateUploadContext";
 
 export default function LogoutBtn({
     className,
@@ -19,6 +20,7 @@ export default function LogoutBtn({
         const result = await logoutAction();
 
         if (result.status >= 200 && result.status < 300) {
+            clearLectureUploadTasksStorage();
             router.replace("/");
             router.refresh();
         } else {
