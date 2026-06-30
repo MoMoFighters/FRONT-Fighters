@@ -8,6 +8,10 @@ import { jwtDecode } from "jwt-decode";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 
+interface MomoJwtPayload {
+    roles?: string;
+}
+
 export default async function Forbidden() {
 
     const cookie = await cookies();
@@ -18,7 +22,7 @@ export default async function Forbidden() {
         }
         if (token) {
             // 옵션 없이 사용하면 페이로드(내용)를 디코딩합니다.
-            const decoded = jwtDecode(token);
+            const decoded = jwtDecode<MomoJwtPayload>(token);
             const { roles } = decoded;
             if (!roles) {
                 throw new Error('알 수 없는 에러가 발생했습니다.');

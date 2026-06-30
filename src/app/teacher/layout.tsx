@@ -5,7 +5,11 @@ import LectureCreateFloatingWidget from "@/features/lecture/components/teacher/L
 import { LectureCreateUploadProvider } from "@/features/lecture/components/teacher/LectureCreateUploadContext";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { jwtDecode, JwtPayload } from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
+
+interface MomoJwtPayload {
+    roles?: string;
+}
 
 export default async function TeacherLayout({
     children,
@@ -21,7 +25,7 @@ export default async function TeacherLayout({
     }
     if (token) {
         // 옵션 없이 사용하면 페이로드(내용)를 디코딩합니다.
-        const decoded: JwtPayload = jwtDecode(token);
+        const decoded = jwtDecode<MomoJwtPayload>(token);
         const { roles } = decoded;
         if (roles === "ROLE_STUDENT") {
             redirect('/forbidden');
