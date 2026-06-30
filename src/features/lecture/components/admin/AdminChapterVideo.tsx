@@ -6,6 +6,7 @@ interface AdminChapterVideoProps {
     lectureTitle: string;
     chapter: Chapter;
     presignedUrl: string;
+    canDelete?: boolean;
 }
 
 const formatDuration = (durationSec: number) => {
@@ -20,6 +21,7 @@ export default function AdminChapterVideo({
     lectureTitle,
     chapter,
     presignedUrl,
+    canDelete = true,
 }: AdminChapterVideoProps) {
     return (
         <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
@@ -44,13 +46,15 @@ export default function AdminChapterVideo({
                         <p className="mt-1 font-bold text-slate-950">{formatDuration(chapter.durationSec)}</p>
                     </div>
                 </div>
-                <AdminLectureDeleteButton
-                    target="챕터"
-                    targetId={chapter.chapterId}
-                    lectureId={lectureId}
-                    variant="button"
-                    successHref={`/admin/lectures/${lectureId}`}
-                />
+                {canDelete && (
+                    <AdminLectureDeleteButton
+                        target="챕터"
+                        targetId={chapter.chapterId}
+                        lectureId={lectureId}
+                        variant="button"
+                        successHref={`/admin/lectures/${lectureId}`}
+                    />
+                )}
             </div>
         </section>
     );

@@ -69,7 +69,7 @@ export default async function AdminLectureListPage({
             />
 
             <p className="mb-4 text-sm font-semibold text-slate-500">
-                전체 강의 <span className="text-indigo-500">{responseData.totalElements}</span>개
+                {status && status === "waiting" ? "승인 대기" : "전체"} 강의 <span className="text-indigo-500">{responseData.totalElements}</span>개
             </p>
 
             {responseData.content.length > 0 ? (

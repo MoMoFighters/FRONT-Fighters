@@ -1,10 +1,5 @@
 import { AlertCircle, CheckCircle2 } from "lucide-react";
-
-export interface AdminDashboardSystemStatus {
-    id: number;
-    name: string;
-    status: "정상" | "비정상";
-}
+import { AdminDashboardSystemStatus } from "./type";
 
 // 시스템 상태는 목업처럼 한 줄 안에서 주요 서비스 헬스만 빠르게 확인하게 구성합니다.
 export default function AdminDashboardSystemStatusList({

@@ -1,12 +1,5 @@
 import { ShieldAlert } from "lucide-react";
-
-export interface AdminDashboardReport {
-    id: number;
-    title: string;
-    reporter: string;
-    reportedAt: string;
-    status: "처리" | "미처리";
-}
+import { AdminDashboardReport } from "./type";
 
 const STATUS_CLASS = {
     "처리": "bg-slate-50 text-slate-600",

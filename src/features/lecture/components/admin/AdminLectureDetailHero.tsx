@@ -4,6 +4,7 @@ import { Star } from "lucide-react";
 import { LectureDetailResponse } from "@/features/lecture/type";
 import getCategoryMeta from "@/features/lecture/components/student/shared/category";
 import AdminLectureDeleteButton from "./AdminLectureDeleteButton";
+import AdminLectureApprovalActions from "./AdminLectureApprovalActions";
 
 interface AdminLectureDetailHeroProps {
     lecture: LectureDetailResponse;
@@ -58,12 +59,16 @@ export default function AdminLectureDetailHero({
                         <span className="text-sm font-semibold text-slate-400">
                             등록일 {formatAdminDateTime(lecture.createdAt)}
                         </span>
-                        <AdminLectureDeleteButton
-                            target="강의"
-                            targetId={lecture.lectureId}
-                            variant="text"
-                            successHref="/admin/lectures"
-                        />
+                        {lecture.lectureStatus === "WAITING" ? (
+                            <AdminLectureApprovalActions lectureIds={[lecture.lectureId]} />
+                        ) : (
+                            <AdminLectureDeleteButton
+                                target="강의"
+                                targetId={lecture.lectureId}
+                                variant="text"
+                                successHref="/admin/lectures"
+                            />
+                        )}
                     </div>
                 </div>
             </div>

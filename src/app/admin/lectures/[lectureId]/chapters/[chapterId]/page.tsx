@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 
-import { getLectureMeta, getVideoPlayer } from "@/app/services/lecture/service";
+import { getLectureById, getLectureMeta, getVideoPlayer } from "@/app/services/lecture/service";
 import AdminChapterList from "@/features/lecture/components/admin/AdminChapterList";
 import AdminChapterVideo from "@/features/lecture/components/admin/AdminChapterVideo";
 import StudentPageHeader from "@/features/student/components/StudentPageHeader";
@@ -13,8 +13,11 @@ export default async function AdminChapterDetailPage({
     params,
 }: AdminChapterDetailPageProps) {
     const { lectureId, chapterId } = await params;
-    const metaData = await getLectureMeta(lectureId);
-    const playerData = await getVideoPlayer(lectureId, chapterId);
+    const [lecture, metaData, playerData] = await Promise.all([
+        getLectureById(lectureId),
+        getLectureMeta(lectureId),
+        getVideoPlayer(lectureId, chapterId),
+    ]);
 
     if (!metaData) {
         throw new Error("강의 정보를 불러올 수 없습니다.");
@@ -23,6 +26,7 @@ export default async function AdminChapterDetailPage({
     const currentChapter = metaData.chapters.find(
         (chapter) => chapter.chapterId === Number(chapterId),
     );
+    const canDeleteLectureContent = lecture.lectureStatus !== "WAITING";
 
     if (!currentChapter) notFound();
 
@@ -45,6 +49,7 @@ export default async function AdminChapterDetailPage({
                     lectureTitle={metaData.lectureTitle}
                     chapter={currentChapter}
                     presignedUrl={playerData.presignedUrl}
+                    canDelete={canDeleteLectureContent}
                 />
             </section>
 
@@ -57,6 +62,7 @@ export default async function AdminChapterDetailPage({
                     lectureId={lectureId}
                     chapters={metaData.chapters}
                     currentChapterId={currentChapter.chapterId}
+                    canDelete={canDeleteLectureContent}
                 />
             </aside>
         </main>
