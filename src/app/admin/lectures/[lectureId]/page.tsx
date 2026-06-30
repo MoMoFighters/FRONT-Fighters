@@ -28,6 +28,8 @@ export default async function AdminLectureDetailPage({
 
     if (!lecture) notFound();
 
+    const canDeleteLectureContent = lecture.lectureStatus !== "WAITING";
+
     const reviewResponseData = currentTab === "reviews"
         ? await getReviewsByLectureId(lectureId, currentPage)
         : undefined;
@@ -61,12 +63,17 @@ export default async function AdminLectureDetailPage({
                 />
 
                 {currentTab === "chapters" ? (
-                    <AdminChapterList lectureId={lectureId} chapters={lecture.chapters} />
+                    <AdminChapterList
+                        lectureId={lectureId}
+                        chapters={lecture.chapters}
+                        canDelete={canDeleteLectureContent}
+                    />
                 ) : reviewResponseData && (
                     <>
                         <AdminReviewList
                             lectureId={lectureId}
                             reviews={reviewResponseData.content}
+                            canDelete={canDeleteLectureContent}
                         />
                         <div className="border-t border-slate-100 px-5 pb-5">
                             <ListPagination

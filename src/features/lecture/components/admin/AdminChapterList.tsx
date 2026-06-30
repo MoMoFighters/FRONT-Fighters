@@ -8,6 +8,7 @@ interface AdminChapterListProps {
     lectureId: string;
     chapters: Chapter[];
     currentChapterId?: number;
+    canDelete?: boolean;
 }
 
 const formatDuration = (durationSec: number) => {
@@ -21,6 +22,7 @@ export default function AdminChapterList({
     lectureId,
     chapters,
     currentChapterId,
+    canDelete = true,
 }: AdminChapterListProps) {
     return (
         <div className="divide-y divide-slate-100">
@@ -51,11 +53,13 @@ export default function AdminChapterList({
                                 {formatDuration(chapter.durationSec)}
                             </span>
                         </Link>
-                        <AdminLectureDeleteButton
-                            target="챕터"
-                            targetId={chapter.chapterId}
-                            lectureId={lectureId}
-                        />
+                        {canDelete && (
+                            <AdminLectureDeleteButton
+                                target="챕터"
+                                targetId={chapter.chapterId}
+                                lectureId={lectureId}
+                            />
+                        )}
                     </div>
                 );
             })}

@@ -182,7 +182,7 @@ export default function AdminNoticeList({ notices: initialNotices }: AdminNotice
                     {notices.map((notice) => (
                         <article
                             key={notice.noticeId}
-                            className="grid grid-cols-[32px_minmax(0,1fr)_120px_72px] items-center px-5 py-4 text-sm hover:bg-slate-50"
+                            className={`grid grid-cols-[32px_minmax(0,1fr)_120px_72px] items-center px-5 py-4 text-sm ${notice.isPinned ? "bg-indigo-50 hover:bg-indigo-100" : "hover:bg-slate-50"} cursor-pointer`}
                         >
                             <input
                                 type="checkbox"

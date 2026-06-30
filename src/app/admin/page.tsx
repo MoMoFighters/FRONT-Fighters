@@ -7,28 +7,26 @@ import {
     ShieldAlert,
 } from "lucide-react";
 
-import AdminDashboardAccessLogList, {
-    AdminDashboardAccessLog,
-} from "@/features/admin/components/dashboard/AdminDashboardAccessLogList";
+import AdminDashboardAccessLogList from "@/features/admin/components/dashboard/AdminDashboardAccessLogList";
 import AdminDashboardCard from "@/features/admin/components/dashboard/AdminDashboardCard";
-import AdminDashboardMonthlyLineChart, {
-    AdminDashboardMonthlyDatum,
-} from "@/features/admin/components/dashboard/AdminDashboardMonthlyLineChart";
-import AdminDashboardNoticeList, {
-    AdminDashboardNotice,
-} from "@/features/admin/components/dashboard/AdminDashboardNoticeList";
-import AdminDashboardReportList, {
-    AdminDashboardReport,
-} from "@/features/admin/components/dashboard/AdminDashboardReportList";
-import AdminDashboardSystemStatusList, {
-    AdminDashboardSystemStatus,
-} from "@/features/admin/components/dashboard/AdminDashboardSystemStatusList";
-import AdminDashboardTaskTable, {
-    AdminDashboardTask,
-} from "@/features/admin/components/dashboard/AdminDashboardTaskTable";
+import AdminDashboardNoticeList from "@/features/admin/components/dashboard/AdminDashboardNoticeList";
+import AdminDashboardReportList from "@/features/admin/components/dashboard/AdminDashboardReportList";
+import AdminDashboardSystemStatusList from "@/features/admin/components/dashboard/AdminDashboardSystemStatusList";
+import AdminDashboardTaskTable from "@/features/admin/components/dashboard/AdminDashboardTaskTable";
 import { getDashboardSummary, getMonthlyState } from "@/app/services/admin-dashboard/service";
-import { DashboardRecentAccessLogs, DashboardSystemHealth, MonthlyCount } from "@/features/admin/components/dashboard/type";
+import {
+    AdminDashboardAccessLog,
+    AdminDashboardMonthlyDatum,
+    AdminDashboardNotice,
+    AdminDashboardReport,
+    AdminDashboardSystemStatus,
+    AdminDashboardTask,
+    DashboardRecentAccessLogs,
+    DashboardSystemHealth,
+    MonthlyCount,
+} from "@/features/admin/components/dashboard/type";
 import { USER_ROLE_LABEL } from "@/features/user/type";
+import AdminDashboardDynamic from "@/features/admin/components/dashboard/AdminDashboardDynamic";
 
 const formatAdminDateTime = (dateTime: string) => {
     return dateTime.replace("T", " ").slice(0, 16);
@@ -36,12 +34,6 @@ const formatAdminDateTime = (dateTime: string) => {
 
 const createMonthlyCountMap = (counts: MonthlyCount[]) => {
     return new Map(counts.map((item) => [item.month, item.count]));
-};
-
-const getLastDataMonth = (...monthlyCounts: MonthlyCount[][]) => {
-    const months = monthlyCounts.flat().map((item) => item.month);
-
-    return Math.max(1, ...months);
 };
 
 const formatAccessUser = (log: DashboardRecentAccessLogs) => {
@@ -59,31 +51,35 @@ const mapSystemHealth = (systemHealth: DashboardSystemHealth): AdminDashboardSys
     { id: 4, name: "메일 서비스", status: systemHealth.mailService },
 ];
 
-export default async function AdminDashboardPage() {
+interface AdminDashboardPageProps {
+    searchParams: Promise<{
+        year?: string;
+    }>;
+}
+
+export default async function AdminDashboardPage({
+    searchParams,
+}: AdminDashboardPageProps) {
+    const { year } = await searchParams;
+    const dashboardYear = Number(year) || new Date().getFullYear();
+
     const [monthlyState, dashboardSummary] = await Promise.all([
-        getMonthlyState(),
+        getMonthlyState(dashboardYear),
         getDashboardSummary(),
     ]);
 
-    const dashboardYear = new Date().getFullYear();
     const memberCountMap = createMonthlyCountMap(monthlyState.memberCounts);
     const lectureCountMap = createMonthlyCountMap(monthlyState.lectureCounts);
     const postCountMap = createMonthlyCountMap(monthlyState.postCounts);
-    const lastDataMonth = getLastDataMonth(
-        monthlyState.memberCounts,
-        monthlyState.lectureCounts,
-        monthlyState.postCounts,
-    );
-
     const monthlyDashboardData: AdminDashboardMonthlyDatum[] = [
-        ...Array.from({ length: lastDataMonth }, (_, index) => {
+        ...Array.from({ length: 12 }, (_, index) => {
             const month = index + 1;
 
             return {
                 month: `${month}월`,
-                totalLectures: lectureCountMap.get(month) ?? 0,
-                totalUsers: memberCountMap.get(month) ?? 0,
-                totalPosts: postCountMap.get(month) ?? 0,
+                totalLectures: lectureCountMap.get(month) ?? null,
+                totalUsers: memberCountMap.get(month) ?? null,
+                totalPosts: postCountMap.get(month) ?? null,
             };
         }),
     ];
@@ -148,7 +144,7 @@ export default async function AdminDashboardPage() {
                 </div>
             </div>
 
-            <AdminDashboardMonthlyLineChart
+            <AdminDashboardDynamic
                 data={monthlyDashboardData}
                 year={dashboardYear}
             />

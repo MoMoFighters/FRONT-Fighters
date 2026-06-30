@@ -98,7 +98,7 @@ export default function AdminLectureApprovalActions({
                         type="button"
                         variant="outline"
                         onClick={() => openDialog("REJECT")}
-                        className="h-8 rounded-md border-slate-200 px-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50"
+                        className="h-8 rounded-md border-slate-200 px-2 text-xs font-bold text-slate-600 hover:bg-slate-50"
                     >
                         <X className="size-3.5" />
                         미승인
@@ -106,7 +106,7 @@ export default function AdminLectureApprovalActions({
                     <Button
                         type="button"
                         onClick={() => openDialog("APPROVE")}
-                        className="h-8 rounded-md bg-indigo-500 px-2.5 text-xs font-bold text-white hover:bg-indigo-600"
+                        className="h-8 rounded-md bg-indigo-500 px-2 text-xs font-bold text-white hover:bg-indigo-600"
                     >
                         승인
                     </Button>

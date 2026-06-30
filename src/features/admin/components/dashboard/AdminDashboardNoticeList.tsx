@@ -1,12 +1,5 @@
 import { Pin } from "lucide-react";
-
-export interface AdminDashboardNotice {
-    id: number;
-    title: string;
-    date: string;
-    pinned?: boolean;
-    isNew?: boolean;
-}
+import { AdminDashboardNotice } from "./type";
 
 export default function AdminDashboardNoticeList({
     notices,

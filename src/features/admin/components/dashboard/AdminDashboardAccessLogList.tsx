@@ -1,10 +1,4 @@
-export interface AdminDashboardAccessLog {
-    id: number;
-    ip: string;
-    user: string;
-    accessedAt: string;
-    status: "성공" | "실패";
-}
+import { AdminDashboardAccessLog } from "./type";
 
 const STATUS_CLASS = {
     "성공": "bg-emerald-50 text-emerald-600",

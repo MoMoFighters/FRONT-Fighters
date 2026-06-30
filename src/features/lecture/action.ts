@@ -18,6 +18,14 @@ import { revalidatePath } from "next/cache";
 export const updateLectureStatusAction = async (id: string, status: LectureStatus) => {
     await updateLectureStatus(id, status);
     revalidatePath('/admin/lectures');
+    revalidatePath('/teacher/lectures');
+    revalidatePath('/student/lectures');
+    revalidatePath('/student/study/lectures');
+    revalidatePath('/student/fitness/lectures');
+    revalidatePath('/student/art/lectures');
+    revalidatePath('/student/cook/lectures');
+    revalidatePath('/student/beauty/lectures');
+    revalidatePath(`/admin/lectures/${id}`);
 }
 
 // 영상 시청 중 진척도 저장하는 액션함수

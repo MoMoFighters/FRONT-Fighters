@@ -78,7 +78,7 @@ const parseJsonOrNull = async <T>(response: Response): Promise<T | null> => {
 
 
 /**
- * 헤더에 토큰을 넘기지 않는 강의 전체 조회 api -> 조건에 맞는 모든 강의를 조회하기 위함
+ * 헤더에 토큰을 넘기지 않는 강의 전체 조회 api -> 조건에 맞는 모든 강의를 조회하기 위함 (SSG 렌더링 방식)
  * @param payload -> 쿼리 파라미터에 필요한 값들 (필터, 페이지네이션 등등)
  * @returns LectureListResponse
  */
@@ -98,6 +98,7 @@ export const getLectures = async (
   const response = await fetch(`${BASE_URL}/api/v1/lectures?${queryString}`, {
     headers: {
       "Content-Type": "application/json",
+      cache: 'force-cache'
     },
   });
   await handleErrorResponse(response);
@@ -230,7 +231,9 @@ export const updateLectureStatus = async (
 ) => {
   const response = await fetchWithAuth(`/api/v1/lectures/${id}/status`, {
     method: "PATCH",
-    body: JSON.stringify(status),
+    body: JSON.stringify({
+      lectureStatus: status,
+    }),
   });
 
   await handleErrorResponse(response);

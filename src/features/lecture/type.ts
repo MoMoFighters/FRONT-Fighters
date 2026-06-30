@@ -174,9 +174,9 @@ export interface UpdateVideoProgressByExitRequest {
 export interface UpdateVideoProgressResponse {
     chapterId: number;
     watchedSeconds: number;
-    progressRate: number;
+    chapterProgress: number;
     isCompleted: boolean;
-    totalProgress: number;
+    lectureProgress: number;
     completedCount: number;
 }
 
