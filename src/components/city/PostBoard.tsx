@@ -10,6 +10,8 @@ import GuestBookItem, { GuestBookListItem } from "../postboard/GuestBookItem";
 import StudentNoticeItem, { StudentNoticeListItem } from "../postboard/StudentNoticeItem";
 import GuestbookForm from "@/features/postboard/GuestbookForm";
 import CreateReportBtn from "@/features/report/components/buttons/CreateReportBtn";
+import { getNoticesAction } from "@/features/notice/action";
+import { Notice, NoticeListResponse } from "@/features/notice/type";
 
 interface PostBoardProps {
     mode: "MY" | "FRIEND";
@@ -27,6 +29,14 @@ interface StudentNoticeDetail extends StudentNoticeListItem {
 }
 
 const PAGE_SIZE = 9;
+
+const EMPTY_NOTICE_RESPONSE: NoticeListResponse = {
+    items: [],
+    page: 1,
+    size: PAGE_SIZE,
+    totalElements: 0,
+    totalPages: 1,
+};
 
 const DUMMY_GUESTBOOKS: GuestBookDetail[] = Array.from({ length: 23 }).map((_, index) => ({
     guestbookId: index + 1,
@@ -66,13 +76,41 @@ const paginate = <T,>(
     page * PAGE_SIZE
 );
 
+const normalizeNoticeContent = (content?: string) => {
+    if (!content) {
+        return ["공지사항 내용을 확인해주세요."];
+    }
+
+    const paragraphs = content
+        .split(/\r?\n/)
+        .map((paragraph) => paragraph.trim())
+        .filter(Boolean);
+
+    return paragraphs.length > 0 ? paragraphs : [content];
+};
+
+const toStudentNotice = (notice: Notice): StudentNoticeDetail => {
+    const content = normalizeNoticeContent(notice.content);
+
+    return {
+        noticeId: notice.noticeId,
+        title: notice.title,
+        summary: notice.content?.replace(/\s+/g, " ").slice(0, 80) || "공지사항 내용을 확인해주세요.",
+        content,
+        createdAt: notice.createdAt,
+        viewCount: 0,
+    };
+};
+
 export default function PostBoard({ mode }: PostBoardProps) {
 
     const [isModal, setIsModal] = useState(false);
     const [nav, setNav] = useState<PostBoardMode>('guestbook');
     const [panelView, setPanelView] = useState<PanelView>("list");
-    const [guestbookPage, setGuestbookPage] = useState(1);
-    const [noticePage, setNoticePage] = useState(1);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [noticeResponse, setNoticeResponse] =
+        useState<NoticeListResponse>(EMPTY_NOTICE_RESPONSE);
+    const [isNoticeLoading, setIsNoticeLoading] = useState(false);
     const [selectedGuestbook, setSelectedGuestbook] =
         useState<GuestBookDetail | null>(null);
     const [selectedNotice, setSelectedNotice] =
@@ -82,21 +120,18 @@ export default function PostBoard({ mode }: PostBoardProps) {
         Math.ceil(DUMMY_GUESTBOOKS.length / PAGE_SIZE);
 
     const noticeTotalPages =
-        Math.ceil(DUMMY_NOTICES.length / PAGE_SIZE);
+        Math.max(noticeResponse.totalPages || 1, 1);
 
     const guestbooks = useMemo(() => {
         return paginate(
             DUMMY_GUESTBOOKS,
-            guestbookPage
+            currentPage
         );
-    }, [guestbookPage]);
+    }, [currentPage]);
 
     const notices = useMemo(() => {
-        return paginate(
-            DUMMY_NOTICES,
-            noticePage
-        );
-    }, [noticePage]);
+        return noticeResponse.items.map(toStudentNotice);
+    }, [noticeResponse.items]);
 
     const shouldCompactGuestbookGrid =
         guestbooks.length <= 6;
@@ -111,10 +146,39 @@ export default function PostBoard({ mode }: PostBoardProps) {
             // page, size를 넘기고 받은 목록을 GuestBookItem에 내려주면 됨.
         }
         else {
-            // TODO: 공지사항 목록조회 API 연결 지점
-            // page, size를 넘기고 받은 목록을 StudentNoticeItem에 내려주면 됨.
+
         }
-    }, [isModal, nav, guestbookPage, noticePage])
+    }, [isModal, nav])
+
+    useEffect(() => {
+        if (!isModal || nav !== "notice" || panelView !== "list") {
+            return;
+        }
+
+        let isCurrent = true;
+
+        const loadNotices = async () => {
+            setIsNoticeLoading(true);
+
+            try {
+                const response = await getNoticesAction(currentPage);
+
+                if (isCurrent) {
+                    setNoticeResponse(response);
+                }
+            } finally {
+                if (isCurrent) {
+                    setIsNoticeLoading(false);
+                }
+            }
+        };
+
+        void loadNotices();
+
+        return () => {
+            isCurrent = false;
+        };
+    }, [isModal, nav, panelView, currentPage]);
 
     const resetToList = () => {
         setPanelView("list");
@@ -124,6 +188,7 @@ export default function PostBoard({ mode }: PostBoardProps) {
 
     const handleChangeNav = (nextNav: PostBoardMode) => {
         setNav(nextNav);
+        setCurrentPage(1);
         resetToList();
     };
 
@@ -139,7 +204,7 @@ export default function PostBoard({ mode }: PostBoardProps) {
 
     const handleSelectNotice = (noticeId: number) => {
         const notice =
-            DUMMY_NOTICES.find((item) => item.noticeId === noticeId) ?? null;
+            notices.find((item) => item.noticeId === noticeId) ?? null;
 
         setSelectedNotice(notice);
         setPanelView("notice-detail");
@@ -284,8 +349,8 @@ export default function PostBoard({ mode }: PostBoardProps) {
                             {panelView === "list" && nav === "guestbook" && (
                                 <BoardListLayout
                                     totalPages={guestbookTotalPages}
-                                    currentPage={guestbookPage}
-                                    onChangePage={setGuestbookPage}
+                                    currentPage={currentPage}
+                                    onChangePage={setCurrentPage}
                                 >
                                     <div className={`grid grid-cols-3 gap-2 px-1 pt-1 pb-3 ${shouldCompactGuestbookGrid
                                         ? "content-start"
@@ -305,11 +370,19 @@ export default function PostBoard({ mode }: PostBoardProps) {
                             {panelView === "list" && nav === "notice" && (
                                 <BoardListLayout
                                     totalPages={noticeTotalPages}
-                                    currentPage={noticePage}
-                                    onChangePage={setNoticePage}
+                                    currentPage={currentPage}
+                                    onChangePage={setCurrentPage}
                                 >
                                     <div className="grid grid-cols-1 gap-2 px-1 pt-1 pb-3">
-                                        {notices.map((notice) => (
+                                        {isNoticeLoading ? (
+                                            <div className="flex h-40 items-center justify-center text-sm font-bold text-slate-400">
+                                                공지사항을 불러오는 중입니다.
+                                            </div>
+                                        ) : notices.length === 0 ? (
+                                            <div className="flex h-40 items-center justify-center text-sm font-bold text-slate-400">
+                                                등록된 공지사항이 없습니다.
+                                            </div>
+                                        ) : notices.map((notice) => (
                                             <StudentNoticeItem
                                                 key={notice.noticeId}
                                                 notice={notice}

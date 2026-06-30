@@ -4,12 +4,13 @@ import {
     createNotice,
     deleteNoticeById,
     deleteNoticeByIds,
+    getNotices,
     pinNoticeById,
     unPinNoticeById,
     updateNoticeById,
 } from "@/app/services/notice/service";
 import { revalidatePath } from "next/cache";
-import { CreateNoticeRequest, UpdateNoticeRequest } from "./type";
+import { CreateNoticeRequest, NoticeListResponse, UpdateNoticeRequest } from "./type";
 
 export type NoticeActionState = {
     success: boolean;
@@ -214,3 +215,9 @@ export const updateNoticePinAction = async (
         success: true,
     };
 };
+
+// 수강생 공지사항 목록 조회 액션 함수
+export const getNoticesAction = async (page: number): Promise<NoticeListResponse> => {
+    const response = await getNotices(page);
+    return response;
+}
