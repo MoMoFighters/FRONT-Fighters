@@ -426,7 +426,10 @@ export const nicknameRegistAction = async (
 interface OAuthLoginData {
     accessToken: string;
     refreshToken: string;
-    status: string;
+    status: UserStatus;
+    role: UserRole;
+    isTempPwd: boolean;
+    nickname: string | null;
     expiresIn: number;
 }
 
