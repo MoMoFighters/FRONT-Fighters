@@ -6,6 +6,7 @@ export type CommunityMypagePostViewMode = "list" | "grid" | "card";
 export interface CommunityMypagePostItemProps {
     mode: CommunityMypagePostViewMode;
     postId: number;
+    detailHrefBase?: string;
     thumbnailImageUrl: string | null;
     title: string;
     viewCount: number;
@@ -72,6 +73,7 @@ function PostStats({
 export default function CommunityMypagePostItem({
     mode,
     postId,
+    detailHrefBase = "/student/phone/community",
     thumbnailImageUrl,
     title,
     viewCount,
@@ -79,10 +81,12 @@ export default function CommunityMypagePostItem({
     commentCount,
     createdAt,
 }: CommunityMypagePostItemProps) {
+    const detailHref = `${detailHrefBase}/${postId}`;
+
     if (mode === "grid") {
         return (
             <Link
-                href={`/student/phone/community/${postId}`}
+                href={detailHref}
                 className="group relative block aspect-square overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-100 transition hover:-translate-y-0.5 hover:shadow-md"
             >
                 <Thumbnail
@@ -115,7 +119,7 @@ export default function CommunityMypagePostItem({
     if (mode === "card") {
         return (
             <Link
-                href={`/student/phone/community/${postId}`}
+                href={detailHref}
                 className="grid min-h-28 grid-cols-[116px_1fr] overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-100 transition hover:-translate-y-0.5 hover:shadow-md"
             >
                 <Thumbnail
@@ -147,7 +151,7 @@ export default function CommunityMypagePostItem({
 
     return (
         <Link
-            href={`/student/phone/community/${postId}`}
+            href={detailHref}
             className="grid h-[52px] grid-cols-[52px_1fr_auto_auto_auto] items-center gap-3 rounded-2xl bg-white px-2.5 py-2 shadow-sm ring-1 ring-slate-100 transition hover:-translate-y-0.5 hover:bg-indigo-50/60 hover:shadow-md"
         >
             <Thumbnail
