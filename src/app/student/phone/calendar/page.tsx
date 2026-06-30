@@ -1,5 +1,5 @@
 ﻿import CalendarSide from '@/components/phone/calendar/CalendarSide';
-import Calendar from '@/features/phone/components/todo/Calendar';
+import CalendarLoader from '@/features/phone/components/todo/CalendarLoader';
 import { redirect } from 'next/navigation';
 
 interface CalendarPageProps {
@@ -32,7 +32,7 @@ export default async function CalendarPage({
               flex
               overflow-hidden
         ">
-            <Calendar
+            <CalendarLoader
                 selectedDate={date}
             />
 

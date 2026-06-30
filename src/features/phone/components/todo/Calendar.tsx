@@ -8,11 +8,9 @@ import {
     useSearchParams,
 } from 'next/navigation'
 
-import MoreMemoModal from '@/components/phone/calendar/MoreMemoModal'
 import { getMonthlyCalendarAction } from '@/features/calendar/action'
 
 import type { ScheduleItem } from '../../../calendar/type'
-import AddMemoModal from './MemoModal'
 
 const FullCalendarMonthView = dynamic(
     () => import('./FullCalendarMonthView'),
@@ -23,6 +21,20 @@ const FullCalendarMonthView = dynamic(
                 캘린더를 불러오는 중입니다.
             </div>
         ),
+    }
+)
+
+const AddMemoModal = dynamic(
+    () => import('./MemoModal'),
+    {
+        ssr: false,
+    }
+)
+
+const MoreMemoModal = dynamic(
+    () => import('@/components/phone/calendar/MoreMemoModal'),
+    {
+        ssr: false,
     }
 )
 
