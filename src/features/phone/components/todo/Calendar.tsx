@@ -1,12 +1,16 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
 import {
     useRouter,
     useSearchParams,
 } from 'next/navigation'
+import {
+    useQuery,
+    useQueryClient,
+} from '@tanstack/react-query'
 
 import { getMonthlyCalendarAction } from '@/features/calendar/action'
 
@@ -72,16 +76,35 @@ const toFullCalendarEnd = (end?: string) => {
     return formatLocalDate(date)
 }
 
+const getCalendarMonth = (date: string) => date.slice(0, 7)
+
+const getCalendarMonthQueryKey = (month: string) => [
+    'calendar',
+    'monthly',
+    month,
+]
+
+const EMPTY_SCHEDULES: ScheduleItem[] = []
+
 export default function Calendar({
     selectedDate,
 }: Props) {
     const router = useRouter()
     const searchParams = useSearchParams()
+    const queryClient = useQueryClient()
 
-    const loadedMonthRef = useRef("")
-    const loadingMonthRef = useRef("")
-    const [monthlySchedules, setMonthlySchedules] =
-        useState<ScheduleItem[]>([])
+    const [visibleMonthDate, setVisibleMonthDate] = useState(selectedDate)
+    const visibleMonth = getCalendarMonth(visibleMonthDate)
+
+    const monthlySchedulesQuery = useQuery({
+        queryKey: getCalendarMonthQueryKey(visibleMonth),
+        queryFn: () => getMonthlyCalendarAction({
+            date: visibleMonthDate,
+        }),
+        placeholderData: (previousData) => previousData,
+    })
+
+    const monthlySchedules = monthlySchedulesQuery.data ?? EMPTY_SCHEDULES
 
     const [isMemoModalOpen, setIsMemoModalOpen] = useState(false)
     const [createMemo, setCreateMemo] = useState(false)
@@ -105,44 +128,26 @@ export default function Calendar({
         }))
     }, [monthlySchedules])
 
-    const fetchMonthlyIfNeeded = useCallback(async (
-        date: string,
-        options?: { force?: boolean }
-    ) => {
-        const nextMonth = date.slice(0, 7)
-
-        if (
-            !options?.force &&
-            (nextMonth === loadedMonthRef.current ||
-                nextMonth === loadingMonthRef.current)
-        ) {
-            return
-        }
-
-        loadingMonthRef.current = nextMonth
-
-        try {
-            const nextMonthlySchedules =
-                await getMonthlyCalendarAction({
-                    date,
-                })
-
-            setMonthlySchedules(nextMonthlySchedules)
-            loadedMonthRef.current = nextMonth
-        } finally {
-            if (loadingMonthRef.current === nextMonth) {
-                loadingMonthRef.current = ""
-            }
-        }
+    const updateVisibleMonth = useCallback((date: string) => {
+        setVisibleMonthDate(date)
     }, [])
 
     const refreshMonthlySchedules = useCallback(async (date: string) => {
-        await fetchMonthlyIfNeeded(date, {
-            force: true,
-        })
+        const changedMonth = getCalendarMonth(date)
+
+        await Promise.all([
+            queryClient.invalidateQueries({
+                queryKey: getCalendarMonthQueryKey(changedMonth),
+            }),
+            changedMonth === visibleMonth
+                ? Promise.resolve()
+                : queryClient.invalidateQueries({
+                    queryKey: getCalendarMonthQueryKey(visibleMonth),
+                }),
+        ])
 
         router.refresh()
-    }, [fetchMonthlyIfNeeded, router])
+    }, [queryClient, router, visibleMonth])
 
     const updateSelectedDate = useCallback((date: string) => {
         const params = new URLSearchParams(searchParams.toString())
@@ -213,7 +218,8 @@ export default function Calendar({
                 <FullCalendarMonthView
                     events={events}
                     selectedDate={selectedDate}
-                    onDatesSet={fetchMonthlyIfNeeded}
+                    initialDate={selectedDate}
+                    onDatesSet={updateVisibleMonth}
                     onDateClick={updateSelectedDate}
                     onEventClick={handleOpenMemo}
                     onMoreClick={handleMoreClick}

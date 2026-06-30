@@ -29,6 +29,7 @@ const HEADER_TOOLBAR = {
 interface FullCalendarMonthViewProps {
     events: CalendarMemoEvent[]
     selectedDate: string
+    initialDate: string
     onDatesSet: (date: string) => void
     onDateClick: (date: string) => void
     onEventClick: (memo: ScheduleItem) => void
@@ -47,6 +48,7 @@ const formatLocalDate = (date: Date) => {
 function FullCalendarMonthView({
     events,
     selectedDate,
+    initialDate,
     onDatesSet,
     onDateClick,
     onEventClick,
@@ -98,6 +100,7 @@ function FullCalendarMonthView({
         <FullCalendar
             plugins={FULL_CALENDAR_PLUGINS}
             initialView="dayGridMonth"
+            initialDate={initialDate}
             height="auto"
             timeZone="local"
             datesSet={handleDatesSet}
