@@ -1,19 +1,25 @@
 import {
     Bell,
+    BookOpen,
     CheckCircle2,
     ClipboardCheck,
     FileText,
     LayoutDashboard,
     ShieldAlert,
+    UserCheck,
+    Users,
 } from "lucide-react";
 
 import AdminDashboardAccessLogList from "@/features/admin/components/dashboard/AdminDashboardAccessLogList";
 import AdminDashboardCard from "@/features/admin/components/dashboard/AdminDashboardCard";
+import AdminDashboardMetricCard from "@/features/admin/components/dashboard/AdminDashboardMetricCard";
+import AdminDashboardMonthlyBarChart from "@/features/admin/components/dashboard/AdminDashboardMonthlyBarChart";
+import AdminDashboardMonthlyLineChart from "@/features/admin/components/dashboard/AdminDashboardMonthlyLineChart";
 import AdminDashboardNoticeList from "@/features/admin/components/dashboard/AdminDashboardNoticeList";
 import AdminDashboardReportList from "@/features/admin/components/dashboard/AdminDashboardReportList";
 import AdminDashboardSystemStatusList from "@/features/admin/components/dashboard/AdminDashboardSystemStatusList";
 import AdminDashboardTaskTable from "@/features/admin/components/dashboard/AdminDashboardTaskTable";
-import { getDashboardSummary, getMonthlyState } from "@/app/services/admin-dashboard/service";
+import { getDashboardSummary, getMonthlyState, getMonthlySubState } from "@/app/services/admin-dashboard/service";
 import {
     AdminDashboardAccessLog,
     AdminDashboardMonthlyDatum,
@@ -26,7 +32,6 @@ import {
     MonthlyCount,
 } from "@/features/admin/components/dashboard/type";
 import { USER_ROLE_LABEL } from "@/features/user/type";
-import AdminDashboardDynamic from "@/features/admin/components/dashboard/AdminDashboardDynamic";
 
 const formatAdminDateTime = (dateTime: string) => {
     return dateTime.replace("T", " ").slice(0, 16);
@@ -63,8 +68,9 @@ export default async function AdminDashboardPage({
     const { year } = await searchParams;
     const dashboardYear = Number(year) || new Date().getFullYear();
 
-    const [monthlyState, dashboardSummary] = await Promise.all([
+    const [monthlyState, monthlySubState, dashboardSummary] = await Promise.all([
         getMonthlyState(dashboardYear),
+        getMonthlySubState(),
         getDashboardSummary(),
     ]);
 
@@ -80,6 +86,21 @@ export default async function AdminDashboardPage({
                 totalLectures: lectureCountMap.get(month) ?? null,
                 totalUsers: memberCountMap.get(month) ?? null,
                 totalPosts: postCountMap.get(month) ?? null,
+            };
+        }),
+    ];
+    const subMemberCountMap = createMonthlyCountMap(monthlySubState.memberCounts);
+    const subLectureCountMap = createMonthlyCountMap(monthlySubState.lectureCounts);
+    const subPostCountMap = createMonthlyCountMap(monthlySubState.postCounts);
+    const monthlySubDashboardData: AdminDashboardMonthlyDatum[] = [
+        ...Array.from({ length: 12 }, (_, index) => {
+            const month = index + 1;
+
+            return {
+                month: `${month}월`,
+                totalLectures: subLectureCountMap.get(month) ?? null,
+                totalUsers: subMemberCountMap.get(month) ?? null,
+                totalPosts: subPostCountMap.get(month) ?? null,
             };
         }),
     ];
@@ -144,9 +165,47 @@ export default async function AdminDashboardPage({
                 </div>
             </div>
 
-            <AdminDashboardDynamic
+            <AdminDashboardMonthlyLineChart
                 data={monthlyDashboardData}
                 year={dashboardYear}
+            />
+
+            <div className="mb-5 grid grid-cols-4 gap-5">
+                <AdminDashboardMetricCard
+                    title="총 회원 수"
+                    value={`${dashboardSummary.cards.totalUsers.toLocaleString()}명`}
+                    icon={Users}
+                    tone="indigo"
+                    description="현재 가입된 전체 회원 수"
+                />
+
+                <AdminDashboardMetricCard
+                    title="총 강의 수"
+                    value={`${dashboardSummary.cards.activeLectures.toLocaleString()}개`}
+                    icon={BookOpen}
+                    tone="emerald"
+                    description="현재 운영 중인 강의 수"
+                />
+
+                <AdminDashboardMetricCard
+                    title="대기 중인 신고"
+                    value={`${dashboardSummary.cards.unresolvedReports.toLocaleString()}건`}
+                    icon={ShieldAlert}
+                    tone="rose"
+                    description="아직 처리되지 않은 신고 수"
+                />
+
+                <AdminDashboardMetricCard
+                    title="승인 대기 중인 강사"
+                    value={`${dashboardSummary.cards.pendingTeachers.toLocaleString()}명`}
+                    icon={UserCheck}
+                    tone="amber"
+                    description="승인 검토가 필요한 강사 수"
+                />
+            </div>
+
+            <AdminDashboardMonthlyBarChart
+                data={monthlySubDashboardData}
             />
 
             <div className="grid grid-cols-[minmax(0,1.1fr)_minmax(440px,0.96fr)] gap-5">

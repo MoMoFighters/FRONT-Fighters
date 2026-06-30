@@ -66,6 +66,24 @@ export const getMonthlyState = async (year?: number): Promise<MonthlyStateRespon
 };
 
 /**
+ * 관리자 대시보드 월별 신규 지표 조회 api
+ * @returns MonthlyStateResponse
+ */
+export const getMonthlySubState = async (year?: number): Promise<MonthlyStateResponse> => {
+    const params = new URLSearchParams();
+
+    if (year) {
+        params.set("year", String(year));
+    }
+
+    const queryString = params.toString();
+    const response = await fetchWithAuth(`/api/v1/dashboard/monthly-stats/sub${queryString ? `?${queryString}` : ""}`);
+    await handleErrorResponse(response);
+    const result: ApiResponse<MonthlyStateResponse> = await response.json();
+    return assertApiData(result);
+};
+
+/**
  * 관리자 대시보드 통계 데이터 조회 api
  * @returns DashboardSummaryResponse
  */
