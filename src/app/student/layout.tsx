@@ -34,7 +34,7 @@ export default async function StudentLayout({
             header={<StudentHeader role="student" />}
             footer={<Footer />}
         >
-            <StudentNicknameGuard nickname={decoded.nickname ?? null} />
+            <StudentNicknameGuard nicknameIsNull={decoded?.nickname === null} />
             {children}
         </StudentLayoutShell>
     );
