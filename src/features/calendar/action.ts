@@ -1,5 +1,6 @@
 ﻿'use server';
 
+import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 
 import type { ApiResponse } from '@/lib/api';
@@ -8,6 +9,10 @@ import { addDateMemoService, addDateRangeMemoService, checkTodoService, createTo
 
 import { GetCalendarSchedulesActionProps, ScheduleItem, TodayChapter }
     from './type';
+
+const revalidateCalendarPaths = () => {
+    revalidatePath('/student/phone/calendar');
+};
 
 
 
@@ -154,9 +159,6 @@ export const getDailyCalendarAction = async ({
 
 
 
-import { revalidatePath }
-    from 'next/cache';
-
 interface CreateTodoActionRequest {
     title: string;
     start: string;
@@ -239,7 +241,7 @@ export const createTodoAction = async (
 
 
         // 캐시 갱신
-        revalidatePath('/phone/calendar');
+        revalidateCalendarPaths();
 
 
         return result;
@@ -296,7 +298,7 @@ export const addDateMemoAction = async (
 
 
         // 캐시 갱신
-        revalidatePath('/phone/calendar');
+        revalidateCalendarPaths();
 
 
         return result;
@@ -355,7 +357,7 @@ export const addDateRangeMemoAction = async (
 
 
         // 캐시 갱신
-        revalidatePath('/phone/calendar');
+        revalidateCalendarPaths();
 
 
         return result;
@@ -430,7 +432,7 @@ export const editDateMemoAction = async (
             });
 
 
-        revalidatePath('/phone/calendar');
+        revalidateCalendarPaths();
 
 
         return result;
@@ -507,7 +509,7 @@ export const editDateRangeMemoAction = async (
             });
 
 
-        revalidatePath('/phone/calendar');
+        revalidateCalendarPaths();
 
 
         return result;
@@ -568,7 +570,7 @@ export const deleteMemoAction = async (
             });
 
 
-        revalidatePath('/phone/calendar');
+        revalidateCalendarPaths();
 
 
         return result;
@@ -633,7 +635,7 @@ export const deleteTodoAction = async (
 
 
         // 캐시 갱신
-        revalidatePath('/calendar');
+        revalidateCalendarPaths();
 
 
         // 페이지 이동
@@ -727,7 +729,7 @@ export const editTodoAction = async ({
 
 
         // 캐시 갱신
-        revalidatePath('/calendar');
+        revalidateCalendarPaths();
 
 
         return result;
@@ -803,7 +805,7 @@ export const checkTodoAction = async ({
 
 
         // 캐시 갱신
-        revalidatePath('/calendar');
+        revalidateCalendarPaths();
 
 
         return result;

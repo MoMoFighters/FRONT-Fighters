@@ -7,14 +7,15 @@ import { addDateMemoAction, addDateRangeMemoAction, deleteMemoAction, editDateMe
 import DeleteModal from "@/features/modal/DeleteModal";
 import { format } from "date-fns";
 import { CalendarIcon, Check, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 
-export default function AddMemoModal({ setIsMemoModalOpen, createMemo, data }:
+export default function AddMemoModal({ setIsMemoModalOpen, createMemo, onChanged, data }:
     {
         setIsMemoModalOpen: (a: boolean) => void,
         createMemo: boolean
+        onChanged?: (date: string) => void | Promise<void>
         data?: {
             id: number;
             title: string;
@@ -50,7 +51,10 @@ export default function AddMemoModal({ setIsMemoModalOpen, createMemo, data }:
         const result = await addDateRangeMemoAction({ title, start: dateRange.start, end: dateRange.end })
         if (result.status !== 201) {
             toast.error(result.message)
-        } else { toast.success(result.message) }
+        } else {
+            toast.success(result.message)
+            await onChanged?.(dateRange.start)
+        }
         setIsMemoModalOpen(false)
         setIsSending(false);
     }
@@ -60,7 +64,10 @@ export default function AddMemoModal({ setIsMemoModalOpen, createMemo, data }:
         const result = await addDateMemoAction({ title, start: date })
         if (result.status !== 201) {
             toast.error(result.message)
-        } else { toast.success(result.message) }
+        } else {
+            toast.success(result.message)
+            await onChanged?.(date)
+        }
         setIsMemoModalOpen(false)
         setIsSending(false);
     }
@@ -80,7 +87,10 @@ export default function AddMemoModal({ setIsMemoModalOpen, createMemo, data }:
         })
         if (result.status !== 200) {
             toast.error(result.message)
-        } else { toast.success(result.message) }
+        } else {
+            toast.success(result.message)
+            await onChanged?.(dateRange.start)
+        }
         setIsMemoModalOpen(false)
         setIsSending(false);
     }
@@ -99,7 +109,10 @@ export default function AddMemoModal({ setIsMemoModalOpen, createMemo, data }:
         })
         if (result.status !== 200) {
             toast.error(result.message)
-        } else { toast.success(result.message) }
+        } else {
+            toast.success(result.message)
+            await onChanged?.(date)
+        }
         setIsMemoModalOpen(false)
         setIsSending(false);
     }
@@ -116,7 +129,10 @@ export default function AddMemoModal({ setIsMemoModalOpen, createMemo, data }:
         })
         if (result.status !== 200) {
             toast.error(result.message)
-        } else { toast.success(result.message) }
+        } else {
+            toast.success(result.message)
+            await onChanged?.(data.start)
+        }
         setIsMemoModalOpen(false)
         setIsSending(false);
     }

@@ -1,18 +1,17 @@
-import type { EventApi } from "@fullcalendar/core";
 import { X } from "lucide-react";
 
 import type { ScheduleItem } from "@/features/calendar/type";
 
 interface MoreMemoModalProps {
     moreDate: string;
-    moreEvents: EventApi[];
+    moreMemos: ScheduleItem[];
     onClose: () => void;
     onSelectMemo: (memo: ScheduleItem) => void;
 }
 
 export default function MoreMemoModal({
     moreDate,
-    moreEvents,
+    moreMemos,
     onClose,
     onSelectMemo,
 }: MoreMemoModalProps) {
@@ -46,27 +45,22 @@ export default function MoreMemoModal({
                 </div>
 
                 <div className="flex max-h-72 flex-col gap-2 overflow-auto scrollbar-none">
-                    {moreEvents.map((event) => {
-                        const memo =
-                            event.extendedProps.memo as ScheduleItem;
-
-                        return (
-                            <button
-                                key={event.id}
-                                type="button"
-                                onClick={() => onSelectMemo(memo)}
-                                className="rounded-md bg-indigo-50 px-3 py-2 text-left transition hover:bg-indigo-100 cursor-pointer"
-                            >
-                                <p className="truncate text-sm font-black text-slate-800">
-                                    {event.title}
-                                </p>
-                                <p className="mt-0.5 text-xs font-semibold text-slate-400">
-                                    {memo.start}
-                                    {memo.end ? ` ~ ${memo.end}` : ""}
-                                </p>
-                            </button>
-                        );
-                    })}
+                    {moreMemos.map((memo) => (
+                        <button
+                            key={memo.calendarId}
+                            type="button"
+                            onClick={() => onSelectMemo(memo)}
+                            className="rounded-md bg-indigo-50 px-3 py-2 text-left transition hover:bg-indigo-100 cursor-pointer"
+                        >
+                            <p className="truncate text-sm font-black text-slate-800">
+                                {memo.title}
+                            </p>
+                            <p className="mt-0.5 text-xs font-semibold text-slate-400">
+                                {memo.start}
+                                {memo.end ? ` ~ ${memo.end}` : ""}
+                            </p>
+                        </button>
+                    ))}
                 </div>
             </section>
         </div>
