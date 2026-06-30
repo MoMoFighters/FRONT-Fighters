@@ -32,6 +32,7 @@ export default async function MyPage() {
         points: DATA.data?.points ?? 0,
         buildings: DATA.data?.buildingInfos.length ?? 0,
     };
+    const buildingInfo = DATA.data?.buildingInfos ?? [];
 
     return (
         <div className="p-12">
@@ -93,7 +94,7 @@ export default async function MyPage() {
 
                     <div className="flex min-w-0 flex-col gap-5">
                         <MyInfoTable data={USER_DATA} />
-                        <MyBuildingInfo data={USER_DATA} />
+                        <MyBuildingInfo data={buildingInfo} />
                     </div>
                 </div>
             </section>
