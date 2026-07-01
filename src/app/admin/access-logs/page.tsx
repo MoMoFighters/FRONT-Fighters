@@ -9,6 +9,7 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "@/components/ui/pagination";
+import { getVisiblePageNumbers } from "@/lib/pagination";
 
 interface AdminAccessLogsPageProps {
     searchParams: Promise<{ page?: string }>;
@@ -23,6 +24,7 @@ export default async function AdminAccessLogsPage({
     const totalPages = accessLogResponse.totalPages;
     const currentPage = accessLogResponse.page || requestedPage;
     const logs = accessLogResponse.items;
+    const pageNumbers = getVisiblePageNumbers(currentPage, totalPages);
 
     return (
         <div className="mx-auto w-full max-w-360 pb-10">
@@ -49,20 +51,16 @@ export default async function AdminAccessLogsPage({
                             )}
 
                             <PaginationContent>
-                                {Array.from({ length: totalPages }, (_, index) => {
-                                    const pageNumber = index + 1;
-
-                                    return (
-                                        <PaginationItem key={pageNumber}>
-                                            <PaginationLink
-                                                href={`?page=${pageNumber}`}
-                                                isActive={pageNumber === currentPage}
-                                            >
-                                                {pageNumber}
-                                            </PaginationLink>
-                                        </PaginationItem>
-                                    );
-                                })}
+                                {pageNumbers.map((pageNumber) => (
+                                    <PaginationItem key={pageNumber}>
+                                        <PaginationLink
+                                            href={`?page=${pageNumber}`}
+                                            isActive={pageNumber === currentPage}
+                                        >
+                                            {pageNumber}
+                                        </PaginationLink>
+                                    </PaginationItem>
+                                ))}
                             </PaginationContent>
 
                             {currentPage < totalPages && (
