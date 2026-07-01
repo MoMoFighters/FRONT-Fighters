@@ -72,9 +72,13 @@ export const studentSignupService = async (
 export type TeacherSignupData = null;
 
 export const teacherSignupService = async (
-    formData: FormData
+    formData: FormData,
+    accessToken: string
 ): Promise<ApiResponse<TeacherSignupData>> => {
-    const response = await fetchWithAuth("/api/v1/teacherApply", {
+    const response = await fetch(`${BASE_SERVER_URL}/api/v1/teacherApply`, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
         method: 'POST',
         body: formData
     })

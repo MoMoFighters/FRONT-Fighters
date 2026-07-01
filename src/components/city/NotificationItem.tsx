@@ -27,8 +27,7 @@ export default function NotificationItem({
     const router = useRouter();
 
     const isFriendRequest =
-        content.includes("친구 요청") ||
-        content.includes("移쒓뎄");
+        content.includes("친구 요청")
 
     const title =
         type === 'message' ? "메시지 확인" :
@@ -43,7 +42,7 @@ export default function NotificationItem({
 
     const href =
         type === 'message' ? `/student/phone/friends?status=friend&roomId=${targetId}` :
-            type === "calendar" ? `/student/phone/calendar?month=${targetId}`
+            type === "calendar" ? "/student/phone/calendar"
                 : type === "community" ? `/student/phone/community/${targetId}`
                     : type === "friend" ? isFriendRequest ? "/student/phone/friends?status=request"
                         : `/student/phone/friends?status=friend&friendId=${targetId}`
