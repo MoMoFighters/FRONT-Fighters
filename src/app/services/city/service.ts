@@ -40,7 +40,9 @@ const assertApiData = <T>(result: ApiResponse<T>): T => {
  * @returns Building[]
  */
 export const getMyBuildings = async () => {
-    const response = await fetchWithAuth("/api/v1/user/buildings");
+    const response = await fetchWithAuth("/api/v1/user/buildings", {
+        cache: "no-store",
+    });
     await handleErrorResponse(response);
     const result: ApiResponse<Building[]> = await response.json();
     return assertApiData(result);
