@@ -18,8 +18,6 @@ export default async function StudentMainPage() {
         month: today.getMonth() + 1,
     });
 
-    console.log(buildings);
-
     return (
         <CityCanvas>
             <BusStation mode="MY" />

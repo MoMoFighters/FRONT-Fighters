@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import {
-    updateVideoProgressAction,
     updateVideoProgressByExitAction,
 } from "@/features/lecture/action";
 import {
@@ -60,9 +59,12 @@ export default function VideoPlayer({
     const lastTrackedPositionRef = useRef(lastPositionSec);
     const lastTrackedAtRef = useRef(0);
     const isPlayingRef = useRef(false);
+    const hasMovedToStartPositionRef = useRef(false);
+    const seekRetryCountRef = useRef(0);
     const [completedChapterId, setCompletedChapterId] = useState<number | null>(
         chapter.isCompleted ? chapter.chapterId : null
     );
+    const [seekRetryTick, setSeekRetryTick] = useState(0);
     const canMoveToNextChapter =
         nextChapterHref &&
         (
@@ -120,23 +122,90 @@ export default function VideoPlayer({
         return playbackSecondsRef.current;
     }, []);
 
-    const moveToStartPosition = useCallback(() => {
-        const video = videoRef.current;
-
-        if (!video) return;
-
+    const getStartPosition = useCallback(() => {
         const startPosition = chapter.isCompleted ? 0 : lastPositionSec;
 
-        if (startPosition > 0 && Number.isFinite(startPosition)) {
-            video.currentTime = startPosition;
-        }
-
-        currentPositionRef.current = startPosition;
-        lastTrackedPositionRef.current = startPosition;
-        lastTrackedAtRef.current = Date.now();
+        return Number.isFinite(startPosition) && startPosition > 0
+            ? Math.floor(startPosition)
+            : 0;
     }, [
         chapter.isCompleted,
         lastPositionSec,
+    ]);
+
+    const syncTrackingPosition = useCallback((position: number) => {
+        currentPositionRef.current = position;
+        lastTrackedPositionRef.current = position;
+        lastTrackedAtRef.current = Date.now();
+    }, []);
+
+    const moveToStartPosition = useCallback(() => {
+        const video = videoRef.current;
+
+        if (!video || hasMovedToStartPositionRef.current) return;
+
+        const startPosition = getStartPosition();
+
+        if (startPosition <= 0) {
+            hasMovedToStartPositionRef.current = true;
+            syncTrackingPosition(0);
+            return;
+        }
+
+        if (video.readyState < HTMLMediaElement.HAVE_METADATA) {
+            return;
+        }
+
+        const duration = Number.isFinite(video.duration)
+            ? video.duration
+            : chapter.durationSec;
+        const safeStartPosition = Math.min(
+            startPosition,
+            Math.max(0, Math.floor(duration) - 1)
+        );
+
+        try {
+            if ("fastSeek" in video && typeof video.fastSeek === "function") {
+                video.fastSeek(safeStartPosition);
+            } else {
+                video.currentTime = safeStartPosition;
+            }
+        } catch {
+            if (seekRetryCountRef.current < 8) {
+                seekRetryCountRef.current += 1;
+                window.setTimeout(() => {
+                    setSeekRetryTick((tick) => tick + 1);
+                }, 500);
+            }
+
+            return;
+        }
+
+        syncTrackingPosition(safeStartPosition);
+
+        window.setTimeout(() => {
+            const currentVideo = videoRef.current;
+
+            if (!currentVideo) return;
+
+            const isNearStartPosition =
+                Math.abs(currentVideo.currentTime - safeStartPosition) <= 1;
+
+            if (isNearStartPosition) {
+                hasMovedToStartPositionRef.current = true;
+                syncTrackingPosition(currentVideo.currentTime);
+                return;
+            }
+
+            if (seekRetryCountRef.current < 8) {
+                seekRetryCountRef.current += 1;
+                setSeekRetryTick((tick) => tick + 1);
+            }
+        }, 500);
+    }, [
+        chapter.durationSec,
+        getStartPosition,
+        syncTrackingPosition,
     ]);
 
     const markChapterCompleted = useCallback(() => {
@@ -158,8 +227,11 @@ export default function VideoPlayer({
         const normalizedPlaybackSeconds = Math.floor(
             playbackSeconds ?? trackWatchedSeconds()
         );
+        const normalizedLastPositionSec = Math.floor(
+            currentPositionRef.current
+        );
 
-        if (normalizedPlaybackSeconds <= 0) {
+        if (normalizedPlaybackSeconds <= 0 && normalizedLastPositionSec <= 0) {
             return undefined;
         }
 
@@ -171,11 +243,12 @@ export default function VideoPlayer({
 
         const savePromise = (async () => {
             try {
-                const result = await updateVideoProgressAction(
+                const result = await updateVideoProgressByExitAction(
                     lectureId,
                     String(chapter.chapterId),
                     {
                         playbackSeconds: normalizedPlaybackSeconds,
+                        lastPositionSec: normalizedLastPositionSec,
                     }
                 );
 
@@ -225,6 +298,7 @@ export default function VideoPlayer({
     const handlePause = () => {
         trackWatchedSeconds();
         isPlayingRef.current = false;
+        void saveProgress();
     };
 
     const handleSeeking = () => {
@@ -244,7 +318,7 @@ export default function VideoPlayer({
     };
 
     const handleCanPlay = () => {
-        if (currentPositionRef.current < lastPositionSec) {
+        if (!hasMovedToStartPositionRef.current) {
             moveToStartPosition();
         }
     };
@@ -256,6 +330,8 @@ export default function VideoPlayer({
         lastTrackedAtRef.current = Date.now();
         isPlayingRef.current = false;
         isCompletedRef.current = chapter.isCompleted ?? false;
+        hasMovedToStartPositionRef.current = false;
+        seekRetryCountRef.current = 0;
         hasSaveErrorToastShownRef.current = false;
     }, [
         chapter.chapterId,
@@ -278,11 +354,23 @@ export default function VideoPlayer({
     ]);
 
     useEffect(() => {
+        if (seekRetryTick <= 0) return;
+
+        moveToStartPosition();
+    }, [
+        moveToStartPosition,
+        seekRetryTick,
+    ]);
+
+    useEffect(() => {
         const interval = setInterval(() => {
             void saveProgress();
         }, 10000);
 
-        return () => clearInterval(interval);
+        return () => {
+            clearInterval(interval);
+            void saveProgress();
+        };
     }, [
         saveProgress,
     ]);
@@ -373,9 +461,13 @@ export default function VideoPlayer({
                     onPause={handlePause}
                     onSeeking={handleSeeking}
                     onLoadedMetadata={handleLoadedMetadata}
+                    onLoadedData={handleCanPlay}
                     onCanPlay={handleCanPlay}
+                    onCanPlayThrough={handleCanPlay}
+                    onProgress={handleCanPlay}
                     onTimeUpdate={handleTimeUpdate}
                     onEnded={handleVideoEnded}
+                    preload="auto"
                     className="aspect-video w-full bg-black"
                 >
                     <source

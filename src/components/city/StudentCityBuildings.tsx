@@ -1,9 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import BuildingItem from "@/components/city/BuildingItem";
-import { Skeleton } from "@/components/ui/skeleton";
-import { getMyBuildingsAction } from "@/features/city/action";
 import { Building } from "@/features/city/type";
 
 const buildingSlots = [
@@ -43,33 +40,13 @@ interface StudentCityBuildingsProps {
     initialBuildings: Building[];
 }
 
-const buildingQueryKey = ["student", "city", "my-buildings"] as const;
-
-const BuildingItemSkeleton = () => (
-    <Skeleton className="h-full w-full rounded-[18%] bg-white/35" />
-);
-
 export default function StudentCityBuildings({
     initialBuildings,
 }: StudentCityBuildingsProps) {
-    const { data: buildings = initialBuildings, isLoading } = useQuery({
-        queryKey: buildingQueryKey,
-        queryFn: async () => {
-            const result = await getMyBuildingsAction();
-
-            if (!result.success || !result.data) {
-                throw new Error(result.message ?? "건물 정보를 불러오지 못했습니다.");
-            }
-
-            return result.data;
-        },
-        initialData: initialBuildings,
-    });
-
     return (
         <>
             {buildingSlots.map((slot) => {
-                const building = buildings.find(
+                const building = initialBuildings.find(
                     (buildingItem) => buildingItem.position === slot.position
                 );
 
@@ -79,9 +56,7 @@ export default function StudentCityBuildings({
                         className="absolute"
                         style={building ? slot.filledStyle : slot.emptyStyle}
                     >
-                        {isLoading ? (
-                            <BuildingItemSkeleton />
-                        ) : building ? (
+                        {building ? (
                             <BuildingItem
                                 category={building.category}
                                 level={building.level}
