@@ -804,10 +804,6 @@ export const checkTodoAction = async ({
             });
 
 
-        // 캐시 갱신
-        revalidateCalendarPaths();
-
-
         return result;
 
     } catch (error) {

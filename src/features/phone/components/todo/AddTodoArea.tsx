@@ -1,21 +1,19 @@
 'use client'
 
 import { PlusCircle } from 'lucide-react'
-import {
-    startTransition,
-    useActionState,
-    useEffect,
-    useState,
-} from 'react'
+import { useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 
 import { createTodoAction } from '../../../calendar/action'
 import { toast } from 'sonner'
+import { getCalendarDailyQueryKey } from './calendarQueryKeys'
 
 interface Props {
     selectedDate: string
 }
 
 export default function AddTodoArea({ selectedDate, }: Props) {
+    const queryClient = useQueryClient()
 
     const [isAdding, setIsAdding] =
         useState(false)
@@ -27,17 +25,32 @@ export default function AddTodoArea({ selectedDate, }: Props) {
 
 
     const handleAddTodo = async () => {
-        isSending(true)
         if (!title.trim()) {
             return
         }
-        const result = await createTodoAction({ title: title, start: selectedDate })
-        if (result.status !== 201) {
-            toast.error(result.message)
-        } else { toast.success(result.message) }
-        setTitle("");
-        setIsAdding(false);
-        isSending(false)
+
+        isSending(true)
+
+        try {
+            const result = await createTodoAction({
+                title,
+                start: selectedDate,
+            })
+
+            if (result.status !== 201) {
+                toast.error(result.message)
+                return
+            }
+
+            toast.success(result.message)
+            setTitle("")
+            setIsAdding(false)
+            await queryClient.invalidateQueries({
+                queryKey: getCalendarDailyQueryKey(selectedDate),
+            })
+        } finally {
+            isSending(false)
+        }
     }
 
 
