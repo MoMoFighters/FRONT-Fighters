@@ -84,7 +84,19 @@ export const teacherSignupAction = async (
     formData: FormData
 ): Promise<ApiResponse<TeacherSignupData>> => {
     try {
-        const result = await teacherSignupService(formData);
+        const cookieStore = await cookies();
+        const accessToken =
+            cookieStore.get("accessToken")?.value;
+
+        if (!accessToken) {
+            return createUnauthorizedResponse<TeacherSignupData>();
+        }
+
+        const result = await teacherSignupService(
+            formData,
+            accessToken
+        );
+
         return result;
     } catch (error) {
         return createErrorResponse<TeacherSignupData>(
