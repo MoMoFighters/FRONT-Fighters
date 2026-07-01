@@ -1,33 +1,27 @@
 import {
-    Bell,
+    BookOpen,
     CheckCircle2,
-    ClipboardCheck,
-    FileText,
     LayoutDashboard,
     ShieldAlert,
+    UserCheck,
+    Users,
 } from "lucide-react";
 
-import AdminDashboardAccessLogList, {
+import AdminDashboardBelowFoldDynamic from "@/features/admin/components/dashboard/AdminDashboardBelowFoldDynamic";
+import AdminDashboardDynamic from "@/features/admin/components/dashboard/AdminDashboardDynamic";
+import AdminDashboardMetricCard from "@/features/admin/components/dashboard/AdminDashboardMetricCard";
+import { getDashboardSummary, getMonthlyState, getMonthlySubState } from "@/app/services/admin-dashboard/service";
+import {
     AdminDashboardAccessLog,
-} from "@/features/admin/components/dashboard/AdminDashboardAccessLogList";
-import AdminDashboardCard from "@/features/admin/components/dashboard/AdminDashboardCard";
-import AdminDashboardMonthlyLineChart, {
     AdminDashboardMonthlyDatum,
-} from "@/features/admin/components/dashboard/AdminDashboardMonthlyLineChart";
-import AdminDashboardNoticeList, {
     AdminDashboardNotice,
-} from "@/features/admin/components/dashboard/AdminDashboardNoticeList";
-import AdminDashboardReportList, {
     AdminDashboardReport,
-} from "@/features/admin/components/dashboard/AdminDashboardReportList";
-import AdminDashboardSystemStatusList, {
     AdminDashboardSystemStatus,
-} from "@/features/admin/components/dashboard/AdminDashboardSystemStatusList";
-import AdminDashboardTaskTable, {
     AdminDashboardTask,
-} from "@/features/admin/components/dashboard/AdminDashboardTaskTable";
-import { getDashboardSummary, getMonthlyState } from "@/app/services/admin-dashboard/service";
-import { DashboardRecentAccessLogs, DashboardSystemHealth, MonthlyCount } from "@/features/admin/components/dashboard/type";
+    DashboardRecentAccessLogs,
+    DashboardSystemHealth,
+    MonthlyCount,
+} from "@/features/admin/components/dashboard/type";
 import { USER_ROLE_LABEL } from "@/features/user/type";
 
 const formatAdminDateTime = (dateTime: string) => {
@@ -36,12 +30,6 @@ const formatAdminDateTime = (dateTime: string) => {
 
 const createMonthlyCountMap = (counts: MonthlyCount[]) => {
     return new Map(counts.map((item) => [item.month, item.count]));
-};
-
-const getLastDataMonth = (...monthlyCounts: MonthlyCount[][]) => {
-    const months = monthlyCounts.flat().map((item) => item.month);
-
-    return Math.max(1, ...months);
 };
 
 const formatAccessUser = (log: DashboardRecentAccessLogs) => {
@@ -59,31 +47,51 @@ const mapSystemHealth = (systemHealth: DashboardSystemHealth): AdminDashboardSys
     { id: 4, name: "메일 서비스", status: systemHealth.mailService },
 ];
 
-export default async function AdminDashboardPage() {
-    const [monthlyState, dashboardSummary] = await Promise.all([
-        getMonthlyState(),
+interface AdminDashboardPageProps {
+    searchParams: Promise<{
+        year?: string;
+    }>;
+}
+
+export default async function AdminDashboardPage({
+    searchParams,
+}: AdminDashboardPageProps) {
+    const { year } = await searchParams;
+    const dashboardYear = Number(year) || new Date().getFullYear();
+
+    const [monthlyState, monthlySubState, dashboardSummary] = await Promise.all([
+        getMonthlyState(dashboardYear),
+        getMonthlySubState(),
         getDashboardSummary(),
     ]);
 
-    const dashboardYear = new Date().getFullYear();
     const memberCountMap = createMonthlyCountMap(monthlyState.memberCounts);
     const lectureCountMap = createMonthlyCountMap(monthlyState.lectureCounts);
     const postCountMap = createMonthlyCountMap(monthlyState.postCounts);
-    const lastDataMonth = getLastDataMonth(
-        monthlyState.memberCounts,
-        monthlyState.lectureCounts,
-        monthlyState.postCounts,
-    );
-
     const monthlyDashboardData: AdminDashboardMonthlyDatum[] = [
-        ...Array.from({ length: lastDataMonth }, (_, index) => {
+        ...Array.from({ length: 12 }, (_, index) => {
             const month = index + 1;
 
             return {
                 month: `${month}월`,
-                totalLectures: lectureCountMap.get(month) ?? 0,
-                totalUsers: memberCountMap.get(month) ?? 0,
-                totalPosts: postCountMap.get(month) ?? 0,
+                totalLectures: lectureCountMap.get(month) ?? null,
+                totalUsers: memberCountMap.get(month) ?? null,
+                totalPosts: postCountMap.get(month) ?? null,
+            };
+        }),
+    ];
+    const subMemberCountMap = createMonthlyCountMap(monthlySubState.memberCounts);
+    const subLectureCountMap = createMonthlyCountMap(monthlySubState.lectureCounts);
+    const subPostCountMap = createMonthlyCountMap(monthlySubState.postCounts);
+    const monthlySubDashboardData: AdminDashboardMonthlyDatum[] = [
+        ...Array.from({ length: 12 }, (_, index) => {
+            const month = index + 1;
+
+            return {
+                month: `${month}월`,
+                totalLectures: subLectureCountMap.get(month) ?? null,
+                totalUsers: subMemberCountMap.get(month) ?? null,
+                totalPosts: subPostCountMap.get(month) ?? null,
             };
         }),
     ];
@@ -148,54 +156,54 @@ export default async function AdminDashboardPage() {
                 </div>
             </div>
 
-            <AdminDashboardMonthlyLineChart
+            <AdminDashboardDynamic
                 data={monthlyDashboardData}
                 year={dashboardYear}
             />
 
-            <div className="grid grid-cols-[minmax(0,1.1fr)_minmax(440px,0.96fr)] gap-5">
-                <div className="space-y-5">
-                    <AdminDashboardCard
-                        title="처리 대기 작업"
-                        icon={ClipboardCheck}
-                    >
-                        <AdminDashboardTaskTable tasks={pendingTasks} />
-                    </AdminDashboardCard>
+            <div className="mb-5 grid grid-cols-4 gap-5">
+                <AdminDashboardMetricCard
+                    title="총 회원 수"
+                    value={`${dashboardSummary.cards.totalUsers.toLocaleString()}명`}
+                    icon={Users}
+                    tone="indigo"
+                    description="현재 가입된 전체 회원 수"
+                />
 
-                    <AdminDashboardCard
-                        title="공지사항"
-                        href="/admin/notices"
-                        icon={Bell}
-                    >
-                        <AdminDashboardNoticeList notices={notices} />
-                    </AdminDashboardCard>
-                </div>
+                <AdminDashboardMetricCard
+                    title="총 강의 수"
+                    value={`${dashboardSummary.cards.activeLectures.toLocaleString()}개`}
+                    icon={BookOpen}
+                    tone="emerald"
+                    description="현재 운영 중인 강의 수"
+                />
 
-                <div className="space-y-5">
-                    <AdminDashboardCard
-                        title="최근 신고"
-                        href="/admin/reports"
-                        icon={ShieldAlert}
-                    >
-                        <AdminDashboardReportList reports={reports} />
-                    </AdminDashboardCard>
+                <AdminDashboardMetricCard
+                    title="대기 중인 신고"
+                    value={`${dashboardSummary.cards.unresolvedReports.toLocaleString()}건`}
+                    icon={ShieldAlert}
+                    tone="rose"
+                    description="아직 처리되지 않은 신고 수"
+                />
 
-                    <AdminDashboardCard
-                        title="접근 로그"
-                        href="/admin/access-logs"
-                        icon={FileText}
-                    >
-                        <AdminDashboardAccessLogList logs={accessLogs} />
-                    </AdminDashboardCard>
-
-                    <AdminDashboardCard
-                        title="시스템 상태"
-                        icon={CheckCircle2}
-                    >
-                        <AdminDashboardSystemStatusList statuses={systemStatuses} />
-                    </AdminDashboardCard>
-                </div>
+                <AdminDashboardMetricCard
+                    title="승인 대기 중인 강사"
+                    value={`${dashboardSummary.cards.pendingTeachers.toLocaleString()}명`}
+                    icon={UserCheck}
+                    tone="amber"
+                    description="승인 검토가 필요한 강사 수"
+                />
             </div>
+
+            <AdminDashboardBelowFoldDynamic
+                monthlySubDashboardData={monthlySubDashboardData}
+                pendingTasks={pendingTasks}
+                notices={notices}
+                reports={reports}
+                accessLogs={accessLogs}
+                systemStatuses={systemStatuses}
+            />
+
         </div>
     );
 }

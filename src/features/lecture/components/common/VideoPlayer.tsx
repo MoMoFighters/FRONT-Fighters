@@ -46,13 +46,20 @@ export default function VideoPlayer({
     nextChapterHref,
 }: VideoPlayerProps) {
     const router = useRouter();
+    const initialPlaybackSeconds =
+        typeof chapter.chapterProgress === "number" && chapter.chapterProgress > 0
+            ? chapter.durationSec * (chapter.chapterProgress / 100)
+            : lastPositionSec;
     const videoRef = useRef<HTMLVideoElement>(null);
     const isSavingRef = useRef(false);
     const hasSaveErrorToastShownRef = useRef(false);
     const savePromiseRef = useRef<Promise<UpdateVideoProgressResponse | undefined> | null>(null);
-    const playbackSecondsRef = useRef(lastPositionSec);
+    const playbackSecondsRef = useRef(initialPlaybackSeconds);
     const isCompletedRef = useRef(chapter.isCompleted ?? false);
     const currentPositionRef = useRef(lastPositionSec);
+    const lastTrackedPositionRef = useRef(lastPositionSec);
+    const lastTrackedAtRef = useRef(0);
+    const isPlayingRef = useRef(false);
     const [completedChapterId, setCompletedChapterId] = useState<number | null>(
         chapter.isCompleted ? chapter.chapterId : null
     );
@@ -62,6 +69,75 @@ export default function VideoPlayer({
             chapter.isCompleted === true ||
             completedChapterId === chapter.chapterId
         );
+
+    const trackWatchedSeconds = useCallback(() => {
+        const video = videoRef.current;
+
+        if (!video || !Number.isFinite(video.currentTime)) {
+            return playbackSecondsRef.current;
+        }
+
+        const now = Date.now();
+        const currentTime = video.currentTime;
+        const isTrackablePlayback =
+            isPlayingRef.current ||
+            !video.paused ||
+            video.ended;
+
+        if (!isTrackablePlayback) {
+            currentPositionRef.current = currentTime;
+            lastTrackedPositionRef.current = currentTime;
+            lastTrackedAtRef.current = now;
+
+            return playbackSecondsRef.current;
+        }
+
+        if (lastTrackedAtRef.current === 0) {
+            currentPositionRef.current = currentTime;
+            lastTrackedPositionRef.current = currentTime;
+            lastTrackedAtRef.current = now;
+
+            return playbackSecondsRef.current;
+        }
+
+        const movedSeconds = currentTime - lastTrackedPositionRef.current;
+        const elapsedSeconds = (now - lastTrackedAtRef.current) / 1000;
+        const allowedMovedSeconds = Math.max(
+            4,
+            elapsedSeconds + 3
+        );
+
+        currentPositionRef.current = video.currentTime;
+
+        // 재생바를 앞으로 크게 당긴 경우에는 실제 시청 시간으로 인정하지 않는다.
+        if (movedSeconds > 0 && movedSeconds <= allowedMovedSeconds) {
+            playbackSecondsRef.current += movedSeconds;
+        }
+
+        lastTrackedPositionRef.current = currentTime;
+        lastTrackedAtRef.current = now;
+
+        return playbackSecondsRef.current;
+    }, []);
+
+    const moveToStartPosition = useCallback(() => {
+        const video = videoRef.current;
+
+        if (!video) return;
+
+        const startPosition = chapter.isCompleted ? 0 : lastPositionSec;
+
+        if (startPosition > 0 && Number.isFinite(startPosition)) {
+            video.currentTime = startPosition;
+        }
+
+        currentPositionRef.current = startPosition;
+        lastTrackedPositionRef.current = startPosition;
+        lastTrackedAtRef.current = Date.now();
+    }, [
+        chapter.isCompleted,
+        lastPositionSec,
+    ]);
 
     const markChapterCompleted = useCallback(() => {
         if (isCompletedRef.current) return;
@@ -76,9 +152,17 @@ export default function VideoPlayer({
     ]);
 
     const saveProgress = useCallback(async (
-        playbackSeconds = playbackSecondsRef.current
+        playbackSeconds?: number
     ): Promise<UpdateVideoProgressResponse | undefined> => {
         // 중복 저장 요청을 막고 진행 중인 저장 요청이 있으면 같은 Promise를 재사용한다.
+        const normalizedPlaybackSeconds = Math.floor(
+            playbackSeconds ?? trackWatchedSeconds()
+        );
+
+        if (normalizedPlaybackSeconds <= 0) {
+            return undefined;
+        }
+
         if (isSavingRef.current) {
             return savePromiseRef.current ?? undefined;
         }
@@ -91,7 +175,7 @@ export default function VideoPlayer({
                     lectureId,
                     String(chapter.chapterId),
                     {
-                        playbackSeconds: Math.floor(playbackSeconds),
+                        playbackSeconds: normalizedPlaybackSeconds,
                     }
                 );
 
@@ -120,52 +204,83 @@ export default function VideoPlayer({
         chapter.chapterId,
         lectureId,
         markChapterCompleted,
+        trackWatchedSeconds,
     ]);
 
     const handleTimeUpdate = () => {
-        if (!videoRef.current) return;
+        trackWatchedSeconds();
+    };
 
-        const currentTime = videoRef.current.currentTime;
-        currentPositionRef.current = currentTime;
+    const handlePlay = () => {
+        const video = videoRef.current;
 
-        if (currentTime <= playbackSecondsRef.current + 2) {
-            playbackSecondsRef.current = Math.max(
-                playbackSecondsRef.current,
-                currentTime
-            );
+        if (!video || !Number.isFinite(video.currentTime)) return;
+
+        isPlayingRef.current = true;
+        currentPositionRef.current = video.currentTime;
+        lastTrackedPositionRef.current = video.currentTime;
+        lastTrackedAtRef.current = Date.now();
+    };
+
+    const handlePause = () => {
+        trackWatchedSeconds();
+        isPlayingRef.current = false;
+    };
+
+    const handleSeeking = () => {
+        trackWatchedSeconds();
+
+        const video = videoRef.current;
+
+        if (!video || !Number.isFinite(video.currentTime)) return;
+
+        currentPositionRef.current = video.currentTime;
+        lastTrackedPositionRef.current = video.currentTime;
+        lastTrackedAtRef.current = Date.now();
+    };
+
+    const handleLoadedMetadata = () => {
+        moveToStartPosition();
+    };
+
+    const handleCanPlay = () => {
+        if (currentPositionRef.current < lastPositionSec) {
+            moveToStartPosition();
         }
     };
+
+    useEffect(() => {
+        playbackSecondsRef.current = initialPlaybackSeconds;
+        currentPositionRef.current = lastPositionSec;
+        lastTrackedPositionRef.current = lastPositionSec;
+        lastTrackedAtRef.current = Date.now();
+        isPlayingRef.current = false;
+        isCompletedRef.current = chapter.isCompleted ?? false;
+        hasSaveErrorToastShownRef.current = false;
+    }, [
+        chapter.chapterId,
+        chapter.isCompleted,
+        initialPlaybackSeconds,
+        lastPositionSec,
+    ]);
 
     useEffect(() => {
         const video = videoRef.current;
 
         if (!video) return;
 
-        const handleLoadedMetadata = () => {
-            video.currentTime = chapter.isCompleted ? 0 : lastPositionSec;
-        };
-
-        video.addEventListener(
-            "loadedmetadata",
-            handleLoadedMetadata
-        );
-
-        return () => {
-            video.removeEventListener(
-                "loadedmetadata",
-                handleLoadedMetadata
-            );
-        };
+        if (video.readyState >= HTMLMediaElement.HAVE_METADATA) {
+            moveToStartPosition();
+        }
     }, [
         chapter.chapterId,
-        chapter.isCompleted,
-        lastPositionSec,
+        moveToStartPosition,
     ]);
 
     useEffect(() => {
         const interval = setInterval(() => {
             void saveProgress();
-        }, 20000);
+        }, 10000);
 
         return () => clearInterval(interval);
     }, [
@@ -174,16 +289,20 @@ export default function VideoPlayer({
 
     const handleExit = async () => {
         try {
+            const playbackSeconds = Math.floor(trackWatchedSeconds());
+            const lastPositionSec = Math.floor(currentPositionRef.current);
+
+            if (playbackSeconds <= 0 && lastPositionSec <= 0) {
+                router.push(exitHref);
+                return;
+            }
+
             const result = await updateVideoProgressByExitAction(
                 lectureId,
                 String(chapter.chapterId),
                 {
-                    playbackSeconds: Math.floor(
-                        playbackSecondsRef.current
-                    ),
-                    lastPositionSec: Math.floor(
-                        currentPositionRef.current
-                    ),
+                    playbackSeconds,
+                    lastPositionSec,
                 }
             );
 
@@ -198,17 +317,21 @@ export default function VideoPlayer({
     };
 
     const handleVideoEnded = async () => {
+        const trackedPlaybackSeconds = trackWatchedSeconds();
         const duration = videoRef.current?.duration;
         const completedSeconds =
             duration && Number.isFinite(duration)
                 ? duration
                 : chapter.durationSec;
 
-        playbackSecondsRef.current = Math.max(
-            playbackSecondsRef.current,
-            completedSeconds
-        );
-        currentPositionRef.current = playbackSecondsRef.current;
+        if (completedSeconds - trackedPlaybackSeconds <= 5) {
+            playbackSecondsRef.current = Math.max(
+                playbackSecondsRef.current,
+                completedSeconds
+            );
+        }
+
+        currentPositionRef.current = completedSeconds;
 
         if (isSavingRef.current && savePromiseRef.current) {
             await savePromiseRef.current;
@@ -246,6 +369,11 @@ export default function VideoPlayer({
                 <video
                     ref={videoRef}
                     controls
+                    onPlay={handlePlay}
+                    onPause={handlePause}
+                    onSeeking={handleSeeking}
+                    onLoadedMetadata={handleLoadedMetadata}
+                    onCanPlay={handleCanPlay}
                     onTimeUpdate={handleTimeUpdate}
                     onEnded={handleVideoEnded}
                     className="aspect-video w-full bg-black"

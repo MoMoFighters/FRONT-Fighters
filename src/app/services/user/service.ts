@@ -96,29 +96,53 @@ export type EditMyInfoResponse = ApiResponse<{
 }>
 
 export interface EditMyInfoRequest {
-   accessToken: string;
-   nickname?: string;
-   currentPassword?: string;
-   password?: string;
+   itemName?: string | null;
+   accessToken: string;
+   nickname?: string | null;
+   currentPassword?: string | null;
+   password?: string | null;
 }
 
 export const editMyInfoService = async ({
-   accessToken,
-   nickname,
-   currentPassword,
-   password,
+   accessToken,
+   itemName,
+   nickname,
+   currentPassword,
+   password,
 }: EditMyInfoRequest): Promise<EditMyInfoResponse> => {
+   const payload: {
+      itemName?: string;
+      nickname?: string;
+      currentPassword?: string;
+      password?: string;
+   } = {};
+
+   if (typeof itemName === "string" && itemName.trim()) {
+      payload.itemName = itemName.trim();
+   }
+
+   if (typeof nickname === "string" && nickname.trim()) {
+      payload.nickname = nickname.trim();
+   }
+
+   if (
+      typeof currentPassword === "string" &&
+      currentPassword.trim()
+   ) {
+      payload.currentPassword = currentPassword.trim();
+   }
+
+   if (typeof password === "string" && password.trim()) {
+      payload.password = password.trim();
+   }
+
    const response = await fetch(`${BASE_SERVER_URL}/api/v1/user/update`, {
       method: 'PATCH',
       headers: {
          'Content-Type': 'application/json',
          Authorization: `Bearer ${accessToken}`,
-      },
-      body: JSON.stringify({
-         nickname,
-         currentPassword,
-         password,
-      }),
+      },
+      body: JSON.stringify(payload),
    });
 
    const result: EditMyInfoResponse = await response.json();

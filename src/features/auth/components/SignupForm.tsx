@@ -11,6 +11,7 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import logo from '@/app/assets/img/logo.png'
+import { redirect } from "next/navigation";
 
 export default function SignupForm() {
     const [name, setName] = useState("");
@@ -158,6 +159,7 @@ export default function SignupForm() {
                 if (result && (result.status < 200 || result.status >= 300)) {
                     setErrorActionState(result.message);
                 }
+                redirect("/auth/login")
             })();
         });
     };

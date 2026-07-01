@@ -51,9 +51,33 @@ const assertApiData = <T>(result: ApiResponse<T>): T => {
  * 관리자 대시보드 올해 월별 데이터 조회 api
  * @returns MonthlyStateResponse
  */
-export const getMonthlyState = async (): Promise<MonthlyStateResponse> => {
+export const getMonthlyState = async (year?: number): Promise<MonthlyStateResponse> => {
+    const params = new URLSearchParams();
 
-    const response = await fetchWithAuth('/api/v1/dashboard/monthly-stats');
+    if (year) {
+        params.set("year", String(year));
+    }
+
+    const queryString = params.toString();
+    const response = await fetchWithAuth(`/api/v1/dashboard/monthly-stats${queryString ? `?${queryString}` : ""}`);
+    await handleErrorResponse(response);
+    const result: ApiResponse<MonthlyStateResponse> = await response.json();
+    return assertApiData(result);
+};
+
+/**
+ * 관리자 대시보드 월별 신규 지표 조회 api
+ * @returns MonthlyStateResponse
+ */
+export const getMonthlySubState = async (year?: number): Promise<MonthlyStateResponse> => {
+    const params = new URLSearchParams();
+
+    if (year) {
+        params.set("year", String(year));
+    }
+
+    const queryString = params.toString();
+    const response = await fetchWithAuth(`/api/v1/dashboard/monthly-stats/sub${queryString ? `?${queryString}` : ""}`);
     await handleErrorResponse(response);
     const result: ApiResponse<MonthlyStateResponse> = await response.json();
     return assertApiData(result);

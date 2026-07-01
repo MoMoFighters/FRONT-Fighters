@@ -7,10 +7,10 @@ import postBoard from "@/app/assets/img/guestBook.png";
 import { Button } from "../ui/button";
 import { ChevronLeft, ChevronRight, Plus, X } from "lucide-react";
 import GuestBookItem, { GuestBookListItem } from "../postboard/GuestBookItem";
-import StudentNoticeItem, { StudentNoticeListItem } from "../postboard/StudentNoticeItem";
+import StudentNoticeItem from "../postboard/StudentNoticeItem";
 import GuestbookForm from "@/features/guestbook/GuestbookForm";
 import CreateReportBtn from "@/features/report/components/buttons/CreateReportBtn";
-import { getNoticesAction } from "@/features/notice/action";
+import { getNoticeAction, getNoticesAction } from "@/features/notice/action";
 import { Notice, NoticeListResponse } from "@/features/notice/type";
 import { getGuestbooksAction } from "@/features/guestbook/action";
 import {
@@ -28,10 +28,6 @@ type PanelView = "list" | "guestbook-form" | "guestbook-detail" | "notice-detail
 
 interface GuestBookDetail extends GuestBookListItem {
     visitorProfileImageUrl: string | null;
-}
-
-interface StudentNoticeDetail extends StudentNoticeListItem {
-    content: string[];
 }
 
 const PAGE_SIZE = 9;
@@ -61,21 +57,6 @@ const normalizeNoticeContent = (content?: string) => {
         .filter(Boolean);
 
     return paragraphs.length > 0 ? paragraphs : [content];
-};
-
-const toStudentNotice = (notice: Notice): StudentNoticeDetail => {
-    const content = normalizeNoticeContent(notice.content);
-
-    return {
-        noticeId: notice.noticeId,
-        title: notice.title,
-        summary:
-            notice.content?.replace(/\s+/g, " ").slice(0, 80) ||
-            "공지사항 내용을 확인해주세요.",
-        content,
-        createdAt: notice.createdAt,
-        viewCount: 0,
-    };
 };
 
 const toGuestbookDetail = (
@@ -111,7 +92,7 @@ export default function PostBoard({ mode, ownerId }: PostBoardProps) {
     const [selectedGuestbook, setSelectedGuestbook] =
         useState<GuestBookDetail | null>(null);
     const [selectedNotice, setSelectedNotice] =
-        useState<StudentNoticeDetail | null>(null);
+        useState<Notice | null>(null);
 
     const guestbookTotalPages = getTotalPages(guestbooks.length);
     const noticeTotalPages = Math.max(noticeResponse.totalPages || 1, 1);
@@ -121,10 +102,8 @@ export default function PostBoard({ mode, ownerId }: PostBoardProps) {
         [guestbooks, currentPage]
     );
 
-    const notices = useMemo(
-        () => noticeResponse.items.map(toStudentNotice),
-        [noticeResponse.items]
-    );
+    const notices = noticeResponse.items;
+    console.log(notices)
 
     const shouldCompactGuestbookGrid = visibleGuestbooks.length <= 6;
 
@@ -360,7 +339,7 @@ export default function PostBoard({ mode, ownerId }: PostBoardProps) {
 
                             {panelView === "notice-detail" && selectedNotice && (
                                 <NoticeDetailView
-                                    notice={selectedNotice}
+                                    noticeId={selectedNotice.noticeId}
                                     onBack={resetToList}
                                 />
                             )}
@@ -530,12 +509,43 @@ function GuestbookDetailView({
 }
 
 function NoticeDetailView({
-    notice,
+    noticeId,
     onBack,
 }: {
-    notice: StudentNoticeDetail;
+    noticeId: number;
     onBack: () => void;
 }) {
+    const [notice, setNotice] = useState<Notice | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        let isCurrent = true;
+
+        const loadNotice = async () => {
+            setIsLoading(true);
+
+            try {
+                const response = await getNoticeAction(noticeId);
+
+                if (isCurrent) {
+                    setNotice(response);
+                }
+            } finally {
+                if (isCurrent) {
+                    setIsLoading(false);
+                }
+            }
+        };
+
+        void loadNotice();
+
+        return () => {
+            isCurrent = false;
+        };
+    }, [noticeId]);
+
+    const content = normalizeNoticeContent(notice?.content);
+
     return (
         <div className="flex h-full flex-col rounded-2xl bg-white p-5">
             <div className="mb-4 border-b border-slate-100 pb-4">
@@ -548,17 +558,19 @@ function NoticeDetailView({
                 </button>
 
                 <h3 className="text-xl font-black text-slate-900">
-                    {notice.title}
+                    {notice?.title ?? (isLoading ? "불러오는 중입니다." : "공지사항")}
                 </h3>
 
                 <div className="mt-2 flex items-center gap-3 text-xs font-bold text-slate-400">
-                    <time>{notice.createdAt}</time>
+                    {notice?.createdAt ? <time>{notice.createdAt}</time> : null}
                 </div>
             </div>
 
             <div className="min-h-0 flex-1 overflow-y-auto rounded-2xl bg-slate-50 p-4 scrollbar-hidden">
                 <div className="space-y-3 text-sm font-semibold leading-7 text-slate-700">
-                    {notice.content.map((paragraph, index) => (
+                    {isLoading ? (
+                        <p>공지사항 내용을 불러오는 중입니다.</p>
+                    ) : content.map((paragraph, index) => (
                         <p key={index}>
                             {paragraph}
                         </p>

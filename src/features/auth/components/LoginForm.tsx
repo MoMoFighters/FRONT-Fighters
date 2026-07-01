@@ -10,11 +10,6 @@ import googleIcon from "@/app/assets/img/google.svg"
 import naverIcon from "@/app/assets/img/NAVER_login_Dark_KR_green_icon_H56.png"
 
 import {
-    GOOGLE_AUTH_LINK,
-    javascriptkey,
-} from "@/lib/config/oauth/oauthAPI";
-
-import {
     loginAction,
 } from "../action";
 
@@ -22,6 +17,8 @@ import LoginResultModal from "./LoginResultModal";
 import EmailInputModal from "./EmailInputModal";
 import { UserRole, UserStatus } from "@/features/user/type";
 import { ApiResponse } from "@/lib/api";
+import type { OAuthClientConfig } from "@/lib/config/oauth/oauthAPI";
+import { redirect } from "next/navigation";
 
 interface LoginData {
     accessToken: string;
@@ -33,10 +30,13 @@ interface LoginData {
     expiresIn: number;
 }
 
-export default function LoginForm() {
+interface LoginFormProps {
+    oauthConfig: OAuthClientConfig;
+}
 
-    const googleAuthLink =
-        GOOGLE_AUTH_LINK;
+export default function LoginForm({
+    oauthConfig,
+}: LoginFormProps) {
 
     const [showPassword, setShowPassword] =
         useState(false);
@@ -58,9 +58,7 @@ export default function LoginForm() {
 
     const handleKakaoLogin = () => {
         window.Kakao.Auth.authorize({
-            redirectUri:
-                process.env
-                    .NEXT_PUBLIC_KAKAO_REDIRECT_URI,
+            redirectUri: oauthConfig.kakaoRedirectUri,
         });
     };
 
@@ -72,11 +70,11 @@ export default function LoginForm() {
             !window.Kakao.isInitialized()
         ) {
             window.Kakao.init(
-                javascriptkey
+                oauthConfig.javascriptKey
             );
         }
 
-    }, []);
+    }, [oauthConfig.javascriptKey]);
 
     const handleSubmit = async (
         formData: FormData
@@ -100,7 +98,6 @@ export default function LoginForm() {
 
 
             setLoginResult(result);
-            console.log(result, '로그인 ');
             setIsModal(true);
         } finally {
             setIsPending(false);
@@ -238,7 +235,7 @@ export default function LoginForm() {
                             handleKakaoLogin
                         }
                     />
-                    <a href={googleAuthLink}>
+                    <a href={oauthConfig.googleAuthLink}>
                         <Image src={googleIcon} alt='구글' width={40} height={40} className="border-2 border-slate-100 hover:border-slate-400 hover:translate-y-0.5 rounded-full p-2" />
                     </a>
                     <a href="/oauth/naver/start">

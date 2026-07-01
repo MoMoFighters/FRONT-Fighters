@@ -1,11 +1,4 @@
-export interface AdminDashboardTask {
-    id: number;
-    type: "강사 승인" | "신고";
-    title: string;
-    requester: string;
-    requestedAt: string;
-    status: "대기" | "긴급";
-}
+import { AdminDashboardTask } from "./type";
 
 const TYPE_CLASS = {
     "강사 승인": "bg-amber-50 text-amber-600",

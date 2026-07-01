@@ -1,12 +1,22 @@
 "use server";
 
-import { getFriendStreak, getMyStreak } from "@/app/services/city/service";
-import { StreakRequest, StreakResponse } from "./type";
+import {
+    getFriendStreak,
+    getMyBuildings,
+    getMyStreak,
+} from "@/app/services/city/service";
+import { Building, StreakRequest, StreakResponse } from "./type";
 
 export type StreakActionResult = {
     success: boolean;
     message?: string;
     data?: StreakResponse;
+};
+
+export type BuildingActionResult = {
+    success: boolean;
+    message?: string;
+    data?: Building[];
 };
 
 const getCityActionErrorMessage = (error: unknown) => {
@@ -28,6 +38,22 @@ export const getMyStreakAction = async (
 ): Promise<StreakActionResult> => {
     try {
         const data = await getMyStreak(payload);
+
+        return {
+            success: true,
+            data,
+        };
+    } catch (error) {
+        return {
+            success: false,
+            message: getCityActionErrorMessage(error),
+        };
+    }
+};
+
+export const getMyBuildingsAction = async (): Promise<BuildingActionResult> => {
+    try {
+        const data = await getMyBuildings();
 
         return {
             success: true,

@@ -1,6 +1,6 @@
 ﻿"use server";
 
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { ApiResponse } from "@/lib/api";
 
 import {
@@ -43,6 +43,16 @@ const createUnauthorizedResponse = <T>(): ApiResponse<T> => ({
     message: "다시 로그인 해주세요.",
 });
 
+const getForwardedForHeader = async (): Promise<string> => {
+    const headerStore = await headers();
+
+    return (
+        headerStore.get("x-forwarded-for") ??
+        headerStore.get("x-real-ip") ??
+        ""
+    );
+};
+
 
 // ==========================================
 // 1-1. 회원가입
@@ -84,7 +94,19 @@ export const teacherSignupAction = async (
     formData: FormData
 ): Promise<ApiResponse<TeacherSignupData>> => {
     try {
-        const result = await teacherSignupService(formData);
+        const cookieStore = await cookies();
+        const accessToken =
+            cookieStore.get("accessToken")?.value;
+
+        if (!accessToken) {
+            return createUnauthorizedResponse<TeacherSignupData>();
+        }
+
+        const result = await teacherSignupService(
+            formData,
+            accessToken
+        );
+
         return result;
     } catch (error) {
         return createErrorResponse<TeacherSignupData>(
@@ -186,10 +208,11 @@ export const loginAction = async (
     password: string
 ): Promise<ApiResponse<LoginData>> => {
     try {
+        const forwardedFor = await getForwardedForHeader();
         const result = await loginService({
             email,
             password,
-        });
+        }, forwardedFor);
 
         if (!result.data) {
             return result;
@@ -359,9 +382,11 @@ export const logoutAction = async (): Promise<
             return createUnauthorizedResponse<LogoutData>();
         }
 
+        const forwardedFor = await getForwardedForHeader();
         const result = await logoutService(
             accessToken,
-            refreshToken
+            refreshToken,
+            forwardedFor
         );
 
         killTokenAction()
@@ -458,7 +483,8 @@ export const handleKakaoLoginCallback = async (
         throw new Error("코드가 존재하지 않습니다.");
     }
 
-    const result = await kakaoLoginService(code);
+    const forwardedFor = await getForwardedForHeader();
+    const result = await kakaoLoginService(code, forwardedFor);
 
     if (result.data) {
         await setOAuthCookies(result.data);
@@ -474,7 +500,8 @@ export const googleLoginAction = async (
         throw new Error("코드가 존재하지 않습니다.");
     }
 
-    const result = await googleLoginService(code);
+    const forwardedFor = await getForwardedForHeader();
+    const result = await googleLoginService(code, forwardedFor);
 
     if (result.data) {
         await setOAuthCookies(result.data);
@@ -490,7 +517,8 @@ export const naverLoginAction = async (
         throw new Error("네이버 인가 코드가 없습니다.");
     }
 
-    const result = await naverLoginService(code);
+    const forwardedFor = await getForwardedForHeader();
+    const result = await naverLoginService(code, forwardedFor);
 
     if (result.data) {
         await setOAuthCookies(result.data);

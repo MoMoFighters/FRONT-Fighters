@@ -173,6 +173,7 @@ export default function LoginResultModal({
                     setIsModal={setIsApplyModal}
                     nickName={userInfo?.nickname || ""}
                     isReApply={true}
+                    closeResultModal={setIsModal}
                 />
             )}
         </>

@@ -239,11 +239,6 @@ export const createTodoAction = async (
                 accessToken,
             });
 
-
-        // 캐시 갱신
-        revalidateCalendarPaths();
-
-
         return result;
 
     } catch (error) {
@@ -295,10 +290,6 @@ export const addDateMemoAction = async (
                 start,
                 accessToken,
             });
-
-
-        // 캐시 갱신
-        revalidateCalendarPaths();
 
 
         return result;
@@ -354,10 +345,6 @@ export const addDateRangeMemoAction = async (
                 end,
                 accessToken,
             });
-
-
-        // 캐시 갱신
-        revalidateCalendarPaths();
 
 
         return result;
@@ -726,10 +713,6 @@ export const editTodoAction = async ({
 
                 start
             });
-
-
-        // 캐시 갱신
-        revalidateCalendarPaths();
 
 
         return result;

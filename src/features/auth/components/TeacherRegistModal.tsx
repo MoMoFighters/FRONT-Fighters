@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -13,6 +13,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { Spinner } from "@/components/ui/spinner";
 import { redirect } from "next/navigation";
 
 interface TeacherRegistModalProps {
@@ -20,9 +21,10 @@ interface TeacherRegistModalProps {
     setIsModal: React.Dispatch<React.SetStateAction<boolean>>;
     nickName: string;
     isReApply?: boolean;
+    closeResultModal?: (a: boolean) => void;
 }
 
-export default function TeacherRegistModal({ isModal, setIsModal, nickName, isReApply }: TeacherRegistModalProps) {
+export default function TeacherRegistModal({ isModal, setIsModal, nickName, isReApply, closeResultModal }: TeacherRegistModalProps) {
 
     const [category, setCategory] = useState("");
     const [previewFile, setPreviewFile] = useState<File | null>(null);
@@ -45,7 +47,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
             e.target.value = "";
             setPreviewFile(null);
             setPreviewUrl(null);
-            alert("PDF 또는 MP4 파일만 업로드할 수 있습니다.");
+            toast.error("PDF 또는 MP4 파일만 가능합니다.")
             return;
         }
 
@@ -75,7 +77,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
         const nickname = String(formData.get("teacherName") ?? "").trim();
 
         if (!currentNickname || !nickname || !category || !previewFile) {
-            toast.error("필수 값을 모두 입력해주세요.", { duration: 1000 });
+            toast.error("값이 누락되었습니다.", { duration: 1000 });
             return;
         }
 
@@ -99,7 +101,10 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
             setIsModal(false);
             await logoutAction();
             clearLectureUploadTasksStorage();
-            redirect("/auth/login");
+            if (closeResultModal ?
+                closeResultModal(false) : ""
+            )
+                redirect("/auth/login");
         } finally {
             setIsSubmitting(false);
         }
@@ -108,22 +113,34 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
     if (!isModal) return (
         <div
             className='pr-2 px-1 pb-4 text-sm font-bold transition border-transparent text-slate-500 hover:text-slate-900 cursor-pointer'
-            onClick={() => setIsModal(true)}
+            onClick={() => {
+                if (!isSubmitting) {
+                    setIsModal(true);
+                }
+            }}
         >
-            강사 등록
+            강사 전환
         </div>)
 
     return (
         <>
             <div
                 className='pr-2 px-1 pb-4 text-sm font-bold transition border-transparent text-slate-500 hover:text-slate-900 cursor-pointer'
-                onClick={() => setIsModal(false)}
+                onClick={() => {
+                    if (!isSubmitting) {
+                        setIsModal(false);
+                    }
+                }}
             >
-                강사 등록
+                강사 전환
             </div>
             <div
                 className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
-                onClick={() => setIsModal(false)}
+                onClick={() => {
+                    if (!isSubmitting) {
+                        setIsModal(false);
+                    }
+                }}
             >
                 <div
                     className="flex flex-col w-[60vw] h-[85vh] rounded-2xl border border-slate-200 bg-white px-6 pt-7 shadow-2xl"
@@ -131,13 +148,14 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
                 >
                     <div className="flex flex-row items-center">
                         <h2 className="text-2xl font-bold text-slate-900">
-                            강사 등록
+                            강사 전환하기
                         </h2>
                         <div className="flex-1" />
                         {!isReApply &&
                             <button
                                 type="button"
                                 className="text-slate-500 hover:text-slate-900 cursor-pointer"
+                                disabled={isSubmitting}
                                 onClick={() => setIsModal(false)}>
                                 <X />
                             </button>}
@@ -145,7 +163,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
                     </div>
 
                     <p className="mt-2 text-sm leading-6 text-slate-500">
-                        강사 활동에 사용할 이름과 강의 분야, 인증 자료를 등록해 주세요.
+                        강사로 전환됩니다.
                     </p>
                     <form
                         className="mt-7 flex min-h-0 flex-1 flex-col overflow-hidden"
@@ -169,7 +187,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
                                     id="teacherName"
                                     name="teacherName"
                                     defaultValue={nickName}
-                                    placeholder="예: 모모쌤"
+                                    placeholder="강사 활동명을 입력해주세요"
                                     className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm text-slate-700 outline-none transition-colors placeholder:text-slate-400 focus:border-mauve-400 focus:bg-white focus:ring-4 focus:ring-mauve-100"
                                 />
                             </div>
@@ -191,7 +209,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
                                         id="category"
                                         className="!h-10 min-h-10 w-full rounded-xl border-slate-200 bg-slate-50 px-4 py-0 text-sm text-slate-700 shadow-none focus:border-mauve-400 focus:bg-white focus:ring-4 focus:ring-mauve-100 [&>span]:leading-none"
                                     >
-                                        <SelectValue placeholder="선택" />
+                                        <SelectValue placeholder="?좏깮" />
                                     </SelectTrigger>
 
                                     <SelectContent>
@@ -199,7 +217,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
                                         <SelectItem value="ART" className="!h-10">예술</SelectItem>
                                         <SelectItem value="COOK" className="!h-10">요리</SelectItem>
                                         <SelectItem value="STUDY" className="!h-10">학습</SelectItem>
-                                        <SelectItem value="FASHION" className="!h-10">패션</SelectItem>
+                                        <SelectItem value="BEAUTY" className="!h-10">뷰티</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -216,7 +234,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
 
                         <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden mt-2">
                             <label className="text-sm font-semibold text-slate-700">
-                                인증 파일
+                                증빙자료
                             </label>
 
                             {!previewFile || !previewUrl ? (
@@ -231,11 +249,11 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
                                     </div>
 
                                     <p className="mt-3 text-sm font-semibold text-slate-700">
-                                        파일 업로드하기
+                                        클릭하여 파일 추가
                                     </p>
 
                                     <p className="mt-1 text-xs text-slate-400">
-                                        PDF 또는 MP4 파일 1개만 등록할 수 있습니다.
+                                        PDF 또는 MP4 파일을 선택해주세요.
                                     </p>
                                 </label>
                             ) : (
@@ -243,7 +261,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
                                     <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white p-4">
                                         <div className="mb-3 flex shrink-0 items-center justify-between gap-3">
                                             <p className="text-sm font-semibold text-slate-700">
-                                                파일 미리보기
+                                                미리보기
                                             </p>
 
                                             <p className="max-w-64 truncate text-xs font-medium text-slate-400">
@@ -273,7 +291,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
                                             htmlFor="proofFile"
                                             className="mr-2 flex shrink-0 cursor-pointer items-center justify-center text-sm font-semibold text-slate-400 transition-colors hover:text-slate-600"
                                         >
-                                            파일 바꾸기
+                                            파일 변경하기
                                         </label>
                                     </div>
 
@@ -284,9 +302,12 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="my-4 h-12 w-full shrink-0 rounded-xl bg-indigo-500 text-base font-bold text-white shadow-sm transition-colors hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
+                            className="my-4 flex h-12 w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-indigo-500 text-base font-bold text-white shadow-sm transition-colors hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
                         >
-                            {isSubmitting ? "신청 중" : "등록 요청하기"}
+                            {isSubmitting && (
+                                <Spinner className="size-5" />
+                            )}
+                            {isSubmitting ? "요청 중..." : "강사 전환 요청"}
                         </button>
                     </form>
                 </div>

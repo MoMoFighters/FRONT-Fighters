@@ -17,6 +17,8 @@ import type {
     CommunityPostDashboardData,
     CommunityPostListItem,
 } from "@/features/community/type";
+import { getVisiblePageNumbers } from "@/lib/pagination";
+import Image from "next/image";
 
 export interface CommunityProfileData {
     userId: number;
@@ -119,6 +121,7 @@ export default function CommunityProfilePostsPage({
             : selectedMode === "grid"
                 ? "grid grid-cols-4 gap-3"
                 : "grid grid-cols-2 gap-3";
+    const pageNumbers = getVisiblePageNumbers(currentPage, totalPages);
 
     return (
         <div className="flex h-full min-h-0 flex-row overflow-hidden bg-white/80 shadow-sm ring-1 ring-slate-200/80 backdrop-blur">
@@ -129,7 +132,7 @@ export default function CommunityProfilePostsPage({
                     <div className="flex items-center justify-between gap-5">
                         <div className="flex min-w-0 items-center gap-3">
                             {profile.profileImageUrl ? (
-                                <img
+                                <Image
                                     src={profile.profileImageUrl}
                                     alt={`${profile.nickname} profile`}
                                     className="h-16 w-16 rounded-2xl object-cover shadow-sm ring-1 ring-indigo-100"
@@ -234,7 +237,7 @@ export default function CommunityProfilePostsPage({
                     )}
                 </div>
 
-                {totalPages >= 1 && (
+                {totalPages > 1 && (
                     <Pagination className="mt-3 shrink-0">
                         <PaginationContent>
                             {currentPage > 1 && (
@@ -251,10 +254,7 @@ export default function CommunityProfilePostsPage({
                                 </PaginationItem>
                             )}
 
-                            {Array.from(
-                                { length: totalPages },
-                                (_, index) => index + 1
-                            ).map((pageNumber) => (
+                            {pageNumbers.map((pageNumber) => (
                                 <PaginationItem key={pageNumber}>
                                     <PaginationLink
                                         href={createHref({

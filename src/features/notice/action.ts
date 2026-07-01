@@ -4,13 +4,14 @@ import {
     createNotice,
     deleteNoticeById,
     deleteNoticeByIds,
+    getNoticeById,
     getNotices,
     pinNoticeById,
     unPinNoticeById,
     updateNoticeById,
 } from "@/app/services/notice/service";
 import { revalidatePath } from "next/cache";
-import { CreateNoticeRequest, NoticeListResponse, UpdateNoticeRequest } from "./type";
+import { CreateNoticeRequest, Notice, NoticeListResponse, UpdateNoticeRequest } from "./type";
 
 export type NoticeActionState = {
     success: boolean;
@@ -221,3 +222,9 @@ export const getNoticesAction = async (
 ): Promise<NoticeListResponse> => {
     return await getNotices(page);
 };
+
+export const getNoticeAction = async (
+    noticeId: number
+): Promise<Notice> => {
+    return await getNoticeById(String(noticeId))
+}

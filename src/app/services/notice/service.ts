@@ -7,8 +7,15 @@ import { notFound } from "next/navigation";
  * @param response
  * @returns X -> 에러를 던짐
  */
-const handleErrorResponse = async (response: Response) => {
-    if (response.status === 404) {
+const handleErrorResponse = async (
+    response: Response,
+    options: {
+        notFoundOn404?: boolean;
+    } = {},
+) => {
+    const { notFoundOn404 = true } = options;
+
+    if (response.status === 404 && notFoundOn404) {
         notFound();
     }
 
@@ -101,7 +108,7 @@ export const createNotice = async (payload: CreateNoticeRequest) => {
         body: JSON.stringify(payload)
     });
 
-    await handleErrorResponse(response);
+    await handleErrorResponse(response, { notFoundOn404: false });
     return parseJsonOrNull(response);
 };
 
@@ -117,7 +124,7 @@ export const updateNoticeById = async (id: string, payload: UpdateNoticeRequest)
         body: JSON.stringify(payload)
     });
 
-    await handleErrorResponse(response);
+    await handleErrorResponse(response, { notFoundOn404: false });
     return parseJsonOrNull(response);
 };
 
@@ -131,7 +138,7 @@ export const pinNoticeById = async (id: string) => {
         method: "PATCH"
     });
 
-    await handleErrorResponse(response);
+    await handleErrorResponse(response, { notFoundOn404: false });
     return parseJsonOrNull(response);
 };
 
@@ -145,7 +152,7 @@ export const unPinNoticeById = async (id: string) => {
         method: "PATCH"
     });
 
-    await handleErrorResponse(response);
+    await handleErrorResponse(response, { notFoundOn404: false });
     return parseJsonOrNull(response);
 };
 
@@ -159,7 +166,7 @@ export const deleteNoticeById = async (id: string) => {
         method: "DELETE"
     });
 
-    await handleErrorResponse(response);
+    await handleErrorResponse(response, { notFoundOn404: false });
     return parseJsonOrNull(response);
 };
 
@@ -169,11 +176,11 @@ export const deleteNoticeById = async (id: string) => {
  * @returns 
  */
 export const deleteNoticeByIds = async (ids: string[]) => {
-    const response = await fetchWithAuth('/api/v1/admin-notices/', {
+    const response = await fetchWithAuth('/api/v1/admin-notices', {
         method: "DELETE",
-        body: JSON.stringify(ids)
+        body: JSON.stringify({ ids: ids })
     });
 
-    await handleErrorResponse(response);
+    await handleErrorResponse(response, { notFoundOn404: false });
     return parseJsonOrNull(response);
 };

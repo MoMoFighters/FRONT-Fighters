@@ -13,6 +13,7 @@ import {
     AdminReportListItem,
     ReportList,
 } from "@/features/report/type";
+import { getVisiblePageNumbers } from "@/lib/pagination";
 
 interface AdminReportsPageProps {
     searchParams: Promise<{
@@ -50,6 +51,7 @@ export default async function AdminReportsPage({
     const reports = reportResponse.items.map(mapReportListItem);
     const currentPage = reportResponse.page;
     const totalPages = reportResponse.totalPages;
+    const pageNumbers = getVisiblePageNumbers(currentPage, totalPages);
 
     const createPageHref = (pageNumber: number) => {
         const params = new URLSearchParams();
@@ -91,20 +93,16 @@ export default async function AdminReportsPage({
                             )}
 
                             <PaginationContent>
-                                {Array.from({ length: totalPages }, (_, index) => {
-                                    const pageNumber = index + 1;
-
-                                    return (
-                                        <PaginationItem key={pageNumber}>
-                                            <PaginationLink
-                                                href={createPageHref(pageNumber)}
-                                                isActive={currentPage === pageNumber}
-                                            >
-                                                {pageNumber}
-                                            </PaginationLink>
-                                        </PaginationItem>
-                                    );
-                                })}
+                                {pageNumbers.map((pageNumber) => (
+                                    <PaginationItem key={pageNumber}>
+                                        <PaginationLink
+                                            href={createPageHref(pageNumber)}
+                                            isActive={currentPage === pageNumber}
+                                        >
+                                            {pageNumber}
+                                        </PaginationLink>
+                                    </PaginationItem>
+                                ))}
                             </PaginationContent>
 
                             {currentPage < totalPages && (

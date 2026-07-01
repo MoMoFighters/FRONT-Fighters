@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils/utils";
 import { LogOut } from "lucide-react";
 import { clearLectureUploadTasksStorage } from "@/features/lecture/components/teacher/LectureCreateUploadContext";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function LogoutBtn({
     className,
@@ -15,11 +16,13 @@ export default function LogoutBtn({
     iconOnly?: boolean;
 }) {
     const router = useRouter();
+    const queryClient = useQueryClient();
 
     const handleLogout = async () => {
         const result = await logoutAction();
 
         if (result.status >= 200 && result.status < 300) {
+            queryClient.clear();
             clearLectureUploadTasksStorage();
             router.replace("/");
             router.refresh();

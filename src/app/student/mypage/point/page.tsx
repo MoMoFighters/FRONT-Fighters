@@ -16,6 +16,7 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "@/components/ui/pagination";
+import { getVisiblePageNumbers } from "@/lib/pagination";
 
 type PointHistoryType =
     | "LECTURE_REWARD"
@@ -111,6 +112,7 @@ export default async function MypagePointPage({
         startIndex,
         startIndex + PAGE_SIZE
     );
+    const pageNumbers = getVisiblePageNumbers(currentPage, totalPages);
 
     return (
         <main className="mx-auto w-full max-w-360 px-12 py-12">
@@ -259,10 +261,7 @@ export default async function MypagePointPage({
                                 </PaginationItem>
                             )}
 
-                            {Array.from(
-                                { length: totalPages },
-                                (_, index) => index + 1
-                            ).map((pageNumber) => (
+                            {pageNumbers.map((pageNumber) => (
                                 <PaginationItem key={pageNumber}>
                                     <PaginationLink
                                         href={createPageHref(pageNumber)}

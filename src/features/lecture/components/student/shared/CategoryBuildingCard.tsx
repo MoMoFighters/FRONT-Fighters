@@ -59,10 +59,10 @@ export default function CategoryBuildingCard({
             </div>
 
             <Link
-                href={`/student/${category}`}
+                href={'/student/'}
                 className="mt-6 flex h-12 items-center justify-center rounded-xl border border-indigo-300 text-sm font-bold text-indigo-500 transition hover:bg-indigo-50"
             >
-                건물 보기
+                도시로 돌아가기
             </Link>
         </section>
     );

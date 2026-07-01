@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
 interface StudentNicknameGuardProps {
-    nicknameIsNull: boolean
+    nicknameIsNull: boolean;
 }
 
 export default function StudentNicknameGuard({
@@ -18,7 +18,7 @@ export default function StudentNicknameGuard({
             return;
         }
 
-        router.replace("/student/mypage");
+        router.push("/student/mypage");
     }, [nicknameIsNull, pathname, router]);
 
     return null;

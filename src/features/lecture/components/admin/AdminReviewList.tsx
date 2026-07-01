@@ -6,6 +6,7 @@ import AdminLectureDeleteButton from "./AdminLectureDeleteButton";
 interface AdminReviewListProps {
     lectureId: string;
     reviews: Review[];
+    canDelete?: boolean;
 }
 
 const formatAdminDateTime = (dateTime: string) => {
@@ -15,6 +16,7 @@ const formatAdminDateTime = (dateTime: string) => {
 export default function AdminReviewList({
     lectureId,
     reviews,
+    canDelete = true,
 }: AdminReviewListProps) {
     if (reviews.length === 0) {
         return (
@@ -47,11 +49,13 @@ export default function AdminReviewList({
                         </div>
                         <p className="mt-3 text-sm font-medium leading-6 text-slate-500">{review.content}</p>
                     </div>
-                    <AdminLectureDeleteButton
-                        target="수강평"
-                        targetId={review.reviewId}
-                        lectureId={lectureId}
-                    />
+                    {canDelete && (
+                        <AdminLectureDeleteButton
+                            target="수강평"
+                            targetId={review.reviewId}
+                            lectureId={lectureId}
+                        />
+                    )}
                 </article>
             ))}
         </div>

@@ -4,6 +4,10 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 
+interface MomoJwtPayload {
+    roles?: string;
+}
+
 export default async function AdminLayout({
     children,
 }: Readonly<{
@@ -17,7 +21,7 @@ export default async function AdminLayout({
     }
     if (token) {
         // 옵션 없이 사용하면 페이로드(내용)를 디코딩합니다.
-        const decoded = jwtDecode(token);
+        const decoded = jwtDecode<MomoJwtPayload>(token);
         const { roles } = decoded;
         if (roles !== "ROLE_ADMIN") {
             redirect('/forbidden');

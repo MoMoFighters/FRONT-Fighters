@@ -92,13 +92,13 @@ export default async function TeacherMainPage() {
 
     return (
         <main className="mx-auto w-full max-w-360 px-12 py-10">
-            <section className="relative overflow-hidden rounded-4xl bg-gradient-to-br from-indigo-500 via-indigo-500 to-slate-900 p-8 text-white shadow-xl shadow-indigo-200">
+            <section className="relative overflow-hidden rounded-4xl border border-slate-200 bg-white p-8 text-slate-950 shadow-sm">
                 <div className="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-white/10 blur-2xl" />
                 <div className="absolute bottom-0 right-32 h-24 w-24 rounded-full bg-indigo-300/20 blur-xl" />
 
                 <div className="relative flex items-start justify-between gap-6">
                     <div>
-                        <div className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-black text-indigo-50 ring-1 ring-white/15">
+                        <div className="inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1 text-xs font-black text-indigo-500 ring-1 ring-indigo-100">
                             <LayoutDashboard className="h-3.5 w-3.5" />
                             Teacher Dashboard
                         </div>
@@ -106,7 +106,7 @@ export default async function TeacherMainPage() {
                         <h1 className="mt-5 text-3xl font-black tracking-tight">
                             강사 대시보드
                         </h1>
-                        <p className="mt-3 max-w-160 text-sm font-semibold leading-6 text-indigo-100">
+                        <p className="mt-3 max-w-160 text-sm font-semibold leading-6 text-slate-500">
                             등록한 강의 현황과 수강생 질문을 한눈에 확인하고,
                             새로운 강의를 빠르게 개설할 수 있습니다.
                         </p>

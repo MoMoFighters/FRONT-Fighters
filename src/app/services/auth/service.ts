@@ -4,6 +4,18 @@ import { ApiResponse, fetchWithAuth } from "@/lib/api";
 const BASE_SERVER_URL =
     process.env.NEXT_PUBLIC_API_BASE_URL;
 
+const createForwardedForHeaders = (
+    forwardedFor?: string
+): HeadersInit => {
+    if (!forwardedFor) {
+        return {};
+    }
+
+    return {
+        "X-Forwarded-For": forwardedFor,
+    };
+};
+
 
 /*
   1-1. 학생 회원가입
@@ -72,9 +84,13 @@ export const studentSignupService = async (
 export type TeacherSignupData = null;
 
 export const teacherSignupService = async (
-    formData: FormData
+    formData: FormData,
+    accessToken: string
 ): Promise<ApiResponse<TeacherSignupData>> => {
-    const response = await fetchWithAuth("/api/v1/teacherApply", {
+    const response = await fetch(`${BASE_SERVER_URL}/api/v1/teacherApply`, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
         method: 'POST',
         body: formData
     })
@@ -213,7 +229,8 @@ export const loginService = async (
     loginData: {
         email: string;
         password: string;
-    }
+    },
+    forwardedFor?: string
 ): Promise<ApiResponse<LoginData>> => {
     const response = await fetch(
         `${BASE_SERVER_URL}/api/v1/auth/login`,
@@ -221,6 +238,7 @@ export const loginService = async (
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                ...createForwardedForHeaders(forwardedFor),
             },
             body: JSON.stringify(loginData),
         }
@@ -378,7 +396,8 @@ export type LogoutData = null;
 
 export const logoutService = async (
     accessToken: string,
-    refreshToken: string
+    refreshToken: string,
+    forwardedFor?: string
 ): Promise<ApiResponse<LogoutData>> => {
     const response = await fetch(
         `${BASE_SERVER_URL}/api/v1/auth/logout`,
@@ -389,6 +408,7 @@ export const logoutService = async (
                     `Bearer ${accessToken}`,
                 "Refresh-Token":
                     refreshToken,
+                ...createForwardedForHeaders(forwardedFor),
             },
         }
     );
@@ -463,7 +483,8 @@ export interface KakaoLoginData {
 }
 
 export const kakaoLoginService = async (
-    code: string
+    code: string,
+    forwardedFor?: string
 ): Promise<ApiResponse<KakaoLoginData>> => {
     const response = await fetch(
         `${BASE_SERVER_URL}/api/v1/auth/kakaologin`,
@@ -471,6 +492,7 @@ export const kakaoLoginService = async (
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                ...createForwardedForHeaders(forwardedFor),
             },
             body: JSON.stringify({ code }),
         }
@@ -504,7 +526,8 @@ export interface GoogleLoginTokenData {
 export type GoogleLoginData = ApiResponse<GoogleLoginTokenData>;
 
 export const googleLoginService = async (
-    code: string
+    code: string,
+    forwardedFor?: string
 ): Promise<GoogleLoginData> => {
     const response = await fetch(
         `${BASE_SERVER_URL}/api/v1/auth/googlelogin`,
@@ -512,6 +535,7 @@ export const googleLoginService = async (
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                ...createForwardedForHeaders(forwardedFor),
             },
             body: JSON.stringify({ code }),
         }
@@ -544,7 +568,8 @@ export interface NaverLoginTokenData {
 export type NaverLoginData = ApiResponse<NaverLoginTokenData>;
 
 export const naverLoginService = async (
-    code: string
+    code: string,
+    forwardedFor?: string
 ): Promise<NaverLoginData> => {
     const response = await fetch(
         `${BASE_SERVER_URL}/api/v1/auth/naverlogin`,
@@ -552,6 +577,7 @@ export const naverLoginService = async (
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                ...createForwardedForHeaders(forwardedFor),
             },
             body: JSON.stringify({ code }),
         }
