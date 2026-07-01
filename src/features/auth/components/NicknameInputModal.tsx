@@ -43,7 +43,6 @@ export default function NicknameInputModal({
         if (result.status === 200) {
             setIsClosed(true);
             router.refresh();
-            router.push('/auth/login')
         }
     };
 

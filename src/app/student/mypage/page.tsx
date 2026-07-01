@@ -6,14 +6,8 @@ import DeleteAccountBtn from "@/features/auth/components/DeleteAccountBtn";
 import NicknameInputModal from "@/features/auth/components/NicknameInputModal";
 import StudentPageHeader from "@/features/student/components/StudentPageHeader";
 import { getMyInfo } from "@/features/user/action";
-import { jwtDecode } from "jwt-decode";
 import { PencilLine, UserRound } from "lucide-react";
-import { cookies } from "next/headers";
 import Link from "next/link";
-
-interface StudentTokenPayload {
-    nickname?: string | null;
-}
 
 const isMissingNickname = (nickname: unknown) =>
     nickname === null ||
@@ -22,21 +16,8 @@ const isMissingNickname = (nickname: unknown) =>
     nickname === "null";
 
 export default async function MyPage() {
-    const cookie = await cookies();
-    const token = cookie.get("accessToken")?.value;
-    let tokenValue: StudentTokenPayload = {};
-
-    if (token) {
-        try {
-            tokenValue = jwtDecode<StudentTokenPayload>(token);
-        } catch {
-            tokenValue = {};
-        }
-    }
-
     const DATA = await getMyInfo();
     const shouldOpenNicknameModal =
-        isMissingNickname(tokenValue.nickname) &&
         isMissingNickname(DATA.data?.nickname);
 
     const USER_DATA = {
