@@ -18,7 +18,7 @@ export default function StudentNicknameGuard({
             return;
         }
 
-        router.replace("/student/mypage");
+        router.push("/student/mypage");
     }, [nicknameIsNull, pathname, router]);
 
     return null;

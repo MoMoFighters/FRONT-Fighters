@@ -1,11 +1,11 @@
 ﻿'use client';
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Eye, EyeOff, UserRound } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
-import { MomoUserInfoResponse, editMyInfo, checkAndRegisterNickname } from "@/features/user/action";
+import { MomoUserInfoResponse, editMyInfo, checkAndRegisterNickname, EditMyInfoInput } from "@/features/user/action";
 import { toast } from "sonner";
 import UserProfileChoice from "./UserProfileChoice";
 
@@ -29,15 +29,17 @@ export default function UserInfoEditForm({
     const [nickname, setNickname] = useState(profile?.nickname || "");
     const [email] = useState(profile?.email || "");
     const [profileUrl, setProfileUrl] = useState(profile?.profileImageUrl || "");
-    const profileObjectUrlRef = useRef<string | null>(null);
 
     // 비번 보이게하기
+    const [isPasswordEditOpen, setIsPasswordEditOpen] = useState(false);
     const [showCurrentPassword, setShowCurrentPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
 
     // 프사 변경 모달 관련
     const [profileChangeOpen, setProfileChangeOpen] = useState(false);
+    const [selectedProfileItemName, setSelectedProfileItemName] =
+        useState<string | null>(null);
 
     // 비번 관련 입력값 상태관리
     const [currentPassword, setCurrentPassword] = useState("");
@@ -47,15 +49,33 @@ export default function UserInfoEditForm({
     // 제출 막는것 관련
     const [isNicknameChecked, setIsNicknameChecked] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const passwordSame = passwordConfirm === "" ? true : password === passwordConfirm;
-    const passwordInvalid = (currentPassword === "" && password !== "") || (currentPassword !== "" && password === "");
+    const passwordSame =
+        !isPasswordEditOpen ||
+        passwordConfirm === "" ||
+        password === passwordConfirm;
+    const passwordInvalid =
+        isPasswordEditOpen &&
+        (
+            currentPassword.trim() === "" ||
+            password.trim() === "" ||
+            passwordConfirm.trim() === ""
+        );
 
     // 제출 막기 상태
+    const isProfileUnchanged =
+        selectedProfileItemName === null;
+
     const isUnchanged =
         nickname === (profile?.nickname || "") &&
-        currentPassword === "" &&
-        password === "" &&
-        passwordConfirm === "";
+        isProfileUnchanged &&
+        (
+            !isPasswordEditOpen ||
+            (
+                currentPassword === "" &&
+                password === "" &&
+                passwordConfirm === ""
+            )
+        );
 
     // input 스타일
     const inputStyle =
@@ -80,39 +100,45 @@ export default function UserInfoEditForm({
                 toast.error(res.message || "이미 사용 중인 닉네임입니다!!!.");
                 setIsNicknameChecked(false);
             }
-        } catch (error) {
+        } catch {
             toast("닉네임 중복확인 중 오류가 발생했습니다.");
         }
     };
 
-    // 프사 변경 액션
-    const handleProfileImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
+    const handleProfileItemSelect = (
+        nextProfileUrl: string,
+        nextImageName: string
+    ) => {
+        const trimmedNextImageName = nextImageName.trim();
 
-        if (!file) {
-            return;
-        }
-
-        if (profileObjectUrlRef.current) {
-            URL.revokeObjectURL(profileObjectUrlRef.current);
-        }
-
-        const nextProfileUrl = URL.createObjectURL(file);
-        profileObjectUrlRef.current = nextProfileUrl;
         setProfileUrl(nextProfileUrl);
+        setSelectedProfileItemName(
+            trimmedNextImageName.length > 0
+                ? trimmedNextImageName
+                : null
+        );
         onPreviewChange?.({
             profileImageUrl: nextProfileUrl,
         });
+        setProfileChangeOpen(false);
     };
 
-    // 나중에 필요없어질듯
-    useEffect(() => {
-        return () => {
-            if (profileObjectUrlRef.current) {
-                URL.revokeObjectURL(profileObjectUrlRef.current);
+    const handlePasswordEditToggle = () => {
+        setIsPasswordEditOpen((prev) => {
+            const next = !prev;
+
+            if (!next) {
+                setCurrentPassword("");
+                setPassword("");
+                setPasswordConfirm("");
+                setShowCurrentPassword(false);
+                setShowNewPassword(false);
+                setShowPasswordConfirm(false);
             }
-        };
-    }, []);
+
+            return next;
+        });
+    };
 
     // 정보 수정 눌렀을때
     const handleSubmit = async (e: React.FormEvent) => {
@@ -131,19 +157,47 @@ export default function UserInfoEditForm({
         }
 
         if (passwordInvalid) {
-            toast.error("비밀번호 변경시 현재 비밀번호를 입력해주세요.");
+            toast.error("비밀번호 변경 정보를 모두 입력해주세요.");
             return;
         }
 
         try {
             setIsSubmitting(true);
+            const trimmedImageName = selectedProfileItemName?.trim();
+            const trimmedNickname = nickname.trim();
+            const trimmedCurrentPassword = currentPassword.trim();
+            const trimmedPassword = password.trim();
+            const profileImagePayload =
+                trimmedImageName || undefined;
+
+            if (
+                !isProfileUnchanged &&
+                !profileImagePayload
+            ) {
+                toast.error("선택한 프로필 정보를 다시 확인해주세요.");
+                return;
+            }
+
+            const editPayload: EditMyInfoInput = {};
+
+            if (profileImagePayload) {
+                editPayload.itemName = profileImagePayload;
+            }
+
+            if (trimmedNickname !== (profile?.nickname || "") && trimmedNickname) {
+                editPayload.nickname = trimmedNickname;
+            }
+
+            if (isPasswordEditOpen && trimmedCurrentPassword) {
+                editPayload.currentPassword = trimmedCurrentPassword;
+            }
+
+            if (isPasswordEditOpen && trimmedPassword) {
+                editPayload.password = trimmedPassword;
+            }
 
             // 서버 액션 호출
-            const res = await editMyInfo({
-                nickname: nickname === profile?.nickname ? undefined : nickname,
-                currentPassword: currentPassword || undefined,
-                password: password || undefined,
-            });
+            const res = await editMyInfo(editPayload);
 
 
             if (res.status >= 200 && res.status < 300) {
@@ -155,7 +209,7 @@ export default function UserInfoEditForm({
 
                 // 🔄 브라우저 캐시 갱신 및 마이페이지로 복귀 혹은 새로고침 처리
                 router.refresh();
-                if (!currentPassword) {
+                if (!isPasswordEditOpen) {
                     router.push("/student/mypage");
                     toast.success("회원 정보가 성공적으로 수정되었습니다.");
                 } else {
@@ -163,9 +217,9 @@ export default function UserInfoEditForm({
                     toast("비밀번호가 변경되었으니 다시 로그인해주세요.");
                 }
             } else {
-                toast(res.message || "정보 수정에 실패했습니다.");
+                toast.error(res.message || "정보 수정에 실패했습니다.");
             }
-        } catch (error) {
+        } catch {
             toast("서버 통신 중 오류가 발생했습니다.");
         } finally {
             setIsSubmitting(false);
@@ -194,7 +248,11 @@ export default function UserInfoEditForm({
                             />
                         }
                     </div>
-                    <UserProfileChoice profileChangeOpen={profileChangeOpen} setProfileChangeOpen={setProfileChangeOpen} />
+                    <UserProfileChoice
+                        profileChangeOpen={profileChangeOpen}
+                        setProfileChangeOpen={setProfileChangeOpen}
+                        onSelectProfileImage={handleProfileItemSelect}
+                    />
                 </div>
             </div>
 
@@ -265,82 +323,99 @@ export default function UserInfoEditForm({
                 />
             </div>
 
-            {/* 현재 비밀번호 */}
             <div className="flex items-center gap-8">
-                <label htmlFor="currentPassword" className="w-24 font-semibold text-slate-800 text-right">
-                    현재 비밀번호
-                </label>
-                <div className="relative">
-                    <input
-                        type={showCurrentPassword ? "text" : "password"}
-                        id="currentPassword"
-                        className={`${inputStyle} pr-10`}
-                        value={currentPassword}
-                        onChange={(e) => setCurrentPassword(e.target.value)}
-                    />
-                    <button
-                        type="button"
-                        onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 cursor-pointer"
-                    >
-                        {showCurrentPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                    </button>
-                </div>
-            </div>
-
-            {/* 새 비밀번호 */}
-            <div className="flex items-center gap-8">
-                <label htmlFor="password" className="w-24 font-semibold text-slate-800 text-right">
-                    새 비밀번호
-                </label>
-                <div className="relative">
-                    <input
-                        type={showNewPassword ? "text" : "password"}
-                        id="password"
-                        name="password"
-                        className={`${inputStyle} pr-10`}
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                    <button
-                        type="button"
-                        onClick={() => setShowNewPassword(!showNewPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 cursor-pointer"
-                    >
-                        {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                    </button>
-                </div>
-            </div>
-
-            {/* 비밀번호 확인 */}
-            <div className="flex items-center gap-8">
-                <label htmlFor="passwordConfirm" className="w-24 font-semibold text-slate-800 text-right">
-                    비밀번호 확인
-                </label>
-                <div className="relative">
-                    <input
-                        type={showPasswordConfirm ? "text" : "password"}
-                        id="passwordConfirm"
-                        className={`${inputStyle} pr-10`}
-                        value={passwordConfirm}
-                        onChange={(e) => setPasswordConfirm(e.target.value)}
-                    />
-                    <button
-                        type="button"
-                        onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 cursor-pointer"
-                    >
-                        {showPasswordConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
-                    </button>
-                </div>
-            </div>
-
-            {/* 비밀번호 불일치 경고 */}
-            <div className="p-0 text-left mt-[-15px] ml-32 h-5">
-                <p className="text-sm text-red-500 font-bold">
-                    {!passwordSame ? "비밀번호가 일치하지 않습니다." : " "}
+                <p className="w-24 font-semibold text-slate-800 text-right">
+                    비밀번호
                 </p>
+                <Button
+                    type="button"
+                    onClick={handlePasswordEditToggle}
+                    className="border border-slate-300 px-4 h-10 text-sm bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-none transition-colors shadow-none"
+                >
+                    {isPasswordEditOpen ? "변경 취소" : "비밀번호 변경"}
+                </Button>
             </div>
+
+            {isPasswordEditOpen && (
+                <>
+                    {/* 현재 비밀번호 */}
+                    <div className="flex items-center gap-8">
+                        <label htmlFor="currentPassword" className="w-24 font-semibold text-slate-800 text-right">
+                            현재 비밀번호
+                        </label>
+                        <div className="relative">
+                            <input
+                                type={showCurrentPassword ? "text" : "password"}
+                                id="currentPassword"
+                                className={`${inputStyle} pr-10`}
+                                value={currentPassword}
+                                onChange={(e) => setCurrentPassword(e.target.value)}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 cursor-pointer"
+                            >
+                                {showCurrentPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* 새 비밀번호 */}
+                    <div className="flex items-center gap-8">
+                        <label htmlFor="password" className="w-24 font-semibold text-slate-800 text-right">
+                            새 비밀번호
+                        </label>
+                        <div className="relative">
+                            <input
+                                type={showNewPassword ? "text" : "password"}
+                                id="password"
+                                name="password"
+                                className={`${inputStyle} pr-10`}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowNewPassword(!showNewPassword)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 cursor-pointer"
+                            >
+                                {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* 비밀번호 확인 */}
+                    <div className="flex items-center gap-8">
+                        <label htmlFor="passwordConfirm" className="w-24 font-semibold text-slate-800 text-right">
+                            비밀번호 확인
+                        </label>
+                        <div className="relative">
+                            <input
+                                type={showPasswordConfirm ? "text" : "password"}
+                                id="passwordConfirm"
+                                className={`${inputStyle} pr-10`}
+                                value={passwordConfirm}
+                                onChange={(e) => setPasswordConfirm(e.target.value)}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 cursor-pointer"
+                            >
+                                {showPasswordConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* 비밀번호 불일치 경고 */}
+                    <div className="p-0 text-left mt-[-15px] ml-32 h-5">
+                        <p className="text-sm text-red-500 font-bold">
+                            {!passwordSame ? "비밀번호가 일치하지 않습니다." : " "}
+                        </p>
+                    </div>
+                </>
+            )}
 
             {/* submit */}
             <div className="mt-[-5px] flex w-[544px] justify-end">

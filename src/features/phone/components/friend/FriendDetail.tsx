@@ -52,7 +52,7 @@ export default function FriendDetail({ friend }: FriendDetailProps) {
             return;
         }
 
-        toast(response.message, {
+        toast.success(response.message, {
             duration: 1000,
         });
 

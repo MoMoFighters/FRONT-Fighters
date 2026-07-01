@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { nicknameRegistAction } from "../action";
+import { logoutAction, nicknameRegistAction } from "../action";
 
 interface NicknameInputModalProps {
     nickIsNull: boolean;
@@ -43,6 +43,7 @@ export default function NicknameInputModal({
         if (result.status === 200) {
             setIsClosed(true);
             router.refresh();
+            router.push('/auth/login')
         }
     };
 
