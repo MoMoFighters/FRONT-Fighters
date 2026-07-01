@@ -1,6 +1,7 @@
 "use client";
 
-import Link from "next/link";
+import dynamic from "next/dynamic";
+import Image from "next/image";
 import { Bell, BellOff } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -8,14 +9,11 @@ import {
     HoverCardContent,
     HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import Image from "next/image";
-
 import logo from "@/app/assets/img/logo.png";
-import message from "@/app/assets/img/phone-message.png";
-import calendar from "@/app/assets/img/phone-calendar.png";
-import tutorial from "@/app/assets/img/phone-tutorial.png";
-import community from "@/app/assets/img/phone-community.png";
-import { getNoticeAppCountsAction, toggleNotificationAction } from "@/features/user/components/notification/action";
+import {
+    getNoticeAppCountsAction,
+    toggleNotificationAction,
+} from "@/features/user/components/notification/action";
 import { connectNoticeStomp } from "@/lib/stomp/stomp";
 import { NoticeAppCountsData } from "@/features/user/components/notification/type";
 import { toast } from "sonner";
@@ -31,7 +29,21 @@ const EMPTY_COUNTS: NoticeAppCountsData = {
     communityCount: 0,
 };
 
-const formatCount = (count: number) => (count > 99 ? "99+" : count);
+const PhoneAppGridSkeleton = () => (
+    <div className="grid grid-cols-2 gap-8">
+        {Array.from({ length: 4 }, (_, index) => (
+            <div
+                key={index}
+                className="h-14 w-14 animate-pulse rounded-2xl bg-slate-200/80 shadow-sm"
+            />
+        ))}
+    </div>
+);
+
+const PhoneAppGrid = dynamic(() => import("./PhoneAppGrid"), {
+    ssr: false,
+    loading: () => <PhoneAppGridSkeleton />,
+});
 
 export default function Phone({
     accessToken,
@@ -43,8 +55,10 @@ export default function Phone({
     const [vibrationOffset, setVibrationOffset] = useState({ x: 0, y: 0 });
     const [notification, setNotification] =
         useState<NoticeAppCountsData>(EMPTY_COUNTS);
+    const [shouldRenderAppGrid, setShouldRenderAppGrid] = useState(false);
     const hoverReleaseTimerRef = useRef<number | null>(null);
     const interactionLockTimerRef = useRef<number | null>(null);
+    const appGridAreaRef = useRef<HTMLDivElement | null>(null);
 
     const hasNotificationValue =
         Object.values(notification).some((count) => count > 0);
@@ -54,23 +68,59 @@ export default function Phone({
         !isHovered &&
         !isInteractionLocked &&
         notificationActive;
+    const renderedVibrationOffset = shouldVibrate
+        ? vibrationOffset
+        : { x: 0, y: 0 };
 
-
-    const handleNotificationOnoff = async () => {
-        const result = await toggleNotificationAction()
-        if (result.status >= 400) {
-            toast.error("알림 상태 변경 실패", {
-                duration: 1000
-            })
+    const clearHoverReleaseTimer = () => {
+        if (hoverReleaseTimerRef.current === null) {
             return;
         }
+
+        window.clearTimeout(hoverReleaseTimerRef.current);
+        hoverReleaseTimerRef.current = null;
+    };
+
+    const keepPhoneStable = () => {
+        clearHoverReleaseTimer();
+        setIsHovered(true);
+    };
+
+    const releasePhoneStable = () => {
+        clearHoverReleaseTimer();
+        hoverReleaseTimerRef.current = window.setTimeout(() => {
+            setIsHovered(false);
+        }, 450);
+    };
+
+    const lockInteraction = () => {
+        if (interactionLockTimerRef.current !== null) {
+            window.clearTimeout(interactionLockTimerRef.current);
+        }
+
+        setIsInteractionLocked(true);
+        interactionLockTimerRef.current = window.setTimeout(() => {
+            setIsInteractionLocked(false);
+        }, 700);
+    };
+
+    const handleNotificationOnoff = async () => {
+        const result = await toggleNotificationAction();
+
+        if (result.status >= 400) {
+            toast.error("알림 상태 변경 실패", {
+                duration: 1000,
+            });
+            return;
+        }
+
         toast.success("알림 상태 변경 성공", {
-            duration: 1000
-        })
+            duration: 1000,
+        });
         keepPhoneStable();
         lockInteraction();
         setNotificationEnabled(result.data?.do_not_disturb === true);
-    }
+    };
 
     useEffect(() => {
         let isMounted = true;
@@ -81,8 +131,8 @@ export default function Phone({
             if (!isMounted) {
                 return;
             }
+
             setNotification(response.data ?? EMPTY_COUNTS);
-            console.log(notification, "!!!");
         };
 
         void loadAppCounts();
@@ -126,41 +176,34 @@ export default function Phone({
         };
     }, [accessToken]);
 
-    const clearHoverReleaseTimer = () => {
-        if (hoverReleaseTimerRef.current === null) {
+    useEffect(() => {
+        if (shouldRenderAppGrid || !appGridAreaRef.current) {
             return;
         }
 
-        window.clearTimeout(hoverReleaseTimerRef.current);
-        hoverReleaseTimerRef.current = null;
-    };
+        const target = appGridAreaRef.current;
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setShouldRenderAppGrid(true);
+                    observer.disconnect();
+                }
+            },
+            {
+                rootMargin: "80px 0px",
+                threshold: 0.15,
+            }
+        );
 
-    const keepPhoneStable = () => {
-        clearHoverReleaseTimer();
-        setIsHovered(true);
-    };
+        observer.observe(target);
 
-    const releasePhoneStable = () => {
-        clearHoverReleaseTimer();
-        hoverReleaseTimerRef.current = window.setTimeout(() => {
-            setIsHovered(false);
-        }, 450);
-    };
-
-    const lockInteraction = () => {
-        if (interactionLockTimerRef.current !== null) {
-            window.clearTimeout(interactionLockTimerRef.current);
-        }
-
-        setIsInteractionLocked(true);
-        interactionLockTimerRef.current = window.setTimeout(() => {
-            setIsInteractionLocked(false);
-        }, 700);
-    };
+        return () => {
+            observer.disconnect();
+        };
+    }, [shouldRenderAppGrid]);
 
     useEffect(() => {
         if (!shouldVibrate) {
-            setVibrationOffset({ x: 0, y: 0 });
             return;
         }
 
@@ -205,10 +248,9 @@ export default function Phone({
             onFocusCapture={keepPhoneStable}
             onBlurCapture={releasePhoneStable}
             style={{
-                transform: `translate(${vibrationOffset.x}px, ${vibrationOffset.y}px)`,
+                transform: `translate(${renderedVibrationOffset.x}px, ${renderedVibrationOffset.y}px)`,
             }}
         >
-
             <div className="relative h-full overflow-hidden rounded-[30px] border-[8px] border-slate-950 bg-slate-950 shadow-2xl">
                 <div className="absolute left-1/2 top-2 z-30 h-3 w-15 -translate-x-1/2 rounded-full bg-slate-950" />
 
@@ -244,110 +286,23 @@ export default function Phone({
                         </HoverCard>
                     </header>
 
-                    <main className="flex flex-col justify-center items-center gap-10 z-10 min-h-0 flex-1 px-4">
-                        <div className="relative w-30 h-5">
+                    <main className="z-10 flex min-h-0 flex-1 flex-col items-center justify-center gap-10 px-4">
+                        <div className="relative h-5 w-30">
                             <Image
                                 src={logo}
                                 alt="MOMOCITY 로고"
                                 fill
+                                sizes="120px"
                                 priority
                             />
                         </div>
-                        <div className="grid grid-cols-2 gap-8">
-                            <HoverCard openDelay={200} closeDelay={100}>
-                                <HoverCardTrigger asChild>
-                                    <Link
-                                        href="/student/phone/friends"
-                                        aria-label="메신저"
-                                        className="h-14 w-14 rounded-2xl shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md relative"
-                                    >
-                                        <Image
-                                            src={message}
-                                            alt="메신저"
-                                            fill
-                                        />
-                                        {notification.totalMsgFriendCount > 0 && (
-                                            <div className="relative z-5 ml-auto h-4 w-4 items-center rounded-full bg-red-500 text-center text-xs text-white">
-                                                {formatCount(notification.totalMsgFriendCount)}
-                                            </div>
-                                        )}
-                                    </Link>
-                                </HoverCardTrigger>
 
-                                <HoverCardContent side="left" className="w-auto px-3 py-2">
-                                    메신저
-                                </HoverCardContent>
-                            </HoverCard>
-
-                            <HoverCard openDelay={200} closeDelay={100}>
-                                <HoverCardTrigger asChild>
-                                    <Link
-                                        href="/student/phone/calendar"
-                                        aria-label="캘린더"
-                                        className="h-14 w-14 rounded-2xl shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md relative"
-                                    >
-                                        <Image
-                                            src={calendar}
-                                            alt="캘린더"
-                                            fill
-                                        />
-                                        {notification.calendarCount > 0 && (
-                                            <div className="relative z-5 ml-auto h-4 w-4 items-center rounded-full bg-red-500 text-center text-xs text-white">
-                                                {formatCount(notification.calendarCount)}
-                                            </div>
-                                        )}
-                                    </Link>
-                                </HoverCardTrigger>
-
-                                <HoverCardContent side="right" className="w-auto px-3 py-2">
-                                    캘린더
-                                </HoverCardContent>
-                            </HoverCard>
-
-                            <HoverCard openDelay={200} closeDelay={100}>
-                                <HoverCardTrigger asChild>
-                                    <Link
-                                        href="/student/tutorial"
-                                        aria-label="튜토리얼"
-                                        className="h-14 w-14 rounded-2xl shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md relative"
-                                    >
-                                        <Image
-                                            src={tutorial}
-                                            alt="튜토리얼"
-                                            fill
-                                        />
-                                    </Link>
-                                </HoverCardTrigger>
-
-                                <HoverCardContent side="left" className="w-auto px-3 py-2">
-                                    튜토리얼
-                                </HoverCardContent>
-                            </HoverCard>
-
-                            <HoverCard openDelay={200} closeDelay={100}>
-                                <HoverCardTrigger asChild>
-                                    <Link
-                                        href="/student/phone/community"
-                                        aria-label="커뮤니티"
-                                        className="h-14 w-14 rounded-2xl shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md relative"
-                                    >
-                                        <Image
-                                            src={community}
-                                            alt="커뮤니티"
-                                            fill
-                                        />
-                                        {notification.communityCount > 0 && (
-                                            <div className="relative z-5 ml-auto h-4 w-4 items-center rounded-full bg-red-500 text-center text-xs text-white">
-                                                {formatCount(notification.communityCount)}
-                                            </div>
-                                        )}
-                                    </Link>
-                                </HoverCardTrigger>
-
-                                <HoverCardContent side="right" className="w-auto px-3 py-2">
-                                    커뮤니티
-                                </HoverCardContent>
-                            </HoverCard>
+                        <div ref={appGridAreaRef} className="min-h-[136px]">
+                            {shouldRenderAppGrid ? (
+                                <PhoneAppGrid notification={notification} />
+                            ) : (
+                                <PhoneAppGridSkeleton />
+                            )}
                         </div>
                     </main>
 

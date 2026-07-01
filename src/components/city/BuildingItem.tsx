@@ -14,11 +14,21 @@ interface BuildingItemProps {
     common?: CommonBuilding,
     category?: Category,
     level?: number,
-    buildingUrl?: StaticImageData
+    buildingUrl?: string | StaticImageData
     position?: number
+    priority?: boolean
+    imageSizes?: string
 }
 
-export default function BuildingItem({ common, category, level, buildingUrl, position }: BuildingItemProps) {
+export default function BuildingItem({
+    common,
+    category,
+    level,
+    buildingUrl,
+    position,
+    priority = false,
+    imageSizes = "(max-width: 768px) 18vw, 13vw",
+}: BuildingItemProps) {
 
     const getBuildingInfo = () => {
         if (common && common === "mypage") {
@@ -68,6 +78,8 @@ export default function BuildingItem({ common, category, level, buildingUrl, pos
                         src={buildingInfo.buildingImage}
                         alt={buildingInfo.label}
                         fill
+                        sizes={imageSizes}
+                        priority={priority}
                         className="object-contain"
                     />
 
