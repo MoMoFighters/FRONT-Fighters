@@ -11,6 +11,12 @@ interface StudentTokenPayload {
     nickname?: string | null;
 }
 
+const isMissingNickname = (nickname: unknown) =>
+    nickname === null ||
+    nickname === undefined ||
+    nickname === "" ||
+    nickname === "null";
+
 export default async function StudentLayout({
     children,
 }: Readonly<{
@@ -23,7 +29,13 @@ export default async function StudentLayout({
         redirect("/auth/login");
     }
 
-    const decoded = jwtDecode<StudentTokenPayload>(token);
+    let decoded: StudentTokenPayload;
+
+    try {
+        decoded = jwtDecode<StudentTokenPayload>(token);
+    } catch {
+        redirect("/auth/login");
+    }
 
     if (decoded.roles === "ROLE_TEACHER") {
         redirect("/forbidden");
@@ -34,7 +46,9 @@ export default async function StudentLayout({
             header={<StudentHeader role="student" />}
             footer={<Footer />}
         >
-            <StudentNicknameGuard nicknameIsNull={decoded?.nickname === null} />
+            <StudentNicknameGuard
+                nicknameIsNull={isMissingNickname(decoded.nickname)}
+            />
             {children}
         </StudentLayoutShell>
     );

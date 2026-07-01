@@ -47,7 +47,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
             e.target.value = "";
             setPreviewFile(null);
             setPreviewUrl(null);
-            alert("PDF ?먮뒗 MP4 ?뚯씪留??낅줈?쒗븷 ???덉뒿?덈떎.");
+            toast.error("PDF 또는 MP4 파일만 가능합니다.")
             return;
         }
 
@@ -77,7 +77,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
         const nickname = String(formData.get("teacherName") ?? "").trim();
 
         if (!currentNickname || !nickname || !category || !previewFile) {
-            toast.error("?꾩닔 媛믪쓣 紐⑤몢 ?낅젰?댁＜?몄슂.", { duration: 1000 });
+            toast.error("값이 누락되었습니다.", { duration: 1000 });
             return;
         }
 
@@ -119,7 +119,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
                 }
             }}
         >
-            媛뺤궗 ?깅줉
+            강사 전환
         </div>)
 
     return (
@@ -132,7 +132,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
                     }
                 }}
             >
-                媛뺤궗 ?깅줉
+                강사 전환
             </div>
             <div
                 className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
@@ -148,7 +148,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
                 >
                     <div className="flex flex-row items-center">
                         <h2 className="text-2xl font-bold text-slate-900">
-                            媛뺤궗 ?깅줉
+                            강사 전환하기
                         </h2>
                         <div className="flex-1" />
                         {!isReApply &&
@@ -163,7 +163,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
                     </div>
 
                     <p className="mt-2 text-sm leading-6 text-slate-500">
-                        媛뺤궗 ?쒕룞???ъ슜???대쫫怨?媛뺤쓽 遺꾩빞, ?몄쬆 ?먮즺瑜??깅줉??二쇱꽭??
+                        강사로 전환됩니다.
                     </p>
                     <form
                         className="mt-7 flex min-h-0 flex-1 flex-col overflow-hidden"
@@ -180,7 +180,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
                                     htmlFor="teacherName"
                                     className="text-sm font-semibold text-slate-700"
                                 >
-                                    媛뺤궗 ?쒕룞紐?
+                                    강사 활동명
                                 </label>
                                 <input
                                     type="text"
@@ -197,7 +197,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
                                     htmlFor="category"
                                     className="text-sm font-semibold text-slate-700"
                                 >
-                                    移댄뀒怨좊━
+                                    카테고리
                                 </label>
 
                                 <Select
@@ -213,11 +213,11 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
                                     </SelectTrigger>
 
                                     <SelectContent>
-                                        <SelectItem value="FITNESS" className="!h-10">?쇳듃?덉뒪</SelectItem>
-                                        <SelectItem value="ART" className="!h-10">?덉닠</SelectItem>
-                                        <SelectItem value="COOK" className="!h-10">?붾━</SelectItem>
-                                        <SelectItem value="STUDY" className="!h-10">?숈뒿</SelectItem>
-                                        <SelectItem value="BEAUTY" className="!h-10">酉고떚</SelectItem>
+                                        <SelectItem value="FITNESS" className="!h-10">피트니스</SelectItem>
+                                        <SelectItem value="ART" className="!h-10">예술</SelectItem>
+                                        <SelectItem value="COOK" className="!h-10">요리</SelectItem>
+                                        <SelectItem value="STUDY" className="!h-10">학습</SelectItem>
+                                        <SelectItem value="BEAUTY" className="!h-10">뷰티</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -234,7 +234,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
 
                         <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden mt-2">
                             <label className="text-sm font-semibold text-slate-700">
-                                ?몄쬆 ?뚯씪
+                                증빙자료
                             </label>
 
                             {!previewFile || !previewUrl ? (
@@ -249,11 +249,11 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
                                     </div>
 
                                     <p className="mt-3 text-sm font-semibold text-slate-700">
-                                        ?뚯씪 ?낅줈?쒗븯湲?
+                                        클릭하여 파일 추가
                                     </p>
 
                                     <p className="mt-1 text-xs text-slate-400">
-                                        PDF ?먮뒗 MP4 ?뚯씪 1媛쒕쭔 ?깅줉?????덉뒿?덈떎.
+                                        PDF 또는 MP4 파일을 선택해주세요.
                                     </p>
                                 </label>
                             ) : (
@@ -261,7 +261,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
                                     <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white p-4">
                                         <div className="mb-3 flex shrink-0 items-center justify-between gap-3">
                                             <p className="text-sm font-semibold text-slate-700">
-                                                ?뚯씪 誘몃━蹂닿린
+                                                미리보기
                                             </p>
 
                                             <p className="max-w-64 truncate text-xs font-medium text-slate-400">
@@ -273,7 +273,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
                                             {previewFile.type === "application/pdf" ? (
                                                 <iframe
                                                     src={previewUrl}
-                                                    title="PDF 誘몃━蹂닿린"
+                                                    title="PDF 미리보기"
                                                     className="h-full w-full rounded-xl border-0"
                                                 />
                                             ) : (
@@ -291,7 +291,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
                                             htmlFor="proofFile"
                                             className="mr-2 flex shrink-0 cursor-pointer items-center justify-center text-sm font-semibold text-slate-400 transition-colors hover:text-slate-600"
                                         >
-                                            ?뚯씪 諛붽씀湲?
+                                            파일 변경하기
                                         </label>
                                     </div>
 
@@ -307,7 +307,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
                             {isSubmitting && (
                                 <Spinner className="size-5" />
                             )}
-                            {isSubmitting ? "요청 중..." : "?깅줉 ?붿껌?섍린"}
+                            {isSubmitting ? "요청 중..." : "강사 전환 요청"}
                         </button>
                     </form>
                 </div>

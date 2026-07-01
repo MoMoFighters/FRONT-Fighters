@@ -45,10 +45,6 @@ const createUnauthorizedResponse = <T>(): ApiResponse<T> => ({
 
 const getForwardedForHeader = async (): Promise<string> => {
     const headerStore = await headers();
-    const fuck = headerStore.get("x-forwarded-for")
-    const fuck2 = headerStore.get("x-real-ip")
-    console.log(fuck, 'fuck')
-    console.log(fuck2, 'fuck2')
 
     return (
         headerStore.get("x-forwarded-for") ??
@@ -422,6 +418,9 @@ export const nicknameRegistAction = async (
         const accessToken =
             cookieStore.get("accessToken")?.value;
 
+        const refreshToken =
+            cookieStore.get("refreshToken")?.value;
+
         if (!accessToken) {
             return {
                 timestamp: new Date().toISOString(),
@@ -431,10 +430,36 @@ export const nicknameRegistAction = async (
             };
         }
 
-        return await nicknameRegistService(
+        const result = await nicknameRegistService(
             nickname,
             accessToken
         );
+
+        if (result.status === 200 && refreshToken) {
+            try {
+                const refreshResult = await authRefresh(
+                    refreshToken,
+                    accessToken
+                );
+
+                if (refreshResult.data?.accessToken) {
+                    cookieStore.set(
+                        "accessToken",
+                        refreshResult.data.accessToken,
+                        {
+                            httpOnly: true,
+                            path: "/",
+                            maxAge: refreshResult.data.expiresIn,
+                            sameSite: "lax",
+                        }
+                    );
+                }
+            } catch {
+                // 닉네임 등록 자체는 성공했으므로 토큰 갱신 실패는 무시하고 다음 요청에서 다시 검사한다.
+            }
+        }
+
+        return result;
     } catch (error) {
         return {
             timestamp: new Date().toISOString(),

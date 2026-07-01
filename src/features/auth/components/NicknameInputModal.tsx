@@ -14,8 +14,8 @@ export default function NicknameInputModal({
 }: NicknameInputModalProps) {
     const router = useRouter();
 
-    const [isModal, setIsModal] =
-        useState(nickIsNull);
+    const [isClosed, setIsClosed] =
+        useState(false);
 
     const [nickname, setNickname] =
         useState('');
@@ -27,19 +27,26 @@ export default function NicknameInputModal({
         useState('닉네임을 입력해주세요.');
 
     const handleSubmit = async () => {
+        const trimmedNickname = nickname.trim();
+
+        if (!trimmedNickname) {
+            setMessage("닉네임을 입력해주세요.");
+            return;
+        }
+
         setLoading(true);
-        const result = await nicknameRegistAction(nickname);
+        const result = await nicknameRegistAction(trimmedNickname);
 
         setMessage(result.message);
         setLoading(false);
 
         if (result.status === 200) {
-            setIsModal(false);
+            setIsClosed(true);
             router.refresh();
         }
     };
 
-    if (!isModal) {
+    if (!nickIsNull || isClosed) {
         return null;
     }
 
@@ -77,7 +84,7 @@ export default function NicknameInputModal({
                     />
 
                     <Button
-                        disabled={loading}
+                        disabled={loading || !nickname.trim()}
                         onClick={handleSubmit}
                     >
                         {

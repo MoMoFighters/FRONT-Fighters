@@ -15,12 +15,29 @@ interface StudentTokenPayload {
     nickname?: string | null;
 }
 
+const isMissingNickname = (nickname: unknown) =>
+    nickname === null ||
+    nickname === undefined ||
+    nickname === "" ||
+    nickname === "null";
+
 export default async function MyPage() {
     const cookie = await cookies();
     const token = cookie.get("accessToken")?.value;
-    const tokenValue = token ? jwtDecode<StudentTokenPayload>(token) : {};
+    let tokenValue: StudentTokenPayload = {};
+
+    if (token) {
+        try {
+            tokenValue = jwtDecode<StudentTokenPayload>(token);
+        } catch {
+            tokenValue = {};
+        }
+    }
+
     const DATA = await getMyInfo();
-    console.log(DATA);
+    const shouldOpenNicknameModal =
+        isMissingNickname(tokenValue.nickname) &&
+        isMissingNickname(DATA.data?.nickname);
 
     const USER_DATA = {
         name: DATA.data?.name || "이름 없음",
@@ -36,7 +53,7 @@ export default async function MyPage() {
 
     return (
         <div className="p-12">
-            <NicknameInputModal nickIsNull={tokenValue?.nickname === null} />
+            <NicknameInputModal nickIsNull={shouldOpenNicknameModal} />
             <StudentPageHeader
                 backHref="/student"
                 breadcrumbs={[
