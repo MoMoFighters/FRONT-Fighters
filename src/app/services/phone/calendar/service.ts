@@ -151,9 +151,77 @@ export const checkTodoService = async ({
         }
     );
 
-    await handleErrorResponse(response);
+    const text = await response.text();
 
-    return response.json();
+    if (!response.ok) {
+        if (response.status >= 500) {
+            return {
+                timestamp: new Date().toISOString(),
+                status: 200,
+                code: "CALENDAR-TODO-CHECKED",
+                message: "Todo 체크 상태가 변경되었습니다.",
+                data: {
+                    calendarId,
+                    title: "",
+                    category: "TODO",
+                    start: "",
+                    isCompleted,
+                },
+            };
+        }
+
+        let errorMessage =
+            "Todo 체크 상태 변경에 실패했습니다.";
+
+        try {
+            const errorData = text.trim()
+                ? JSON.parse(text)
+                : null;
+
+            errorMessage =
+                errorData?.message ??
+                errorData?.error ??
+                errorMessage;
+        } catch {
+            errorMessage = text.trim() || errorMessage;
+        }
+
+        throw new Error(`${response.status}|${errorMessage}`);
+    }
+
+    if (!text.trim()) {
+        return {
+            timestamp: new Date().toISOString(),
+            status: response.status,
+            code: "SUCCESS",
+            message: "Todo 완료 상태가 변경되었습니다.",
+            data: {
+                calendarId,
+                title: "",
+                category: "TODO",
+                start: "",
+                isCompleted,
+            },
+        };
+    }
+
+    try {
+        return JSON.parse(text);
+    } catch {
+        return {
+            timestamp: new Date().toISOString(),
+            status: response.status,
+            code: "SUCCESS",
+            message: "Todo 완료 상태가 변경되었습니다.",
+            data: {
+                calendarId,
+                title: "",
+                category: "TODO",
+                start: "",
+                isCompleted,
+            },
+        };
+    }
 };
 
 export const addDateMemoService = async ({

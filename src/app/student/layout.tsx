@@ -5,11 +5,18 @@ import StudentNicknameGuard from "@/components/layout/StudentNicknameGuard";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
+import { getMyInfoService } from "@/app/services/user/service";
 
 interface StudentTokenPayload {
     roles?: string;
     nickname?: string | null;
 }
+
+const isMissingNickname = (nickname: unknown) =>
+    nickname === null ||
+    nickname === undefined ||
+    nickname === 'null' ||
+    nickname === "";
 
 export default async function StudentLayout({
     children,
@@ -23,10 +30,29 @@ export default async function StudentLayout({
         redirect("/auth/login");
     }
 
-    const decoded = jwtDecode<StudentTokenPayload>(token);
+    let decoded: StudentTokenPayload;
+
+    try {
+        decoded = jwtDecode<StudentTokenPayload>(token);
+    } catch {
+        redirect("/auth/login");
+    }
 
     if (decoded.roles === "ROLE_TEACHER") {
         redirect("/forbidden");
+    }
+
+    let nicknameIsNull = isMissingNickname(decoded.nickname);
+
+    if (nicknameIsNull) {
+        try {
+            const myInfo = await getMyInfoService(token);
+
+            nicknameIsNull =
+                isMissingNickname(myInfo.data.userDetail.nickname);
+        } catch {
+            nicknameIsNull = true;
+        }
     }
 
     return (
@@ -34,7 +60,9 @@ export default async function StudentLayout({
             header={<StudentHeader role="student" />}
             footer={<Footer />}
         >
-            <StudentNicknameGuard nicknameIsNull={decoded?.nickname === null} />
+            <StudentNicknameGuard
+                nicknameIsNull={nicknameIsNull}
+            />
             {children}
         </StudentLayoutShell>
     );

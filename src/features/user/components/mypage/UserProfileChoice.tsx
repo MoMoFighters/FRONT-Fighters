@@ -9,9 +9,10 @@ import { useEffect, useRef, useState } from "react";
 import { getProfileOrderListAction } from "@/features/point/action";
 import { ProfileOrderItem } from "@/features/point/type";
 
-export default function UserProfileChoice({ profileChangeOpen, setProfileChangeOpen }: {
+export default function UserProfileChoice({ profileChangeOpen, setProfileChangeOpen, onSelectProfileImage }: {
     profileChangeOpen: boolean;
     setProfileChangeOpen: (a: boolean) => void;
+    onSelectProfileImage: (imageUrl: string, itemName: string) => void;
 }) {
     const containerRef =
         useRef<HTMLDivElement>(null);
@@ -120,6 +121,15 @@ export default function UserProfileChoice({ profileChangeOpen, setProfileChangeO
                                 <button
                                     key={`owned-${item.itemName}`}
                                     type="button"
+                                    onClick={() => {
+                                        if (item.imageUrl && item.itemName) {
+                                            onSelectProfileImage(
+                                                item.imageUrl,
+                                                item.itemName
+                                            );
+                                        }
+                                    }}
+                                    disabled={!item.imageUrl}
                                     className="relative flex h-[75px] w-[75px] cursor-pointer items-center justify-center overflow-hidden rounded-xl border border-indigo-100 bg-white text-sm font-bold text-slate-600 transition-colors hover:bg-indigo-50"
                                 >
                                     {item.imageUrl ? (

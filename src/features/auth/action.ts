@@ -45,10 +45,6 @@ const createUnauthorizedResponse = <T>(): ApiResponse<T> => ({
 
 const getForwardedForHeader = async (): Promise<string> => {
     const headerStore = await headers();
-    const fuck = headerStore.get("x-forwarded-for")
-    const fuck2 = headerStore.get("x-real-ip")
-    console.log(fuck, 'fuck')
-    console.log(fuck2, 'fuck2')
 
     return (
         headerStore.get("x-forwarded-for") ??

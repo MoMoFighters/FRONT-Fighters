@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
-import clsx from 'clsx'
 import { Edit, Trash2 } from 'lucide-react'
 import DeleteModal from '@/features/modal/DeleteModal'
 import { ScheduleItem } from '../../../calendar/type'
@@ -18,8 +18,10 @@ interface Props {
 export default function TodoItem({
     todo,
 }: Props) {
+    const router = useRouter()
 
     const [checked, setChecked] = useState(todo.isCompleted)
+    const [isChecking, setIsChecking] = useState(false)
 
     const [title, setTitle] = useState(todo.title)
 
@@ -27,17 +29,35 @@ export default function TodoItem({
 
     const handleDelete = async () => {
         const result = await deleteTodoAction(todo.calendarId)
-        if (result.status !== 201) {
+        if (result.status < 200 || result.status >= 300) {
             toast.error(result.message)
-        } else { toast.success(result.message) }
+        } else {
+            toast.success(result.message)
+            router.refresh()
+        }
     }
 
     const handleToggle = async () => {
-        const result = await checkTodoAction({ calendarId: todo.calendarId, isCompleted: !checked, });
-        if (result.status !== 200) {
-            toast.error(result.message)
-        } else {
-            setChecked(!checked)
+        const nextChecked = !checked
+
+        setChecked(nextChecked)
+        setIsChecking(true)
+
+        try {
+            const result = await checkTodoAction({
+                calendarId: todo.calendarId,
+                isCompleted: nextChecked,
+            });
+
+            if (result.status !== 200) {
+                setChecked(!nextChecked)
+                toast.error(result.message)
+                return
+            }
+
+            setChecked(result.data?.isCompleted ?? nextChecked)
+        } finally {
+            setIsChecking(false)
         }
     };
 
@@ -47,6 +67,7 @@ export default function TodoItem({
             toast.error(result.message)
         } else {
             toast.success(result.message)
+            router.refresh()
         }
         setIsEditing(false)
     }
@@ -59,6 +80,7 @@ export default function TodoItem({
                 type="checkbox"
                 checked={checked}
                 onChange={handleToggle}
+                disabled={isChecking}
             />
 
             {isEditing ? (

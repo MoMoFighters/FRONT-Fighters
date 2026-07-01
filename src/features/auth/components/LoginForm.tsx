@@ -18,6 +18,7 @@ import EmailInputModal from "./EmailInputModal";
 import { UserRole, UserStatus } from "@/features/user/type";
 import { ApiResponse } from "@/lib/api";
 import type { OAuthClientConfig } from "@/lib/config/oauth/oauthAPI";
+import { redirect } from "next/navigation";
 
 interface LoginData {
     accessToken: string;
@@ -97,7 +98,6 @@ export default function LoginForm({
 
 
             setLoginResult(result);
-            console.log(result, '로그인 ');
             setIsModal(true);
         } finally {
             setIsPending(false);

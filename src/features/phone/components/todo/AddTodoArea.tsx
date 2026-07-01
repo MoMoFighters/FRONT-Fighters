@@ -1,12 +1,8 @@
 'use client'
 
 import { PlusCircle } from 'lucide-react'
-import {
-    startTransition,
-    useActionState,
-    useEffect,
-    useState,
-} from 'react'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 import { createTodoAction } from '../../../calendar/action'
 import { toast } from 'sonner'
@@ -16,6 +12,7 @@ interface Props {
 }
 
 export default function AddTodoArea({ selectedDate, }: Props) {
+    const router = useRouter()
 
     const [isAdding, setIsAdding] =
         useState(false)
@@ -27,17 +24,24 @@ export default function AddTodoArea({ selectedDate, }: Props) {
 
 
     const handleAddTodo = async () => {
-        isSending(true)
         if (!title.trim()) {
             return
         }
-        const result = await createTodoAction({ title: title, start: selectedDate })
-        if (result.status !== 201) {
-            toast.error(result.message)
-        } else { toast.success(result.message) }
-        setTitle("");
-        setIsAdding(false);
-        isSending(false)
+        isSending(true)
+
+        try {
+            const result = await createTodoAction({ title: title, start: selectedDate })
+            if (result.status !== 201) {
+                toast.error(result.message)
+            } else {
+                toast.success(result.message)
+                setTitle("");
+                setIsAdding(false);
+                router.refresh()
+            }
+        } finally {
+            isSending(false)
+        }
     }
 
 

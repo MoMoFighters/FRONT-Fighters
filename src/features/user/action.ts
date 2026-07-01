@@ -100,14 +100,15 @@ export const getMyInfo = async (): Promise<MomoUserInfoResponse> => {
 };
 
 export interface EditMyInfoInput {
-    nickname?: string;
-    currentPassword?: string;
-    password?: string;
+    itemName?: string | null;
+    nickname?: string | null;
+    currentPassword?: string | null;
+    password?: string | null;
 }
 
 // 2. 내 정보 수정하기 액션 (비어있던 부분 완성)
 export const editMyInfo = async (
-    { nickname, currentPassword, password }: EditMyInfoInput
+    { itemName, nickname, currentPassword, password }: EditMyInfoInput
 ): Promise<EditMyInfoActionResponse> => {
     try {
         const cookieStore = await cookies();
@@ -122,13 +123,34 @@ export const editMyInfo = async (
             };
         }
 
-        // 서비스 영역 함수 호출
-        const result = await editMyInfoService({
+        const payload: EditMyInfoInput & { accessToken: string } = {
             accessToken,
-            nickname,
-            currentPassword,
-            password
-        });
+        };
+
+        if (typeof itemName === "string" && itemName.trim()) {
+            payload.itemName = itemName.trim();
+        }
+
+        if (typeof nickname === "string" && nickname.trim()) {
+            payload.nickname = nickname.trim();
+        }
+
+        if (
+            typeof currentPassword === "string" &&
+            currentPassword.trim()
+        ) {
+            payload.currentPassword = currentPassword.trim();
+        }
+
+        if (typeof password === "string" && password.trim()) {
+            payload.password = password.trim();
+        }
+
+        // 서비스 영역 함수 호출
+        const result = await editMyInfoService(payload);
+
+        revalidatePath("/student/mypage");
+        revalidatePath("/student/mypage/edit");
 
         return result;
     } catch (error) {
