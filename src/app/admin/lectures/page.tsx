@@ -13,6 +13,7 @@ import AdminLectureList from "@/features/lecture/components/admin/AdminLectureLi
 import LectureManageNav from "@/features/lecture/components/admin/LectureManageNav";
 import AdminLectureSearchbar from "@/features/lecture/components/admin/AdminLectureSearchbar";
 import { Category, LectureListRequest } from "@/features/lecture/type";
+import { getVisiblePageNumbers } from "@/lib/pagination";
 
 interface AdminLectureListPageProps {
     searchParams: Promise<{
@@ -36,6 +37,7 @@ export default async function AdminLectureListPage({
     };
     const responseData = await getLecturesWithAuth(payload);
     const totalPages = responseData.totalPages;
+    const pageNumbers = getVisiblePageNumbers(currentPage, totalPages);
 
     const createPageHref = (pageNumber: number) => {
         const params = new URLSearchParams();
@@ -89,20 +91,16 @@ export default async function AdminLectureListPage({
                                         />
                                     )}
                                     <PaginationContent>
-                                        {Array.from({ length: totalPages }, (_, index) => {
-                                            const pageNumber = index + 1;
-
-                                            return (
-                                                <PaginationItem key={pageNumber}>
-                                                    <PaginationLink
-                                                        href={createPageHref(pageNumber)}
-                                                        isActive={currentPage === pageNumber}
-                                                    >
-                                                        {pageNumber}
-                                                    </PaginationLink>
-                                                </PaginationItem>
-                                            );
-                                        })}
+                                        {pageNumbers.map((pageNumber) => (
+                                            <PaginationItem key={pageNumber}>
+                                                <PaginationLink
+                                                    href={createPageHref(pageNumber)}
+                                                    isActive={currentPage === pageNumber}
+                                                >
+                                                    {pageNumber}
+                                                </PaginationLink>
+                                            </PaginationItem>
+                                        ))}
                                     </PaginationContent>
                                     {currentPage < totalPages && (
                                         <PaginationNext

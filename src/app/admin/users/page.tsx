@@ -12,6 +12,7 @@ import AdminUsersList from "@/features/user/components/admin/AdminUsersList";
 import PendingTeacherTable from "@/features/user/components/admin/PendingTeacherTable";
 import UserManageNav from "@/features/user/components/admin/UserManageNav";
 import UserManageSearchbar from "@/features/user/components/admin/UserManageSearchbar";
+import { getVisiblePageNumbers } from "@/lib/pagination";
 
 interface UserManagePageProps {
     searchParams: Promise<{
@@ -58,6 +59,7 @@ export default async function UserManagePage({
         currentPage > 1 ||
         currentViewUsers.length >= currentPageSize
     );
+    const pageNumbers = getVisiblePageNumbers(currentPage, totalPages);
 
     const createPageHref = (
         pageNumber: number
@@ -137,20 +139,16 @@ export default async function UserManagePage({
                             )}
 
                             <PaginationContent>
-                                {Array.from({ length: totalPages }, (_, index) => {
-                                    const pageNumber = index + 1;
-
-                                    return (
-                                        <PaginationItem key={pageNumber}>
-                                            <PaginationLink
-                                                href={createPageHref(pageNumber)}
-                                                isActive={currentPage === pageNumber}
-                                            >
-                                                {pageNumber}
-                                            </PaginationLink>
-                                        </PaginationItem>
-                                    );
-                                })}
+                                {pageNumbers.map((pageNumber) => (
+                                    <PaginationItem key={pageNumber}>
+                                        <PaginationLink
+                                            href={createPageHref(pageNumber)}
+                                            isActive={currentPage === pageNumber}
+                                        >
+                                            {pageNumber}
+                                        </PaginationLink>
+                                    </PaginationItem>
+                                ))}
                             </PaginationContent>
 
                             {currentPage < totalPages && (

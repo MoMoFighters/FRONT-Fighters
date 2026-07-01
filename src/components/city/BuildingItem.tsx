@@ -73,7 +73,7 @@ export default function BuildingItem({
     return (
         <HoverCard openDelay={50} closeDelay={50}>
             <HoverCardTrigger asChild>
-                <Link href={buildingInfo.href} className="relative block w-full h-full">
+                <Link href={buildingInfo.href} className="relative block w-full h-full hover:scale-110 transition-all">
                     <Image
                         src={buildingInfo.buildingImage}
                         alt={buildingInfo.label}

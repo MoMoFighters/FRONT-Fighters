@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { getNotices } from "@/app/services/notice/service";
 import AdminNoticeList from "@/features/notice/components/admin/AdminNoticeList";
+import { getVisiblePageNumbers } from "@/lib/pagination";
 
 interface AdminNoticesPageProps {
     searchParams: Promise<{ page?: string }>;
@@ -26,6 +27,7 @@ export default async function AdminNoticesPage({
     const totalPages = noticeResponse.totalPages;
     const currentPage = noticeResponse.page || requestedPage;
     const notices = noticeResponse.items;
+    const pageNumbers = getVisiblePageNumbers(currentPage, totalPages);
 
     return (
         <div className="mx-auto w-full max-w-360 pb-10">
@@ -61,17 +63,13 @@ export default async function AdminNoticesPage({
                                 <PaginationPrevious href={`?page=${currentPage - 1}`} className="absolute right-full top-0 mr-1 w-fit" />
                             )}
                             <PaginationContent>
-                                {Array.from({ length: totalPages }, (_, index) => {
-                                    const pageNumber = index + 1;
-
-                                    return (
-                                        <PaginationItem key={pageNumber}>
-                                            <PaginationLink href={`?page=${pageNumber}`} isActive={pageNumber === currentPage}>
-                                                {pageNumber}
-                                            </PaginationLink>
-                                        </PaginationItem>
-                                    );
-                                })}
+                                {pageNumbers.map((pageNumber) => (
+                                    <PaginationItem key={pageNumber}>
+                                        <PaginationLink href={`?page=${pageNumber}`} isActive={pageNumber === currentPage}>
+                                            {pageNumber}
+                                        </PaginationLink>
+                                    </PaginationItem>
+                                ))}
                             </PaginationContent>
                             {currentPage < totalPages && (
                                 <PaginationNext href={`?page=${currentPage + 1}`} className="absolute left-full top-0 ml-1 w-fit" />

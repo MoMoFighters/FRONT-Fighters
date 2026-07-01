@@ -18,6 +18,7 @@ import { createPointOrderAction } from "../action";
 import { POINT_STORE_CATEGORIES } from "../data";
 import { PointStoreItem, PointStoreTab } from "../type";
 import PointStoreItemCard from "./PointStoreItemCard";
+import { getVisiblePageNumbers } from "@/lib/pagination";
 
 interface PointStorePurchaseSectionProps {
     points: number;
@@ -36,6 +37,7 @@ export default function PointStorePurchaseSection({
     const [activeTab, setActiveTab] = useState<PointStoreTab>("ALL");
     const [selectedItem, setSelectedItem] = useState<PointStoreItem | null>(null);
     const [isPurchasing, setIsPurchasing] = useState(false);
+    const pageNumbers = getVisiblePageNumbers(currentPage, totalPages);
 
     const filteredItems = useMemo(() => {
         if (activeTab === "ALL") {
@@ -150,10 +152,7 @@ export default function PointStorePurchaseSection({
                                 </PaginationItem>
                             )}
 
-                            {Array.from(
-                                { length: totalPages },
-                                (_, index) => index + 1
-                            ).map((pageNumber) => (
+                            {pageNumbers.map((pageNumber) => (
                                 <PaginationItem key={pageNumber}>
                                     <PaginationLink
                                         href={createPageHref(pageNumber)}

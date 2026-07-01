@@ -14,6 +14,7 @@ import {
     getLectureById,
     getReviewsByLectureId,
 } from "@/app/services/lecture/service";
+import { getVisiblePageNumbers } from "@/lib/pagination";
 
 interface TeacherLectureDetailPageProps {
     params: Promise<{
@@ -38,6 +39,10 @@ export default async function TeacherLectureDetailPage({
     const reviewResponseData = tab === "reviews"
         ? await getReviewsByLectureId(lectureId, currentPage)
         : undefined;
+    const pageNumbers = getVisiblePageNumbers(
+        currentPage,
+        reviewResponseData?.totalPages ?? 1,
+    );
 
     if (!lecture) {
         return <div>존재하지 않는 강의입니다.</div>;
@@ -67,10 +72,7 @@ export default async function TeacherLectureDetailPage({
                             </PaginationItem>
                         )}
 
-                        {Array.from(
-                            { length: reviewResponseData.totalPages },
-                            (_, index) => index + 1,
-                        ).map((pageNumber) => (
+                        {pageNumbers.map((pageNumber) => (
                             <PaginationItem key={pageNumber}>
                                 <PaginationLink
                                     href={`?tab=reviews&page=${pageNumber}`}
