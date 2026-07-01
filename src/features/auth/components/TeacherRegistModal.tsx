@@ -199,7 +199,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
                                         <SelectItem value="ART" className="!h-10">예술</SelectItem>
                                         <SelectItem value="COOK" className="!h-10">요리</SelectItem>
                                         <SelectItem value="STUDY" className="!h-10">학습</SelectItem>
-                                        <SelectItem value="FASHION" className="!h-10">패션</SelectItem>
+                                        <SelectItem value="BEAUTY" className="!h-10">뷰티</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
