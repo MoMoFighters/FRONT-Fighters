@@ -1,24 +1,15 @@
 import {
-    Bell,
     BookOpen,
     CheckCircle2,
-    ClipboardCheck,
-    FileText,
     LayoutDashboard,
     ShieldAlert,
     UserCheck,
     Users,
 } from "lucide-react";
 
-import AdminDashboardAccessLogList from "@/features/admin/components/dashboard/AdminDashboardAccessLogList";
-import AdminDashboardCard from "@/features/admin/components/dashboard/AdminDashboardCard";
+import AdminDashboardBelowFoldDynamic from "@/features/admin/components/dashboard/AdminDashboardBelowFoldDynamic";
+import AdminDashboardDynamic from "@/features/admin/components/dashboard/AdminDashboardDynamic";
 import AdminDashboardMetricCard from "@/features/admin/components/dashboard/AdminDashboardMetricCard";
-import AdminDashboardMonthlyBarChart from "@/features/admin/components/dashboard/AdminDashboardMonthlyBarChart";
-import AdminDashboardMonthlyLineChart from "@/features/admin/components/dashboard/AdminDashboardMonthlyLineChart";
-import AdminDashboardNoticeList from "@/features/admin/components/dashboard/AdminDashboardNoticeList";
-import AdminDashboardReportList from "@/features/admin/components/dashboard/AdminDashboardReportList";
-import AdminDashboardSystemStatusList from "@/features/admin/components/dashboard/AdminDashboardSystemStatusList";
-import AdminDashboardTaskTable from "@/features/admin/components/dashboard/AdminDashboardTaskTable";
 import { getDashboardSummary, getMonthlyState, getMonthlySubState } from "@/app/services/admin-dashboard/service";
 import {
     AdminDashboardAccessLog,
@@ -165,7 +156,7 @@ export default async function AdminDashboardPage({
                 </div>
             </div>
 
-            <AdminDashboardMonthlyLineChart
+            <AdminDashboardDynamic
                 data={monthlyDashboardData}
                 year={dashboardYear}
             />
@@ -204,53 +195,15 @@ export default async function AdminDashboardPage({
                 />
             </div>
 
-            <AdminDashboardMonthlyBarChart
-                data={monthlySubDashboardData}
+            <AdminDashboardBelowFoldDynamic
+                monthlySubDashboardData={monthlySubDashboardData}
+                pendingTasks={pendingTasks}
+                notices={notices}
+                reports={reports}
+                accessLogs={accessLogs}
+                systemStatuses={systemStatuses}
             />
 
-            <div className="grid grid-cols-[minmax(0,1.1fr)_minmax(440px,0.96fr)] gap-5">
-                <div className="space-y-5">
-                    <AdminDashboardCard
-                        title="처리 대기 작업"
-                        icon={ClipboardCheck}
-                    >
-                        <AdminDashboardTaskTable tasks={pendingTasks} />
-                    </AdminDashboardCard>
-
-                    <AdminDashboardCard
-                        title="공지사항"
-                        href="/admin/notices"
-                        icon={Bell}
-                    >
-                        <AdminDashboardNoticeList notices={notices} />
-                    </AdminDashboardCard>
-                </div>
-
-                <div className="space-y-5">
-                    <AdminDashboardCard
-                        title="최근 신고"
-                        href="/admin/reports"
-                        icon={ShieldAlert}
-                    >
-                        <AdminDashboardReportList reports={reports} />
-                    </AdminDashboardCard>
-
-                    <AdminDashboardCard
-                        title="접근 로그"
-                        href="/admin/access-logs"
-                        icon={FileText}
-                    >
-                        <AdminDashboardAccessLogList logs={accessLogs} />
-                    </AdminDashboardCard>
-
-                    <AdminDashboardCard
-                        title="시스템 상태"
-                        icon={CheckCircle2}
-                    >
-                        <AdminDashboardSystemStatusList statuses={systemStatuses} />
-                    </AdminDashboardCard>
-                </div>
-            </div>
         </div>
     );
 }
