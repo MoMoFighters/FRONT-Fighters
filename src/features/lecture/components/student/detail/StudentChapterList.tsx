@@ -16,7 +16,6 @@ export default function StudentChapterList({
     isEnrolled,
     chapterBaseHref,
 }: StudentChapterListProps) {
-    console.log(chapters, "Tlqkf")
     return (
         <div className="divide-y divide-slate-100">
             {chapters.map((chapter) => (

@@ -2,17 +2,18 @@
 
 import { PlusCircle } from 'lucide-react'
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useQueryClient } from '@tanstack/react-query'
 
 import { createTodoAction } from '../../../calendar/action'
 import { toast } from 'sonner'
+import { getCalendarDailyQueryKey } from './calendarQueryKeys'
 
 interface Props {
     selectedDate: string
 }
 
 export default function AddTodoArea({ selectedDate, }: Props) {
-    const router = useRouter()
+    const queryClient = useQueryClient()
 
     const [isAdding, setIsAdding] =
         useState(false)
@@ -27,18 +28,26 @@ export default function AddTodoArea({ selectedDate, }: Props) {
         if (!title.trim()) {
             return
         }
+
         isSending(true)
 
         try {
-            const result = await createTodoAction({ title: title, start: selectedDate })
+            const result = await createTodoAction({
+                title,
+                start: selectedDate,
+            })
+
             if (result.status !== 201) {
                 toast.error(result.message)
-            } else {
-                toast.success(result.message)
-                setTitle("");
-                setIsAdding(false);
-                router.refresh()
+                return
             }
+
+            toast.success(result.message)
+            setTitle("")
+            setIsAdding(false)
+            await queryClient.invalidateQueries({
+                queryKey: getCalendarDailyQueryKey(selectedDate),
+            })
         } finally {
             isSending(false)
         }
