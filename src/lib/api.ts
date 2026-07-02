@@ -21,6 +21,7 @@ export async function fetchWithAuth(endpoint: string, options: RequestInit = {})
     // Header 설정
     const headers = {
         'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true',
         ...(accessToken && { 'Authorization': `Bearer ${accessToken}` }),
         ...options.headers
     }
