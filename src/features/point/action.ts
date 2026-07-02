@@ -4,12 +4,14 @@ import { revalidatePath } from "next/cache";
 
 import {
     createPointOrderService,
+    getPointHistoryListService,
     getPointStoreItemsService,
     getProfileOrderListService,
 } from "@/app/services/point/service";
 import {
     CreatePointOrderRequest,
     CreatePointOrderResponse,
+    PointHistoryListResponse,
     PointStoreListResponse,
     ProfileOrderListResponse,
 } from "./type";
@@ -52,6 +54,23 @@ export const getProfileOrderListAction =
                     error instanceof Error
                         ? error.message
                         : "프로필 아이템 목록을 불러오지 못했습니다.",
+            };
+        }
+    };
+
+export const getPointHistoryListAction =
+    async (page?: number): Promise<PointHistoryListResponse> => {
+        try {
+            return await getPointHistoryListService(page);
+        } catch (error) {
+            return {
+                timestamp: new Date().toISOString(),
+                status: 500,
+                code: "POINT-HISTORY-LIST-FAILED",
+                message:
+                    error instanceof Error
+                        ? error.message
+                        : "포인트 사용 내역 조회에 실패했습니다.",
             };
         }
     };

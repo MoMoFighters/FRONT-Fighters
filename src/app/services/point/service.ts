@@ -2,6 +2,7 @@ import { fetchWithAuth } from "@/lib/api";
 import {
     CreatePointOrderRequest,
     CreatePointOrderResponse,
+    PointHistoryListResponse,
     PointStoreListResponse,
     ProfileOrderListResponse,
 } from "@/features/point/type";
@@ -125,3 +126,25 @@ export const createPointOrderService = async (
 
     return result;
 };
+
+export const getPointHistoryListService =
+    async (page?: number): Promise<PointHistoryListResponse> => {
+        const params = new URLSearchParams();
+
+        if (page && page > 0) {
+            params.set("page", String(page));
+        }
+
+        const queryString = params.toString();
+        const response = await fetchWithAuth(`/api/v1/order/list${queryString ? `?${queryString}` : ""}`, {
+            method: "GET",
+        });
+
+        const result: PointHistoryListResponse = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "포인트 사용 내역 조회에 실패했습니다.");
+        }
+
+        return result;
+    };

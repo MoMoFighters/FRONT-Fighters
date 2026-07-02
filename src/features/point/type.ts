@@ -64,6 +64,33 @@ export interface CreatePointOrderRequest {
 export type CreatePointOrderResponse =
     ApiResponse<null>;
 
+export type PointHistoryTransactionType = "GAINED" | "USED";
+
+export type PointHistoryReason =
+    | "COMPLETE"
+    | "REVIEW"
+    | "PROFILE"
+    | "BUS"
+    | "GUESTBOOK";
+
+export interface PointHistoryItem {
+    type: PointHistoryTransactionType;
+    reason: PointHistoryReason;
+    createdAt: string;
+    amount: number;
+}
+
+export interface PointHistoryListData {
+    list: PointHistoryItem[];
+    page: number;
+    size: number;
+    totalElements: number;
+    totalPages: number;
+}
+
+export type PointHistoryListResponse =
+    ApiResponse<PointHistoryListData>;
+
 export interface MyPointItem {
     id: number;
     itemId: number;
