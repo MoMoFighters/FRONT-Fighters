@@ -16,21 +16,13 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "@/components/ui/pagination";
+import { getPointHistoryListAction } from "@/features/point/action";
+import {
+    PointHistoryReason,
+    PointHistoryTransactionType,
+} from "@/features/point/type";
+import { getMyInfo } from "@/features/user/action";
 import { getVisiblePageNumbers } from "@/lib/pagination";
-
-type PointHistoryType =
-    | "LECTURE_REWARD"
-    | "ATTENDANCE"
-    | "EVENT"
-    | "PURCHASE"
-    | "REFUND";
-
-interface PointHistoryItem {
-    id: number;
-    createdAt: string;
-    type: PointHistoryType;
-    value: number;
-}
 
 interface MypagePointPageProps {
     searchParams: Promise<{
@@ -38,61 +30,35 @@ interface MypagePointPageProps {
     }>;
 }
 
-const POINT_TYPE_LABEL: Record<PointHistoryType, string> = {
-    LECTURE_REWARD: "강의 수강 보상",
-    ATTENDANCE: "출석 보상",
-    EVENT: "이벤트 적립",
-    PURCHASE: "포인트 사용",
-    REFUND: "결제 환불",
+const POINT_REASON_LABEL: Record<PointHistoryReason, string> = {
+    COMPLETE: "강의 완료 보상",
+    REVIEW: "리뷰 작성 보상",
+    PROFILE: "프로필 아이템",
+    BUS: "버스 이용",
+    GUESTBOOK: "방명록",
 };
 
-const POINT_HISTORY: PointHistoryItem[] = [
-    {
-        id: 1,
-        createdAt: "2026.04.04 04:44",
-        type: "LECTURE_REWARD",
-        value: 500,
-    },
-    {
-        id: 2,
-        createdAt: "2026.04.05 10:12",
-        type: "ATTENDANCE",
-        value: 120,
-    },
-    {
-        id: 3,
-        createdAt: "2026.04.07 18:30",
-        type: "PURCHASE",
-        value: -800,
-    },
-    {
-        id: 4,
-        createdAt: "2026.04.11 09:20",
-        type: "EVENT",
-        value: 1000,
-    },
-    {
-        id: 5,
-        createdAt: "2026.04.13 21:08",
-        type: "REFUND",
-        value: 300,
-    },
-    {
-        id: 6,
-        createdAt: "2026.04.15 13:35",
-        type: "LECTURE_REWARD",
-        value: 450,
-    },
-    {
-        id: 7,
-        createdAt: "2026.04.18 08:10",
-        type: "PURCHASE",
-        value: -300,
-    },
-];
+const POINT_TYPE_LABEL: Record<PointHistoryTransactionType, string> = {
+    GAINED: "적립",
+    USED: "사용",
+};
 
-const CURRENT_POINT = 3200;
-const PAGE_SIZE = 5;
+const formatDateTime = (createdAt: string) => {
+    const date = new Date(createdAt);
+
+    if (Number.isNaN(date.getTime())) {
+        return createdAt;
+    }
+
+    return new Intl.DateTimeFormat("ko-KR", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+    }).format(date);
+};
 
 const createPageHref = (pageNumber: number) =>
     `/student/mypage/point?page=${pageNumber}`;
@@ -101,18 +67,20 @@ export default async function MypagePointPage({
     searchParams,
 }: MypagePointPageProps) {
     const { page } = await searchParams;
+    const requestedPage = Math.max(Number(page) || 1, 1);
 
-    const totalPages = Math.ceil(POINT_HISTORY.length / PAGE_SIZE);
-    const currentPage = Math.min(
-        Math.max(Number(page) || 1, 1),
-        totalPages
-    );
-    const startIndex = (currentPage - 1) * PAGE_SIZE;
-    const pointHistoryPage = POINT_HISTORY.slice(
-        startIndex,
-        startIndex + PAGE_SIZE
-    );
+    const [myInfoResponse, pointHistoryResponse] = await Promise.all([
+        getMyInfo(),
+        getPointHistoryListAction(requestedPage),
+    ]);
+
+    const currentPoint = myInfoResponse.data?.points ?? 0;
+    const pointHistory = pointHistoryResponse.data?.list ?? [];
+    const totalElements = pointHistoryResponse.data?.totalElements ?? pointHistory.length;
+    const currentPage = pointHistoryResponse.data?.page ?? requestedPage;
+    const totalPages = Math.max(pointHistoryResponse.data?.totalPages ?? 1, 1);
     const pageNumbers = getVisiblePageNumbers(currentPage, totalPages);
+    const hasError = pointHistoryResponse.status >= 400;
 
     return (
         <main className="mx-auto w-full max-w-360 px-12 py-12">
@@ -150,7 +118,7 @@ export default async function MypagePointPage({
                         </div>
 
                         <Link
-                            href="/student"
+                            href="/student/point-store"
                             className="flex shrink-0 items-center gap-1.5 text-sm font-bold text-indigo-500 transition-colors hover:text-indigo-600"
                         >
                             포인트 사용하러 가기
@@ -169,7 +137,7 @@ export default async function MypagePointPage({
                                     현재 보유 포인트
                                 </p>
                                 <p className="mt-0.5 text-3xl font-black tracking-tight text-slate-900">
-                                    {CURRENT_POINT.toLocaleString()}
+                                    {currentPoint.toLocaleString()}
                                     <span className="ml-1.5 text-lg text-indigo-500">
                                         P
                                     </span>
@@ -186,101 +154,107 @@ export default async function MypagePointPage({
                                 포인트 내역
                             </h2>
                             <p className="mt-1 text-xs font-medium text-slate-400">
-                                일시, 획득처, 변화량을 확인하세요.
+                                총 {totalElements.toLocaleString()}건의 포인트 내역
                             </p>
                         </div>
                     </div>
 
                     <div className="divide-y divide-slate-100">
-                        {/* ==================== POINT_HISTORY_ITEM_COMPONENT_START ==================== */}
-                        {/* TODO: 아래 포인트 내역 아이템은 추후 별도 컴포넌트로 분리 예정 */}
-                        {pointHistoryPage.map((item) => {
-                            const isIncrease = item.value > 0;
+                        {hasError ? (
+                            <div className="px-5 py-10 text-center text-sm font-bold text-rose-500">
+                                {pointHistoryResponse.message}
+                            </div>
+                        ) : pointHistory.length === 0 ? (
+                            <div className="px-5 py-10 text-center text-sm font-bold text-slate-400">
+                                포인트 사용 내역이 없습니다.
+                            </div>
+                        ) : (
+                            pointHistory.map((item, index) => {
+                                const isIncrease = item.type === "GAINED";
 
-                            return (
-                                <div
-                                    key={item.id}
-                                    className="grid grid-cols-[160px_minmax(0,1fr)_120px] items-center gap-4 px-5 py-3 transition-colors hover:bg-slate-50"
-                                >
-                                    <p className="text-xs font-semibold text-slate-500">
-                                        {item.createdAt}
-                                    </p>
+                                return (
+                                    <div
+                                        key={`${item.createdAt}-${item.reason}-${index}`}
+                                        className="grid grid-cols-[160px_minmax(0,1fr)_120px] items-center gap-4 px-5 py-3 transition-colors hover:bg-slate-50"
+                                    >
+                                        <p className="text-xs font-semibold text-slate-500">
+                                            {formatDateTime(item.createdAt)}
+                                        </p>
 
-                                    <div className="flex min-w-0 items-center gap-2.5">
-                                        <div
-                                            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
+                                        <div className="flex min-w-0 items-center gap-2.5">
+                                            <div
+                                                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
+                                                    isIncrease
+                                                        ? "bg-indigo-50 text-indigo-500"
+                                                        : "bg-slate-100 text-slate-500"
+                                                }`}
+                                            >
+                                                {isIncrease ? (
+                                                    <ArrowDownLeft className="h-4 w-4" />
+                                                ) : (
+                                                    <ArrowUpRight className="h-4 w-4" />
+                                                )}
+                                            </div>
+
+                                            <div className="min-w-0">
+                                                <p className="truncate text-sm font-bold text-slate-900">
+                                                    {POINT_REASON_LABEL[item.reason] ?? item.reason}
+                                                </p>
+                                                <p className="mt-0.5 text-[11px] font-medium text-slate-400">
+                                                    {POINT_TYPE_LABEL[item.type] ?? item.type}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <p
+                                            className={`text-right text-base font-black ${
                                                 isIncrease
-                                                    ? "bg-indigo-50 text-indigo-500"
-                                                    : "bg-slate-100 text-slate-500"
+                                                    ? "text-indigo-500"
+                                                    : "text-rose-500"
                                             }`}
                                         >
-                                            {isIncrease ? (
-                                                <ArrowDownLeft className="h-4 w-4" />
-                                            ) : (
-                                                <ArrowUpRight className="h-4 w-4" />
-                                            )}
-                                        </div>
-
-                                        <div className="min-w-0">
-                                            <p className="truncate text-sm font-bold text-slate-900">
-                                                {POINT_TYPE_LABEL[item.type]}
-                                            </p>
-                                            <p className="mt-0.5 text-[11px] font-medium text-slate-400">
-                                                {item.type}
-                                            </p>
-                                        </div>
+                                            {isIncrease ? "+" : "-"}
+                                            {Math.abs(item.amount).toLocaleString()} P
+                                        </p>
                                     </div>
-
-                                    <p
-                                        className={`text-right text-base font-black ${
-                                            isIncrease
-                                                ? "text-indigo-500"
-                                                : "text-rose-500"
-                                        }`}
-                                    >
-                                        {isIncrease ? "+" : "-"}
-                                        {Math.abs(item.value).toLocaleString()} P
-                                    </p>
-                                </div>
-                            );
-                        })}
-                        {/* TODO: 위 포인트 내역 아이템은 추후 별도 컴포넌트로 분리 예정 */}
-                        {/* ===================== POINT_HISTORY_ITEM_COMPONENT_END ===================== */}
+                                );
+                            })
+                        )}
                     </div>
                 </div>
 
-                {totalPages > 1 && (
-                    <Pagination className="mt-6">
-                        <PaginationContent>
-                            {currentPage > 1 && (
-                                <PaginationItem>
+                {totalPages > 1 && !hasError && (
+                    <Pagination className="mt-10">
+                        <div className="relative">
+                            <div className="relative mx-auto w-fit">
+                                {currentPage > 1 && (
                                     <PaginationPrevious
                                         href={createPageHref(currentPage - 1)}
-                                        text="이전"
+                                        className="absolute right-full top-0 mr-1 w-fit"
                                     />
-                                </PaginationItem>
-                            )}
+                                )}
 
-                            {pageNumbers.map((pageNumber) => (
-                                <PaginationItem key={pageNumber}>
-                                    <PaginationLink
-                                        href={createPageHref(pageNumber)}
-                                        isActive={pageNumber === currentPage}
-                                    >
-                                        {pageNumber}
-                                    </PaginationLink>
-                                </PaginationItem>
-                            ))}
+                                <PaginationContent>
+                                    {pageNumbers.map((pageNumber) => (
+                                        <PaginationItem key={pageNumber}>
+                                            <PaginationLink
+                                                href={createPageHref(pageNumber)}
+                                                isActive={currentPage === pageNumber}
+                                            >
+                                                {pageNumber}
+                                            </PaginationLink>
+                                        </PaginationItem>
+                                    ))}
+                                </PaginationContent>
 
-                            {currentPage < totalPages && (
-                                <PaginationItem>
+                                {currentPage < totalPages && (
                                     <PaginationNext
                                         href={createPageHref(currentPage + 1)}
-                                        text="다음"
+                                        className="absolute left-full top-0 ml-1 w-fit"
                                     />
-                                </PaginationItem>
-                            )}
-                        </PaginationContent>
+                                )}
+                            </div>
+                        </div>
                     </Pagination>
                 )}
             </section>
