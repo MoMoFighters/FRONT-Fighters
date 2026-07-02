@@ -1,24 +1,27 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useQueryClient } from '@tanstack/react-query'
 
 import { Edit, Trash2 } from 'lucide-react'
 import DeleteModal from '@/features/modal/DeleteModal'
 import { ScheduleItem } from '../../../calendar/type'
 import { checkTodoAction, deleteTodoAction, editTodoAction } from '../../../calendar/action'
 import { toast } from 'sonner'
+import { getCalendarDailyQueryKey } from './calendarQueryKeys'
 
 
 
 interface Props {
     todo: ScheduleItem
+    selectedDate: string
 }
 
 export default function TodoItem({
     todo,
+    selectedDate,
 }: Props) {
-    const router = useRouter()
+    const queryClient = useQueryClient()
 
     const [checked, setChecked] = useState(todo.isCompleted)
     const [isChecking, setIsChecking] = useState(false)
@@ -31,10 +34,13 @@ export default function TodoItem({
         const result = await deleteTodoAction(todo.calendarId)
         if (result.status < 200 || result.status >= 300) {
             toast.error(result.message)
-        } else {
-            toast.success(result.message)
-            router.refresh()
+            return
         }
+
+        toast.success(result.message)
+        await queryClient.invalidateQueries({
+            queryKey: getCalendarDailyQueryKey(selectedDate),
+        })
     }
 
     const handleToggle = async () => {
@@ -56,6 +62,9 @@ export default function TodoItem({
             }
 
             setChecked(result.data?.isCompleted ?? nextChecked)
+            await queryClient.invalidateQueries({
+                queryKey: getCalendarDailyQueryKey(selectedDate),
+            })
         } finally {
             setIsChecking(false)
         }
@@ -67,7 +76,9 @@ export default function TodoItem({
             toast.error(result.message)
         } else {
             toast.success(result.message)
-            router.refresh()
+            await queryClient.invalidateQueries({
+                queryKey: getCalendarDailyQueryKey(selectedDate),
+            })
         }
         setIsEditing(false)
     }

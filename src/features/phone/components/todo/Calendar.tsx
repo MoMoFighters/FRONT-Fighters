@@ -15,6 +15,7 @@ import {
 import { getMonthlyCalendarAction } from '@/features/calendar/action'
 
 import type { ScheduleItem } from '../../../calendar/type'
+import { getCalendarMonthQueryKey } from './calendarQueryKeys'
 
 const FullCalendarMonthView = dynamic(
     () => import('./FullCalendarMonthView'),
@@ -78,12 +79,6 @@ const toFullCalendarEnd = (end?: string) => {
 
 const getCalendarMonth = (date: string) => date.slice(0, 7)
 
-const getCalendarMonthQueryKey = (month: string) => [
-    'calendar',
-    'monthly',
-    month,
-]
-
 const EMPTY_SCHEDULES: ScheduleItem[] = []
 
 export default function Calendar({
@@ -145,9 +140,7 @@ export default function Calendar({
                     queryKey: getCalendarMonthQueryKey(visibleMonth),
                 }),
         ])
-
-        router.refresh()
-    }, [queryClient, router, visibleMonth])
+    }, [queryClient, visibleMonth])
 
     const updateSelectedDate = useCallback((date: string) => {
         const params = new URLSearchParams(searchParams.toString())

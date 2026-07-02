@@ -9,11 +9,13 @@ import { ScheduleItem } from '../../../calendar/type'
 interface Props {
     selectedDate: string
     todos: ScheduleItem[]
+    isLoading?: boolean
 }
 
 export default function TodoSection({
     selectedDate,
     todos,
+    isLoading = false,
 }: Props) {
 
     const filteredTodos = todos.filter(
@@ -34,10 +36,17 @@ export default function TodoSection({
 
             {/* TODO LIST */}
             <div className="flex flex-col gap-2 h-full scrollbar-none overflow-auto w-full">
-                {filteredTodos[0] ? (filteredTodos.map((todo) => (
+                {isLoading ? (
+                    <div className="text-center h-full items-center flex justify-center">
+                        <p className="font-bold text-slate-700">
+                            불러오는 중입니다.
+                        </p>
+                    </div>
+                ) : filteredTodos[0] ? (filteredTodos.map((todo) => (
                     <TodoItem
                         key={todo.calendarId}
                         todo={todo}
+                        selectedDate={selectedDate}
                     />
                 ))) : (<div className="text-center h-full items-center flex justify-center">
                     <p className="font-bold text-slate-700">
