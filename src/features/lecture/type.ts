@@ -69,7 +69,10 @@ export interface Chapter {
     durationSec: number;
 
     // api 가능하면
+    chapterThumbnailUrl?: string;
     thumbnailUrl?: string;
+    chapterThumbnailImageUrl?: string;
+    thumbnailImageUrl?: string;
 
     // 수강 중인 학생의 경우
     isCompleted?: boolean;
@@ -142,6 +145,9 @@ export interface ChapterByMeta {
     chapterId: number;
     // api 수정에서 반드시 받아오게 될 예정
     chapterThumbnailUrl?: string;
+    thumbnailUrl?: string
+    chapterThumbnailImageUrl?: string;
+    thumbnailImageUrl?: string
     title: string;
     orderNo: number;
     durationSec: number;

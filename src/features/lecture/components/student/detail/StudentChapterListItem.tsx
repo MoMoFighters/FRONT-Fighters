@@ -35,9 +35,9 @@ export default function StudentChapterListItem({
     const content = (
         <>
             <div className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-100 text-[10px] font-bold text-slate-400">
-                {chapter.thumbnailUrl ? (
+                {chapter.chapterThumbnailUrl ? (
                     <Image
-                        src={chapter.thumbnailUrl}
+                        src={chapter.chapterThumbnailUrl}
                         alt={`${chapter.title} 썸네일`}
                         fill
                         sizes="48px"
