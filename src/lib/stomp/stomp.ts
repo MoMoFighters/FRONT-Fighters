@@ -1,7 +1,6 @@
 "use client";
 
 import { Client, type StompSubscription } from "@stomp/stompjs";
-import SockJS from "sockjs-client";
 
 type StompMessageHandler = (body: string) => void;
 
@@ -50,17 +49,6 @@ const getWebSocketUrl = (accessToken: string) =>
         accessToken
     );
 
-const getSockJsUrl = (accessToken: string) =>
-    appendTokenQuery(
-        getRawStompUrl()
-            .replace(/^ws:\/\//, "http://")
-            .replace(/^wss:\/\//, "https://"),
-        accessToken
-    );
-
-const shouldUseSockJs = () =>
-    process.env.NEXT_PUBLIC_STOMP_TRANSPORT === "sockjs";
-
 const getAuthHeaders = (accessToken: string) => ({
     Authorization: `Bearer ${accessToken}`,
 });
@@ -103,19 +91,14 @@ const createClientProxy = (): MomoStompClient => ({
 });
 
 const createSharedStompClient = (accessToken: string) => {
-    const useSockJs = shouldUseSockJs();
-
     sharedAccessToken = accessToken;
     isConnected = false;
     sharedStompClient = new Client({
-        brokerURL: useSockJs ? undefined : getWebSocketUrl(accessToken),
+        brokerURL: getWebSocketUrl(accessToken),
         connectHeaders: getAuthHeaders(accessToken),
         reconnectDelay: 5000,
         heartbeatIncoming: 10000,
         heartbeatOutgoing: 10000,
-        webSocketFactory: useSockJs
-            ? () => new SockJS(getSockJsUrl(accessToken))
-            : undefined,
         debug: (message) => console.log("[STOMP Debug]", message),
     });
 

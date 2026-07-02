@@ -7,12 +7,9 @@ const BASE_SERVER_URL =
 const createForwardedForHeaders = (
     forwardedFor?: string
 ): HeadersInit => {
-    if (!forwardedFor) {
-        return {};
-    }
-
     return {
-        "X-Forwarded-For": forwardedFor,
+        "ngrok-skip-browser-warning": "true",
+        ...(forwardedFor && { "X-Forwarded-For": forwardedFor }),
     };
 };
 

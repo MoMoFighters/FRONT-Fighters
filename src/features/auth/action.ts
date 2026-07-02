@@ -479,50 +479,71 @@ const setOAuthCookies = async (data: OAuthLoginData) => {
 export const handleKakaoLoginCallback = async (
     code: string
 ): Promise<ApiResponse<OAuthLoginData>> => {
-    if (!code) {
-        throw new Error("코드가 존재하지 않습니다.");
+    try {
+        if (!code) {
+            throw new Error("코드가 존재하지 않습니다.");
+        }
+
+        const forwardedFor = await getForwardedForHeader();
+        const result = await kakaoLoginService(code, forwardedFor);
+
+        if (result.data) {
+            await setOAuthCookies(result.data);
+        }
+
+        return result;
+    } catch (error) {
+        return createErrorResponse<OAuthLoginData>(
+            error,
+            "카카오 로그인 처리에 실패했습니다."
+        );
     }
-
-    const forwardedFor = await getForwardedForHeader();
-    const result = await kakaoLoginService(code, forwardedFor);
-
-    if (result.data) {
-        await setOAuthCookies(result.data);
-    }
-
-    return result;
 };
 
 export const googleLoginAction = async (
     code: string
 ): Promise<ApiResponse<OAuthLoginData>> => {
-    if (!code) {
-        throw new Error("코드가 존재하지 않습니다.");
+    try {
+        if (!code) {
+            throw new Error("코드가 존재하지 않습니다.");
+        }
+
+        const forwardedFor = await getForwardedForHeader();
+        const result = await googleLoginService(code, forwardedFor);
+
+        if (result.data) {
+            await setOAuthCookies(result.data);
+        }
+
+        return result;
+    } catch (error) {
+        return createErrorResponse<OAuthLoginData>(
+            error,
+            "구글 로그인 처리에 실패했습니다."
+        );
     }
-
-    const forwardedFor = await getForwardedForHeader();
-    const result = await googleLoginService(code, forwardedFor);
-
-    if (result.data) {
-        await setOAuthCookies(result.data);
-    }
-
-    return result;
 };
 
 export const naverLoginAction = async (
     code: string
 ): Promise<ApiResponse<OAuthLoginData>> => {
-    if (!code) {
-        throw new Error("네이버 인가 코드가 없습니다.");
+    try {
+        if (!code) {
+            throw new Error("네이버 인가 코드가 없습니다.");
+        }
+
+        const forwardedFor = await getForwardedForHeader();
+        const result = await naverLoginService(code, forwardedFor);
+
+        if (result.data) {
+            await setOAuthCookies(result.data);
+        }
+
+        return result;
+    } catch (error) {
+        return createErrorResponse<OAuthLoginData>(
+            error,
+            "네이버 로그인 처리에 실패했습니다."
+        );
     }
-
-    const forwardedFor = await getForwardedForHeader();
-    const result = await naverLoginService(code, forwardedFor);
-
-    if (result.data) {
-        await setOAuthCookies(result.data);
-    }
-
-    return result;
 };
