@@ -91,7 +91,7 @@ export default function HeaderNotificationZone({
                         }}
                     >
                         <Bell />
-                        {notification > 1 && (
+                        {notification > 0 && (
                             <p className="absolute -top-2.5 left-3.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-xs text-slate-200">
                                 {notification > 99 ? "99+" : notification}
                             </p>
