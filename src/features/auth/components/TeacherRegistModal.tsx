@@ -209,7 +209,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
                                         id="category"
                                         className="!h-10 min-h-10 w-full rounded-xl border-slate-200 bg-slate-50 px-4 py-0 text-sm text-slate-700 shadow-none focus:border-mauve-400 focus:bg-white focus:ring-4 focus:ring-mauve-100 [&>span]:leading-none"
                                     >
-                                        <SelectValue placeholder="?좏깮" />
+                                        <SelectValue placeholder="카테고리" />
                                     </SelectTrigger>
 
                                     <SelectContent>
