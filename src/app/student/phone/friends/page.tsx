@@ -64,7 +64,12 @@ export default async function StudentChatPage({
     const sentResponse = await getSentFriendRequestsService(accessToken);
     const sent = sentResponse.status === 200 ? sentResponse.data ?? [] : [];
 
-    const myChatRoom = chatRoomData[0];
+    const myChatRoom =
+        chatRoomData.length > 0
+            ? chatRoomData.reduce((smallestRoom, room) =>
+                room.roomId < smallestRoom.roomId ? room : smallestRoom
+            )
+            : undefined;
     const selectedFriend =
         friends.find(friend => friend.userId === currentFriendId) ?? null;
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import ChatRoomItem from "@/components/common/ChatRoomItem";
 import {
@@ -19,12 +19,15 @@ export default function ChatRoomListPanel({
     accessToken,
     initialRooms,
 }: ChatRoomListPanelProps) {
-    const [rooms, setRooms] = useState(initialRooms);
-    console.log(rooms, "채팅방목록영역");
+    const [liveRooms, setLiveRooms] = useState<ChatRoomListData[] | null>(null);
+    const rooms = liveRooms ?? initialRooms;
+    const myChatRoomId = useMemo(() => {
+        if (rooms.length === 0) {
+            return null;
+        }
 
-    useEffect(() => {
-        setRooms(initialRooms);
-    }, [initialRooms]);
+        return Math.min(...rooms.map((room) => room.roomId));
+    }, [rooms]);
 
     useEffect(() => {
         if (!accessToken) {
@@ -41,7 +44,7 @@ export default function ChatRoomListPanel({
                     "/user/sub/chat/rooms",
                     (body) => {
                         const data = JSON.parse(body) as RawChatRoomListResponseData;
-                        setRooms(normalizeChatRoomListData(data));
+                        setLiveRooms(normalizeChatRoomListData(data));
                     }
                 );
             },
@@ -60,6 +63,7 @@ export default function ChatRoomListPanel({
                     <ChatRoomItem
                         key={room.roomId}
                         data={room}
+                        myChatRoomId={myChatRoomId}
                     />
                 ))
             ) : (
