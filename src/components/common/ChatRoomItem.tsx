@@ -9,6 +9,9 @@ import { ChatMemberResponse } from "@/features/chat/type";
 const getInitial = (name?: string | null) =>
     name?.trim().charAt(0) || "?";
 
+const getMemberDisplayName = (member?: ChatMemberResponse) =>
+    member?.nickname?.trim() || member?.name?.trim() || "채팅방";
+
 function ProfileImage({
     member,
     title,
@@ -111,33 +114,38 @@ function GroupProfile({
     );
 }
 
-export default function ChatRoomItem({ data }: { data: ChatRoomListData }) {
+export default function ChatRoomItem({
+    data,
+    myChatRoomId,
+}: {
+    data: ChatRoomListData;
+    myChatRoomId?: number | null;
+}) {
     const pathname = usePathname();
     const {
         roomId,
         roomTitle,
-        inMemberCount,
         content,
         unreadCount,
     } = data;
     const memberInfo = data.memberInfo ?? [];
     const isGroupRoom = Boolean(roomTitle?.trim());
+    const isMyRoom = myChatRoomId !== null && myChatRoomId !== undefined
+        ? roomId === myChatRoomId
+        : false;
 
     const opponent =
         memberInfo.find((member) => member.status !== "me") ??
         memberInfo[0];
     const myMember =
         memberInfo.find((member) => member.status === "me");
-    const isMyRoom =
-        inMemberCount === 1 ||
-        (memberInfo.length === 1 && Boolean(myMember));
 
     const title =
         isGroupRoom
             ? roomTitle
             : isMyRoom
                 ? "나와의 채팅"
-                : opponent?.nickname ?? "채팅방";
+                : getMemberDisplayName(opponent);
 
     const role = !isGroupRoom && !isMyRoom ? opponent?.role : undefined;
     const profileMember = !isGroupRoom ? (isMyRoom ? myMember : opponent) : undefined;

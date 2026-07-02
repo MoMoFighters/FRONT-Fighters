@@ -2,8 +2,10 @@
 
 import Image from "next/image";
 import { CheckCircle2, ImageIcon } from "lucide-react";
+import { toast } from "sonner";
 
 import { MyPointItem } from "../type";
+import { editMyInfo } from "@/features/user/action";
 
 interface MyPointItemCardProps {
     item: MyPointItem;
@@ -14,7 +16,16 @@ export default function MyPointItemCard({
 }: MyPointItemCardProps) {
 
     const handleMyItemClick = async () => {
-        console.log(item.id, "|||", item.itemId)
+        const response = await editMyInfo({
+            itemName: item.name,
+        });
+
+        if (response.status >= 400) {
+            toast.error(response.message || "프로필 변경에 실패했습니다.");
+            return;
+        }
+
+        toast.success(response.message || "프로필이 변경되었습니다.");
     }
 
     return (
