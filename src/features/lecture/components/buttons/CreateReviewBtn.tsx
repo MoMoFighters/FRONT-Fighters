@@ -45,7 +45,7 @@ export default function CreateReviewBtn({
                     content: content,
                 });
 
-                toast.success("수강평이 등록되었습니다.");
+                toast.success("수강평이 등록되었습니다. (+30p)");
                 setOpen(false);
                 setRating(5);
                 setContent("");
