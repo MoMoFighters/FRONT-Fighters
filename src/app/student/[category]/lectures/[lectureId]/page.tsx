@@ -16,6 +16,7 @@ import CategoryBuildingCard from "@/features/lecture/components/student/shared/C
 import getCategoryMeta from "@/features/lecture/components/student/shared/category";
 import LearningProgressCard from "@/features/lecture/components/student/shared/LearningProgressCard";
 import ResumeLectureCard from "@/features/lecture/components/student/shared/ResumeLectureCard";
+import { generateLectureDetailMetadata } from "@/features/lecture/metadata";
 import { Category } from "@/features/lecture/type";
 import StudentPageHeader from "@/features/student/components/StudentPageHeader";
 
@@ -29,6 +30,17 @@ interface LectureByCategoryDetailProps {
         page?: string;
     }>;
 }
+
+export const generateMetadata = async ({
+    params,
+}: LectureByCategoryDetailProps) => {
+    const { category, lectureId } = await params;
+
+    return generateLectureDetailMetadata({
+        lectureId,
+        pathname: `/student/${category}/lectures/${lectureId}`,
+    });
+};
 
 export default async function LectureByCategoryDetail({
     searchParams,

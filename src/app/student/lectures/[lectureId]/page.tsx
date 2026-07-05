@@ -13,6 +13,7 @@ import StudentChapterList from "@/features/lecture/components/student/detail/Stu
 import StudentLectureDetailItem from "@/features/lecture/components/student/detail/StudentLectureDetailItem";
 import StudentLectureDetailTabs from "@/features/lecture/components/student/detail/StudentLectureDetailTabs";
 import StudentReviewList from "@/features/lecture/components/student/detail/StudentReviewList";
+import { generateLectureDetailMetadata } from "@/features/lecture/metadata";
 import StudentPageHeader from "@/features/student/components/StudentPageHeader";
 
 interface LectureDetailPageProps {
@@ -25,6 +26,17 @@ interface LectureDetailPageProps {
         position?: string;
     }>;
 }
+
+export const generateMetadata = async ({
+    params,
+}: LectureDetailPageProps) => {
+    const { lectureId } = await params;
+
+    return generateLectureDetailMetadata({
+        lectureId,
+        pathname: `/student/lectures/${lectureId}`,
+    });
+};
 
 export default async function LectureDetailPage({
     params,
