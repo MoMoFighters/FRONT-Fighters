@@ -16,7 +16,7 @@ import {
   LatestChapterInfoResponse,
 } from "@/features/lecture/type";
 import { ApiResponse, fetchWithAuth } from "@/lib/api";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -138,6 +138,9 @@ export const getLecturesWithAuth = async (
 export const getLectureById = async (id: string): Promise<LectureDetailResponse> => {
   const response = await fetchWithAuth(`/api/v1/lectures/${id}`);
 
+  if (response.status === 401) {
+    redirect('/auth/login');
+  }
   await handleErrorResponse(response);
   const result: ApiResponse<LectureDetailResponse> = await response.json();
   return assertApiData(result);
