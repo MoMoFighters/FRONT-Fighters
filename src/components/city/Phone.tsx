@@ -21,6 +21,7 @@ import { toast } from "sonner";
 interface PhoneProps {
     accessToken?: string;
     hasNotification?: boolean;
+    notificationIsOn?: boolean;
 }
 
 const EMPTY_COUNTS: NoticeAppCountsData = {
@@ -48,8 +49,9 @@ const PhoneAppGrid = dynamic(() => import("./PhoneAppGrid"), {
 export default function Phone({
     accessToken,
     hasNotification = false,
+    notificationIsOn
 }: PhoneProps) {
-    const [notificationEnabled, setNotificationEnabled] = useState(true);
+    const [notificationEnabled, setNotificationEnabled] = useState(notificationIsOn);
     const [isHovered, setIsHovered] = useState(false);
     const [isInteractionLocked, setIsInteractionLocked] = useState(false);
     const [vibrationOffset, setVibrationOffset] = useState({ x: 0, y: 0 });

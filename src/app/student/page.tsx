@@ -6,10 +6,12 @@ import CityCanvas from "@/components/city/CityCanvas";
 import StudentCityBuildings from "@/components/city/StudentCityBuildings";
 import { cookies } from "next/headers";
 import { getMyBuildings, getMyStreak } from "../services/city/service";
+import { getMyInfo } from "@/features/user/action";
 
 export default async function StudentMainPage() {
     const cookieStore = await cookies();
     const accessToken = cookieStore.get("accessToken")?.value;
+    const myInfo = await getMyInfo();
 
     const buildings = await getMyBuildings();
     const today = new Date();
@@ -22,7 +24,7 @@ export default async function StudentMainPage() {
         <CityCanvas>
             <BusStation mode="MY" />
             <PostBoard mode="MY" />
-            <Phone accessToken={accessToken} />
+            <Phone accessToken={accessToken} notificationIsOn={myInfo.data?.isPaid} />
             <MonthlyStreakGarden initialStreak={monthlyStreak} />
             <StudentCityBuildings initialBuildings={buildings} />
         </CityCanvas>
