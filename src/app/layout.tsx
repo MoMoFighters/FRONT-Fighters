@@ -7,6 +7,9 @@ import KakaoSdkScript from '@/components/common/KakaoSdkScript';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://momocity-six.vercel.app'),
+  verification: {
+    google: 'Q69RkDWPxAGWddUPSPmatEy4zD9TAer4HqypT26FR2g'
+  },
   title: {
     default: '모모시티',
     template: '%s | 모모시티',
