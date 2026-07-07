@@ -74,7 +74,7 @@ export default async function StudentChatPage({
         friends.find(friend => friend.userId === currentFriendId) ?? null;
 
     return (
-        <div className="mx-3 flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white">
+        <div className="mx-3 flex h-full max-h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white">
             <FriendNav status={currentStatus} />
 
             {currentStatus === "friend" && (
@@ -119,8 +119,8 @@ export default async function StudentChatPage({
             )}
 
             {currentStatus === "chat" && (
-                <div className="grid min-h-0 flex-1 grid-cols-[4fr_6fr] overflow-hidden">
-                    <div className="flex min-h-0 flex-col border-r border-slate-200 bg-white">
+                <div className="grid h-full max-h-full min-h-0 flex-1 grid-cols-[4fr_6fr] overflow-hidden">
+                    <div className="flex min-h-0 flex-col overflow-hidden border-r border-slate-200 bg-white">
                         <div className="hidden">
                             <p className="font-semibold text-slate-900">
                                 채팅 목록
@@ -133,7 +133,7 @@ export default async function StudentChatPage({
                         />
                     </div>
 
-                    <div className="min-w-0 bg-white">
+                    <div className="min-h-0 min-w-0 overflow-hidden bg-white">
                         <ChatRoomArea
                             currentRoomId={currentRoomId}
                             accessToken={accessToken}
