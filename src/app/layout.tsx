@@ -6,9 +6,9 @@ import ReactQueryProvider from '@/components/common/ReactQueryProvider';
 import KakaoSdkScript from '@/components/common/KakaoSdkScript';
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
+  metadataBase: new URL('https://momocity-six.vercel.app'),
   title: {
-    default: '모모시티 - 홈',
+    default: '모모시티',
     template: '%s | 모모시티',
   },
   description: '모모시티는 학습과 활동을 도시 성장으로 연결해 재미있게 배울 수 있는 온라인 학습 플랫폼입니다.',

@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next';
 
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+const baseUrl = 'https://momocity-six.vercel.app';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
