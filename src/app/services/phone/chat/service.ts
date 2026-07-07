@@ -379,6 +379,24 @@ export interface LeaveChatRoomData {
     members: LeaveChatRoomMemberData[];
 }
 
+export interface InviteChatRoomMembersData {
+    roomId: number;
+    roomTitle: string | null;
+    userId: number;
+    nickname: string;
+    role: string;
+    joinedAt: string;
+}
+
+export interface ModifyChatRoomTitleData {
+    roomId: number;
+    userId: number;
+    nickname: string;
+    role: string;
+    roomTitle: string;
+    createdAt: string;
+}
+
 export const leaveChatroomService = async (
     roomId: number,
     accessToken: string
@@ -401,6 +419,72 @@ export const leaveChatroomService = async (
             result.message ||
             "채팅방 나가기에 실패했습니다."
         );
+    }
+
+    return result;
+};
+
+export const inviteChatRoomMembersService = async ({
+    roomId,
+    chatMember,
+    accessToken,
+}: {
+    roomId: number;
+    chatMember: number[];
+    accessToken: string;
+}): Promise<ApiResponse<InviteChatRoomMembersData>> => {
+    const response = await fetch(
+        `${BASE_SERVER_URL}/api/v2/message/chatrooms/invite/${roomId}`,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${accessToken}`,
+            },
+            body: JSON.stringify({
+                chatMember,
+            }),
+        }
+    );
+
+    const result: ApiResponse<InviteChatRoomMembersData> =
+        await response.json();
+
+    if (!response.ok && response.status >= 500) {
+        throw new Error("500 | 알 수 없는 문제가 발생했습니다.");
+    }
+
+    return result;
+};
+
+export const modifyChatRoomTitleService = async ({
+    roomId,
+    roomTitle,
+    accessToken,
+}: {
+    roomId: number;
+    roomTitle: string;
+    accessToken: string;
+}): Promise<ApiResponse<ModifyChatRoomTitleData>> => {
+    const response = await fetch(
+        `${BASE_SERVER_URL}/api/v2/message/chatrooms/modify/${roomId}`,
+        {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${accessToken}`,
+            },
+            body: JSON.stringify({
+                roomTitle,
+            }),
+        }
+    );
+
+    const result: ApiResponse<ModifyChatRoomTitleData> =
+        await response.json();
+
+    if (!response.ok && response.status >= 500) {
+        throw new Error("500 | 알 수 없는 문제가 발생했습니다.");
     }
 
     return result;

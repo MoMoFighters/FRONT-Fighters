@@ -3,8 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+
 import { ChatRoomListData } from "@/app/services/phone/chat/service";
 import { ChatMemberResponse } from "@/features/chat/type";
+import ChatRoomOptionsMenu from "./ChatRoomOptionsMenu";
 
 const getInitial = (name?: string | null) =>
     name?.trim().charAt(0) || "?";
@@ -87,14 +89,14 @@ function GroupProfile({
                             key={member.userId}
                             member={member}
                             title={title}
-                            className="h-5.5 w-5.5 rounded-full"
+                            className="h-5 w-5 rounded-full"
                         />
                     ))}
                 </div>
                 <ProfileImage
                     member={displayMembers[2]}
                     title={title}
-                    className="h-5.5 w-5.5 rounded-full"
+                    className="h-5 w-5 rounded-full"
                 />
             </div>
         );
@@ -122,44 +124,41 @@ export default function ChatRoomItem({
     myChatRoomId?: number | null;
 }) {
     const pathname = usePathname();
-    const {
-        roomId,
-        roomTitle,
-        content,
-        unreadCount,
-    } = data;
+    const { roomId, roomTitle, content, unreadCount } = data;
     const memberInfo = data.memberInfo ?? [];
     const isGroupRoom = Boolean(roomTitle?.trim());
-    const isMyRoom = myChatRoomId !== null && myChatRoomId !== undefined
-        ? roomId === myChatRoomId
-        : false;
+    const isMyRoom =
+        myChatRoomId !== null && myChatRoomId !== undefined
+            ? roomId === myChatRoomId
+            : false;
 
     const opponent =
         memberInfo.find((member) => member.status !== "me") ??
         memberInfo[0];
-    const myMember =
-        memberInfo.find((member) => member.status === "me");
+    const myMember = memberInfo.find((member) => member.status === "me");
 
-    const title =
-        isGroupRoom
-            ? roomTitle
-            : isMyRoom
-                ? "나와의 채팅"
-                : getMemberDisplayName(opponent);
+    const title = isGroupRoom
+        ? roomTitle
+        : isMyRoom
+            ? "나와의 채팅"
+            : getMemberDisplayName(opponent);
 
     const role = !isGroupRoom && !isMyRoom ? opponent?.role : undefined;
-    const profileMember = !isGroupRoom ? (isMyRoom ? myMember : opponent) : undefined;
+    const profileMember = !isGroupRoom
+        ? isMyRoom
+            ? myMember
+            : opponent
+        : undefined;
 
-    const href =
-        pathname.startsWith("/teacher")
-            ? `/teacher/ask?roomId=${roomId}`
-            : `/student/phone/friends?status=chat&roomId=${roomId}`;
+    const href = pathname.startsWith("/teacher")
+        ? `/teacher/ask?roomId=${roomId}`
+        : `/student/phone/friends?status=chat&roomId=${roomId}`;
 
     return (
-        <Link href={href}>
-            <div
-                className="flex w-full cursor-pointer flex-row items-center gap-3 border-b border-slate-100 px-4 py-3 transition-colors hover:bg-slate-50"
-                key={roomId}
+        <div className="flex w-full flex-row items-center gap-2 border-b border-slate-100 px-4 py-3 transition-colors hover:bg-slate-50">
+            <Link
+                href={href}
+                className="flex min-w-0 flex-1 cursor-pointer flex-row items-center gap-3"
             >
                 {isGroupRoom ? (
                     <GroupProfile
@@ -191,15 +190,17 @@ export default function ChatRoomItem({
                         {content}
                     </p>
                 </div>
+            </Link>
 
-                {unreadCount > 0 && (
-                    <div className="flex h-5 min-w-5 items-center justify-center rounded-full bg-indigo-500 px-1.5">
-                        <p className="text-[11px] font-semibold text-white">
-                            {unreadCount > 99 ? "99+" : unreadCount}
-                        </p>
-                    </div>
-                )}
-            </div>
-        </Link>
+            {unreadCount > 0 && (
+                <div className="flex h-5 min-w-5 items-center justify-center rounded-full bg-indigo-500 px-1.5">
+                    <p className="text-[11px] font-semibold text-white">
+                        {unreadCount > 99 ? "99+" : unreadCount}
+                    </p>
+                </div>
+            )}
+
+            <ChatRoomOptionsMenu room={data} isMyRoom={isMyRoom} />
+        </div>
     );
 }
