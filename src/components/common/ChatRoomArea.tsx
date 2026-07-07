@@ -284,7 +284,7 @@ export default function ChatRoomArea({
         return (
             <div className="flex justify-center items-center h-full flex-col gap-2">
                 <MyFriendListModal />
-                <p className="font-bold text-2xl">
+                <p className="font-bold text-lg text-slate-500">
                     단체 채팅을 시작하려면 클릭하세요
                 </p>
             </div>

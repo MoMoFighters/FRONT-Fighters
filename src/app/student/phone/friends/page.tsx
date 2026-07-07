@@ -121,7 +121,7 @@ export default async function StudentChatPage({
             {currentStatus === "chat" && (
                 <div className="grid min-h-0 flex-1 grid-cols-[4fr_6fr] overflow-hidden">
                     <div className="flex min-h-0 flex-col border-r border-slate-200 bg-white">
-                        <div className="border-b border-slate-100 px-4 py-3">
+                        <div className="hidden">
                             <p className="font-semibold text-slate-900">
                                 채팅 목록
                             </p>
