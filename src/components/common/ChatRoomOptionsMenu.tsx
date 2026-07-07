@@ -254,17 +254,17 @@ export default function ChatRoomOptionsMenu({
                     <DropdownMenuItem onClick={() => void openInviteDialog()}>
                         초대하기
                     </DropdownMenuItem>
+                    {isGroupRoom && (
+                        <DropdownMenuItem onClick={openRenameDialog}>
+                            방 이름 변경
+                        </DropdownMenuItem>
+                    )}
                     <DropdownMenuItem
                         variant="destructive"
                         onClick={() => void handleLeaveRoom()}
                     >
                         나가기
                     </DropdownMenuItem>
-                    {isGroupRoom && (
-                        <DropdownMenuItem onClick={openRenameDialog}>
-                            방 이름 변경
-                        </DropdownMenuItem>
-                    )}
                 </DropdownMenuContent>
             </DropdownMenu>
 
@@ -311,18 +311,16 @@ export default function ChatRoomOptionsMenu({
                                         type="button"
                                         disabled={member.locked}
                                         onClick={() => toggleFriend(member.userId)}
-                                        className={`mb-2 flex w-full items-center gap-3 rounded-xl border bg-white p-3 text-left transition ${
-                                            isSelected
+                                        className={`mb-2 flex w-full items-center gap-3 rounded-xl border bg-white p-3 text-left transition ${isSelected
                                                 ? "border-indigo-200 bg-indigo-50"
                                                 : "border-slate-100 hover:border-slate-200"
-                                        } ${member.locked ? "cursor-not-allowed opacity-80" : "cursor-pointer"}`}
+                                            } ${member.locked ? "cursor-not-allowed opacity-80" : "cursor-pointer"}`}
                                     >
                                         <span
-                                            className={`h-4 w-4 rounded border ${
-                                                isSelected
+                                            className={`h-4 w-4 rounded border ${isSelected
                                                     ? "border-indigo-500 bg-indigo-500"
                                                     : "border-slate-300 bg-white"
-                                            }`}
+                                                }`}
                                         />
                                         <div className="relative h-10 w-10 overflow-hidden rounded-full bg-indigo-50">
                                             {member.profileImageUrl ? (
