@@ -119,7 +119,7 @@ export const createChatRoomAction = async (
         if (!accessToken) {
             return createUnauthorizedResponse<CreateChatRoomData>();
         }
-        revalidatePath("/student/phone/friends?status=chat")
+        revalidatePath("/student/friends?status=chat")
         return await createChatRoomService(
             chatRoom,
             accessToken
@@ -196,7 +196,7 @@ export const inviteChatRoomMembersAction = async ({
             accessToken,
         });
 
-        revalidatePath("/student/phone/friends");
+        revalidatePath("/student/friends");
         revalidatePath("/teacher/ask");
 
         return result;
@@ -228,7 +228,7 @@ export const modifyChatRoomTitleAction = async ({
             accessToken,
         });
 
-        revalidatePath("/student/phone/friends");
+        revalidatePath("/student/friends");
         revalidatePath("/teacher/ask");
 
         return result;

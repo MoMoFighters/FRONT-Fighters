@@ -18,17 +18,17 @@ export default function FriendNav({ status }: FriendNavProps) {
         {
             key: "friend",
             label: "내친구",
-            href: "/student/phone/friends?status=friend",
+            href: "/student/friends?status=friend",
         },
         {
             key: "request",
             label: "요청관리",
-            href: "/student/phone/friends?status=request",
+            href: "/student/friends?status=request",
         },
         {
             key: "chat",
             label: "채팅",
-            href: "/student/phone/friends?status=chat",
+            href: "/student/friends?status=chat",
         },
     ] as const;
 

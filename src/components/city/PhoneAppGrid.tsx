@@ -37,7 +37,7 @@ export default function PhoneAppGrid({ notification }: PhoneAppGridProps) {
             <HoverCard openDelay={200} closeDelay={100}>
                 <HoverCardTrigger asChild>
                     <Link
-                        href="/student/phone/friends"
+                        href="/student/friends"
                         aria-label="메신저"
                         className="relative h-14 w-14 rounded-2xl shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
                     >
@@ -54,7 +54,7 @@ export default function PhoneAppGrid({ notification }: PhoneAppGridProps) {
             <HoverCard openDelay={200} closeDelay={100}>
                 <HoverCardTrigger asChild>
                     <Link
-                        href="/student/phone/calendar"
+                        href="/student/calendar"
                         aria-label="캘린더"
                         className="relative h-14 w-14 rounded-2xl shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
                     >
@@ -87,7 +87,7 @@ export default function PhoneAppGrid({ notification }: PhoneAppGridProps) {
             <HoverCard openDelay={200} closeDelay={100}>
                 <HoverCardTrigger asChild>
                     <Link
-                        href="/student/phone/community"
+                        href="/student/community"
                         aria-label="커뮤니티"
                         className="relative h-14 w-14 rounded-2xl shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
                     >

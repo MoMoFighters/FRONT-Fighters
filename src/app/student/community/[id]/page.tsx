@@ -52,7 +52,7 @@ export default async function CommunityPostDetailPage({
                 <header className="w-full border-b border-slate-100 pb-3">
                     <div className="flex items-center justify-between gap-3">
                         <Link
-                            href="/student/phone/community"
+                            href="/student/community"
                             className="inline-flex items-center gap-1 text-xs font-black text-slate-400 transition hover:text-indigo-500"
                         >
                             <ChevronLeft className="h-4 w-4" />
@@ -68,7 +68,7 @@ export default async function CommunityPostDetailPage({
                         ) : (
                             <Link
                                 className="cursor-pointer rounded-md border border-slate-200 px-2.5 py-1 text-xs font-bold text-slate-500 transition hover:bg-slate-100"
-                                href={`/student/phone/community/${post.postId}/edit`}
+                                href={`/student/community/${post.postId}/edit`}
                             >
                                 수정
                             </Link>
@@ -90,8 +90,8 @@ export default async function CommunityPostDetailPage({
                     <div className="mt-2 flex items-center gap-3">
                         <Link
                             href={post.isMine
-                                ? "/student/phone/community/mypage"
-                                : `/student/phone/community/user/${post.authorId}`
+                                ? "/student/community/mypage"
+                                : `/student/community/user/${post.authorId}`
                             }
                             className="flex min-w-0 items-center gap-2"
                         >

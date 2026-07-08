@@ -36,10 +36,12 @@ const formatMessageTime = (createdAt: string) => {
         return "";
     }
 
-    return date.toLocaleTimeString("ko-KR", {
-        hour: "2-digit",
-        minute: "2-digit",
-    });
+    const hours = date.getHours();
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const period = hours < 12 ? "오전" : "오후";
+    const displayHours = hours % 12 || 12;
+
+    return `${period} ${String(displayHours).padStart(2, "0")}:${minutes}`;
 };
 
 const getMessageDateKey = (createdAt: string) => {
@@ -89,7 +91,7 @@ export default function ChatRoomArea({
 
     const href = pathname.startsWith("/teacher")
         ? "/teacher/ask"
-        : "/student/phone/friends?status=chat";
+        : "/student/friends?status=chat";
 
     const applyChatHistory = useCallback((chatHistory?: ChatHistoryData) => {
         setRoomInfo(chatHistory?.roomInfo ?? null);
@@ -387,10 +389,10 @@ export default function ChatRoomArea({
                             return (
                                 <Fragment key={`${message.type ?? "message"}-${message.messageId}`}>
                                     {shouldShowDateDivider && (
-                                        <div className="flex h-8 w-full justify-center select-none">
+                                        <div className="flex w-full justify-center select-none">
                                             <div className="min-w-10 max-w-fit rounded-full bg-slate-200/70 px-4 py-1">
-                                                <p className="text-center text-sm text-slate-700">
-                                                {formatMessageDateLabel(message.createdAt)}
+                                                <p className="text-center text-xs text-slate-500">
+                                                    {formatMessageDateLabel(message.createdAt)}
                                                 </p>
                                             </div>
                                         </div>

@@ -1,4 +1,4 @@
-﻿import CalendarSide from '@/components/phone/calendar/CalendarSide';
+import CalendarSide from '@/components/phone/calendar/CalendarSide';
 import CalendarLoader from '@/features/phone/components/todo/CalendarLoader';
 import { redirect } from 'next/navigation';
 
@@ -22,7 +22,7 @@ export default async function CalendarPage({
 
     if (!month) {
         redirect(
-            `/student/phone/calendar?month=${currentDate}`
+            `/student/calendar?month=${currentDate}`
         );
     }
 

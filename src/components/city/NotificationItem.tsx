@@ -41,11 +41,11 @@ export default function NotificationItem({
     }
 
     const href =
-        type === 'message' ? `/student/phone/friends?status=friend&roomId=${targetId}` :
-            type === "calendar" ? "/student/phone/calendar"
-                : type === "community" ? `/student/phone/community/${targetId}`
-                    : type === "friend" ? isFriendRequest ? "/student/phone/friends?status=request"
-                        : `/student/phone/friends?status=friend&friendId=${targetId}`
+        type === 'message' ? `/student/friends?status=friend&roomId=${targetId}` :
+            type === "calendar" ? "/student/calendar"
+                : type === "community" ? `/student/community/${targetId}`
+                    : type === "friend" ? isFriendRequest ? "/student/friends?status=request"
+                        : `/student/friends?status=friend&friendId=${targetId}`
                         : "/student"
 
     const handleClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {

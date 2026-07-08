@@ -91,7 +91,7 @@ export default function MyFriendListModal() {
 
             toast.success(response.message, { duration: 1000 });
             closeModal();
-            router.push(`/student/phone/friends?status=chat&roomId=${roomId}`);
+            router.push(`/student/friends?status=chat&roomId=${roomId}`);
             router.refresh();
         } finally {
             setIsSubmitting(false);

@@ -14,25 +14,25 @@ export default function CommunitySideBar({ role }: { role?: "TEACHER" | "ADMIN" 
         {
             label: "홈",
             description: "추천",
-            href: role === "TEACHER" ? "/teacher/community" : role === "ADMIN" ? "/admin/community" : "/student/phone/community",
+            href: role === "TEACHER" ? "/teacher/community" : role === "ADMIN" ? "/admin/community" : "/student/community",
             icon: Home,
         },
         // { 모듈5때 인기글 기능 생기면 위에꺼랑 교체 하기
         //     label: "전체",
         //     description: "검색",
-        //     href: "/student/phone/community",
+        //     href: "/student/community",
         //     icon: LayoutGrid,
         // },
         {
             label: "내 글",
             description: "마이",
-            href: role === "TEACHER" ? "/teacher/community/mypage" : role === "ADMIN" ? "/admin/community/mypage" : "/student/phone/community/mypage",
+            href: role === "TEACHER" ? "/teacher/community/mypage" : role === "ADMIN" ? "/admin/community/mypage" : "/student/community/mypage",
             icon: UserRound,
         },
         {
             label: "작성",
             description: "새 글",
-            href: role === "TEACHER" ? "/teacher/community/create" : role === "ADMIN" ? "/admin/community/create" : "/student/phone/community/create",
+            href: role === "TEACHER" ? "/teacher/community/create" : role === "ADMIN" ? "/admin/community/create" : "/student/community/create",
             icon: FilePlus2,
         },
     ];

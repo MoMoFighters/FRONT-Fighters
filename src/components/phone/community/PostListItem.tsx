@@ -1,4 +1,4 @@
-﻿import { Eye, Heart, ImageIcon, UserRound } from "lucide-react";
+import { Eye, Heart, ImageIcon, UserRound } from "lucide-react";
 import Link from "next/link";
 
 type CommunityCategory =
@@ -43,7 +43,7 @@ export default function PostListItem({
     const getBaseUrl = () => {
         if (role === "TEACHER") return "/teacher/community";
         if (role === "ADMIN") return "/admin/community";
-        return "/student/phone/community"; // 기본값(학생)
+        return "/student/community"; // 기본값(학생)
     };
     return (
         <Link

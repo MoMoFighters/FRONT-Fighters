@@ -73,7 +73,7 @@ function PostStats({
 export default function CommunityMypagePostItem({
     mode,
     postId,
-    detailHrefBase = "/student/phone/community",
+    detailHrefBase = "/student/community",
     thumbnailImageUrl,
     title,
     viewCount,

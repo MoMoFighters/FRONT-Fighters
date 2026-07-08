@@ -37,8 +37,8 @@ export default async function CommunityUserHome({
             currentPage={profileData.currentPage}
             totalPages={profileData.totalPages}
             totalCount={profileData.totalCount}
-            pageBaseHref={`/student/phone/community/user/${numericUserId}`}
-            detailHrefBase="/student/phone/community"
+            pageBaseHref={`/student/community/user/${numericUserId}`}
+            detailHrefBase="/student/community"
             actionSlot={<CommunityUserFriendButton userId={numericUserId} />}
         />
     );
