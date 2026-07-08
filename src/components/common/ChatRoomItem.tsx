@@ -14,6 +14,38 @@ const getInitial = (name?: string | null) =>
 const getMemberDisplayName = (member?: ChatMemberResponse) =>
     member?.nickname?.trim() || member?.name?.trim() || "채팅방";
 
+const formatChatRoomCreatedAt = (createdAt?: string | null) => {
+    if (!createdAt) {
+        return "";
+    }
+
+    const date = new Date(createdAt);
+
+    if (Number.isNaN(date.getTime())) {
+        return "";
+    }
+
+    const now = new Date();
+    const isToday =
+        date.getFullYear() === now.getFullYear() &&
+        date.getMonth() === now.getMonth() &&
+        date.getDate() === now.getDate();
+    const time = date.toLocaleTimeString("ko-KR", {
+        hour: "2-digit",
+        minute: "2-digit",
+    });
+
+    if (isToday) {
+        return time;
+    }
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day} ${time}`;
+};
+
 function ProfileImage({
     member,
     title,
@@ -124,7 +156,7 @@ export default function ChatRoomItem({
     myChatRoomId?: number | null;
 }) {
     const pathname = usePathname();
-    const { roomId, roomTitle, content, unreadCount } = data;
+    const { roomId, roomTitle, content, unreadCount, createdAt } = data;
     const memberInfo = data.memberInfo ?? [];
     const isGroupRoom = Boolean(roomTitle?.trim());
     const isMyRoom =
@@ -153,6 +185,7 @@ export default function ChatRoomItem({
     const href = pathname.startsWith("/teacher")
         ? `/teacher/ask?roomId=${roomId}`
         : `/student/phone/friends?status=chat&roomId=${roomId}`;
+    const createdAtText = formatChatRoomCreatedAt(createdAt);
 
     return (
         <div className="flex w-full flex-row items-center gap-2 border-b border-slate-100 px-4 py-3 transition-colors hover:bg-slate-50">
@@ -174,15 +207,23 @@ export default function ChatRoomItem({
                 )}
 
                 <div className="flex min-w-0 flex-1 flex-col">
-                    <div className="flex items-center gap-1">
-                        <p className="truncate font-semibold text-slate-800">
-                            {title}
-                        </p>
+                    <div className="flex items-center gap-2">
+                        <div className="flex min-w-0 flex-1 items-center gap-1">
+                            <p className="truncate font-semibold text-slate-800">
+                                {title}
+                            </p>
 
-                        {role === "TEACHER" && (
-                            <span className="rounded bg-indigo-50 px-1.5 py-0.5 text-[11px] font-medium text-indigo-600">
-                                강사
-                            </span>
+                            {role === "TEACHER" && (
+                                <span className="shrink-0 rounded bg-indigo-50 px-1.5 py-0.5 text-[11px] font-medium text-indigo-600">
+                                    강사
+                                </span>
+                            )}
+                        </div>
+
+                        {createdAtText && (
+                            <p className="shrink-0 text-[11px] font-medium text-slate-400">
+                                {createdAtText}
+                            </p>
                         )}
                     </div>
 
@@ -200,7 +241,11 @@ export default function ChatRoomItem({
                 </div>
             )}
 
-            <ChatRoomOptionsMenu room={data} isMyRoom={isMyRoom} />
+            {isMyRoom ? (
+                <div className="h-8 w-8 shrink-0" aria-hidden="true" />
+            ) : (
+                <ChatRoomOptionsMenu room={data} isMyRoom={isMyRoom} />
+            )}
         </div>
     );
 }

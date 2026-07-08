@@ -13,7 +13,7 @@ export default function PhoneLayout({
                         <PhoneTopBar /> */}
 
             <main className="h-full min-h-0 flex-1 overflow-hidden bg-transparent p-2">
-                <div className="h-full min-h-0 overflow-hidden rounded-3xl [&>*]:h-full [&>*]:min-h-0">
+                <div className="h-full min-h-0 overflow-hidden rounded-3xl ">
                     {children}
                 </div>
             </main>

@@ -9,6 +9,7 @@ interface MessageData {
     isMine: boolean | null;
     message: string;
     time: string;
+    unreadCount?: number | null;
     nickname?: string;
     profileImg?: string;
     senderId?: number | null;
@@ -18,12 +19,17 @@ export default function ChatItem({
     isMine,
     message,
     time,
+    unreadCount,
     id,
     nickname,
     profileImg,
     senderId,
 }: MessageData) {
     const [isHover, setIsHover] = useState(false);
+    const visibleUnreadCount =
+        typeof unreadCount === "number" && unreadCount > 0
+            ? unreadCount
+            : null;
 
     if (isMine === null) {
         return (
@@ -74,9 +80,16 @@ export default function ChatItem({
                         </div>
                     </div>
 
-                    <p className="mt-auto shrink-0 text-xs text-slate-400">
-                        {time}
-                    </p>
+                    <div className="mt-auto flex shrink-0 flex-col items-start gap-0.5">
+                        {visibleUnreadCount !== null && (
+                            <p className="text-xs font-semibold text-indigo-500">
+                                {visibleUnreadCount}
+                            </p>
+                        )}
+                        <p className="text-xs text-slate-400">
+                            {time}
+                        </p>
+                    </div>
 
                     {isHover && (
                         <CreateReportBtn
@@ -90,9 +103,16 @@ export default function ChatItem({
                 </>
             ) : (
                 <>
-                    <p className="mt-auto shrink-0 text-xs text-slate-400">
-                        {time}
-                    </p>
+                    <div className="mt-auto flex shrink-0 flex-col items-end gap-0.5">
+                        {visibleUnreadCount !== null && (
+                            <p className="text-xs font-semibold text-indigo-500">
+                                {visibleUnreadCount}
+                            </p>
+                        )}
+                        <p className="text-xs text-slate-400">
+                            {time}
+                        </p>
+                    </div>
 
                     <div className="w-fit max-w-[300px] rounded-[20px] rounded-br-md bg-indigo-500 px-4 py-2 shadow-sm">
                         <p className="whitespace-pre-wrap break-words text-white">

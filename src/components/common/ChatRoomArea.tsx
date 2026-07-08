@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { X } from "lucide-react";
@@ -40,6 +40,33 @@ const formatMessageTime = (createdAt: string) => {
         hour: "2-digit",
         minute: "2-digit",
     });
+};
+
+const getMessageDateKey = (createdAt: string) => {
+    const date = new Date(createdAt);
+
+    if (Number.isNaN(date.getTime())) {
+        return "";
+    }
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+};
+
+const formatMessageDateLabel = (createdAt: string) => {
+    const date = new Date(createdAt);
+
+    if (Number.isNaN(date.getTime())) {
+        return "";
+    }
+
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${date.getFullYear()}년 ${month}월 ${day}일`;
 };
 
 export default function ChatRoomArea({
@@ -312,7 +339,7 @@ export default function ChatRoomArea({
 
     return (
         <>
-            <div className="flex flex-col h-full min-h-0">
+            <div className="flex h-full max-h-full min-h-0 flex-col overflow-hidden">
                 <div className="h-14 shrink-0 border-b border-slate-200 bg-slate-50 pl-2 py-2 flex flex-row items-center gap-2">
                     <div className="flex items-center">
                         <p className="ml-2 text-lg font-semibold text-slate-900">
@@ -347,18 +374,40 @@ export default function ChatRoomArea({
                             </p>
                         </div>
                     ) : (
-                        messages.map((message) => (
-                            <ChatItem
-                                profileImg={message.profileImageUrl || ""}
-                                nickname={message?.nickname || message?.name || "알 수 없음"}
-                                key={`${message.type ?? "message"}-${message.messageId}`}
-                                id={message.messageId}
-                                isMine={message.type ? null : message.isMine}
-                                message={message.content}
-                                time={formatMessageTime(message.createdAt)}
-                                senderId={message.senderId}
-                            />
-                        ))
+                        messages.map((message, index) => {
+                            const currentDateKey = getMessageDateKey(message.createdAt);
+                            const previousDateKey =
+                                index > 0
+                                    ? getMessageDateKey(messages[index - 1].createdAt)
+                                    : "";
+                            const shouldShowDateDivider =
+                                currentDateKey !== "" &&
+                                currentDateKey !== previousDateKey;
+
+                            return (
+                                <Fragment key={`${message.type ?? "message"}-${message.messageId}`}>
+                                    {shouldShowDateDivider && (
+                                        <div className="flex h-8 w-full justify-center select-none">
+                                            <div className="min-w-10 max-w-fit rounded-full bg-slate-200/70 px-4 py-1">
+                                                <p className="text-center text-sm text-slate-700">
+                                                {formatMessageDateLabel(message.createdAt)}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )}
+                                    <ChatItem
+                                        profileImg={message.profileImageUrl || ""}
+                                        nickname={message?.nickname || message?.name || "알 수 없음"}
+                                        id={message.messageId}
+                                        isMine={message.type ? null : message.isMine}
+                                        message={message.content}
+                                        time={formatMessageTime(message.createdAt)}
+                                        unreadCount={message.unreadCount}
+                                        senderId={message.senderId}
+                                    />
+                                </Fragment>
+                            );
+                        })
                     )}
                 </div>
 
