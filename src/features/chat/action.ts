@@ -6,13 +6,17 @@ import {
     createChatRoomService,
     getChatHistoryService,
     getChatRoomsService,
+    inviteChatRoomMembersService,
     leaveChatroomService,
+    modifyChatRoomTitleService,
     readMessageService,
     sendMessageService,
     type ChatRoomListData,
     type CreateChatRoomRequest,
     type CreateChatRoomData,
+    type InviteChatRoomMembersData,
     type LeaveChatRoomData,
+    type ModifyChatRoomTitleData,
     type RawChatHistoryData,
     type ReadMessageData,
     type SendMessageData,
@@ -168,6 +172,70 @@ export const leaveChatroomAction = async (
         return createErrorResponse<LeaveChatRoomData>(
             error,
             "채팅방 나가기에 실패했습니다."
+        );
+    }
+};
+
+export const inviteChatRoomMembersAction = async ({
+    roomId,
+    chatMember,
+}: {
+    roomId: number;
+    chatMember: number[];
+}): Promise<ApiResponse<InviteChatRoomMembersData>> => {
+    try {
+        const accessToken = await getAccessToken();
+
+        if (!accessToken) {
+            return createUnauthorizedResponse<InviteChatRoomMembersData>();
+        }
+
+        const result = await inviteChatRoomMembersService({
+            roomId,
+            chatMember,
+            accessToken,
+        });
+
+        revalidatePath("/student/phone/friends");
+        revalidatePath("/teacher/ask");
+
+        return result;
+    } catch (error) {
+        return createErrorResponse<InviteChatRoomMembersData>(
+            error,
+            "채팅방 멤버 초대에 실패했습니다."
+        );
+    }
+};
+
+export const modifyChatRoomTitleAction = async ({
+    roomId,
+    roomTitle,
+}: {
+    roomId: number;
+    roomTitle: string;
+}): Promise<ApiResponse<ModifyChatRoomTitleData>> => {
+    try {
+        const accessToken = await getAccessToken();
+
+        if (!accessToken) {
+            return createUnauthorizedResponse<ModifyChatRoomTitleData>();
+        }
+
+        const result = await modifyChatRoomTitleService({
+            roomId,
+            roomTitle,
+            accessToken,
+        });
+
+        revalidatePath("/student/phone/friends");
+        revalidatePath("/teacher/ask");
+
+        return result;
+    } catch (error) {
+        return createErrorResponse<ModifyChatRoomTitleData>(
+            error,
+            "채팅방 이름 변경에 실패했습니다."
         );
     }
 };

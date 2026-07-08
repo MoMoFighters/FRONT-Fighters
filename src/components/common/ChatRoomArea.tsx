@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { X } from "lucide-react";
 import { toast } from "sonner";
 
@@ -18,10 +18,8 @@ import {
 } from "@/app/services/phone/chat/service";
 import {
     getChatHistoryAction,
-    leaveChatroomAction,
     readMessageAction,
 } from "@/features/chat/action";
-import { Button } from "../ui/button";
 import MyFriendListModal from "@/features/phone/components/friend/MyFriendListModal";
 import { connectNoticeStomp } from "@/lib/stomp/stomp";
 
@@ -50,7 +48,6 @@ export default function ChatRoomArea({
     isMine = false,
 }: ChatRoomAreaProps) {
     const pathname = usePathname();
-    const router = useRouter();
     const scrollRef = useRef<HTMLDivElement>(null);
     const readMessageTimerRef = useRef<number | null>(null);
     const isReadMessagePendingRef = useRef(false);
@@ -118,18 +115,6 @@ export default function ChatRoomArea({
         }
     }, []);
 
-    const handleLeaveRoom = async (roomId: number) => {
-        const response = await leaveChatroomAction(roomId);
-
-        if (response.status !== 200) {
-            toast.error(response.message, { duration: 1000 });
-            return;
-        }
-
-        toast(response.message);
-        router.push(href);
-    };
-
     useEffect(() => {
         if (scrollRef.current && isBottom) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -140,8 +125,13 @@ export default function ChatRoomArea({
         if (!currentRoomId) {
             lastEnteredRoomIdRef.current = null;
             lastReadRequestedMessageIdRef.current = null;
-            applyChatHistory();
-            return;
+            const animationFrameId = window.requestAnimationFrame(() => {
+                applyChatHistory();
+            });
+
+            return () => {
+                window.cancelAnimationFrame(animationFrameId);
+            };
         }
 
         const loadMessages = async () => {
@@ -294,7 +284,7 @@ export default function ChatRoomArea({
         return (
             <div className="flex justify-center items-center h-full flex-col gap-2">
                 <MyFriendListModal />
-                <p className="font-bold text-2xl">
+                <p className="font-bold text-lg text-slate-500">
                     단체 채팅을 시작하려면 클릭하세요
                 </p>
             </div>
@@ -334,15 +324,6 @@ export default function ChatRoomArea({
                             </p>
                         )}
                     </div>
-
-                    {!isMine && (
-                        <Button
-                            className="px-2 py-1 bg-rose-400 hover:bg-rose-500"
-                            onClick={() => handleLeaveRoom(currentRoomId)}
-                        >
-                            나가기
-                        </Button>
-                    )}
 
                     <div className="flex-1" />
 

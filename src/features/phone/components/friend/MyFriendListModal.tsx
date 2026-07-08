@@ -101,7 +101,7 @@ export default function MyFriendListModal() {
     if (!isModal) {
         return (
             <MessageCirclePlus
-                className="h-12 w-12 cursor-pointer"
+                className="h-12 w-12 cursor-pointer text-slate-500"
                 onClick={() => setIsModal(true)}
             />
         );
@@ -111,7 +111,7 @@ export default function MyFriendListModal() {
         <>
             <div className="pr-2 py-auto flex justify-center cursor-pointer">
                 <UserPlus
-                    className="h-5 w-5 text-slate-700"
+                    className="h-5 w-5 text-slate-500"
                     aria-label={ADD_FRIEND_LABEL}
                 />
             </div>
