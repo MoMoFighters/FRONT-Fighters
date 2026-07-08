@@ -4,7 +4,7 @@ export default function TeacherLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <div className="min-h-[calc(100vh-145px)] m-4 w-full">
+        <div className="h-full min-h-0 w-full overflow-hidden p-4">
             {children}
         </div>
     )

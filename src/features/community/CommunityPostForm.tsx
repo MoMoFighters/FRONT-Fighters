@@ -357,7 +357,7 @@ export default function CommunityPostForm({ mode, data, role }: CommunityPostFor
     return (
         <form
             onSubmit={handleSubmit}
-            className={`flex h-full min-h-0 flex-col rounded-3xl bg-white/85 p-5 shadow-sm ring-1 ring-slate-200/80 backdrop-blur ${role === 'TEACHER' || role === 'ADMIN' ? "min-h-[calc(100vh-170px)]" : ""}`}
+            className="flex h-full min-h-0 flex-col overflow-hidden rounded-3xl bg-white/85 p-5 shadow-sm ring-1 ring-slate-200/80 backdrop-blur"
         >
             <input
                 type="hidden"
@@ -433,26 +433,33 @@ export default function CommunityPostForm({ mode, data, role }: CommunityPostFor
                     )}
                 </div>
 
-                <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                    <AutoResizeTextarea
-                        value={mainContent}
-                        onChange={setMainContent}
-                        className="w-full bg-transparent px-2 py-2 text-sm font-medium leading-7 text-slate-700 outline-none transition placeholder:text-slate-400"
-                        placeholder="내용 입력..."
-                    />
-
-                    {postContents.map((postContent, index) => (
-                        <PostContentFieldset
-                            key={postContent.id}
-                            postContent={postContent}
-                            orderNo={index + 1}
-                            isThumbnail={thumbnailId === postContent.id}
-                            onSelectThumbnail={setThumbnailId}
-                            onChangeImage={handleChangeImage}
-                            onChangeContent={handleChangePostContent}
-                            onRemove={handleRemoveImage}
+                <div className="flex min-h-0 flex-1 flex-col overflow-hidden px-4 py-3">
+                    <div className="min-h-0 flex-1">
+                        <AutoResizeTextarea
+                            value={mainContent}
+                            onChange={setMainContent}
+                            className="h-full min-h-0 w-full bg-transparent px-2 py-2 text-sm font-medium leading-7 text-slate-700 outline-none transition placeholder:text-slate-400 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                            placeholder="내용 입력..."
+                            fill
                         />
-                    ))}
+                    </div>
+
+                    {postContents.length > 0 && (
+                        <div className="mt-3 max-h-[45%] shrink-0 overflow-y-auto border-t border-slate-100 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                            {postContents.map((postContent, index) => (
+                                <PostContentFieldset
+                                    key={postContent.id}
+                                    postContent={postContent}
+                                    orderNo={index + 1}
+                                    isThumbnail={thumbnailId === postContent.id}
+                                    onSelectThumbnail={setThumbnailId}
+                                    onChangeImage={handleChangeImage}
+                                    onChangeContent={handleChangePostContent}
+                                    onRemove={handleRemoveImage}
+                                />
+                            ))}
+                        </div>
+                    )}
                 </div>
             </section>
 
@@ -556,34 +563,40 @@ function AutoResizeTextarea({
     onChange,
     className,
     placeholder,
+    fill = false,
 }: {
     value: string;
     onChange: (value: string) => void;
     className: string;
     placeholder: string;
+    fill?: boolean;
 }) {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const rows = value.split("\n").length + 1;
 
     useEffect(() => {
+        if (fill) {
+            return;
+        }
+
         if (!textareaRef.current) {
             return;
         }
 
         const lineHeight = 28;
         textareaRef.current.style.height = `${rows * lineHeight}px`;
-    }, [rows]);
+    }, [fill, rows]);
 
     return (
         <textarea
             ref={textareaRef}
             value={value}
-            rows={rows}
+            rows={fill ? 1 : rows}
             onChange={(e) => onChange(e.target.value)}
             className={className}
             style={{
                 resize: "none",
-                overflow: "hidden",
+                overflow: fill ? "auto" : "hidden",
             }}
             placeholder={placeholder}
         />

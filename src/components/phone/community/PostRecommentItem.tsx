@@ -21,10 +21,10 @@ export default function PostRecommentItem({
         <Link
             href={
                 role === "TEACHER"
-                    ? `/teacher/community/${postId}`
+                    ? `/teacher/community/${postId}?commentCount=${commentCount}`
                     : role === "ADMIN"
-                        ? `/admin/community/${postId}`
-                        : `/student/community/${postId}`
+                        ? `/admin/community/${postId}?commentCount=${commentCount}`
+                        : `/student/community/${postId}?commentCount=${commentCount}`
             }
             className={`grid grid-cols-[72px_1fr] gap-3 rounded-2xl border p-2.5 transition hover:border-indigo-100 hover:bg-indigo-50/50 ${isActive
                 ? "border-indigo-200 bg-indigo-50"

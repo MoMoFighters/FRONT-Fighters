@@ -13,7 +13,7 @@ import type {
 } from "./type";
 import type { CommunityProfileData } from "@/components/phone/community/CommunityProfilePostsPage";
 
-export const COMMUNITY_PROFILE_PAGE_SIZE = 8;
+export const COMMUNITY_PROFILE_PAGE_SIZE = 10;
 
 interface LoadedCommunityProfilePosts {
     profile: CommunityProfileData;

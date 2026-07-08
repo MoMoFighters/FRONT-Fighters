@@ -60,6 +60,7 @@ export interface CommunityPostDetailData {
     category: CommunityCategory;
     viewCount: number;
     likeCount: number;
+    commentCount?: number;
     isLiked: boolean;
     isMine: boolean;
     authorId: number;
@@ -152,6 +153,7 @@ export interface CommunityRecommendedPostItem {
     category: CommunityCategory;
     viewCount: number;
     likeCount: number;
+    commentCount?: number;
     thumbnailUrl: string | null;
     authorId: number;
     authorName: string;

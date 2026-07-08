@@ -25,7 +25,7 @@ export default function LectureCreateFloatingWidget() {
 
     return (
         <>
-            <div className="fixed bottom-8 right-8 z-[100] flex w-72 flex-col gap-2">
+            <div className="fixed bottom-22 right-8 z-[100] flex w-72 flex-col gap-2">
                 {hasTasks && (
                     <div className="max-h-[50vh] space-y-2 overflow-y-auto rounded-2xl border border-slate-200 bg-white/95 p-3 shadow-2xl backdrop-blur">
                         {uploadingTasks.map((task) => (
@@ -120,7 +120,7 @@ export default function LectureCreateFloatingWidget() {
                 <button
                     type="button"
                     onClick={() => setIsOpen(true)}
-                    className="ml-auto inline-flex h-12 items-center justify-center gap-2 rounded-full bg-indigo-500 px-5 text-sm font-black text-white shadow-2xl transition hover:bg-indigo-600"
+                    className="cursor-pointer ml-auto inline-flex h-12 items-center justify-center gap-2 rounded-full bg-indigo-500 px-5 text-sm font-black text-white shadow-2xl transition hover:bg-indigo-600"
                 >
                     <Plus className="h-4 w-4" />
                     강의등록

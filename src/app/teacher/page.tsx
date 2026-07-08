@@ -93,8 +93,6 @@ export default async function TeacherMainPage() {
     return (
         <main className="mx-auto w-full max-w-360 px-12 py-10">
             <section className="relative overflow-hidden rounded-4xl border border-slate-200 bg-white p-8 text-slate-950 shadow-sm">
-                <div className="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-white/10 blur-2xl" />
-                <div className="absolute bottom-0 right-32 h-24 w-24 rounded-full bg-indigo-300/20 blur-xl" />
 
                 <div className="relative flex items-start justify-between gap-6">
                     <div>
@@ -151,7 +149,7 @@ export default async function TeacherMainPage() {
                 ))}
             </section>
 
-            <section className="mt-6 grid grid-cols-[minmax(0,1fr)_360px] gap-5">
+            <section className="mt-6">
                 <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
                     <div className="mb-4 flex items-center justify-between">
                         <div>
@@ -200,80 +198,6 @@ export default async function TeacherMainPage() {
                     </div>
                 </div>
 
-                <div className="space-y-5">
-                    <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-                        <div className="mb-4 flex items-center justify-between">
-                            <div>
-                                <h2 className="text-lg font-black text-slate-950">
-                                    최근 들어온 질문
-                                </h2>
-                                <p className="mt-1 text-xs font-bold text-slate-400">
-                                    답변이 필요한 질문을 확인하세요.
-                                </p>
-                            </div>
-
-                            <HelpCircle className="h-5 w-5 text-indigo-400" />
-                        </div>
-
-                        <div className="space-y-2">
-                            {questions.map((question) => (
-                                <div
-                                    key={question.id}
-                                    className="rounded-2xl border border-slate-100 bg-slate-50/80 p-4"
-                                >
-                                    <div className="flex items-center justify-between gap-3">
-                                        <span
-                                            className={`rounded-full px-2 py-0.5 text-[11px] font-black ${question.status === "대기"
-                                                ? "bg-amber-50 text-amber-600"
-                                                : "bg-emerald-50 text-emerald-600"
-                                                }`}
-                                        >
-                                            {question.status}
-                                        </span>
-                                        <span className="text-[11px] font-bold text-slate-400">
-                                            {question.createdAt}
-                                        </span>
-                                    </div>
-
-                                    <p className="mt-2 line-clamp-2 text-sm font-black text-slate-800">
-                                        {question.title}
-                                    </p>
-                                    <p className="mt-1 truncate text-xs font-bold text-slate-400">
-                                        {question.lectureTitle}
-                                    </p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className="rounded-3xl border border-indigo-100 bg-indigo-50 p-5">
-                        <div className="flex items-center gap-2 text-sm font-black text-indigo-600">
-                            <CheckCircle2 className="h-4 w-4" />
-                            강의 운영 상태
-                        </div>
-
-                        <div className="mt-4 space-y-3 text-sm font-bold text-slate-600">
-                            <div className="flex items-center justify-between">
-                                <span>승인 대기</span>
-                                <span className="text-slate-950">
-                                    {waitingLectures.length}개
-                                </span>
-                            </div>
-                            <div className="flex items-center justify-between">
-                                <span>보류/거절</span>
-                                <span className="text-slate-950">
-                                    {holdLectures.length}개
-                                </span>
-                            </div>
-                            <div className="flex items-center justify-between">
-                                <span>총 등록 강의</span>
-                                <span className="text-slate-950">
-                                    {teacherLectures.length}개
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </section>
         </main>
     );

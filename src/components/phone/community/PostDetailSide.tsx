@@ -141,7 +141,7 @@ const mapRecommendedPost = (
     category: post.category,
     viewCount: post.viewCount,
     likeCount: post.likeCount,
-    commentCount: 0,
+    commentCount: post.commentCount ?? 0,
     thumbnailUrl: post.thumbnailUrl,
     authorName: post.authorName,
     authorProfileImageUrl: DEFAULT_PROFILE_IMAGE_URL,
@@ -303,7 +303,7 @@ export default function PostDetailSide({
     };
 
     return (
-        <aside className="flex min-h-0 flex-col rounded-3xl bg-white/90 p-4 shadow-sm ring-1 ring-slate-100">
+        <aside className="flex h-full min-h-0 flex-col overflow-hidden rounded-3xl bg-white/90 p-4 shadow-sm ring-1 ring-slate-100">
             <div className="mb-4 shrink-0 rounded-2xl bg-slate-50 p-1">
                 <div className="grid grid-cols-2 gap-1">
                     <button

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import PostRecommentItem from "./PostRecommentItem";
 import type { PostRecommandPanelProps } from "./PostDetailSide";
 
