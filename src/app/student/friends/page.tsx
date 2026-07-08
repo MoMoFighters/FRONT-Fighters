@@ -74,7 +74,7 @@ export default async function StudentChatPage({
         friends.find(friend => friend.userId === currentFriendId) ?? null;
 
     return (
-        <div className="mx-3 flex h-full max-h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white">
+        <div className="mx-3 flex h-[calc(100vh-137px)] max-h-[calc(100vh-137px)] min-h-0 flex-col overflow-hidden   bg-white">
             <FriendNav status={currentStatus} />
 
             {currentStatus === "friend" && (

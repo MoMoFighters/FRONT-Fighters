@@ -13,10 +13,11 @@ const Calendar = dynamic(
         loading: () => (
             <div className="
                 flex-1
+                min-h-0
                 min-w-0
                 p-4
                 border-r
-                overflow-auto
+                overflow-hidden
                 scrollbar-none
             ">
                 <div className="flex h-full items-center justify-center text-sm font-bold text-slate-400">
