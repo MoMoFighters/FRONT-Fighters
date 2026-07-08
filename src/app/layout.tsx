@@ -8,7 +8,10 @@ import KakaoSdkScript from '@/components/common/KakaoSdkScript';
 export const metadata: Metadata = {
   metadataBase: new URL('https://momocity-six.vercel.app'),
   verification: {
-    google: 'Q69RkDWPxAGWddUPSPmatEy4zD9TAer4HqypT26FR2g'
+    google: 'Q69RkDWPxAGWddUPSPmatEy4zD9TAer4HqypT26FR2g',
+    other: {
+      "naver-site-verification": "a4b3761c8ab37abd9a2dcce5d1751492e394d87f",
+    },
   },
   title: {
     default: '모모시티',
@@ -28,6 +31,8 @@ export const metadata: Metadata = {
     '학습',
     '인강',
     '모모시티',
+    '갓생',
+    'MomoCity'
   ],
   alternates: {
     canonical: '/',

@@ -1,5 +1,5 @@
 import { BookOpen, ChefHat, ChevronRight, Dumbbell, Palette, Sparkles, TrendingUp, Users } from "lucide-react";
-import cityImage from '@/app/assets/img/cityImg.png'
+import cityImage from '@/app/assets/img/homeCityImg.png'
 import Image from "next/image";
 import Link from "next/link";
 
@@ -15,7 +15,18 @@ export default async function Home() {
 
   return (
     <>
+
       <section className="relative bg-linear-to-br from-slate-50 via-slate-100/50 to-slate-100 py-24 overflow-hidden">
+        <div className="absolute top-0 right-0 w-[52%] h-full mask-[linear-gradient(to_right,transparent_0%,black_30%,black_100%)]">
+          <Image
+            src={cityImage}
+            alt="도시 이미지"
+            fill
+            sizes="52vw"
+            className="scale-105 object-cover object-center opacity-55 blur-[2px] saturate-110"
+            priority
+          />
+        </div>
         <div className="max-w-7xl mx-auto px-8">
           <div className="grid grid-cols-2 gap-16 items-center">
             <div>
@@ -51,23 +62,6 @@ export default async function Home() {
                 <div>
                   <div className="text-3xl font-bold text-slate-900">4.8★</div>
                   <div className="text-sm text-slate-600 mt-1">평균 평점</div>
-                </div>
-              </div>
-            </div>
-
-            <div className="relative">
-              <div className="relative bg-white rounded-3xl shadow-2xl p-10 transform rotate-2 hover:rotate-0 transition-transform">
-                <div
-                  className="w-full h-80 rounded-2xl relative"
-                >
-                  <Image
-                    src={cityImage}
-                    alt="이미지"
-                    fill
-                    sizes="100vw"
-                    className="w-full h-auto rounded-2xl brightness-90"
-                    priority
-                  />
                 </div>
               </div>
             </div>
