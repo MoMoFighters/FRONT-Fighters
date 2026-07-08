@@ -101,7 +101,7 @@ function FullCalendarMonthView({
             plugins={FULL_CALENDAR_PLUGINS}
             initialView="dayGridMonth"
             initialDate={initialDate}
-            height="auto"
+            height="100%"
             timeZone="local"
             datesSet={handleDatesSet}
             dateClick={handleDateClick}

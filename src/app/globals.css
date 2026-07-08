@@ -268,3 +268,14 @@
 .fc-toolbar-chunk .fc-toolbar-title {
   font-weight: 700;
 }
+
+.fc .fc-scroller,
+.fc .fc-scroller-liquid-absolute {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.fc .fc-scroller::-webkit-scrollbar,
+.fc .fc-scroller-liquid-absolute::-webkit-scrollbar {
+  display: none;
+}
