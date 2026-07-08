@@ -37,6 +37,12 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/',
   },
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/icon.png", type: "image/png", sizes: "512x512" },
+    ],
+  },
   openGraph: {
     type: 'website',
     locale: 'ko_KR',
