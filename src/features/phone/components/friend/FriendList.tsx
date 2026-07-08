@@ -60,7 +60,7 @@ export default function FriendList({
                     friendList.map(friend => (
                         <FriendItem
                             key={friend.userId}
-                            href={`/student/phone/friends?status=friend&friendId=${friend.userId}`}
+                            href={`/student/friends?status=friend&friendId=${friend.userId}`}
                             selected={selectedFriendId === friend.userId}
                             showActions={false}
                             friendInfo={{

@@ -57,7 +57,7 @@ export default function FriendDetail({ friend }: FriendDetailProps) {
         });
 
         router.push(
-            `/student/phone/friends?status=chat&roomId=${response.data?.roomId}`
+            `/student/friends?status=chat&roomId=${response.data?.roomId}`
         );
     };
 
@@ -78,7 +78,7 @@ export default function FriendDetail({ friend }: FriendDetailProps) {
 
                         toast.success(response.message);
                         setModalType(null);
-                        router.push("/student/phone/friends?status=friend");
+                        router.push("/student/friends?status=friend");
                         router.refresh();
                     },
                 };
@@ -98,7 +98,7 @@ export default function FriendDetail({ friend }: FriendDetailProps) {
 
                         toast.success(response.message);
                         setModalType(null);
-                        router.push("/student/phone/friends?status=friend");
+                        router.push("/student/friends?status=friend");
                         router.refresh();
                     },
                 };
@@ -128,7 +128,7 @@ export default function FriendDetail({ friend }: FriendDetailProps) {
                     variant="ghost"
                     className="h-9 w-9 rounded-lg p-0 text-slate-500 hover:bg-slate-100 hover:text-slate-800"
                 >
-                    <Link href="/student/phone/friends?status=friend">
+                    <Link href="/student/friends?status=friend">
                         <X className="h-5 w-5" />
                     </Link>
                 </Button>

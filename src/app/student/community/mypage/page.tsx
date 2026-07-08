@@ -31,9 +31,9 @@ export default async function CommunityMyPage({
             currentPage={profileData.currentPage}
             totalPages={profileData.totalPages}
             totalCount={profileData.totalCount}
-            pageBaseHref="/student/phone/community/mypage"
-            detailHrefBase="/student/phone/community"
-            actionSlot={<CommunityCreatePostLink href="/student/phone/community/create" />}
+            pageBaseHref="/student/community/mypage"
+            detailHrefBase="/student/community"
+            actionSlot={<CommunityCreatePostLink href="/student/community/create" />}
         />
     );
 }

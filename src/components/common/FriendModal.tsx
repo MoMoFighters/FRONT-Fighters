@@ -52,7 +52,7 @@ export default function FriendModal({ isOpen, onClose }: FriendModalProps) {
             if (isTeacherPage) {
                 router.push(`/teacher/ask?roomId=${state.data.roomId}`);
             } else {
-                router.push(`/student/phone/friends?status=friend&roomId=${state.data.roomId}`);
+                router.push(`/student/friends?status=friend&roomId=${state.data.roomId}`);
             }
         } else if (state.status >= 400 && state.message) {
             // 명세서에 명시된 에러 메시지(예: "자기 자신과는 대화창을 개설할 수 없습니다.") 노출

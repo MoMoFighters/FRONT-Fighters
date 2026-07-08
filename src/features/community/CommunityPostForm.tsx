@@ -65,7 +65,7 @@ const mergeContent = (prevContent: string, nextContent: string) => {
 const getCommunityListHref = (role?: CommunityPostFormProps["role"]) => {
     if (role === "TEACHER") return "/teacher/community";
     if (role === "ADMIN") return "/admin/community";
-    return "/student/phone/community";
+    return "/student/community";
 };
 
 export default function CommunityPostForm({ mode, data, role }: CommunityPostFormProps) {
@@ -93,7 +93,7 @@ export default function CommunityPostForm({ mode, data, role }: CommunityPostFor
             // role이 'TEACHER'나 'ADMIN'이 아니면(undefined 포함) 학생 경로 반환
             if (role === "TEACHER") return "/teacher/community";
             if (role === "ADMIN") return "/admin/community";
-            return "/student/phone/community";
+            return "/student/community";
         };
 
         const baseUrl = getBaseUrl();

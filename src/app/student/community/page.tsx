@@ -1,4 +1,4 @@
-﻿import { Search } from "lucide-react";
+import { Search } from "lucide-react";
 
 import CommunitySideBar from "@/components/phone/community/CommunitySideBar";
 import PostListItem from "@/components/phone/community/PostListItem";
@@ -77,7 +77,7 @@ const createPageHref = ({
 
     const queryString = params.toString();
 
-    return `/student/phone/community${queryString ? `?${queryString}` : ""}`;
+    return `/student/community${queryString ? `?${queryString}` : ""}`;
 };
 
 export default async function CommunityPage({
@@ -156,7 +156,7 @@ export default async function CommunityPage({
                     </div>
 
                     <form
-                        action="/student/phone/community"
+                        action="/student/community"
                         className="mt-3 flex items-center gap-2"
                     >
                         <div className="relative min-w-0 flex-1">

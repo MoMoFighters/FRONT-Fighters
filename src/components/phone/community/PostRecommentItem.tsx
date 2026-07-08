@@ -24,7 +24,7 @@ export default function PostRecommentItem({
                     ? `/teacher/community/${postId}`
                     : role === "ADMIN"
                         ? `/admin/community/${postId}`
-                        : `/student/phone/community/${postId}`
+                        : `/student/community/${postId}`
             }
             className={`grid grid-cols-[72px_1fr] gap-3 rounded-2xl border p-2.5 transition hover:border-indigo-100 hover:bg-indigo-50/50 ${isActive
                 ? "border-indigo-200 bg-indigo-50"

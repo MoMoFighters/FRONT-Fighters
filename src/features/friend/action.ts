@@ -138,7 +138,7 @@ export const updateFriendStatus = async (
             accessToken
         );
 
-        revalidatePath("/student/phone/friends");
+        revalidatePath("/student/friends");
         revalidatePath("/teacher/ask");
 
         return result;

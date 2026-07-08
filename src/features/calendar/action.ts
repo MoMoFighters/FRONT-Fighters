@@ -1,4 +1,4 @@
-﻿'use server';
+'use server';
 
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
@@ -11,7 +11,7 @@ import { GetCalendarSchedulesActionProps, ScheduleItem, TodayChapter }
     from './type';
 
 const revalidateCalendarPaths = () => {
-    revalidatePath('/student/phone/calendar');
+    revalidatePath('/student/calendar');
 };
 
 

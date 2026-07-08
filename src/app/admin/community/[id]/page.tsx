@@ -70,7 +70,7 @@ export default async function CommunityPostDetailPage({
                         ) : (
                             <Link
                                 className="cursor-pointer rounded-md border border-slate-200 px-2.5 py-1 text-xs font-bold text-slate-500 transition hover:bg-slate-100"
-                                href={`/admin/phone/community/${post.postId}/edit`}
+                                href={`/admin/community/${post.postId}/edit`}
                             >
                                 수정
                             </Link>

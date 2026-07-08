@@ -50,7 +50,7 @@ export default function UpdateFriendStatusBtn({ data }: Props) {
         })
 
         router.push(
-            `/student/phone/friends?status=chat&roomId=${response.data?.roomId}`
+            `/student/friends?status=chat&roomId=${response.data?.roomId}`
         );
         // router.refresh()
     };

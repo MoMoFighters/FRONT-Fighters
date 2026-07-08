@@ -48,17 +48,17 @@ export default function HeaderProfileCard({
         },
         {
             label: "커뮤니티",
-            href: "/student/phone/community",
+            href: "/student/community",
             icon: Users,
         },
         {
             label: "메신저",
-            href: "/student/phone/friends",
+            href: "/student/friends",
             icon: MessageSquare,
         },
         {
             label: "일정",
-            href: "/student/phone/calendar",
+            href: "/student/calendar",
             icon: CalendarDays,
         },
         {

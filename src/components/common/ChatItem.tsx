@@ -33,9 +33,9 @@ export default function ChatItem({
 
     if (isMine === null) {
         return (
-            <div className="flex h-8 w-full justify-center select-none">
+            <div className="flex w-full justify-center select-none">
                 <div className="min-w-10 max-w-fit rounded-full bg-slate-200/70 px-4 py-1">
-                    <p className="text-center text-sm text-slate-900">
+                    <p className="text-center text-xs text-slate-500">
                         {message}
                     </p>
                 </div>

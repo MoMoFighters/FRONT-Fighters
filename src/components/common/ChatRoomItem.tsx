@@ -30,10 +30,11 @@ const formatChatRoomCreatedAt = (createdAt?: string | null) => {
         date.getFullYear() === now.getFullYear() &&
         date.getMonth() === now.getMonth() &&
         date.getDate() === now.getDate();
-    const time = date.toLocaleTimeString("ko-KR", {
-        hour: "2-digit",
-        minute: "2-digit",
-    });
+    const hours = date.getHours();
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const period = hours < 12 ? "오전" : "오후";
+    const displayHours = hours % 12 || 12;
+    const time = `${period} ${String(displayHours).padStart(2, "0")}:${minutes}`;
 
     if (isToday) {
         return time;
@@ -184,7 +185,7 @@ export default function ChatRoomItem({
 
     const href = pathname.startsWith("/teacher")
         ? `/teacher/ask?roomId=${roomId}`
-        : `/student/phone/friends?status=chat&roomId=${roomId}`;
+        : `/student/friends?status=chat&roomId=${roomId}`;
     const createdAtText = formatChatRoomCreatedAt(createdAt);
 
     return (

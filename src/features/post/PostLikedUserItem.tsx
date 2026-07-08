@@ -14,7 +14,7 @@ export default function PostLikedUserItem({
 }: PostLikedUserItemProps) {
     return (
         <Link
-            href={`/student/phone/community/user/${user.userId}`}
+            href={`/student/community/user/${user.userId}`}
             className="flex items-center gap-3 rounded-2xl px-3 py-2.5 transition hover:bg-rose-50/70"
         >
             <div className="flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-rose-100 to-indigo-100 text-sm font-black text-rose-500">

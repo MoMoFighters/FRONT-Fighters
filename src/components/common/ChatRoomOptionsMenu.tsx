@@ -50,7 +50,7 @@ const getMemberName = (member: ChatMemberResponse | StudentFriendData) =>
 const getChatBaseHref = (pathname: string) =>
     pathname.startsWith("/teacher")
         ? "/teacher/ask"
-        : "/student/phone/friends?status=chat";
+        : "/student/friends?status=chat";
 
 export default function ChatRoomOptionsMenu({
     room,

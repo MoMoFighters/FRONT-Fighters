@@ -37,7 +37,7 @@ export default function MyProfileDropdown({ myChatRoomId }: MyProfileDropdownPro
                     <DropdownMenuItem
                         onClick={() => {
                             setDropdownOpen(false);
-                            router.push(`/student/phone/friends/?status=chat&roomId=${myChatRoomId}`);
+                            router.push(`/student/friends/?status=chat&roomId=${myChatRoomId}`);
                         }}
                     >
                         나와의 채팅
