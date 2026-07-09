@@ -84,7 +84,7 @@ export default async function StudentTestPage() {
         pointHistoryResponse.data?.totalElements ?? pointHistory.length;
 
     return (
-        <main className="min-h-[calc(100vh-137px)] bg-slate-50 px-8 py-8">
+        <main className="min-h-[calc(100vh-137px)] bg-white px-8 py-8">
             <div className="mx-auto flex w-full max-w-360 gap-6">
                 <aside className="sticky top-8 mb-auto w-68 shrink-0 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
                     <div className="border-b border-slate-100 p-6">

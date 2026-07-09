@@ -50,24 +50,27 @@ export interface BuildingInfo {
 }
 
 export interface GetMyInfoResponse {
-   timestamp: string;
-   status: number;
-   code: string;
-   message: string;
-   data: {
-      userDetail: {
-         profileImageUrl: string;
-         email: string | null;
-         name: string;
-         nickname: string | null;
-         isTempPwd: boolean;
-         createdAt: string;
-         points?: number;
-         point?: number;
-      },
-      buildings: BuildingInfo[]
-      points?: number;
-      point?: number;
+   timestamp: string;
+   status: number;
+   code: string;
+   message: string;
+   data: {
+      userDetail: {
+         profileImageUrl: string;
+         email: string | null;
+         name: string;
+         point: number;
+         doNotDisturb?: boolean;
+         membership?: string;
+         membershipStart?: string | null;
+         nickname: string | null;
+         isTempPwd: boolean;
+         createdAt: string;
+         points?: number;
+      },
+      buildings: BuildingInfo[]
+      points?: number;
+      point?: number;
    };
 }
 

@@ -3,6 +3,7 @@
 import DeleteModal from "@/features/modal/DeleteModal";
 import NotificationItem from "@/components/city/NotificationItem";
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 
 import {
     deleteNoticeAction,
@@ -216,23 +217,23 @@ export default function NotificationList({
         }
     };
 
-    return (
+    const notificationList = (
         <div
-            className="fixed right-0 top-0 h-screen w-screen"
+            className="fixed right-0 top-0 z-[999999] h-screen w-screen"
             onClick={onClose}
         >
             <div
-                className="fixed right-44 top-15 flex max-h-106 min-h-30 w-80 flex-col overflow-hidden rounded-xl border border-slate-300 bg-white/80 shadow-xl shadow-slate-900/10 backdrop-blur-md"
+                className="fixed z-[999999] right-44 top-15 flex max-h-106 min-h-30 w-80 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl shadow-slate-900/10 backdrop-blur-md"
                 onClick={(e) => e.stopPropagation()}
             >
-                <div className="rounded-t-xl border-b border-slate-500/30 px-5 py-3">
+                <div className="rounded-t-xl border-b border-slate-100 px-5 py-3">
                     <h3 className="font-bold text-slate-800">
                         알림 목록
                     </h3>
                 </div>
 
                 {notifications.length > 0 && (
-                    <div className="flex items-center gap-2 border-b border-slate-500/20 px-4 py-2 text-xs">
+                    <div className="flex items-center gap-2 border-b border-slate-100 px-4 py-2 text-xs">
                         <label className="flex cursor-pointer items-center gap-2 text-slate-600">
                             <input
                                 type="checkbox"
@@ -320,4 +321,10 @@ export default function NotificationList({
             </div>
         </div>
     );
+
+    if (typeof document === "undefined") {
+        return null;
+    }
+
+    return createPortal(notificationList, document.body);
 }

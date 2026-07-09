@@ -37,6 +37,9 @@ export interface MomoUserInfo {
     points: number;
     buildings: number;
     buildingInfos: BuildingInfo[];
+    doNotDisturb: boolean;
+    membership: string;
+    membershipStart: string | null;
     isPaid: boolean;
 }
 
@@ -66,6 +69,7 @@ export const getMyInfo = async (): Promise<MomoUserInfoResponse> => {
         const userDetail = result.data.userDetail;
         const buildings = result.data.buildings ?? [];
         const points = userDetail.point ?? userDetail.points ?? result.data.point ?? result.data.points ?? 0;
+        const membership = userDetail.membership ?? "BASIC";
 
         return {
             timestamp: result.timestamp,
@@ -82,7 +86,10 @@ export const getMyInfo = async (): Promise<MomoUserInfoResponse> => {
                 points,
                 buildings: buildings.length,
                 buildingInfos: buildings,
-                isPaid: false,
+                doNotDisturb: userDetail.doNotDisturb ?? false,
+                membership,
+                membershipStart: userDetail.membershipStart ?? null,
+                isPaid: membership !== "BASIC",
             },
         };
     } catch (error) {
