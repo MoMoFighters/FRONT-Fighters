@@ -158,36 +158,36 @@ export default function LoginForm({
                         <div className="flex-1 border-t border-slate-200" />
                     </div>
 
-                    <div className="mt-4 grid grid-cols-3 gap-3">
+                    <div className="mt-4 flex items-center justify-center gap-8">
                         <a
                             href={oauthConfig.googleAuthLink}
-                            className="flex h-11 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white text-[13px] font-semibold text-slate-600 transition-colors hover:border-slate-300 hover:bg-slate-50"
+                            className="flex h-12 w-12 items-center justify-center rounded-full bg-white transition-colors hover:bg-slate-50"
+                            aria-label="Google 로그인"
                         >
-                            <Image src={googleIcon} alt="구글" width={20} height={20} />
-                            Google
+                            <Image src={googleIcon} alt="구글" width={30} height={30} />
                         </a>
                         <button
                             type="button"
-                            className="flex h-11 cursor-pointer items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white text-[13px] font-semibold text-slate-600 transition-colors hover:border-slate-300 hover:bg-slate-50"
+                            className="flex h-12 w-12 cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-slate-50"
                             onClick={handleKakaoLogin}
+                            aria-label="Kakao 로그인"
                         >
-                            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-yellow-300">
+                            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-yellow-300">
                                 <Image
                                     src={kakao}
-                                    width={14}
-                                    height={14}
+                                    width={20}
+                                    height={20}
                                     alt="카카오"
                                     priority
                                 />
                             </span>
-                            카카오톡
                         </button>
                         <a
                             href="/oauth/naver/start"
-                            className="flex h-11 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white text-[13px] font-semibold text-slate-600 transition-colors hover:border-slate-300 hover:bg-slate-50"
+                            className="flex h-12 w-12 items-center justify-center rounded-full bg-white transition-colors hover:bg-slate-50"
+                            aria-label="Naver 로그인"
                         >
-                            <Image src={naverIcon} alt="네이버" width={22} height={22} />
-                            네이버
+                            <Image src={naverIcon} alt="네이버" width={34} height={34} />
                         </a>
                     </div>
                 </div>
