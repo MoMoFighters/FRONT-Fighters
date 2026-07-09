@@ -152,7 +152,7 @@ export default function LoginForm({
                         <div className="flex-1 border-t border-slate-200" />
 
                         <span className="shrink-0 text-[13px] font-semibold text-slate-500">
-                            소셜 로그인
+                            SNS 계정으로 시작하기
                         </span>
 
                         <div className="flex-1 border-t border-slate-200" />
@@ -164,28 +164,30 @@ export default function LoginForm({
                             className="flex h-11 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white text-[13px] font-semibold text-slate-600 transition-colors hover:border-slate-300 hover:bg-slate-50"
                         >
                             <Image src={googleIcon} alt="구글" width={20} height={20} />
-                            google
+                            Google
                         </a>
                         <button
                             type="button"
-                            className="flex h-11 cursor-pointer items-center justify-center gap-2 rounded-lg border border-yellow-200 bg-yellow-300 text-[13px] font-semibold text-slate-800 transition-colors hover:bg-yellow-200"
+                            className="flex h-11 cursor-pointer items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white text-[13px] font-semibold text-slate-600 transition-colors hover:border-slate-300 hover:bg-slate-50"
                             onClick={handleKakaoLogin}
                         >
-                            <Image
-                                src={kakao}
-                                width={20}
-                                height={20}
-                                alt="카카오"
-                                priority
-                            />
-                            kakao
+                            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-yellow-300">
+                                <Image
+                                    src={kakao}
+                                    width={14}
+                                    height={14}
+                                    alt="카카오"
+                                    priority
+                                />
+                            </span>
+                            카카오톡
                         </button>
                         <a
                             href="/oauth/naver/start"
-                            className="flex h-11 items-center justify-center gap-2 rounded-lg bg-emerald-500 text-[13px] font-semibold text-white transition-colors hover:bg-emerald-600"
+                            className="flex h-11 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white text-[13px] font-semibold text-slate-600 transition-colors hover:border-slate-300 hover:bg-slate-50"
                         >
                             <Image src={naverIcon} alt="네이버" width={22} height={22} />
-                            naver
+                            네이버
                         </a>
                     </div>
                 </div>
