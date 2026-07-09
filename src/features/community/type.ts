@@ -39,6 +39,15 @@ export interface CreateCommunityPostContentsRequest {
 export type CreateCommunityPostContentsResponse =
     ApiResponse<null>;
 
+export type EditCommunityPostTitleResponse =
+    ApiResponse<null>;
+
+export type EditCommunityPostContentResponse =
+    ApiResponse<null>;
+
+export type DeleteCommunityPostResponse =
+    ApiResponse<null>;
+
 export type CommunityAuthorRole =
     | "STUDENT"
     | "TEACHER"
