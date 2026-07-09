@@ -86,13 +86,7 @@ export default function NotificationItem({
             onClick={handleClick}
             className="block w-full"
         >
-            <article className="flex w-full cursor-pointer flex-row items-center border-b border-slate-500/30 bg-white/25 px-4 py-2 transition-all hover:bg-white/90 hover:shadow-sm">
-                {isRead ? (
-                    <div className="mb-5 mr-2 h-2 w-2 rounded-full" />
-                ) : (
-                    <div className="mb-5 mr-2 h-2 w-2 rounded-full bg-red-500" />
-                )}
-
+            <article className="flex w-full cursor-pointer flex-row items-center border-b border-slate-100 bg-white px-4 py-2 transition-all hover:bg-slate-50 hover:shadow-sm">
                 <input
                     type="checkbox"
                     checked={isSelected}
@@ -102,10 +96,17 @@ export default function NotificationItem({
                     aria-label="알림 선택"
                 />
 
+
+
                 <div className="flex min-w-0 flex-1 flex-row items-center gap-3">
                     <div className="flex min-w-0 w-full flex-col justify-between">
-                        <h3 className="text-sm font-bold text-slate-800">
+                        <h3 className="text-sm font-bold text-slate-800 flex flex-row items-center">
                             {title}
+                            {isRead ? (
+                                <div className="ml-2 h-2 w-2 rounded-full" />
+                            ) : (
+                                <div className="ml-2 h-2 w-2 rounded-full bg-red-500" />
+                            )}
                         </h3>
                         <p className="truncate text-xs">
                             {content}

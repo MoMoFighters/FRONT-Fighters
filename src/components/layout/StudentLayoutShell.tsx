@@ -32,7 +32,7 @@ export default function StudentLayoutShell({
             <div className="flex h-screen flex-col overflow-hidden bg-white">
                 {header}
 
-                <main className="min-h-0 flex-1 overflow-hidden">
+                <main className="min-h-0 flex-1 overflow-hidden pt-14">
                     {children}
                 </main>
             </div>
@@ -43,7 +43,7 @@ export default function StudentLayoutShell({
         <div className="flex min-h-screen flex-col bg-white">
             {header}
 
-            <main className="flex-1 bg-white">
+            <main className="flex-1 bg-white pt-14">
                 {children}
             </main>
 

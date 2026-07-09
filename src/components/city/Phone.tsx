@@ -17,6 +17,7 @@ import {
 import { connectNoticeStomp } from "@/lib/stomp/stomp";
 import { NoticeAppCountsData } from "@/features/user/components/notification/type";
 import { toast } from "sonner";
+import { getMyInfo } from "@/features/user/action";
 
 interface PhoneProps {
     accessToken?: string;
@@ -44,6 +45,7 @@ const PhoneAppGrid = dynamic(() => import("./PhoneAppGrid"), {
     ssr: false,
     loading: () => <PhoneAppGridSkeleton />,
 });
+
 
 export default function Phone({
     accessToken,
@@ -125,14 +127,17 @@ export default function Phone({
     useEffect(() => {
         let isMounted = true;
 
+
         const loadAppCounts = async () => {
-            const response = await getNoticeAppCountsAction();
+            const notificationResponse = await getNoticeAppCountsAction();
+            const dndResponse = await getMyInfo();
 
             if (!isMounted) {
                 return;
             }
 
-            setNotification(response.data ?? EMPTY_COUNTS);
+            setNotification(notificationResponse.data ?? EMPTY_COUNTS);
+            setNotificationEnabled(dndResponse.data?.doNotDisturb || true)
         };
 
         void loadAppCounts();
