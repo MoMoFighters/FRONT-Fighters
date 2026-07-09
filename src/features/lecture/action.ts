@@ -26,6 +26,7 @@ export const updateLectureStatusAction = async (id: string, status: LectureStatu
     revalidatePath('/student/cook/lectures');
     revalidatePath('/student/beauty/lectures');
     revalidatePath('/lectures');
+    revalidatePath(`/lectures/${id}`);
     revalidatePath(`/admin/lectures/${id}`);
     revalidateTag("lectures", { expire: 0 });
 }
@@ -114,6 +115,7 @@ export const createReviewAction = async (
     revalidatePath(`/admin/lectures/${lectureId}`);
     revalidatePath(`/teacher/lectures/${lectureId}`);
     revalidatePath('/lectures');
+    revalidatePath(`/lectures/${lectureId}`);
     revalidateTag("lectures", { expire: 0 });
 }
 
@@ -143,6 +145,7 @@ export const deleteLectureAction = async (
         await deleteLectureById(lectureId);
         revalidatePath("/admin/lectures");
         revalidatePath("/lectures");
+        revalidatePath(`/lectures/${lectureId}`);
         revalidatePath(`/admin/lectures/${lectureId}`);
         revalidateTag("lectures", { expire: 0 });
 
@@ -165,8 +168,11 @@ export const deleteChapterAction = async (
     try {
         await deleteChapterByIds(lectureId, chapterId);
         revalidatePath("/admin/lectures");
+        revalidatePath("/lectures");
+        revalidatePath(`/lectures/${lectureId}`);
         revalidatePath(`/admin/lectures/${lectureId}`);
         revalidatePath(`/admin/lectures/${lectureId}/chapters/${chapterId}`);
+        revalidateTag("lectures", { expire: 0 });
 
         return {
             success: true,
@@ -188,6 +194,7 @@ export const deleteReviewAction = async (
         await deleteReviewById(reviewId);
         revalidatePath("/admin/lectures");
         revalidatePath("/lectures");
+        revalidatePath(`/lectures/${lectureId}`);
         revalidatePath(`/admin/lectures/${lectureId}`);
         revalidateTag("lectures", { expire: 0 });
 

@@ -151,6 +151,26 @@ export const getLectureById = async (id: string): Promise<LectureDetailResponse>
 };
 
 /**
+ * 비로그인 강의 상세 조회 api -> 헤더에 토큰 X
+ * @param id 조회를 원하는 강의의 id
+ * @returns LectureDetailResponse
+ */
+export const getLectureByIdForGuest = async (id: string): Promise<LectureDetailResponse> => {
+  const response = await fetch(`${BASE_URL}/api/v1/lectures/${id}`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    cache: "force-cache",
+    next: {
+      tags: ["lectures"],
+    },
+  });
+  await handleErrorResponse(response);
+  const result: ApiResponse<LectureDetailResponse> = await response.json();
+  return assertApiData(result);
+};
+
+/**
  * 수강평 목록 조회 api -> 강의 상세 조회 페이지 내에서 수강평을 클릭했을 때 즉, tab === "reviews" 일 때 요청
  * @param id 수강평 목록을 불러올 강의의 id
  * @param page 페이지네이션

@@ -1,13 +1,13 @@
 import {
   ChevronLeft,
   ChevronRight,
-  CircleQuestionMark,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Notice } from "@/features/notice/type";
 import community from '@/app/assets/img/community.png'
 import robot from '@/app/assets/img/robot.png'
+import GuestInquiryCard from "./GuestInquiryCard";
 
 const COMMUNITY_HREF = "/auth/login";
 
@@ -150,22 +150,7 @@ export default function GuestNoticeCommunitySection() {
             </div>
           </div>
 
-          <div className="rounded-xl border border-slate-200 bg-white/70 shadow-sm p-5">
-            <div className="mb-3 flex items-center gap-2 text-xs font-semibold text-slate-500">
-              <CircleQuestionMark className="h-4 w-4 text-indigo-400" />
-              1:1 문의
-            </div>
-            <div className="flex justify-between items-center gap-2">
-              <p className="mt-2 text-xs leading-5 text-slate-600">
-                그 외 기타 사항은 문의를 부탁드립니다.
-              </p>
-              <Link href={COMMUNITY_HREF}>
-                <button className="mt-2 min-w-16 flex cursor-pointer items-center justify-center rounded-lg border border-indigo-400 bg-white px-1.5 py-1.5 text-xs font-semibold text-indigo-600 transition-colors hover:bg-indigo-50">
-                  문의하기
-                </button>
-              </Link>
-            </div>
-          </div>
+          <GuestInquiryCard />
         </aside>
       </div>
     </section>
