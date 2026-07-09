@@ -110,7 +110,7 @@ export default function Footer() {
                     </nav>
 
                     <p className="mt-2 text-xs font-medium leading-5 text-slate-400">
-                        경기도 성남시 수정구 산성대로 553 박애관 4층
+                        경기도 성남시 수정구 산성대로 553 박애관 421호/624호
                     </p>
 
                     <p className="mt-2 text-xs font-medium text-slate-400">

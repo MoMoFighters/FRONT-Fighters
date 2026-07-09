@@ -1,11 +1,13 @@
+import AuthPageShell from "@/features/auth/components/AuthPageShell";
 import SignupForm from "@/features/auth/components/SignupForm";
 
 export default function Signup() {
     return (
-        <div className="flex min-h-screen items-center justify-center px-4 py-10">
-            <div className="flex flex-col justify-center gap-4 p-4">
-                <SignupForm />
-            </div>
-        </div>
+        <AuthPageShell
+            title="모모시티 회원가입"
+            description="간단한 계정 생성 후 강의를 둘러보고 나만의 도시를 세워보세요."
+        >
+            <SignupForm />
+        </AuthPageShell>
     );
 }
