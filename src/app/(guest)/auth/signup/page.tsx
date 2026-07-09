@@ -2,8 +2,8 @@ import SignupForm from "@/features/auth/components/SignupForm";
 
 export default function Signup() {
     return (
-        <div className="flex min-h-[calc(100vh-9rem)] items-center justify-center px-4 py-10">
-            <div className="p-4 flex flex-col gap-4 justify-center align-middle mx-auto">
+        <div className="flex min-h-screen items-center justify-center px-4 py-10">
+            <div className="flex flex-col justify-center gap-4 p-4">
                 <SignupForm />
             </div>
         </div>

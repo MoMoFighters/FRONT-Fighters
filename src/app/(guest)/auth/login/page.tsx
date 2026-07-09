@@ -7,8 +7,8 @@ export default function Login() {
     const oauthConfig = getOAuthClientConfig();
 
     return (
-        <>
-            <div className="p-4 flex flex-col gap-4 justify-center align-middle max-w-100 mx-auto mt-30 ">
+        <div className="flex min-h-screen items-center justify-center px-4 py-10">
+            <div className="flex w-full max-w-100 flex-col justify-center gap-4 p-4">
                 <div className="flex justify-center mb-4">
                     <Image src={logo} width={160} alt="MOMOCITY 로고" priority />
                 </div>
@@ -17,6 +17,6 @@ export default function Login() {
                     oauthConfig={oauthConfig}
                 />
             </div>
-        </>
+        </div>
     );
 }
