@@ -1,9 +1,17 @@
 import { Toaster } from 'sonner';
 import type { Metadata } from 'next';
+import { IBM_Plex_Sans_KR } from 'next/font/google';
 import '../app/globals.css'
 import { TooltipProvider } from '@/components/ui/tooltip';
 import ReactQueryProvider from '@/components/common/ReactQueryProvider';
 import KakaoSdkScript from '@/components/common/KakaoSdkScript';
+
+const ibmPlexSansKr = IBM_Plex_Sans_KR({
+  weight: ['400', '500', '600', '700'],
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-ibm-plex-sans-kr',
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://momocity-six.vercel.app'),
@@ -85,7 +93,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko">
+    <html lang="ko" className={ibmPlexSansKr.variable}>
       <body className="min-h-screen flex flex-col">
 
         <KakaoSdkScript

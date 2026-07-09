@@ -3,8 +3,6 @@ import cityImage from "@/app/assets/img/homeCityImg.png";
 import Image from "next/image";
 import Link from "next/link";
 
-const LECTURE_LIST_HREF = "/lectures";
-
 const heroStats = [
   {
     value: "12,000+",
@@ -28,7 +26,7 @@ const heroStats = [
 
 export default function GuestHeroSection() {
   return (
-    <section className="relative overflow-hidden bg-white py-20">
+    <section className="relative overflow-hidden bg-white py-20 border-b border-slate-200">
       <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[50%] lg:block">
         <div className="absolute inset-0 overflow-hidden [mask-image:linear-gradient(90deg,transparent_0%,rgba(0,0,0,0.5)_10%,#000_20%)] [mask-repeat:no-repeat] [mask-size:100%_100%]">
           <Image
@@ -37,7 +35,7 @@ export default function GuestHeroSection() {
             fill
             sizes="50vw"
             className="object-cover object-right opacity-55 saturate-90 contrast-95"
-            priority
+            preload
           />
         </div>
       </div>
@@ -56,9 +54,9 @@ export default function GuestHeroSection() {
           </p>
 
           <div className="mt-8 flex items-center gap-4">
-            <Link href={LECTURE_LIST_HREF}>
-              <button className="group flex cursor-pointer items-center gap-2 rounded-xl bg-indigo-500/90 px-6 py-3.5 text-xs font-bold text-white shadow-lg shadow-indigo-500/20 transition-all hover:-translate-y-0.5 hover:bg-indigo-500 hover:shadow-xl hover:shadow-indigo-500/25">
-                강의 둘러보기
+            <Link href="/about">
+              <button className="group flex cursor-pointer items-center gap-2 rounded-xl bg-indigo-500/90 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-indigo-500/20 transition-all hover:-translate-y-0.5 hover:bg-indigo-500 hover:shadow-xl hover:shadow-indigo-500/25">
+                사이트 소개
                 <ArrowRight className="h-4 w-4" />
               </button>
             </Link>

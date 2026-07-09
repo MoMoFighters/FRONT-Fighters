@@ -11,7 +11,7 @@ import {
     updateVideoProgressByExit,
 } from "@/app/services/lecture/service";
 import { CreateReviewRequest, LectureStatus, UpdateVideoProgressByExitRequest, UpdateVideoProgressRequest } from "./type";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 
 // 강의 상태 업데이트 액션함수
@@ -25,7 +25,9 @@ export const updateLectureStatusAction = async (id: string, status: LectureStatu
     revalidatePath('/student/art/lectures');
     revalidatePath('/student/cook/lectures');
     revalidatePath('/student/beauty/lectures');
+    revalidatePath('/lectures');
     revalidatePath(`/admin/lectures/${id}`);
+    revalidateTag("lectures", { expire: 0 });
 }
 
 // 영상 시청 중 진척도 저장하는 액션함수
@@ -111,6 +113,8 @@ export const createReviewAction = async (
     revalidatePath(`/student/mypage/lectures/${lectureId}`);
     revalidatePath(`/admin/lectures/${lectureId}`);
     revalidatePath(`/teacher/lectures/${lectureId}`);
+    revalidatePath('/lectures');
+    revalidateTag("lectures", { expire: 0 });
 }
 
 export type LectureDeleteActionResult = {
@@ -138,7 +142,9 @@ export const deleteLectureAction = async (
     try {
         await deleteLectureById(lectureId);
         revalidatePath("/admin/lectures");
+        revalidatePath("/lectures");
         revalidatePath(`/admin/lectures/${lectureId}`);
+        revalidateTag("lectures", { expire: 0 });
 
         return {
             success: true,
@@ -181,7 +187,9 @@ export const deleteReviewAction = async (
     try {
         await deleteReviewById(reviewId);
         revalidatePath("/admin/lectures");
+        revalidatePath("/lectures");
         revalidatePath(`/admin/lectures/${lectureId}`);
+        revalidateTag("lectures", { expire: 0 });
 
         return {
             success: true,

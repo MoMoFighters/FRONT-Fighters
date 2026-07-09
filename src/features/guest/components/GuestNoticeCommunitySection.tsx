@@ -50,9 +50,9 @@ const formatNoticeDate = (dateTime: string) => dateTime.slice(0, 10).replaceAll(
 
 export default function GuestNoticeCommunitySection() {
   return (
-    <section className="bg-white py-16">
+    <section className="bg-white pt-4 pb-12">
       <div className="grid grid-cols-[1fr_320px] gap-6 px-16">
-        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="rounded-md border border-slate-200 bg-white p-6">
           <div className="mb-5 flex items-center justify-between">
             <div>
               <p className="mb-2 text-[10px] font-semibold text-indigo-500">
@@ -64,25 +64,25 @@ export default function GuestNoticeCommunitySection() {
             </div>
 
             <div className="flex items-center gap-2 text-xs text-slate-500">
-              <button className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 transition-colors hover:bg-slate-50">
+              <button className="flex h-8 w-8 items-center justify-center rounded-md border border-slate-200 transition-colors hover:bg-slate-50">
                 <ChevronLeft className="h-4 w-4" />
               </button>
               <span className="font-medium text-slate-900">1</span>
               <span>/</span>
               <span>3</span>
-              <button className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 transition-colors hover:bg-slate-50">
+              <button className="flex h-8 w-8 items-center justify-center rounded-md border border-slate-200 transition-colors hover:bg-slate-50">
                 <ChevronRight className="h-4 w-4" />
               </button>
             </div>
           </div>
 
-          <div className="divide-y divide-slate-100">
+          <div className="border-y border-slate-100">
             {notices.map((notice) => (
               <Link
                 key={notice.noticeId}
                 href="#"
-                className={`group flex items-center justify-between gap-5 rounded-xl px-3 py-3.5 transition-colors ${notice.isPinned
-                  ? "bg-indigo-50/70 hover:bg-indigo-50"
+                className={`group flex items-center justify-between gap-5 border-b border-slate-100 px-2 py-3.5 transition-colors last:border-b-0 ${notice.isPinned
+                  ? "border-l-3 border-l-indigo-500 bg-indigo-50/50 hover:bg-indigo-50"
                   : "hover:bg-slate-50"
                   }`}
               >

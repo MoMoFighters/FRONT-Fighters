@@ -88,7 +88,8 @@ export const getLectures = async (
   const queryString =
     new URLSearchParams(
       Object.entries(payload)
-        .filter(([, value]) => value !== undefined)
+        .filter(([, value]) => value !== undefined && value !== "")
+        .sort(([a], [b]) => a.localeCompare(b))
         .map(([key, value]) => [
           key,
           String(value),
@@ -98,7 +99,10 @@ export const getLectures = async (
   const response = await fetch(`${BASE_URL}/api/v1/lectures?${queryString}`, {
     headers: {
       "Content-Type": "application/json",
-      cache: 'force-cache'
+    },
+    cache: "force-cache",
+    next: {
+      tags: ["lectures"],
     },
   });
   await handleErrorResponse(response);
