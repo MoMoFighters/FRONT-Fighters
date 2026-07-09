@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { BookOpenCheck, GraduationCap, Sparkles } from "lucide-react";
+import { BookOpenCheck, GraduationCap } from "lucide-react";
+import GuestInquiryCard from "@/features/guest/components/GuestInquiryCard";
 
 const categoryGuides = [
     "학습",
@@ -58,16 +59,7 @@ export default function GuestLectureAside() {
                 </div>
             </section>
 
-            <section className="rounded-xl border border-indigo-100 bg-indigo-50/70 p-5">
-                <div className="mb-3 flex items-center gap-2 text-xs font-bold text-indigo-500">
-                    <Sparkles className="h-4 w-4" />
-                    모모시티 학습 경험
-                </div>
-
-                <p className="text-xs leading-5 text-indigo-900/70">
-                    강의를 수강하면 학습 기록이 쌓이고, 선택한 카테고리에 맞는 도시 건물이 성장합니다.
-                </p>
-            </section>
+            <GuestInquiryCard />
         </aside>
     );
 }
