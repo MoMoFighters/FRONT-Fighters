@@ -23,17 +23,17 @@ const growthSteps = [
 
 export default function GuestGrowthStepsSection() {
   return (
-    <section className="bg-white py-10">
-      <div className="px-16">
+    <section className="bg-white py-8 sm:py-10">
+      <div className="px-5 sm:px-8 lg:px-16">
         <div className="mb-5">
           <div>
-            <h2 className="text-[22px] font-bold tracking-tight text-slate-950">
+            <h2 className="text-xl font-bold tracking-tight text-slate-950 sm:text-[22px]">
               모모시티 성장 가이드
             </h2>
           </div>
         </div>
 
-        <div className="grid grid-cols-[1fr_46px_1fr_46px_1fr] items-center gap-3">
+        <div className="grid grid-cols-1 items-center gap-3 lg:grid-cols-[1fr_46px_1fr_46px_1fr]">
           {growthSteps.map((step, index) => {
             const showArrow = index < growthSteps.length - 1;
 
@@ -69,7 +69,7 @@ export default function GuestGrowthStepsSection() {
                 {showArrow && (
                   <div
                     aria-hidden="true"
-                    className="flex items-center justify-center whitespace-nowrap text-lg font-light tracking-widest text-slate-300"
+                    className="flex rotate-90 items-center justify-center whitespace-nowrap py-1 text-lg font-light tracking-widest text-slate-300 lg:rotate-0 lg:py-0"
                   >
                     ---&gt;
                   </div>

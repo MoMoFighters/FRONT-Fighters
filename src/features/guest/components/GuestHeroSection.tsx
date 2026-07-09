@@ -26,7 +26,7 @@ const heroStats = [
 
 export default function GuestHeroSection() {
   return (
-    <section className="relative overflow-hidden bg-white py-20 border-b border-slate-200">
+    <section className="relative overflow-hidden border-b border-slate-200 bg-white py-14 sm:py-16 lg:py-20">
       <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[50%] lg:block">
         <div className="absolute inset-0 overflow-hidden [mask-image:linear-gradient(90deg,transparent_0%,rgba(0,0,0,0.5)_10%,#000_20%)] [mask-repeat:no-repeat] [mask-size:100%_100%]">
           <Image
@@ -40,9 +40,9 @@ export default function GuestHeroSection() {
         </div>
       </div>
 
-      <div className="relative px-16">
+      <div className="relative px-5 sm:px-8 lg:px-16">
         <div className="max-w-xl">
-          <h1 className="text-[2.75rem] font-bold leading-tight tracking-tight text-slate-950 pt-12">
+          <h1 className="pt-8 text-[2rem] font-bold leading-tight tracking-tight text-slate-950 sm:pt-10 sm:text-[2.35rem] lg:pt-12 lg:text-[2.75rem]">
             원하는 분야를 학습하고
             <br />
             <span className="text-indigo-500">나만의 도시를 꾸며보세요!</span>
@@ -53,7 +53,7 @@ export default function GuestHeroSection() {
             관심 카테고리를 고르고 강의를 수강하면 카테고리에 맞는 건물이 생겨나고, 여러 강의를 추가로 수강하면 건물이 성장합니다.
           </p>
 
-          <div className="mt-8 flex items-center gap-4">
+          <div className="mt-8 flex flex-wrap items-center gap-4">
             <Link href="/about">
               <button className="group flex cursor-pointer items-center gap-2 rounded-xl bg-indigo-500/90 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-indigo-500/20 transition-all hover:-translate-y-0.5 hover:bg-indigo-500 hover:shadow-xl hover:shadow-indigo-500/25">
                 사이트 소개
@@ -62,7 +62,7 @@ export default function GuestHeroSection() {
             </Link>
           </div>
 
-          <div className="mt-10 grid max-w-xl grid-cols-3 gap-3 pt-7">
+          <div className="mt-10 grid max-w-xl grid-cols-1 gap-3 pt-7 sm:grid-cols-3">
             {heroStats.map((stat) => {
               const Icon = stat.icon;
 
