@@ -1,36 +1,20 @@
-'use client'
+'use client';
 
 import { Button } from "@/components/ui/button";
 import { useActionState, useEffect, useState } from "react";
 import { X } from "lucide-react";
-
-import { tempPwAction, } from "../action";
-
+import { tempPwAction } from "../action";
 
 export default function EmailInputModal() {
-
-    const [
-        isModal,
-        setIsModal
-    ] = useState(false);
-
-    const [
-        invalidEmail,
-        setInvalidEmail
-    ] = useState(false);
-
-    const [
-        tempPwSent,
-        setTempPwSent
-    ] = useState(false);
-
+    const [isModal, setIsModal] = useState(false);
+    const [invalidEmail, setInvalidEmail] = useState(false);
+    const [tempPwSent, setTempPwSent] = useState(false);
 
     const sendTempPassword = async (_prevState: unknown, formData: FormData) => {
         const email = String(formData.get("email") ?? "");
         return tempPwAction(email);
     };
 
-    // action state
     const [state, formAction, pending] = useActionState(sendTempPassword, {
         timestamp: "",
         status: 0,
@@ -39,28 +23,25 @@ export default function EmailInputModal() {
         data: null,
     });
 
-
-    // 결과 처리
     useEffect(() => {
         if (!state.message) {
             return;
         }
-        // 성공
+
         if (state.status >= 200 && state.status < 300) {
             setTempPwSent(true);
             setInvalidEmail(false);
             return;
         }
-        // 실패
+
         setInvalidEmail(true);
     }, [state]);
-
 
     if (!isModal) {
         return (
             <button
                 type="button"
-                className="cursor-pointer text-sm font-medium text-slate-400 transition-colors hover:text-slate-700"
+                className="cursor-pointer transition-colors hover:text-indigo-500"
                 onClick={() => setIsModal(true)}
             >
                 비밀번호 찾기
@@ -72,7 +53,7 @@ export default function EmailInputModal() {
         <>
             <button
                 type="button"
-                className="text-sm font-medium text-slate-400"
+                className="text-slate-400"
                 disabled
             >
                 비밀번호 찾기
@@ -120,7 +101,7 @@ export default function EmailInputModal() {
                                     htmlFor="email"
                                     className="text-sm font-semibold text-slate-700"
                                 >
-                                    이메일로 인증하기
+                                    이메일 인증
                                 </label>
 
                                 <input
@@ -146,7 +127,7 @@ export default function EmailInputModal() {
                                     임시 비밀번호를 발송했습니다.
                                 </p>
                                 <p className="mt-2 text-sm leading-6 text-green-700/80">
-                                    이메일함을 확인한 뒤 임시 비밀번호로 로그인해 주세요.
+                                    이메일함을 확인하고 임시 비밀번호로 로그인해 주세요.
                                 </p>
                             </div>
 

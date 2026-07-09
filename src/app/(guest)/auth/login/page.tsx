@@ -1,5 +1,4 @@
-import Image from "next/image";
-import logo from '@/app/assets/img/logo.png'
+import AuthPageShell from "@/features/auth/components/AuthPageShell";
 import LoginForm from "@/features/auth/components/LoginForm";
 import { getOAuthClientConfig } from "@/lib/config/oauth/oauthAPI";
 
@@ -7,16 +6,13 @@ export default function Login() {
     const oauthConfig = getOAuthClientConfig();
 
     return (
-        <div className="flex min-h-screen items-center justify-center px-4 py-10">
-            <div className="flex w-full max-w-100 flex-col justify-center gap-4 p-4">
-                <div className="flex justify-center mb-4">
-                    <Image src={logo} width={160} alt="MOMOCITY 로고" priority />
-                </div>
-
-                <LoginForm
-                    oauthConfig={oauthConfig}
-                />
-            </div>
-        </div>
+        <AuthPageShell
+            title="모모시티 로그인"
+            description="로그인 후 강의를 수강하고 나만의 도시를 성장시켜보세요."
+        >
+            <LoginForm
+                oauthConfig={oauthConfig}
+            />
+        </AuthPageShell>
     );
 }

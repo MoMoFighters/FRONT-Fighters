@@ -1,5 +1,4 @@
-import Footer from "../../components/layout/Footer";
-import GuestHeader from "../../components/layout/GuestHeader";
+import GuestLayoutShell from "@/components/layout/GuestLayoutShell";
 
 export default function GuestLayout({
     children,
@@ -7,12 +6,8 @@ export default function GuestLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <div className="flex min-h-screen flex-col">
-            <GuestHeader />
-            <main className="bg-white pt-14 h-full flex-1">
-                {children}
-            </main>
-            <Footer />
-        </div>
+        <GuestLayoutShell>
+            {children}
+        </GuestLayoutShell>
     );
 }
