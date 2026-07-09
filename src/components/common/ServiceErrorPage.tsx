@@ -81,6 +81,7 @@ export default function ServiceErrorPage({
                                     alt="에러 페이지 이미지"
                                     fill
                                     sizes="320px"
+                                    preload
                                     className="object-contain"
                                 />
                             </div>

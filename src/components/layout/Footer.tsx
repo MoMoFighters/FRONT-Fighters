@@ -1,29 +1,120 @@
-import CreateReportBtn from "@/features/report/components/buttons/CreateReportBtn";
+import Image from "next/image";
+import Link from "next/link";
+import icon from "@/app/icon.png";
+
+const serviceLinks = [
+    {
+        label: "소개",
+        href: "/about",
+    },
+    {
+        label: "강의 둘러보기",
+        href: "/lectures",
+    },
+    {
+        label: "커뮤니티",
+        href: "/auth/login",
+    },
+];
+
+const policyLinks = [
+    "회사소개",
+    "이용약관",
+    "개인정보처리방침",
+];
 
 export default function Footer() {
     return (
-        <footer className="shrink-0 bg-white">
-            <div className="mx-auto flex min-h-20 max-w-7xl items-center justify-center gap-60 px-8 py-5  border-t border-slate-200">
+        <footer className="shrink-0 bg-indigo-900">
+            <div className="px-16 py-12">
+                <div className="grid max-w-6xl grid-cols-[1.5fr_0.8fr_0.9fr_0.8fr] gap-8">
+                    <div>
+                        <Link href="/" className="inline-flex items-center gap-3">
+                            <span className="relative h-9 w-9 shrink-0 overflow-hidden rounded-md bg-white">
+                                <Image
+                                    src={icon}
+                                    alt="MoMoCITY 아이콘"
+                                    fill
+                                    sizes="36px"
+                                    className="object-contain"
+                                />
+                            </span>
+                            <span className="text-xl font-bold tracking-tight text-white">
+                                MoMo<span className="text-indigo-400">CITY</span>
+                            </span>
+                        </Link>
 
-                <div className="flex flex-col items-center gap-2">
-                    <nav className="flex items-center gap-4 text-xs text-slate-500">
-                        <a href="#" className="hover:text-slate-900">
-                            이용약관
-                        </a>
-                        <a href="#" className="hover:text-slate-900">
-                            개인정보처리방침
-                        </a>
-                        <a href="#" className="hover:text-slate-900">
-                            고객센터
-                        </a>
-                        <CreateReportBtn
-                            triggerLabel="신고하기"
-                            triggerClassName="cursor-pointer hover:text-slate-900"
-                        />
+                        <p className="mt-5 max-w-72 text-sm font-medium leading-6 text-slate-300">
+                            학습 기록을 도시 성장으로 연결해 꾸준한 배움을 더 즐겁게 만드는 온라인 학습 플랫폼입니다.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h2 className="text-sm font-bold text-white">
+                            서비스
+                        </h2>
+                        <nav className="mt-5 flex flex-col gap-3">
+                            {serviceLinks.map((link) => (
+                                <Link
+                                    key={link.href}
+                                    href={link.href}
+                                    className="w-fit text-sm font-medium text-slate-300 transition-colors hover:text-white"
+                                >
+                                    {link.label}
+                                </Link>
+                            ))}
+                        </nav>
+                    </div>
+
+                    <div>
+                        <h2 className="text-sm font-bold text-white">
+                            문의
+                        </h2>
+                        <div className="mt-5 flex flex-col gap-3 text-sm font-medium text-slate-300">
+                            <span>
+                                yourmomocity@gmail.com
+                            </span>
+                            <span>
+                                02-123-4567
+                            </span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h2 className="text-sm font-bold text-white">
+                            소셜
+                        </h2>
+                        <div className="mt-5 flex flex-col gap-3 text-sm font-medium text-slate-300">
+                            <a
+                                href="https://github.com/MoMoFighters"
+                                target="_blank"
+                                rel="noreferrer"
+                                className="w-fit transition-colors hover:text-white"
+                            >
+                                GitHub
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="mt-10 max-w-6xl border-t border-white/20 pt-7">
+                    <nav className="flex flex-wrap items-center gap-x-6 gap-y-2">
+                        {policyLinks.map((label) => (
+                            <span
+                                key={label}
+                                className="text-xs font-semibold text-slate-300"
+                            >
+                                {label}
+                            </span>
+                        ))}
                     </nav>
 
-                    <p className="text-xs text-slate-400">
-                        yourmomocity@gmail.com · © 2026 MoMoCITY
+                    <p className="mt-2 text-xs font-medium leading-5 text-slate-400">
+                        경기도 성남시 수정구 산성대로 553 박애관 4층
+                    </p>
+
+                    <p className="mt-2 text-xs font-medium text-slate-400">
+                        © 2026 MomoCity. All rights reserved.
                     </p>
                 </div>
             </div>
