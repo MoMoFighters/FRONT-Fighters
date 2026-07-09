@@ -50,10 +50,10 @@ const formatNoticeDate = (dateTime: string) => dateTime.slice(0, 10).replaceAll(
 
 export default function GuestNoticeCommunitySection() {
   return (
-    <section className="bg-white pt-4 pb-12">
-      <div className="grid grid-cols-[1fr_320px] gap-6 px-16">
-        <div className="rounded-md border border-slate-200 bg-white p-6">
-          <div className="mb-5 flex items-center justify-between">
+    <section className="bg-white pt-2 pb-10 sm:pt-4 sm:pb-12">
+      <div className="grid grid-cols-1 gap-6 px-5 sm:px-8 lg:grid-cols-[minmax(0,1fr)_320px] lg:px-16">
+        <div className="rounded-md border border-slate-200 bg-white p-4 sm:p-6">
+          <div className="mb-5 flex items-center justify-between gap-4">
             <div>
               <p className="mb-2 text-[10px] font-semibold text-indigo-500">
                 NOTICE
@@ -81,7 +81,7 @@ export default function GuestNoticeCommunitySection() {
               <Link
                 key={notice.noticeId}
                 href="#"
-                className={`group flex items-center justify-between gap-5 border-b border-slate-100 px-2 py-3.5 transition-colors last:border-b-0 ${notice.isPinned
+                className={`group flex items-start justify-between gap-3 border-b border-slate-100 px-2 py-3.5 transition-colors last:border-b-0 sm:items-center sm:gap-5 ${notice.isPinned
                   ? "border-l-3 border-l-indigo-500 bg-indigo-50/50 hover:bg-indigo-50"
                   : "hover:bg-slate-50"
                   }`}
@@ -98,7 +98,7 @@ export default function GuestNoticeCommunitySection() {
                   </p>
                 </div>
                 <time
-                  className={`shrink-0 text-xs ${notice.isPinned ? "font-medium text-indigo-400" : "text-slate-400"
+                  className={`shrink-0 pt-0.5 text-[11px] sm:pt-0 sm:text-xs ${notice.isPinned ? "font-medium text-indigo-400" : "text-slate-400"
                     }`}
                 >
                   {formatNoticeDate(notice.createdAt)}
@@ -108,8 +108,8 @@ export default function GuestNoticeCommunitySection() {
           </div>
         </div>
 
-        <aside className="space-y-5">
-          <div className="flex items-center justify-between gap-5 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <aside className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:block lg:space-y-5">
+          <div className="flex items-center justify-between gap-5 rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
             <div className="min-w-0 flex-1">
               <h3 className="text-base font-bold text-slate-950">
                 커뮤니티
@@ -128,11 +128,12 @@ export default function GuestNoticeCommunitySection() {
                 src={community}
                 alt="커뮤니티 이미지"
                 fill
+                sizes="112px"
               />
             </div>
           </div>
 
-          <div className="flex items-center justify-between gap-5 rounded-xl border border-slate-200 bg-white shadow-sm p-5">
+          <div className="flex items-center justify-between gap-5 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
             <div className="min-w-0 flex-1">
               <h3 className="text-xs font-bold text-slate-950">
                 AI 학습 도우미
@@ -146,6 +147,7 @@ export default function GuestNoticeCommunitySection() {
                 src={robot}
                 alt="로봇 이미지"
                 fill
+                sizes="64px"
               />
             </div>
           </div>

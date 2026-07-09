@@ -26,9 +26,9 @@ const policyLinks = [
 export default function Footer() {
     return (
         <footer className="shrink-0 bg-indigo-900">
-            <div className="px-16 py-12">
-                <div className="grid max-w-6xl grid-cols-[1.5fr_0.8fr_0.9fr_0.8fr] gap-8">
-                    <div>
+            <div className="px-5 py-10 sm:px-8 lg:px-16 lg:py-12">
+                <div className="grid max-w-6xl grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-[1.5fr_0.8fr_0.9fr_0.8fr]">
+                    <div className="sm:col-span-2 lg:col-span-1">
                         <Link href="/" className="inline-flex items-center gap-3">
                             <span className="relative h-9 w-9 shrink-0 overflow-hidden rounded-md bg-white">
                                 <Image
