@@ -5,6 +5,9 @@ import {
     createCommunityPostCommentService,
     createCommunityPostReplyService,
     createCommunityPostService,
+    deleteCommunityPostService,
+    editCommunityPostContentService,
+    editCommunityPostTitleService,
     getCommunityPostCommentsService,
     getCommunityPostDetailService,
     getCommunityPostLikeListService,
@@ -36,6 +39,9 @@ import {
     GetCommunityPostLikeListResponse,
     GetCommunityPostDashboardResponse,
     UploadCommunityPostImageResponse,
+    EditCommunityPostTitleResponse,
+    EditCommunityPostContentResponse,
+    DeleteCommunityPostResponse,
 } from "./type";
 
 const createFailureResponse = <T>(
@@ -309,6 +315,50 @@ export const createCommunityPostContentsAction = async (
             postId,
             payload
         );
+    } catch (error) {
+        return createFailureResponse(error);
+    }
+};
+
+export const editCommunityPostTitleAction = async ({
+    postId,
+    title,
+    category,
+}: {
+    postId: number;
+    title: string;
+    category: CommunityCategory;
+}): Promise<EditCommunityPostTitleResponse> => {
+    try {
+        return await editCommunityPostTitleService(
+            postId,
+            title,
+            category
+        );
+    } catch (error) {
+        return createFailureResponse(error);
+    }
+};
+
+export const editCommunityPostContentAction = async (
+    postId: number,
+    payload: CreateCommunityPostContentsRequest
+): Promise<EditCommunityPostContentResponse> => {
+    try {
+        return await editCommunityPostContentService(
+            postId,
+            payload
+        );
+    } catch (error) {
+        return createFailureResponse(error);
+    }
+};
+
+export const deleteCommunityPostAction = async (
+    postId: number
+): Promise<DeleteCommunityPostResponse> => {
+    try {
+        return await deleteCommunityPostService(postId);
     } catch (error) {
         return createFailureResponse(error);
     }

@@ -16,6 +16,9 @@ import {
     GetCommunityPostLikeListResponse,
     GetCommunityPostDashboardResponse,
     UploadCommunityPostImageResponse,
+    EditCommunityPostTitleResponse,
+    EditCommunityPostContentResponse,
+    DeleteCommunityPostResponse,
 } from "@/features/community/type";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -61,6 +64,8 @@ const parseApiResponse = async <T>(
     };
 };
 
+
+// 게시글 생성
 export const createCommunityPostService = async (
     payload: CreateCommunityPostRequest
 ): Promise<CreateCommunityPostResponse> => {
@@ -72,6 +77,43 @@ export const createCommunityPostService = async (
     return parseApiResponse(response, "create post");
 };
 
+// 게시글 이미지 업로드
+export const uploadCommunityPostImageService = async (
+    formData: FormData
+): Promise<UploadCommunityPostImageResponse> => {
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get("accessToken")?.value;
+
+    const response = await fetch(`${BASE_URL}/api/v2/posts/images`, {
+        method: "POST",
+        headers: {
+            ...(accessToken && {
+                Authorization: `Bearer ${accessToken}`,
+            }),
+        },
+        body: formData,
+    });
+
+    return parseApiResponse(response, "upload post image");
+};
+
+// 게시글 콘텐츠 업로드
+export const createCommunityPostContentsService = async (
+    postId: number,
+    payload: CreateCommunityPostContentsRequest
+): Promise<CreateCommunityPostContentsResponse> => {
+    const response = await fetchWithAuth(`/api/v2/posts/${postId}/contents`, {
+        method: "POST",
+        body: JSON.stringify(payload),
+    });
+
+    return parseApiResponse(response, "create post contents");
+};
+
+
+
+
+// 게시글 상세조회
 export const getCommunityPostDetailService = async (
     postId: number
 ): Promise<GetCommunityPostDetailResponse> => {
@@ -82,6 +124,7 @@ export const getCommunityPostDetailService = async (
     return parseApiResponse(response, "get post detail");
 };
 
+// 추천 게시글 목록 조회
 export const getCommunityPostRecommendationsService = async (
     postId: number
 ): Promise<GetCommunityPostRecommendationsResponse> => {
@@ -92,6 +135,10 @@ export const getCommunityPostRecommendationsService = async (
     return parseApiResponse(response, "get post recommendations");
 };
 
+
+
+
+// 댓글 조회
 export const getCommunityPostCommentsService = async ({
     postId,
     cursor,
@@ -119,6 +166,7 @@ export const getCommunityPostCommentsService = async ({
     return parseApiResponse(response, "get post comments");
 };
 
+// 답글 조회
 export const getCommunityPostRepliesService = async ({
     postId,
     commentId,
@@ -148,6 +196,7 @@ export const getCommunityPostRepliesService = async ({
     return parseApiResponse(response, "get post replies");
 };
 
+// 댓글 달기
 export const createCommunityPostCommentService = async ({
     postId,
     content,
@@ -165,6 +214,7 @@ export const createCommunityPostCommentService = async ({
     return parseApiResponse(response, "create post comment");
 };
 
+// 답글 달기
 export const createCommunityPostReplyService = async ({
     postId,
     commentId,
@@ -187,6 +237,11 @@ export const createCommunityPostReplyService = async ({
     return parseApiResponse(response, "create post reply");
 };
 
+
+
+
+
+// 게시글 목록조회
 export const getCommunityPostListService = async ({
     category,
     cursor,
@@ -220,6 +275,7 @@ export const getCommunityPostListService = async ({
     return parseApiResponse(response, "get post list");
 };
 
+// 게시글 검색
 export const searchCommunityPostService = async ({
     keyword,
     category,
@@ -255,6 +311,11 @@ export const searchCommunityPostService = async ({
     return parseApiResponse(response, "search post list");
 };
 
+
+
+
+
+// 내 게시글 목록 조회
 export const getMyCommunityPostListService = async ({
     cursor,
     size,
@@ -281,6 +342,7 @@ export const getMyCommunityPostListService = async ({
     return parseApiResponse(response, "get my post list");
 };
 
+// 다른 유저 게시글 목록조회
 export const getUserCommunityPostListService = async ({
     userId,
     cursor,
@@ -309,6 +371,12 @@ export const getUserCommunityPostListService = async ({
     return parseApiResponse(response, "get user post list");
 };
 
+
+
+
+
+
+// 내 커뮤니티 대시보드 조회
 export const getMyCommunityDashboardService =
     async (): Promise<GetCommunityPostDashboardResponse> => {
         const response = await fetchWithAuth("/api/v2/posts/me/dashboard", {
@@ -319,6 +387,7 @@ export const getMyCommunityDashboardService =
         return parseApiResponse(response, "get my post dashboard");
     };
 
+// 다른 유저 커뮤니티 대시보드 조회
 export const getUserCommunityDashboardService = async (
     userId: number
 ): Promise<GetCommunityPostDashboardResponse> => {
@@ -333,6 +402,11 @@ export const getUserCommunityDashboardService = async (
     return parseApiResponse(response, "get user post dashboard");
 };
 
+
+
+
+
+// 게시글 좋아요
 export const likeCommunityPostService = async (
     postId: number
 ): Promise<CommunityPostLikeResponse> => {
@@ -343,6 +417,7 @@ export const likeCommunityPostService = async (
     return parseApiResponse(response, "like post");
 };
 
+// 게시글 좋아요 취소
 export const unlikeCommunityPostService = async (
     postId: number
 ): Promise<CommunityPostLikeResponse> => {
@@ -353,6 +428,7 @@ export const unlikeCommunityPostService = async (
     return parseApiResponse(response, "unlike post");
 };
 
+// 게시글 좋아요 누른 사람 목록 조회
 export const getCommunityPostLikeListService = async (
     postId: number
 ): Promise<GetCommunityPostLikeListResponse> => {
@@ -364,33 +440,45 @@ export const getCommunityPostLikeListService = async (
     return parseApiResponse(response, "get post like list");
 };
 
-export const uploadCommunityPostImageService = async (
-    formData: FormData
-): Promise<UploadCommunityPostImageResponse> => {
-    const cookieStore = await cookies();
-    const accessToken = cookieStore.get("accessToken")?.value;
 
-    const response = await fetch(`${BASE_URL}/api/v2/posts/images`, {
-        method: "POST",
-        headers: {
-            ...(accessToken && {
-                Authorization: `Bearer ${accessToken}`,
-            }),
-        },
-        body: formData,
+
+
+// 게시글 수정
+export const editCommunityPostTitleService = async (
+    postId: number,
+    title: string,
+    category: CommunityCategory
+): Promise<EditCommunityPostTitleResponse> => {
+    const response = await fetchWithAuth(`/api/v2/posts/${postId}`, {
+        method: "PATCH",
+        body: JSON.stringify({
+            title, category
+        })
     });
 
-    return parseApiResponse(response, "upload post image");
+    return parseApiResponse(response, "edit post title");
 };
 
-export const createCommunityPostContentsService = async (
+// 게시글 콘텐츠 수정
+export const editCommunityPostContentService = async (
     postId: number,
     payload: CreateCommunityPostContentsRequest
-): Promise<CreateCommunityPostContentsResponse> => {
+): Promise<EditCommunityPostContentResponse> => {
     const response = await fetchWithAuth(`/api/v2/posts/${postId}/contents`, {
-        method: "POST",
+        method: "PUT",
         body: JSON.stringify(payload),
     });
 
-    return parseApiResponse(response, "create post contents");
+    return parseApiResponse(response, "edit post content");
+};
+
+// 게시글 삭제
+export const deleteCommunityPostService = async (
+    postId: number
+): Promise<DeleteCommunityPostResponse> => {
+    const response = await fetchWithAuth(`/api/v2/posts/${postId}`, {
+        method: "DELETE",
+    });
+
+    return parseApiResponse(response, "delete post");
 };

@@ -7,7 +7,10 @@ import PostDetailSide from "@/components/phone/community/PostDetailSide";
 import CreateReportBtn from "@/features/report/components/buttons/CreateReportBtn";
 import PostLikeBtn from "@/features/post/PostLikeBtn";
 import { getCommunityPostDetailAction } from "@/features/community/action";
+import DeleteCommunityPostButton from "@/features/community/DeleteCommunityPostButton";
 import type { CommunityAuthorRole } from "@/features/community/type";
+import { Button } from "@/components/ui/button";
+import ExtendCommunityImage from "@/features/community/ExtendCommunityImage";
 
 interface CommunityPostDetailPageProps {
     params: Promise<{
@@ -73,17 +76,34 @@ export default async function CommunityPostDetailPage({
 
                         {!post.isMine ? (
                             <CreateReportBtn
-                                triggerClassName="cursor-pointer rounded-md border border-slate-200 px-2.5 py-1 text-xs font-bold text-slate-500 transition hover:bg-slate-100"
+                                triggerClassName="cursor-pointer bg-slate-50 rounded-md border border-slate-200 px-2.5 py-1 text-xs font-bold text-slate-500 transition hover:bg-slate-100"
                                 targetType="POST"
                                 targetId={post.postId}
                             />
                         ) : (
-                            <Link
-                                className="cursor-pointer rounded-md border border-slate-200 px-2.5 py-1 text-xs font-bold text-slate-500 transition hover:bg-slate-100"
-                                href={`/student/community/${post.postId}/edit`}
-                            >
-                                수정
-                            </Link>
+                            <div>
+                                <Button
+                                    className="mr-2 cursor-pointer bg-slate-50 rounded-md border border-slate-200 px-2.5 py-1 text-xs font-bold text-slate-500 transition hover:bg-slate-100"
+                                >
+                                    <Link
+                                        href={`/student/community/${post.postId}/edit`}
+                                    >
+                                        수정
+                                    </Link>
+                                </Button>
+                                <DeleteCommunityPostButton
+                                    postId={post.postId}
+                                    successHref="/student/community"
+                                    trigger={
+                                        <Button
+                                            type="button"
+                                            className="cursor-pointer bg-slate-50 rounded-md border border-slate-200 px-2.5 py-1 text-xs font-bold text-slate-500 transition hover:bg-slate-100"
+                                        >
+                                            삭제
+                                        </Button>
+                                    }
+                                />
+                            </div>
                         )}
                     </div>
 
@@ -150,14 +170,7 @@ export default async function CommunityPostDetailPage({
                                         key={`${content.type}-${index}`}
                                         className="flex justify-center"
                                     >
-                                        <Image
-                                            src={content.imageUrl}
-                                            alt=""
-                                            width={720}
-                                            height={448}
-                                            className="h-auto w-[40%] rounded-2xl object-cover shadow-sm ring-1 ring-slate-100"
-                                            unoptimized
-                                        />
+                                        <ExtendCommunityImage imageUrl={content.imageUrl} />
                                     </div>
                                 );
                             }
