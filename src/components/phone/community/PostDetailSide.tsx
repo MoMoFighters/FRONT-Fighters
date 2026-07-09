@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
     useInfiniteQuery,
     useMutation,
@@ -130,6 +130,7 @@ interface PostDetailSideProps {
 }
 
 const COMMENT_PAGE_SIZE = 10;
+const COMMUNITY_DETAIL_STALE_TIME = 1000 * 60 * 5;
 const DEFAULT_PROFILE_IMAGE_URL =
     "https://placehold.co/80x80/e0e7ff/4f46e5?text=M";
 
@@ -202,6 +203,8 @@ export default function PostDetailSide({
                 : [];
         },
         enabled: mode === "posts",
+        staleTime: COMMUNITY_DETAIL_STALE_TIME,
+        refetchOnWindowFocus: false,
     });
 
     const commentsQuery = useInfiniteQuery({
@@ -217,6 +220,8 @@ export default function PostDetailSide({
         getNextPageParam: (lastPage) =>
             lastPage.data?.nextCursor ?? undefined,
         enabled: mode === "comment",
+        staleTime: COMMUNITY_DETAIL_STALE_TIME,
+        refetchOnWindowFocus: false,
     });
 
     const comments = useMemo(() => {
@@ -244,6 +249,7 @@ export default function PostDetailSide({
             }
         },
     });
+    const { mutateAsync: createComment } = createCommentMutation;
 
     const createReplyMutation = useMutation({
         mutationFn: ({
@@ -283,24 +289,38 @@ export default function PostDetailSide({
             }
         },
     });
+    const { mutateAsync: createReply } = createReplyMutation;
+    const { fetchNextPage: fetchNextCommentsPage } = commentsQuery;
 
-    const handleCreateComment = async (content: string) => {
-        const response = await createCommentMutation.mutateAsync(content);
+    const handleCreateComment = useCallback(async (content: string) => {
+        const response = await createComment(content);
 
         return response.status === 201;
-    };
+    }, [createComment]);
 
-    const handleCreateReply = async (
+    const handleCreateReply = useCallback(async (
         commentId: number,
         content: string
     ) => {
-        const response = await createReplyMutation.mutateAsync({
+        const response = await createReply({
             commentId,
             content,
         });
 
         return response.status === 201;
-    };
+    }, [createReply]);
+
+    const handleLoadMoreComments = useCallback(() => {
+        void fetchNextCommentsPage();
+    }, [fetchNextCommentsPage]);
+
+    const handlePostsMode = useCallback(() => {
+        setMode("posts");
+    }, []);
+
+    const handleCommentMode = useCallback(() => {
+        setMode("comment");
+    }, []);
 
     return (
         <aside className="flex h-full min-h-0 flex-col overflow-hidden rounded-3xl bg-white/90 p-4 shadow-sm ring-1 ring-slate-100">
@@ -308,7 +328,7 @@ export default function PostDetailSide({
                 <div className="grid grid-cols-2 gap-1">
                     <button
                         type="button"
-                        onClick={() => setMode("posts")}
+                        onClick={handlePostsMode}
                         className={`flex h-9 items-center justify-center gap-1.5 rounded-xl text-xs font-black transition ${mode === "posts"
                             ? "bg-white text-indigo-500 shadow-sm"
                             : "text-slate-400 hover:bg-white/70 hover:text-slate-700"
@@ -320,7 +340,7 @@ export default function PostDetailSide({
 
                     <button
                         type="button"
-                        onClick={() => setMode("comment")}
+                        onClick={handleCommentMode}
                         className={`flex h-9 items-center justify-center gap-1.5 rounded-xl text-xs font-black transition ${mode === "comment"
                             ? "bg-white text-indigo-500 shadow-sm"
                             : "text-slate-400 hover:bg-white/70 hover:text-slate-700"
@@ -339,9 +359,7 @@ export default function PostDetailSide({
                     comments={comments}
                     hasNextCommentPage={Boolean(commentsQuery.hasNextPage)}
                     isFetchingNextComments={commentsQuery.isFetchingNextPage}
-                    onLoadMoreComments={() => {
-                        void commentsQuery.fetchNextPage();
-                    }}
+                    onLoadMoreComments={handleLoadMoreComments}
                     onCreateComment={handleCreateComment}
                     onCreateReply={handleCreateReply}
                     role={role}

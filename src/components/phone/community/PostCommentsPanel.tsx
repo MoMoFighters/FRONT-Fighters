@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
 import { getCommunityPostRepliesAction } from "@/features/community/action";
@@ -13,6 +13,7 @@ import type {
 } from "./PostDetailSide";
 
 const REPLY_PAGE_SIZE = 5;
+const REPLY_STALE_TIME = 1000 * 60 * 5;
 const DEFAULT_PROFILE_IMAGE_URL =
     "https://placehold.co/80x80/e0e7ff/4f46e5?text=M";
 
@@ -45,7 +46,10 @@ function CommentRepliesBlock({
     role?: PostCommentsPanelProps["role"];
 }) {
     const [isOpen, setIsOpen] = useState(false);
-    const initialReplies = parentComment.replies ?? [];
+    const initialReplies = useMemo(
+        () => parentComment.replies ?? [],
+        [parentComment.replies]
+    );
     const initialReplyCursor =
         initialReplies.length > 0 ? parentComment.nextReplyCursor ?? null : null;
 
@@ -70,37 +74,61 @@ function CommentRepliesBlock({
         getNextPageParam: (lastPage) =>
             lastPage.data?.nextCursor ?? undefined,
         enabled: false,
+        staleTime: REPLY_STALE_TIME,
+        refetchOnWindowFocus: false,
     });
+    const {
+        data: repliesData,
+        fetchNextPage: fetchNextRepliesPage,
+        hasNextPage: hasNextReplyPage,
+        isFetchingNextPage: isFetchingNextReplies,
+    } = repliesQuery;
 
-    const fetchedReplies = repliesQuery.data?.pages
-        .flatMap((page) => page.data?.replies ?? [])
-        .map((reply) => mapReply(reply, parentComment.commentId)) ?? [];
-    const replies = [
-        ...initialReplies,
-        ...fetchedReplies.filter(
-            (reply) =>
-                !initialReplies.some(
-                    (initialReply) => initialReply.commentId === reply.commentId
-                )
-        ),
-    ];
+    const fetchedReplies = useMemo(
+        () =>
+            repliesData?.pages
+                .flatMap((page) => page.data?.replies ?? [])
+                .map((reply) => mapReply(reply, parentComment.commentId)) ?? [],
+        [parentComment.commentId, repliesData]
+    );
+    const replies = useMemo(() => {
+        const initialReplyIds = new Set(
+            initialReplies.map((reply) => reply.commentId)
+        );
 
-    const handleOpenReplies = async () => {
+        return [
+            ...initialReplies,
+            ...fetchedReplies.filter(
+                (reply) => !initialReplyIds.has(reply.commentId)
+            ),
+        ];
+    }, [fetchedReplies, initialReplies]);
+
+    const handleOpenReplies = useCallback(async () => {
         setIsOpen(true);
 
         if (
             initialReplies.length === 0 &&
-            !repliesQuery.data &&
+            !repliesData &&
             parentComment.hasMoreReplies
         ) {
-            await repliesQuery.fetchNextPage();
+            await fetchNextRepliesPage();
         }
-    };
+    }, [
+        fetchNextRepliesPage,
+        initialReplies.length,
+        parentComment.hasMoreReplies,
+        repliesData,
+    ]);
+
+    const handleLoadMoreReplies = useCallback(() => {
+        void fetchNextRepliesPage();
+    }, [fetchNextRepliesPage]);
 
     return (
         <>
             {isOpen && replies.length > 0 && (
-                <div className="space-y-2 border-l-2 border-indigo-100 pl-3">
+                <div className="space-y-2 pl-4">
                     {replies.map((reply) => (
                         <CommentItem
                             key={reply.commentId}
@@ -125,22 +153,20 @@ function CommentRepliesBlock({
                 <button
                     type="button"
                     onClick={handleOpenReplies}
-                    className="ml-3 rounded-2xl border border-indigo-100 bg-white px-3 py-1.5 text-[11px] font-black text-indigo-500 transition hover:bg-indigo-50"
+                    className="ml-10 text-[11px] font-black text-slate-400 transition hover:text-slate-600"
                 >
                     답글 보기
                 </button>
             )}
 
-            {isOpen && (repliesQuery.hasNextPage || (!repliesQuery.data && parentComment.hasMoreReplies)) && (
+            {isOpen && (hasNextReplyPage || (!repliesData && parentComment.hasMoreReplies)) && (
                 <button
                     type="button"
-                    disabled={repliesQuery.isFetchingNextPage}
-                    onClick={() => {
-                        void repliesQuery.fetchNextPage();
-                    }}
-                    className="ml-3 rounded-2xl border border-indigo-100 bg-white px-3 py-1.5 text-[11px] font-black text-indigo-500 transition hover:bg-indigo-50 disabled:cursor-wait disabled:opacity-60"
+                    disabled={isFetchingNextReplies}
+                    onClick={handleLoadMoreReplies}
+                    className="ml-10 text-[11px] font-black text-slate-400 transition hover:text-slate-600 disabled:cursor-wait disabled:opacity-60"
                 >
-                    {repliesQuery.isFetchingNextPage ? "불러오는 중" : "답글 더보기"}
+                    {isFetchingNextReplies ? "불러오는 중" : "답글 더보기"}
                 </button>
             )}
         </>
@@ -160,8 +186,8 @@ export default function PostCommentsPanel({
 }: PostCommentsPanelProps) {
     return (
         <>
-            <div className="mb-3 shrink-0">
-                <h2 className="text-base font-black text-slate-900">
+            <div className="mb-3 shrink-0 border-b border-slate-100 pb-3">
+                <h2 className="text-sm font-black text-slate-900">
                     댓글 {commentTotalCount}
                 </h2>
 
@@ -173,9 +199,7 @@ export default function PostCommentsPanel({
                 </div>
             </div>
 
-            <div className="min-h-0 flex-1 space-y-3 overflow-y-auto pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                {/* ==================== COMMUNITY_COMMENT_COMPONENT_START ==================== */}
-                {/* TODO: Extract comment item later. */}
+            <div className="min-h-0 flex-1 overflow-y-auto pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 {comments.map((parentComment) => (
                     <div
                         key={parentComment.commentId}
@@ -210,13 +234,11 @@ export default function PostCommentsPanel({
                         type="button"
                         disabled={isFetchingNextComments}
                         onClick={onLoadMoreComments}
-                        className="w-full rounded-2xl border border-indigo-100 bg-indigo-50 px-3 py-2 text-xs font-black text-indigo-500 transition hover:bg-indigo-100 disabled:cursor-wait disabled:opacity-60"
+                        className="mt-3 w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-black text-slate-500 transition hover:bg-slate-100 disabled:cursor-wait disabled:opacity-60"
                     >
                         {isFetchingNextComments ? "불러오는 중" : "댓글 더보기"}
                     </button>
                 )}
-                {/* TODO: Extract comment item later. */}
-                {/* ===================== COMMUNITY_COMMENT_COMPONENT_END ===================== */}
             </div>
         </>
     );
