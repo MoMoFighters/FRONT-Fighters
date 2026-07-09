@@ -61,43 +61,18 @@ export default async function TeacherAskPage({
             <h2>채팅</h2>
 
             <div
-                className="
-                    flex
-                    flex-row
-                    border
-                    border-slate-200
-                    overflow-hidden
-                    flex-1
-                    min-h-0
-                    bg-white
-                "
+                className="flex flex-row border border-slate-200 overflow-hidden flex-1 min-h-0 bg-white"
             >
 
                 {/* 채팅방 목록 */}
                 <div
-                    className="
-                        flex
-                        flex-col
-                        overflow-y-scroll
-                        min-h-0
-                        w-80
-                        shrink-0
-                        scrollbar-none
-                        border-r
-                        border-slate-200
-                    "
+                    className="flex flex-col overflow-y-scroll min-h-0 w-80 shrink-0 scrollbar-none border-r border-slate-200"
                 >
 
                     {chatRoomData?.length === 0 ? (
 
                         <div
-                            className="
-                                p-5
-                                text-center
-                                text-sm
-                                text-slate-400
-                                my-auto
-                            "
+                            className="p-5 text-center text-sm text-slate-400 my-auto"
                         >
                             채팅방이 존재하지 않습니다.
                         </div>
@@ -119,10 +94,7 @@ export default async function TeacherAskPage({
 
                 {/* 채팅창 */}
                 <div
-                    className="
-                        flex-1
-                        overflow-hidden
-                    "
+                    className="flex-1 overflow-hidden"
                 >
                     <ChatRoomArea
                         currentRoomId={

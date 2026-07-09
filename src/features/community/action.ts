@@ -206,7 +206,7 @@ export const searchCommunityPostAction = async ({
 
 export const getMyCommunityPostListAction = async ({
     cursor,
-    size = 8,
+    size = 10,
 }: {
     cursor?: number | null;
     size?: number;
@@ -224,7 +224,7 @@ export const getMyCommunityPostListAction = async ({
 export const getUserCommunityPostListAction = async ({
     userId,
     cursor,
-    size = 8,
+    size = 10,
 }: {
     userId: number;
     cursor?: number | null;

@@ -12,6 +12,9 @@ interface CommunityPostDetailPageProps {
     params: Promise<{
         id: string;
     }>;
+    searchParams?: Promise<{
+        commentCount?: string;
+    }>;
 }
 
 const getRoleLabel = (role: CommunityAuthorRole) => {
@@ -28,8 +31,10 @@ const getRoleLabel = (role: CommunityAuthorRole) => {
 
 export default async function CommunityPostDetailPage({
     params,
+    searchParams,
 }: CommunityPostDetailPageProps) {
     const { id } = await params;
+    const resolvedSearchParams = await searchParams;
     const postId = Number(id);
 
     if (!Number.isFinite(postId)) {
@@ -44,10 +49,17 @@ export default async function CommunityPostDetailPage({
     }
 
     const post = response.data;
+    const initialCommentCount = Number(
+        resolvedSearchParams?.commentCount ?? post.commentCount ?? 0
+    );
+    const commentTotalCount =
+        Number.isFinite(initialCommentCount) && initialCommentCount >= 0
+            ? initialCommentCount
+            : 0;
 
     return (
-        <section className="grid h-full min-h-[calc(100vh-145px)] grid-cols-[7fr_3fr] gap-4 rounded-3xl bg-white/80 p-5 shadow-sm ring-1 ring-slate-200/80 backdrop-blur">
-            <article className="flex min-h-0 flex-col rounded-3xl bg-white/90 p-5 shadow-sm ring-1 ring-slate-100">
+        <section className="grid min-h-[calc(100vh-137px)] grid-cols-[7fr_3fr] items-start gap-4 rounded-3xl bg-white/80 p-5 shadow-sm ring-1 ring-slate-200/80 backdrop-blur">
+            <article className="flex min-h-[calc(100vh-137px)] flex-col rounded-3xl bg-white/90 p-5 shadow-sm ring-1 ring-slate-100">
                 <header className="w-full border-b border-slate-100 pb-3">
                     <div className="flex items-center justify-between gap-3">
                         <Link
@@ -131,7 +143,7 @@ export default async function CommunityPostDetailPage({
                     </div>
                 </header>
 
-                <div className="min-h-0 flex-1 overflow-y-auto pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                <div className="pr-1">
                     <div className="flex flex-col gap-5 py-5">
                         {post.contents.map((content, index) => {
                             if (content.type === "IMAGE") {
@@ -165,11 +177,13 @@ export default async function CommunityPostDetailPage({
                 </div>
             </article>
 
-            <PostDetailSide
-                postId={post.postId}
-                commentTotalCount={0}
-                role="ADMIN"
-            />
+            <div className="sticky top-4 h-[calc(100vh-137px)] max-h-[calc(100vh-137px)] min-h-0">
+                <PostDetailSide
+                    postId={post.postId}
+                    commentTotalCount={commentTotalCount}
+                    role="ADMIN"
+                />
+            </div>
         </section>
     );
 }

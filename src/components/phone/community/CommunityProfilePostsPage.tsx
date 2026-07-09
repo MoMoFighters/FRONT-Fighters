@@ -18,7 +18,6 @@ import type {
     CommunityPostListItem,
 } from "@/features/community/type";
 import { getVisiblePageNumbers } from "@/lib/pagination";
-import Image from "next/image";
 
 export interface CommunityProfileData {
     userId: number;
@@ -119,27 +118,30 @@ export default function CommunityProfilePostsPage({
         selectedMode === "list"
             ? "grid grid-cols-1 gap-2"
             : selectedMode === "grid"
-                ? "grid grid-cols-4 gap-3"
+                ? "grid grid-cols-5 gap-3"
                 : "grid grid-cols-2 gap-3";
     const pageNumbers = getVisiblePageNumbers(currentPage, totalPages);
 
     return (
-        <div className="flex h-full min-h-0 flex-row overflow-hidden bg-white/80 shadow-sm ring-1 ring-slate-200/80 backdrop-blur">
-            <CommunitySideBar role={role} />
+        <div className="flex h-full min-h-0 flex-col overflow-hidden bg-white/80 shadow-sm ring-1 ring-slate-200/80 backdrop-blur">
+            <div className="shrink-0 px-3 pt-3">
+                <CommunitySideBar role={role} />
+            </div>
 
             <section className="flex h-full min-h-0 min-w-0 flex-1 flex-col p-4">
                 <header className="shrink-0 rounded-3xl bg-white/90 p-4 shadow-sm ring-1 ring-slate-100">
                     <div className="flex items-center justify-between gap-5">
                         <div className="flex min-w-0 items-center gap-3">
-                            {profile.profileImageUrl ? (
+                            {/* {profile.profileImageUrl ? (
                                 <Image
-                                    src={profile.profileImageUrl}
+                                    // src={profile.profileImageUrl}
+                                    src={PenLine}
                                     alt={`${profile.nickname} profile`}
                                     className="h-16 w-16 rounded-2xl object-cover shadow-sm ring-1 ring-indigo-100"
                                 />
-                            ) : (
-                                <div className="h-16 w-16 rounded-2xl bg-indigo-50" />
-                            )}
+                            ) : ( */}
+                            <div className="h-16 w-16 rounded-2xl bg-indigo-50" />
+                            {/* )} */}
 
                             <div className="min-w-0">
                                 <p className="truncate text-xl font-black text-slate-900">
@@ -183,6 +185,8 @@ export default function CommunityProfilePostsPage({
                     </div>
 
                     <div className="flex items-center gap-2">
+                        {actionSlot}
+
                         <div className="flex rounded-2xl bg-slate-100 p-1">
                             {VIEW_MODE_OPTIONS.map((option) => {
                                 const Icon = option.icon;
@@ -208,7 +212,6 @@ export default function CommunityProfilePostsPage({
                             })}
                         </div>
 
-                        {actionSlot}
                     </div>
                 </div>
 

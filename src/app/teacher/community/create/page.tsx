@@ -1,11 +1,14 @@
+import CommunitySideBar from "@/components/phone/community/CommunitySideBar";
 import CommunityPostForm from "@/features/community/CommunityPostForm";
 
 export default function CommunityPostCreatePage() {
     return (
-        <div className="flex h-full min-h-0 w-full flex-row overflow-hidden bg-white/80 shadow-sm ring-1 ring-slate-200/80 backdrop-blur">
-            {/* <CommunitySideBar /> */}
+        <div className="flex h-full min-h-0 w-full flex-col overflow-hidden bg-white/80 shadow-sm ring-1 ring-slate-200/80 backdrop-blur">
+            <div className="shrink-0 px-3 pt-3">
+                <CommunitySideBar role="TEACHER" />
+            </div>
 
-            <section className="h-full min-h-0 min-w-0 w-full flex-1 overflow-y-auto px-3 py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <section className="h-full min-h-0 min-w-0 w-full flex-1 overflow-hidden px-3 py-2">
                 <CommunityPostForm mode="CREATE" role="TEACHER" />
             </section>
         </div>

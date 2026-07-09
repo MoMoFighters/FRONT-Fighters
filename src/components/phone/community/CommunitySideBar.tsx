@@ -1,13 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { FilePlus2, Home, UserRound } from "lucide-react";
 import { usePathname } from "next/navigation";
 
-
-
 export default function CommunitySideBar({ role }: { role?: "TEACHER" | "ADMIN" }) {
-
     const pathname = usePathname();
 
     const COMMUNITY_NAV_ITEMS = [
@@ -15,7 +11,6 @@ export default function CommunitySideBar({ role }: { role?: "TEACHER" | "ADMIN" 
             label: "홈",
             description: "추천",
             href: role === "TEACHER" ? "/teacher/community" : role === "ADMIN" ? "/admin/community" : "/student/community",
-            icon: Home,
         },
         // { 모듈5때 인기글 기능 생기면 위에꺼랑 교체 하기
         //     label: "전체",
@@ -27,21 +22,18 @@ export default function CommunitySideBar({ role }: { role?: "TEACHER" | "ADMIN" 
             label: "내 글",
             description: "마이",
             href: role === "TEACHER" ? "/teacher/community/mypage" : role === "ADMIN" ? "/admin/community/mypage" : "/student/community/mypage",
-            icon: UserRound,
         },
         {
             label: "작성",
             description: "새 글",
             href: role === "TEACHER" ? "/teacher/community/create" : role === "ADMIN" ? "/admin/community/create" : "/student/community/create",
-            icon: FilePlus2,
         },
     ];
 
     return (
-        <aside className="h-full w-[76px] shrink-0 border-r border-slate-200/70 bg-white/70 backdrop-blur">
-            <nav className="flex h-full flex-col gap-1 px-1.5 py-2">
+        <div className="mb-6 flex border-b border-slate-200">
+            <nav className="flex flex-1 gap-8">
                 {COMMUNITY_NAV_ITEMS.map((item, index) => {
-                    const Icon = item.icon;
                     const isActive = index === 0
                         ? pathname === item.href
                         : pathname.startsWith(item.href);
@@ -50,27 +42,16 @@ export default function CommunitySideBar({ role }: { role?: "TEACHER" | "ADMIN" 
                         <Link
                             key={`${item.href}-${item.label}`}
                             href={item.href}
-                            className={`group flex h-[72px] flex-col items-center justify-center rounded-2xl border text-center transition-all ${isActive
-                                ? "border-indigo-200 bg-indigo-50 text-indigo-500 shadow-sm"
-                                : "border-transparent text-slate-400 hover:border-slate-100 hover:bg-white hover:text-slate-700 hover:shadow-sm"
-                                }`}
+                            className={`border-b-2 px-1 pb-4 text-sm font-bold transition ${isActive
+                                ? "border-indigo-400 text-indigo-500"
+                                : "border-transparent text-slate-500 hover:text-slate-900"
+                            }`}
                         >
-                            <Icon
-                                className={`h-5 w-5 transition ${isActive
-                                    ? "stroke-[2.6]"
-                                    : "group-hover:-translate-y-0.5"
-                                    }`}
-                            />
-                            <span className="mt-1 text-[11px] font-black leading-none">
-                                {item.label}
-                            </span>
-                            <span className="mt-0.5 text-[9px] font-bold leading-none opacity-60">
-                                {item.description}
-                            </span>
+                            {item.label}
                         </Link>
                     );
                 })}
             </nav>
-        </aside>
+        </div>
     );
 }

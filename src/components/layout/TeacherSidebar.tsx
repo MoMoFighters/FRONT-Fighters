@@ -32,8 +32,8 @@ export default function TeacherSidebar() {
     const pathname = usePathname();
 
     return (
-        <aside className="min-h-[calc(100vh-136px)] w-50 shrink-0 border-r border-slate-200 bg-white">
-            <nav className="sticky flex flex-col gap-1 p-3">
+        <aside className="h-full min-h-0 w-50 shrink-0 border-r border-slate-200 bg-white">
+            <nav className="flex flex-col gap-1 p-3">
                 {TEACHER_NAV_ITEMS.map((item) => {
                     const Icon = item.icon;
                     const isActive = item.exact

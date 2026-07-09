@@ -33,26 +33,23 @@ export default async function TeacherLayout({
     }
 
     return (
-        <div className="h-screen overflow-hidden bg-slate-50">
-            <div className="fixed top-0 left-0 right-0 z-50 h-16">
-                <TeacherHeader role="teacher" />
-            </div>
-            <div className="flex pt-[55px] h-full">
-                <main className="flex-1 h-full overflow-y-auto">
-                    <div className="min-h-full flex flex-col">
+        <div className="flex h-screen flex-col overflow-hidden bg-slate-50">
+            <TeacherHeader role="teacher" />
 
-                        <div className="flex-1 flex flex-row h-full">
-                            <LectureCreateUploadProvider>
-                                <TeacherSidebar />
-                                {children}
-                                <LectureCreateFloatingWidget />
-                            </LectureCreateUploadProvider>
+            <div className="flex min-h-0 flex-1">
+                <LectureCreateUploadProvider>
+                    <TeacherSidebar />
+
+                    <main className="flex min-w-0 flex-1 flex-col overflow-hidden">
+                        <div className="min-h-0 flex-1 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                            {children}
                         </div>
 
                         <Footer />
+                    </main>
 
-                    </div>
-                </main>
+                    <LectureCreateFloatingWidget />
+                </LectureCreateUploadProvider>
             </div>
         </div>
     );
