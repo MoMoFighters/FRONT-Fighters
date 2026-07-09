@@ -8,10 +8,9 @@ import {
     ChevronDown,
     LogOut,
     MessageSquare,
-    NotebookPen,
+    MessagesSquare,
     User,
-    UserRoundPlus,
-    Users,
+    IdCard
 } from "lucide-react";
 
 import {
@@ -42,29 +41,24 @@ export default function HeaderProfileCard({
 
     const profileMenus = mode === 'student' ? [
         {
-            label: "프로필",
+            label: "마이페이지",
             href: "/student/mypage",
+            icon: IdCard,
+        },
+        {
+            label: "메신저",
+            href: "/student/friends",
             icon: User,
         },
         {
             label: "커뮤니티",
             href: "/student/community",
-            icon: Users,
-        },
-        {
-            label: "메신저",
-            href: "/student/friends",
-            icon: MessageSquare,
+            icon: MessagesSquare,
         },
         {
             label: "일정",
             href: "/student/calendar",
             icon: CalendarDays,
-        },
-        {
-            label: "방명록",
-            href: "/student/users",
-            icon: NotebookPen,
         },
     ] : [
         {
@@ -75,7 +69,7 @@ export default function HeaderProfileCard({
         {
             label: "커뮤니티",
             href: "/teacher/community",
-            icon: Users,
+            icon: MessagesSquare,
         },
         {
             label: "채팅",
