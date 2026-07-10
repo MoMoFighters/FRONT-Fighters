@@ -46,7 +46,7 @@ export default function HeaderProfileCard({
             icon: IdCard,
         },
         {
-            label: "메신저",
+            label: "친구",
             href: "/student/friends",
             icon: User,
         },

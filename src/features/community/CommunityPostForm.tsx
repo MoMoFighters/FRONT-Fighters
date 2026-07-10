@@ -10,10 +10,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from "
 import {
     createCommunityPostAction,
     createCommunityPostContentsAction,
+    editCommunityPostContentAction,
+    editCommunityPostTitleAction,
     uploadCommunityPostImageAction,
 } from "@/features/community/action";
 import {
     CommunityCategory,
+    CommunityPostDetailContent,
     CreateCommunityPostContentItem,
 } from "@/features/community/type";
 
@@ -23,13 +26,17 @@ interface CommunityPostFormProps {
     mode: CommunityPostFormMode;
     data?: {
         postId?: number | string;
+        title?: string;
+        category?: CommunityCategory;
+        contents?: CommunityPostDetailContent[];
     };
     role?: "TEACHER" | "ADMIN"
 }
 
 interface PostContentBlock {
     id: string;
-    file: File;
+    file?: File;
+    imageUrl?: string;
     previewUrl: string;
     content: string;
 }
@@ -55,11 +62,27 @@ const createPostContentBlock = (file: File): PostContentBlock => ({
     content: "",
 });
 
+const createExistingPostContentBlock = (
+    imageUrl: string,
+    index: number
+): PostContentBlock => ({
+    id: `existing-image-${index}`,
+    imageUrl,
+    previewUrl: imageUrl,
+    content: "",
+});
+
 const mergeContent = (prevContent: string, nextContent: string) => {
     return [prevContent, nextContent]
         .map((content) => content.trim())
         .filter(Boolean)
         .join("\n");
+};
+
+const revokePreviewUrl = (postContent: PostContentBlock) => {
+    if (postContent.file) {
+        URL.revokeObjectURL(postContent.previewUrl);
+    }
 };
 
 const getCommunityListHref = (role?: CommunityPostFormProps["role"]) => {
@@ -68,14 +91,51 @@ const getCommunityListHref = (role?: CommunityPostFormProps["role"]) => {
     return "/student/community";
 };
 
+const getInitialPostContents = (
+    contents?: CommunityPostDetailContent[]
+) => {
+    const imageBlocks: PostContentBlock[] = [];
+    const mainTexts: string[] = [];
+    let latestImageBlock: PostContentBlock | null = null;
+
+    contents?.forEach((content, index) => {
+        if (content.type === "TEXT") {
+            if (latestImageBlock) {
+                latestImageBlock.content = mergeContent(
+                    latestImageBlock.content,
+                    content.content
+                );
+                return;
+            }
+
+            mainTexts.push(content.content);
+            return;
+        }
+
+        const imageBlock =
+            createExistingPostContentBlock(content.imageUrl, index);
+
+        imageBlocks.push(imageBlock);
+        latestImageBlock = imageBlock;
+    });
+
+    return {
+        mainContent: mainTexts.join("\n\n"),
+        postContents: imageBlocks,
+        thumbnailId: imageBlocks[0]?.id ?? null,
+    };
+};
+
 export default function CommunityPostForm({ mode, data, role }: CommunityPostFormProps) {
     const router = useRouter();
+    const initialContents =
+        getInitialPostContents(data?.contents);
 
-    const [title, setTitle] = useState("");
-    const [category, setCategory] = useState<CommunityCategory>("FREE");
-    const [mainContent, setMainContent] = useState("");
-    const [postContents, setPostContents] = useState<PostContentBlock[]>([]);
-    const [thumbnailId, setThumbnailId] = useState<string | null>(null);
+    const [title, setTitle] = useState(data?.title ?? "");
+    const [category, setCategory] = useState<CommunityCategory>(data?.category ?? "FREE");
+    const [mainContent, setMainContent] = useState(initialContents.mainContent);
+    const [postContents, setPostContents] = useState<PostContentBlock[]>(initialContents.postContents);
+    const [thumbnailId, setThumbnailId] = useState<string | null>(initialContents.thumbnailId);
     const [createdPostId, setCreatedPostId] = useState<number | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -90,7 +150,7 @@ export default function CommunityPostForm({ mode, data, role }: CommunityPostFor
         (hasImage && thumbnailId === null);
     const backHref = (() => {
         const getBaseUrl = () => {
-            // role이 'TEACHER'나 'ADMIN'이 아니면(undefined 포함) 학생 경로 반환
+            // role이 TEACHER/ADMIN이면 해당 도메인으로, 없으면 학생 커뮤니티로 이동
             if (role === "TEACHER") return "/teacher/community";
             if (role === "ADMIN") return "/admin/community";
             return "/student/community";
@@ -116,7 +176,7 @@ export default function CommunityPostForm({ mode, data, role }: CommunityPostFor
     useEffect(() => {
         return () => {
             postContentsRef.current.forEach((postContent) => {
-                URL.revokeObjectURL(postContent.previewUrl);
+                revokePreviewUrl(postContent);
             });
         };
     }, []);
@@ -152,11 +212,12 @@ export default function CommunityPostForm({ mode, data, role }: CommunityPostFor
                     return postContent;
                 }
 
-                URL.revokeObjectURL(postContent.previewUrl);
+                revokePreviewUrl(postContent);
 
                 return {
                     ...postContent,
                     file,
+                    imageUrl: undefined,
                     previewUrl: URL.createObjectURL(file),
                 };
             })
@@ -186,7 +247,7 @@ export default function CommunityPostForm({ mode, data, role }: CommunityPostFor
             return;
         }
 
-        URL.revokeObjectURL(removeTarget.previewUrl);
+        revokePreviewUrl(removeTarget);
 
         if (thumbnailId === id) {
             setThumbnailId(null);
@@ -224,6 +285,15 @@ export default function CommunityPostForm({ mode, data, role }: CommunityPostFor
         const imageUrlById = new Map<string, string>();
 
         for (const postContent of postContents) {
+            if (!postContent.file) {
+                if (postContent.imageUrl) {
+                    imageUrlById.set(postContent.id, postContent.imageUrl);
+                    continue;
+                }
+
+                throw new Error("기존 이미지 URL을 확인할 수 없습니다.");
+            }
+
             const formData = new FormData();
             formData.append("image", postContent.file);
 
@@ -257,7 +327,7 @@ export default function CommunityPostForm({ mode, data, role }: CommunityPostFor
             const imageUrl = imageUrlById.get(postContent.id);
 
             if (!imageUrl) {
-                throw new Error("업로드된 이미지 URL을 찾을 수 없습니다.");
+                throw new Error("업로드된 이미지 URL을 확인할 수 없습니다.");
             }
 
             contents.push({
@@ -289,25 +359,59 @@ export default function CommunityPostForm({ mode, data, role }: CommunityPostFor
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if (mode !== "CREATE") {
-            toast.error("게시글 수정 기능은 아직 연결되지 않았습니다.");
-            return;
-        }
-
         const hasMainContent = mainContent.trim().length > 0;
 
         if (hasImage && !thumbnailId) {
-            toast.error("이미지가 있는 게시글은 썸네일을 하나 지정해야 합니다.");
+            toast.error("이미지가 있는 게시글은 썸네일로 사용할 이미지를 선택해주세요.");
             return;
         }
 
         if (!hasImage && !hasMainContent) {
-            toast.error("이미지가 없는 게시글은 본문을 입력해야 합니다.");
+            toast.error("이미지가 없는 게시글은 본문을 입력해주세요.");
             return;
         }
 
         try {
             setIsSubmitting(true);
+
+            if (mode === "EDIT") {
+                const postId = Number(data?.postId);
+
+                if (!Number.isFinite(postId)) {
+                    throw new Error("수정할 게시글 정보를 확인할 수 없습니다.");
+                }
+
+                const titleResponse =
+                    await editCommunityPostTitleAction({
+                        postId,
+                        title: title.trim(),
+                        category,
+                    });
+
+                if (!isSuccessResponse(titleResponse.status)) {
+                    throw new Error(titleResponse.message || "게시글 제목 수정에 실패했습니다.");
+                }
+
+                const imageUrlById =
+                    await uploadImages();
+
+                const contentsPayload =
+                    createContentsPayload(imageUrlById);
+
+                const contentsResponse =
+                    await editCommunityPostContentAction(
+                        postId,
+                        contentsPayload
+                    );
+
+                if (!isSuccessResponse(contentsResponse.status)) {
+                    throw new Error(contentsResponse.message || "게시글 본문 수정에 실패했습니다.");
+                }
+
+                toast.success("게시글을 수정했습니다.");
+                router.push(`${getCommunityListHref(role)}/${postId}`);
+                return;
+            }
 
             const postResponse =
                 await createCommunityPostAction({
@@ -340,13 +444,15 @@ export default function CommunityPostForm({ mode, data, role }: CommunityPostFor
                 throw new Error(contentsResponse.message || "게시글 본문 등록에 실패했습니다.");
             }
 
-            toast.success("게시글이 등록되었습니다.");
+            toast.success("게시글을 등록했습니다.");
             router.push(getCommunityListHref(role));
         } catch (error) {
             const message =
                 error instanceof Error
                     ? error.message.split("|").at(-1) ?? error.message
-                    : "게시글 등록에 실패했습니다.";
+                    : mode === "EDIT"
+                        ? "게시글 수정에 실패했습니다."
+                        : "게시글 등록에 실패했습니다.";
 
             toast.error(message);
         } finally {
@@ -357,7 +463,7 @@ export default function CommunityPostForm({ mode, data, role }: CommunityPostFor
     return (
         <form
             onSubmit={handleSubmit}
-            className="flex h-full min-h-0 flex-col overflow-hidden rounded-3xl bg-white/85 p-5 shadow-sm ring-1 ring-slate-200/80 backdrop-blur"
+            className="flex min-h-full flex-col rounded-3xl bg-white/85 p-5 shadow-sm ring-1 ring-slate-200/80 backdrop-blur"
         >
             <input
                 type="hidden"
@@ -408,8 +514,8 @@ export default function CommunityPostForm({ mode, data, role }: CommunityPostFor
                 </Select>
             </div>
 
-            <section className="mt-4 flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white">
-                <div className="sticky top-0 z-10 flex h-11 shrink-0 items-center justify-between border-b border-slate-100 bg-white/95 px-4 backdrop-blur">
+            <section className="mt-4 flex flex-col rounded-2xl border border-slate-200 bg-white">
+                <div className="flex shrink-0 items-start justify-between gap-3 border-b border-slate-100 bg-white/95 px-4 py-3 backdrop-blur">
                     <div className="leading-none">
                         <p className="text-xs font-black text-slate-900">
                             본문 영역
@@ -419,33 +525,31 @@ export default function CommunityPostForm({ mode, data, role }: CommunityPostFor
                         </p>
                     </div>
 
-                    {canAddImage && (
-                        <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-indigo-500 px-3 py-1 text-xs font-black text-white transition hover:bg-indigo-600">
-                            <ImagePlus className="h-3.5 w-3.5" />
-                            사진 추가
-                            <input
-                                type="file"
-                                accept="image/*"
-                                className="hidden"
-                                onChange={handleAddImage}
-                            />
-                        </label>
-                    )}
                 </div>
 
-                <div className="flex min-h-0 flex-1 flex-col overflow-hidden px-4 py-3">
-                    <div className="min-h-0 flex-1">
+                {canAddImage && (
+                    <label className="sticky top-4 z-20 mr-4 mt-3 inline-flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center self-end rounded-full bg-indigo-500 text-white shadow-lg transition hover:bg-indigo-600">
+                        <ImagePlus className="h-6 w-6" />
+                        <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={handleAddImage}
+                        />
+                    </label>
+                )}
+                <div className="flex flex-col px-4 py-3">
+                    <div>
                         <AutoResizeTextarea
                             value={mainContent}
                             onChange={setMainContent}
-                            className="h-full min-h-0 w-full bg-transparent px-2 py-2 text-sm font-medium leading-7 text-slate-700 outline-none transition placeholder:text-slate-400 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                            className="min-h-5 w-full bg-transparent px-2 py-2 text-sm font-medium leading-7 text-slate-700 outline-none transition placeholder:text-slate-400"
                             placeholder="내용 입력..."
-                            fill
                         />
                     </div>
 
                     {postContents.length > 0 && (
-                        <div className="mt-3 max-h-[45%] shrink-0 overflow-y-auto border-t border-slate-100 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                        <div className="mt-3 shrink-0">
                             {postContents.map((postContent, index) => (
                                 <PostContentFieldset
                                     key={postContent.id}
@@ -469,7 +573,9 @@ export default function CommunityPostForm({ mode, data, role }: CommunityPostFor
                 className="mt-5 h-11 shrink-0 rounded-2xl bg-indigo-400 text-sm font-black text-white transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:bg-slate-300"
             >
                 {isSubmitting
-                    ? "등록 중..."
+                    ? mode === "CREATE"
+                        ? "등록 중..."
+                        : "수정 중..."
                     : mode === "CREATE"
                         ? "게시글 등록"
                         : "게시글 수정"}
@@ -572,8 +678,6 @@ function AutoResizeTextarea({
     fill?: boolean;
 }) {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
-    const rows = value.split("\n").length + 1;
-
     useEffect(() => {
         if (fill) {
             return;
@@ -583,15 +687,15 @@ function AutoResizeTextarea({
             return;
         }
 
-        const lineHeight = 28;
-        textareaRef.current.style.height = `${rows * lineHeight}px`;
-    }, [fill, rows]);
+        textareaRef.current.style.height = "auto";
+        textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }, [fill, value]);
 
     return (
         <textarea
             ref={textareaRef}
             value={value}
-            rows={fill ? 1 : rows}
+            rows={1}
             onChange={(e) => onChange(e.target.value)}
             className={className}
             style={{

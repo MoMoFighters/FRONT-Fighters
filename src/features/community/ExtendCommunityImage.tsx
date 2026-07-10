@@ -1,70 +1,63 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
-interface ExtendCommunityImageProps {
-    imageUrl: string;
-}
-
-export default function ExtendCommunityImage({
-    imageUrl,
-}: ExtendCommunityImageProps) {
-    const [isModalOpen, setIsModalOpen] = useState(false);
-
-    const closeModal = useCallback(() => {
-        setIsModalOpen(false);
-    }, []);
+export default function ExtendCommunityImage({ imageUrl }: { imageUrl: string }) {
+    const [isModal, setIsModal] = useState(false);
 
     useEffect(() => {
-        if (!isModalOpen) {
+        if (!isModal) {
             return;
         }
 
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key === "Escape") {
-                closeModal();
+                setIsModal(false);
             }
         };
 
+        const originalOverflow = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
         window.addEventListener("keydown", handleKeyDown);
 
         return () => {
+            document.body.style.overflow = originalOverflow;
             window.removeEventListener("keydown", handleKeyDown);
         };
-    }, [closeModal, isModalOpen]);
+    }, [isModal]);
+
+    const modal =
+        isModal && typeof document !== "undefined"
+            ? createPortal(
+                <div
+                    className="fixed inset-0 z-[999999] flex h-dvh w-dvw items-center justify-center bg-slate-950/70 p-6 backdrop-blur-sm"
+                    onClick={() => setIsModal(false)}
+                >
+                    <img
+                        src={imageUrl}
+                        alt="확대 이미지"
+                        className="max-h-[calc(100dvh-48px)] max-w-[calc(100dvw-48px)] rounded-2xl object-contain shadow-2xl ring-1 ring-white/20"
+                        onClick={(event) => event.stopPropagation()}
+                    />
+                </div>,
+                document.body
+            )
+            : null;
 
     return (
         <>
             <Image
-                onClick={() => setIsModalOpen(true)}
+                onClick={() => setIsModal(true)}
                 src={imageUrl}
-                alt="게시글 이미지"
+                alt="이미지"
                 width={720}
                 height={448}
                 className="h-auto w-[40%] cursor-zoom-in rounded-2xl object-cover shadow-sm ring-1 ring-slate-100"
                 unoptimized
             />
-
-            {isModalOpen &&
-                createPortal(
-                    <div
-                        className="fixed inset-0 z-[9999] flex h-screen w-screen items-center justify-center bg-slate-950/70 p-6 backdrop-blur-sm"
-                        onClick={closeModal}
-                    >
-                        <Image
-                            src={imageUrl}
-                            alt="게시글 이미지 확대"
-                            width={1440}
-                            height={960}
-                            className="max-h-[calc(100vh-48px)] max-w-[calc(100vw-48px)] rounded-2xl object-contain shadow-2xl ring-1 ring-white/10"
-                            onClick={(event) => event.stopPropagation()}
-                            unoptimized
-                        />
-                    </div>,
-                    document.body
-                )}
+            {modal}
         </>
     );
 }
