@@ -1,4 +1,3 @@
-import MyPageNav from "@/components/mypage/MyPageNav";
 import StudentPageHeader from "@/features/student/components/StudentPageHeader";
 import { getMyInfo } from "@/features/user/action";
 import MyPageEditClient from "@/features/user/components/mypage/MyPageEditClient";

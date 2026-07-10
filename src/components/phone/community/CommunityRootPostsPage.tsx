@@ -150,7 +150,9 @@ export default function CommunityRootPostsPage({
     return (
         <div className="flex h-full min-h-0 flex-col overflow-hidden bg-white/80 shadow-sm ring-1 ring-slate-200/80 backdrop-blur">
             <div className="shrink-0 px-3 pt-3">
-                <CommunitySideBar role={role === "STUDENT" ? undefined : role} />
+                {role !== 'ADMIN' &&
+                    <CommunitySideBar role={role === "STUDENT" ? undefined : role} />
+                }
             </div>
 
             <section className="flex h-full min-h-0 min-w-0 flex-1 flex-col px-4 py-3">

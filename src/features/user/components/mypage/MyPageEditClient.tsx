@@ -44,7 +44,7 @@ export default function MyPageEditClient({
                             내 정보 수정
                         </h1>
                         <p className="mt-1 text-sm font-bold text-slate-400">
-                            닉네임과 비밀번호 및 프로필 이미지를 변경할 수 있습니다.
+                            닉네임과 프로필 이미지를 변경할 수 있습니다.
                         </p>
                     </div>
                 </div>
