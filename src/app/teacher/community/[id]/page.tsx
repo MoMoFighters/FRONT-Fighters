@@ -7,7 +7,11 @@ import PostDetailSide from "@/components/phone/community/PostDetailSide";
 import CreateReportBtn from "@/features/report/components/buttons/CreateReportBtn";
 import PostLikeBtn from "@/features/post/PostLikeBtn";
 import { getCommunityPostDetailAction } from "@/features/community/action";
+import ExtendCommunityImage from "@/features/community/ExtendCommunityImage";
 import type { CommunityAuthorRole } from "@/features/community/type";
+
+const DEFAULT_PROFILE_IMAGE_URL =
+    "https://placehold.co/80x80/e0e7ff/4f46e5?text=M";
 
 interface CommunityPostDetailPageProps {
     params: Promise<{
@@ -34,8 +38,10 @@ export default async function CommunityPostDetailPage({
     params,
     searchParams,
 }: CommunityPostDetailPageProps) {
-    const { id } = await params;
-    const resolvedSearchParams = await searchParams;
+    const [{ id }, resolvedSearchParams] = await Promise.all([
+        params,
+        searchParams,
+    ]);
     const postId = Number(id);
 
     if (!Number.isFinite(postId)) {
@@ -50,6 +56,11 @@ export default async function CommunityPostDetailPage({
     }
 
     const post = response.data;
+    const authorHref = post.isMine
+        ? "/teacher/community/mypage"
+        : `/teacher/community/user/${post.authorId}`;
+    const authorProfileImageUrl =
+        post.authorProfileImageUrl || DEFAULT_PROFILE_IMAGE_URL;
     const initialCommentCount = Number(
         resolvedSearchParams?.commentCount ?? post.commentCount ?? 0
     );
@@ -101,14 +112,11 @@ export default async function CommunityPostDetailPage({
 
                     <div className="mt-2 flex items-center gap-3">
                         <Link
-                            href={post.isMine
-                                ? "/teacher/community/mypage"
-                                : `/teacher/community/user/${post.authorId}`
-                            }
+                            href={authorHref}
                             className="flex min-w-0 items-center gap-2"
                         >
                             <Image
-                                src={post.authorProfileImageUrl || "https://placehold.co/80x80/e0e7ff/4f46e5?text=M"}
+                                src={authorProfileImageUrl}
                                 alt={`${post.authorName} profile`}
                                 width={32}
                                 height={32}
@@ -150,14 +158,7 @@ export default async function CommunityPostDetailPage({
                                         key={`${content.type}-${index}`}
                                         className="flex justify-center"
                                     >
-                                        <Image
-                                            src={content.imageUrl}
-                                            alt=""
-                                            width={720}
-                                            height={448}
-                                            className="h-auto w-[40%] rounded-2xl object-cover shadow-sm ring-1 ring-slate-100"
-                                            unoptimized
-                                        />
+                                        <ExtendCommunityImage imageUrl={content.imageUrl} />
                                     </div>
                                 );
                             }
