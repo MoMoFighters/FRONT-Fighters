@@ -11,7 +11,6 @@ import ExtendCommunityImage from "@/features/community/ExtendCommunityImage";
 import DeleteCommunityPostButton from "@/features/community/DeleteCommunityPostButton";
 import type { CommunityAuthorRole } from "@/features/community/type";
 import { Button } from "@/components/ui/button";
-import ExtendCommunityImage from "@/features/community/ExtendCommunityImage";
 
 const DEFAULT_PROFILE_IMAGE_URL =
     "https://placehold.co/80x80/e0e7ff/4f46e5?text=M";
