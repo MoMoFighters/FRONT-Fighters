@@ -14,11 +14,6 @@ export interface Streak {
     level: string;
 }
 
-export interface StreakRequest {
-    year: number;
-    month: number;
-}
-
 export interface StreakResponse {
     year: number;
     month: number;

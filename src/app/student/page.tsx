@@ -12,14 +12,12 @@ export default async function StudentMainPage() {
     const cookieStore = await cookies();
     const accessToken = cookieStore.get("accessToken")?.value;
 
-    const buildings = await getMyBuildings();
-    const myInfo = await getMyInfo();
+    const [buildings, myInfo, monthlyStreak] = await Promise.all([
+        getMyBuildings(),
+        getMyInfo(),
+        getMyStreak(),
+    ]);
     const dnd = myInfo.data?.doNotDisturb;
-    const today = new Date();
-    const monthlyStreak = await getMyStreak({
-        year: today.getFullYear(),
-        month: today.getMonth() + 1,
-    });
 
     return (
         <CityCanvas>

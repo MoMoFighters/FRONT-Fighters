@@ -1,4 +1,4 @@
-﻿import Image, { StaticImageData } from "next/image";
+import Image, { StaticImageData } from "next/image";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "../ui/hover-card";
 import Link from "next/link";
 import getCategoryMeta from "@/features/lecture/components/student/shared/category";
@@ -18,6 +18,7 @@ interface BuildingItemProps {
     position?: number
     priority?: boolean
     imageSizes?: string
+    interactive?: boolean
 }
 
 export default function BuildingItem({
@@ -28,6 +29,7 @@ export default function BuildingItem({
     position,
     priority = false,
     imageSizes = "(max-width: 768px) 18vw, 13vw",
+    interactive = true,
 }: BuildingItemProps) {
 
     const getBuildingInfo = () => {
@@ -69,21 +71,40 @@ export default function BuildingItem({
     }
 
     const buildingInfo = getBuildingInfo();
+    const isPlaceholder = !common && !(category && buildingUrl);
+
+    const visual = (
+        <>
+            <Image
+                src={buildingInfo.buildingImage}
+                alt={buildingInfo.label}
+                fill
+                sizes={imageSizes}
+                priority={priority}
+                className="object-contain"
+            />
+
+            {!isPlaceholder && (
+                <span className="pointer-events-none absolute bottom-0 left-1/2 z-10 -translate-x-1/2 translate-y-1/2 whitespace-nowrap rounded-[0.3cqw] bg-white px-[0.4cqw] py-[0.08cqw] text-[0.65cqw] font-semibold text-slate-700 shadow-sm">
+                    {buildingInfo.buildingName}
+                </span>
+            )}
+        </>
+    );
+
+    if (!interactive) {
+        return (
+            <div className="relative block w-full h-full">
+                {visual}
+            </div>
+        );
+    }
 
     return (
         <HoverCard openDelay={50} closeDelay={50}>
             <HoverCardTrigger asChild>
                 <Link href={buildingInfo.href} className="relative block w-full h-full hover:scale-110 transition-all">
-                    <Image
-                        src={buildingInfo.buildingImage}
-                        alt={buildingInfo.label}
-                        fill
-                        sizes={imageSizes}
-                        priority={priority}
-                        className="object-contain"
-                    />
-
-
+                    {visual}
                 </Link>
             </HoverCardTrigger>
             <HoverCardContent className="flex w-64 flex-col gap-0.5" side="bottom">
