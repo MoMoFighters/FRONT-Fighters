@@ -43,7 +43,7 @@ export default function GuestHeroSection() {
       <div className="relative px-5 sm:px-8 lg:px-16">
         <div className="max-w-xl">
           <h1 className="pt-8 text-[2rem] font-bold leading-tight tracking-tight text-slate-950 sm:pt-10 sm:text-[2.35rem] lg:pt-12 lg:text-[2.75rem]">
-            원하는 분야를 학습하고
+            원하는 분야를 학습하고고고
             <br />
             <span className="text-indigo-500">나만의 도시를 꾸며보세요!</span>
           </h1>
