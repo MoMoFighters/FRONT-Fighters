@@ -24,20 +24,30 @@ interface HeaderProfileCardProps {
     role: string;
     profileImageUrl?: string | null;
     nickname: string;
-    isPaid: boolean;
+    membership?: 'BASIC' | 'PRO' | 'PLUS';
     mode: 'student' | 'teacher';
 }
 
+const membershipBadgeStyle = {
+    BASIC:
+        'border border-zinc-300 bg-zinc-200/50 text-zinc-700',
 
+    PLUS:
+        'border border-zinc-400 text-zinc-800 bg-[linear-gradient(135deg,#ffffff_0%,#e5e7eb_25%,#9ca3af_50%,#e5e7eb_75%,#ffffff_100%)] shadow-[inset_0_1px_1px_rgba(255,255,255,.7),0_1px_2px_rgba(0,0,0,.12)]',
+
+    PRO:
+        'border border-yellow-500 text-yellow-900 bg-[linear-gradient(135deg,#fff7cc_0%,#fcd34d_25%,#f59e0b_50%,#fcd34d_75%,#fff7cc_100%)] shadow-[inset_0_1px_1px_rgba(255,255,255,.6),0_1px_2px_rgba(0,0,0,.12)]',
+};
 
 export default function HeaderProfileCard({
     role,
     profileImageUrl,
     nickname,
-    isPaid,
+    membership,
     mode
 }: HeaderProfileCardProps) {
     const defaultProfile = nickname?.[0] ?? "모";
+    const resolvedMembership = membership ?? "BASIC";
 
     const profileMenus = mode === 'student' ? [
         {
@@ -148,13 +158,10 @@ export default function HeaderProfileCard({
                                 className={`
                                     rounded-full px-2 py-0.5
                                     text-[11px] font-semibold
-                                    ${isPaid
-                                        ? "bg-indigo-50 text-indigo-500"
-                                        : "bg-slate-100 text-slate-500"
-                                    }
+                                    ${membershipBadgeStyle[resolvedMembership]}
                                 `}
                             >
-                                {isPaid ? "멤버십" : "일반"}
+                                {resolvedMembership}
                             </span>}
                         </div>
                     </div>

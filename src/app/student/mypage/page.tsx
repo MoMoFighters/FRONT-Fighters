@@ -40,6 +40,17 @@ const POINT_TYPE_LABEL: Record<PointHistoryTransactionType, string> = {
     USED: "사용",
 };
 
+const membershipBadgeStyle = {
+    BASIC:
+        'border border-zinc-300 bg-zinc-200/50 text-zinc-700',
+
+    PLUS:
+        'border border-zinc-400 text-zinc-800 bg-[linear-gradient(135deg,#ffffff_0%,#e5e7eb_25%,#9ca3af_50%,#e5e7eb_75%,#ffffff_100%)] shadow-[inset_0_1px_1px_rgba(255,255,255,.7),0_1px_2px_rgba(0,0,0,.12)]',
+
+    PRO:
+        'border border-yellow-500 text-yellow-900 bg-[linear-gradient(135deg,#fff7cc_0%,#fcd34d_25%,#f59e0b_50%,#fcd34d_75%,#fff7cc_100%)] shadow-[inset_0_1px_1px_rgba(255,255,255,.6),0_1px_2px_rgba(0,0,0,.12)]',
+};
+
 const formatDateTime = (createdAt: string) => {
     const date = new Date(createdAt);
 
@@ -83,16 +94,7 @@ export default async function StudentMyPage() {
     const totalPointHistory =
         pointHistoryResponse.data?.totalElements ?? pointHistory.length;
 
-    const membershipBadgeStyle = {
-        BASIC:
-            'border border-zinc-300 bg-zinc-200/50 text-zinc-700',
 
-        PLUS:
-            'border border-zinc-400 text-zinc-800 bg-[linear-gradient(135deg,#ffffff_0%,#e5e7eb_25%,#9ca3af_50%,#e5e7eb_75%,#ffffff_100%)] shadow-[inset_0_1px_1px_rgba(255,255,255,.7),0_1px_2px_rgba(0,0,0,.12)]',
-
-        PRO:
-            'border border-yellow-500 text-yellow-900 bg-[linear-gradient(135deg,#fff7cc_0%,#fcd34d_25%,#f59e0b_50%,#fcd34d_75%,#fff7cc_100%)] shadow-[inset_0_1px_1px_rgba(255,255,255,.6),0_1px_2px_rgba(0,0,0,.12)]',
-    };
 
     return (
         <main className="min-h-[calc(100vh-137px)] bg-white px-8 py-8">
