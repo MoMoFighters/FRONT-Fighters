@@ -4,7 +4,6 @@ import {
     getProgressByCategory,
 } from "@/app/services/lecture/service";
 import ListPagination from "@/components/common/ListPagination";
-import MyPageNav from "@/components/mypage/MyPageNav";
 import LectureFilterBtn from "@/features/lecture/components/buttons/LectureFilterBtn";
 import LectureSearchbar from "@/features/lecture/components/common/LectureSearchbar";
 import MyLectureBuildingsOverviewCard from "@/features/lecture/components/student/list/MyLectureBuildingsOverviewCard";
@@ -53,7 +52,6 @@ export default async function MyLecturesListPage({
         getLatestChapterInfo(),
     ]);
 
-    console.log(responseData.content);
     const totalPages = responseData.totalPages;
     const currentPage = Number(page) || 1;
     const lectures = responseData.content;
@@ -95,7 +93,6 @@ export default async function MyLecturesListPage({
                     title="내 강의"
                 />
 
-                <MyPageNav />
 
                 <div className="mt-8 mb-4 flex items-center gap-3">
                     <LectureSearchbar

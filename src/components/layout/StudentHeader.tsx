@@ -30,7 +30,7 @@ export default async function AuthHeader({ role }: { role: string }) {
     const myInfo = await getMyInfo();
 
     return (
-        <header className="fixed top-0 left-0 h-14 border-b border-slate-200 bg-white w-screen">
+        <header className="fixed top-0 left-0 z-50 h-14 w-screen border-b border-slate-200 bg-white">
             <div className="flex h-full w-full justify-between items-center px-2">
                 <Link href={`/${role}`} className="relative ml-6 w-24 h-4">
                     <Image

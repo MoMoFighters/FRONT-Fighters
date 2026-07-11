@@ -17,11 +17,10 @@ import {
 import { connectNoticeStomp } from "@/lib/stomp/stomp";
 import { NoticeAppCountsData } from "@/features/user/components/notification/type";
 import { toast } from "sonner";
-import { getMyInfo } from "@/features/user/action";
 
 interface PhoneProps {
     accessToken?: string;
-    hasNotification?: boolean;
+    initialNotification?: boolean;
 }
 
 const EMPTY_COUNTS: NoticeAppCountsData = {
@@ -49,9 +48,9 @@ const PhoneAppGrid = dynamic(() => import("./PhoneAppGrid"), {
 
 export default function Phone({
     accessToken,
-    hasNotification = false,
+    initialNotification
 }: PhoneProps) {
-    const [notificationEnabled, setNotificationEnabled] = useState(true);
+    const [notificationEnabled, setNotificationEnabled] = useState(initialNotification);
     const [isHovered, setIsHovered] = useState(false);
     const [isInteractionLocked, setIsInteractionLocked] = useState(false);
     const [vibrationOffset, setVibrationOffset] = useState({ x: 0, y: 0 });
@@ -65,7 +64,7 @@ export default function Phone({
     const hasNotificationValue =
         Object.values(notification).some((count) => count > 0);
     const notificationActive =
-        notificationEnabled && (hasNotification || hasNotificationValue);
+        notificationEnabled && (hasNotificationValue);
     const shouldVibrate =
         !isHovered &&
         !isInteractionLocked &&
@@ -130,14 +129,12 @@ export default function Phone({
 
         const loadAppCounts = async () => {
             const notificationResponse = await getNoticeAppCountsAction();
-            const dndResponse = await getMyInfo();
 
             if (!isMounted) {
                 return;
             }
 
             setNotification(notificationResponse.data ?? EMPTY_COUNTS);
-            setNotificationEnabled(dndResponse.data?.doNotDisturb || true)
         };
 
         void loadAppCounts();

@@ -6,7 +6,6 @@ import {
     Coins,
 } from "lucide-react";
 
-import MyPageNav from "@/components/mypage/MyPageNav";
 import StudentPageHeader from "@/features/student/components/StudentPageHeader";
 import {
     Pagination,
@@ -102,8 +101,6 @@ export default async function MypagePointPage({
                 title="포인트"
             />
 
-            <MyPageNav />
-
             <section className="mt-8 space-y-6">
                 <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
                     <div className="flex items-center justify-between gap-6">
@@ -183,11 +180,10 @@ export default async function MypagePointPage({
 
                                         <div className="flex min-w-0 items-center gap-2.5">
                                             <div
-                                                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
-                                                    isIncrease
+                                                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${isIncrease
                                                         ? "bg-indigo-50 text-indigo-500"
                                                         : "bg-slate-100 text-slate-500"
-                                                }`}
+                                                    }`}
                                             >
                                                 {isIncrease ? (
                                                     <ArrowDownLeft className="h-4 w-4" />
@@ -207,11 +203,10 @@ export default async function MypagePointPage({
                                         </div>
 
                                         <p
-                                            className={`text-right text-base font-black ${
-                                                isIncrease
+                                            className={`text-right text-base font-black ${isIncrease
                                                     ? "text-indigo-500"
                                                     : "text-rose-500"
-                                            }`}
+                                                }`}
                                         >
                                             {isIncrease ? "+" : "-"}
                                             {Math.abs(item.amount).toLocaleString()} P
