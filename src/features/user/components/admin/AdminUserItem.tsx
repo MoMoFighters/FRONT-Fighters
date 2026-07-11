@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { USER_ROLE_LABEL, UserList } from "@/features/user/type";
 import AdminUserStatusBadge from "./AdminUserStatusBadge";
+import AdminMembershipBadge from "./AdminMembershipBadge";
 
 interface AdminUserItemProps {
     user: UserList;
@@ -39,7 +40,7 @@ export default function AdminUserItem({ user, view }: AdminUserItemProps) {
     return (
         <Link
             href={href}
-            className={`group grid min-w-[900px] ${isDeletedView ? "grid-cols-[1.1fr_.8fr_1.8fr_.9fr_.8fr]" : "grid-cols-[1.05fr_.75fr_1.8fr_.85fr_.75fr_.85fr_1.15fr]"} items-center px-6 py-4 text-sm text-slate-600 transition hover:bg-slate-50`}
+            className={`group grid min-w-[900px] ${isDeletedView ? "grid-cols-[1.1fr_.8fr_1.8fr_.9fr_.8fr]" : "grid-cols-[1.05fr_.75fr_1.8fr_.85fr_.75fr_.7fr_.85fr_1.15fr]"} items-center px-6 py-4 text-sm text-slate-600 transition hover:bg-slate-50`}
         >
             <span className="w-fit font-bold text-slate-900 transition group-hover:text-indigo-600">
                 {user.name}
@@ -54,6 +55,11 @@ export default function AdminUserItem({ user, view }: AdminUserItemProps) {
             <div className="flex justify-center">
                 <AdminUserStatusBadge status={isDeletedView ? "DELETED" : user.status} />
             </div>
+            {!isDeletedView && (
+                <div className="flex justify-center">
+                    <AdminMembershipBadge membership={user.membership} />
+                </div>
+            )}
             {!isDeletedView && (
                 <span className="text-center text-sm font-bold text-slate-700">
                     {user.suspensionCount ?? 0}회

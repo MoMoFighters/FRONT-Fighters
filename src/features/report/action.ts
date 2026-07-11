@@ -64,7 +64,7 @@ export const sanctionReportedUserAction = async ({
 
         return {
             success: true,
-            message: "사용자 제재 처리 후 신고를 처리 완료했습니다.",
+            message: "신고 처리를 승인했습니다.",
         };
     } catch (error) {
         return {

@@ -7,6 +7,7 @@ import { TargetType } from "../report/type";
 export type UserRole = 'STUDENT' | 'TEACHER' | 'ADMIN';
 export type UserStatus = 'ACTIVE' | 'PENDING' | 'REJECTED' | 'BANNED' | 'BLACK' | 'DELETED';
 export type UserCategory = 'FITNESS' | 'STUDY' | 'COOK' | 'BEAUTY' | 'ART';
+export type Membership = "BASIC" | "PLUS" | "PRO";
 
 export const USER_ROLE_LABEL: Record<UserRole, string> = {
     STUDENT: "수강생",
@@ -26,13 +27,12 @@ export interface User {
     isTempPwd: boolean;
     doNotDisturb: boolean;
     isPaid: boolean;
+    membership: Membership;
+    membershipStart: string;
 
     deletedAt?: string;
     proof?: string[]; // 증빙자료 url
     category?: UserCategory;
-
-    // 🍑🍑🍑상의 필요🍑🍑🍑
-    // 멤버십 마감 되는 날짜
 }
 
 
@@ -52,6 +52,7 @@ export interface UserList {
     status: UserStatus;
     suspensionCount: number | null;
     suspendedUntil: string | null;
+    membership: Membership;
 }
 
 export type UserResponse = UserList & {
@@ -89,6 +90,8 @@ export interface userDetail {
     name: string;
     suspensionCount?: number | null;
     reports: ReportByUser[];
+    membership: Membership;
+    membershipStart: string;
 }
 
 // 관리자 대기 강사 조회 타입 정의
