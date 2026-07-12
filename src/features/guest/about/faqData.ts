@@ -88,6 +88,16 @@ export const ABOUT_FAQ_ITEMS: AboutFaqItem[] = [
         ],
     },
     {
+        id: "student-membership",
+        audience: "STUDENT",
+        question: "요금제는 어떻게 되나요?",
+        content: [
+            text(
+                "모모시티에는 크게 3가지의 요금제로 구성되어 있으며, 무료 플랜인 BASIC부터 PRO, PLUS가 존재합니다. BASIC 플랜에서는 커뮤니티 조회, PRO 플랜에서는 강의 수강, PLUS 플랜에서는 무제한 AI 챗봇 이용이 가능합니다. <Link href='membership'>멤버십</Link> 페이지에서 확인 가능합니다."
+            ),
+        ],
+    },
+    {
         id: "teacher-apply",
         audience: "TEACHER",
         question: "강사 신청은 어떻게 진행되나요?",
