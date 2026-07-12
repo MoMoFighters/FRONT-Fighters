@@ -14,7 +14,11 @@ const guestNavItems = [
     },
     {
         label: "커뮤니티",
-        href: "/auth/login",
+        href: "/community",
+    },
+    {
+        label: "멤버십",
+        href: "/membership",
     },
 ];
 
