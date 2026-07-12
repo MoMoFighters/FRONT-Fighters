@@ -155,10 +155,12 @@ export default async function StudentMyPage() {
                                     포인트 상점
                                 </li>
                             </Link>
-                            <li className="cursor-pointer flex items-center gap-3 rounded-2xl px-4 py-3 transition hover:bg-slate-50 hover:text-slate-900">
-                                <ShieldCheck className="h-4 w-4" />
-                                멤버십 관리
-                            </li>
+                            <Link href="/student/mypage/membership">
+                                <li className="cursor-pointer flex items-center gap-3 rounded-2xl px-4 py-3 transition hover:bg-slate-50 hover:text-slate-900">
+                                    <ShieldCheck className="h-4 w-4" />
+                                    멤버십 관리
+                                </li>
+                            </Link>
                             <TeacherRegistMenuItem nickName={userData.nickname} />
                         </ul>
                     </nav>

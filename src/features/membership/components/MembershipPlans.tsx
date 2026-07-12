@@ -1,0 +1,41 @@
+"use client";
+
+import { toast } from "sonner";
+
+import { MEMBERSHIP_PLANS } from "../membershipInfo";
+import { MembershipPlan, MembershipTier } from "../type";
+import MembershipPlanCard from "./MembershipPlanCard";
+
+interface MembershipPlansProps {
+    mode?: "student" | "guest";
+    currentTier?: MembershipTier;
+    endAt?: string | null;
+}
+
+export default function MembershipPlans({
+    mode = "student",
+    currentTier = "BASIC",
+    endAt,
+}: MembershipPlansProps) {
+    const handleSelect = (plan: MembershipPlan) => {
+        toast.info(`${plan.name} 플랜 전환은 준비 중인 기능입니다.`, {
+            duration: 1500,
+        });
+    };
+
+    return (
+        <div className="grid grid-cols-3 gap-5">
+            {MEMBERSHIP_PLANS.map((plan) => (
+                <MembershipPlanCard
+                    key={plan.tier}
+                    plan={plan}
+                    mode={mode}
+                    currentTier={currentTier}
+                    isActive={mode === "student" && plan.tier === currentTier}
+                    endAt={mode === "student" && plan.tier === currentTier ? endAt : undefined}
+                    onSelect={handleSelect}
+                />
+            ))}
+        </div>
+    );
+}

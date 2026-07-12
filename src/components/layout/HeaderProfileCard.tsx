@@ -10,7 +10,8 @@ import {
     MessageSquare,
     MessagesSquare,
     User,
-    IdCard
+    IdCard,
+    CircleDollarSign
 } from "lucide-react";
 
 import {
@@ -69,6 +70,11 @@ export default function HeaderProfileCard({
             label: "일정",
             href: "/student/calendar",
             icon: CalendarDays,
+        },
+        {
+            label: "멤버십",
+            href: "/student/mypage/membership",
+            icon: CircleDollarSign,
         },
     ] : [
         {
