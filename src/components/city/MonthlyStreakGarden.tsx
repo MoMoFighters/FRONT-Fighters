@@ -6,7 +6,7 @@ import {
     HoverCardContent,
     HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { StreakResponse } from "@/features/city/type";
+import { Streak, StreakResponse } from "@/features/city/type";
 
 interface StreakDay {
     date: string;
@@ -41,26 +41,17 @@ const normalizeLevel = (level: string | number | undefined): StreakDay["level"] 
     return 0;
 };
 
-const normalizeStreakData = ({ year, month, streaks }: StreakResponse): StreakDay[] => {
+const normalizeStreakData = (
+    year: number,
+    month: number,
+    streaks: Streak[]
+): StreakDay[] => {
     const daysInMonth = new Date(year, month, 0).getDate();
     const streakLevelByDate = new Map(
-        streaks
-            .map((streak) => {
-                const legacyStreak = streak as {
-                    streakData?: string;
-                    streakDate?: string;
-                };
-                const date =
-                    streak.date ?? legacyStreak.streakData ?? legacyStreak.streakDate;
-
-                return date
-                    ? ([date.slice(0, 10), normalizeLevel(streak.level)] as const)
-                    : undefined;
-            })
-            .filter(
-                (streak): streak is readonly [string, StreakDay["level"]] =>
-                    Boolean(streak)
-            )
+        streaks.map((streak) => [
+            streak.streakDate.slice(0, 10),
+            normalizeLevel(streak.level),
+        ] as const)
     );
 
     return Array.from({ length: daysInMonth }, (_, index) => {
@@ -77,15 +68,13 @@ export default function MonthlyStreakGarden({
     initialStreak,
 }: MonthlyStreakGardenProps) {
     const today = new Date();
-    const currentMonthStreak = initialStreak ?? {
-        year: today.getFullYear(),
-        month: today.getMonth() + 1,
-        streaks: [],
-    };
+    const year = today.getFullYear();
+    const month = today.getMonth() + 1;
+    const streaks = initialStreak?.streaks ?? [];
 
     const streakDays = useMemo(
-        () => normalizeStreakData(currentMonthStreak),
-        [currentMonthStreak]
+        () => normalizeStreakData(year, month, streaks),
+        [year, month, streaks]
     );
 
     return (
