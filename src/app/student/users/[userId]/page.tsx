@@ -3,9 +3,7 @@ import MonthlyStreakGarden from "@/components/city/MonthlyStreakGarden";
 import BusStation from "@/components/city/BusStation";
 import PostBoard from "@/components/city/PostBoard";
 import CityCanvas from "@/components/city/CityCanvas";
-import Image from "next/image";
-import mypage from "@/app/assets/img/mypage.png";
-import point from "@/app/assets/img/point.png";
+import BuildingItem from "@/components/city/BuildingItem";
 import { cookies } from "next/headers";
 import { getFriendBuildings, getFriendStreak } from "@/app/services/city/service";
 
@@ -50,11 +48,7 @@ export default async function StudentMainPage({ params }: {
     const { userId } = await params;
     const cookieStore = await cookies();
     const accessToken = cookieStore.get("accessToken")?.value;
-    const today = new Date();
-    const monthlyStreak = await getFriendStreak(userId, {
-        year: today.getFullYear(),
-        month: today.getMonth() + 1,
-    });
+    const monthlyStreak = await getFriendStreak(userId);
 
     const buildings = await getFriendBuildings(userId);
 
@@ -81,11 +75,13 @@ export default async function StudentMainPage({ params }: {
                         style={building ? slot.filledStyle : slot.emptyStyle}
                     >
                         {building
-                            ? <Image
-                                src={building.buildingUrl}
-                                alt={building.category}
-                                fill
-                                className="object-contain"
+                            ? <BuildingItem
+                                category={building.category}
+                                level={building.level}
+                                buildingUrl={building.buildingUrl}
+                                priority={slot.position <= 3}
+                                imageSizes="(max-width: 768px) 16vw, 13vw"
+                                interactive={false}
                             />
                             : ""}
                     </div>
@@ -97,24 +93,14 @@ export default async function StudentMainPage({ params }: {
                 className="absolute"
                 style={commonBuildingSlots.point}
             >
-                <Image
-                    src={point}
-                    alt="포인트 상점"
-                    fill
-                    className="object-contain"
-                />
+                <BuildingItem common="point" imageSizes="13vw" interactive={false} />
             </div>
             {/* 집 고정 자리 */}
             <div
                 className="absolute"
                 style={commonBuildingSlots.mypage}
             >
-                <Image
-                    src={mypage}
-                    alt="집"
-                    fill
-                    className="object-contain"
-                />
+                <BuildingItem common="mypage" imageSizes="14vw" interactive={false} />
             </div>
         </CityCanvas>
     );
