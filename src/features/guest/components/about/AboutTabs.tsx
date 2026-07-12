@@ -7,7 +7,7 @@ interface AboutTabsProps {
 }
 
 const TAB_ITEMS: { value: AboutTab; label: string }[] = [
-    { value: "all", label: "전체" },
+    { value: "all", label: "공통" },
     { value: "student", label: "수강생" },
     { value: "teacher", label: "강사" },
 ];

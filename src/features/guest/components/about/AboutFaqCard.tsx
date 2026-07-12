@@ -1,14 +1,84 @@
 "use client";
 
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
-import { AboutFaqItem } from "@/features/guest/about/type";
+import { AboutFaqItem, FaqBlock } from "@/features/guest/about/type";
 
 interface AboutFaqCardProps {
     item: AboutFaqItem;
 }
+
+/**
+ * 텍스트 안의 `<Link href='...'>텍스트</Link>` 표기를 실제 next/link로 변환합니다.
+ * 예) "우측 상단의 <Link href='/auth/signup'>회원가입</Link> 버튼을 눌러주세요."
+ */
+const renderFaqText = (text: string): ReactNode[] => {
+    const linkTagRegex = /<Link href=['"]([^'"]+)['"]>([^<]+)<\/Link>/g;
+    const nodes: ReactNode[] = [];
+    let lastIndex = 0;
+    let match: RegExpExecArray | null;
+    let key = 0;
+
+    while ((match = linkTagRegex.exec(text)) !== null) {
+        const [fullMatch, href, label] = match;
+
+        if (match.index > lastIndex) {
+            nodes.push(text.slice(lastIndex, match.index));
+        }
+
+        nodes.push(
+            <Link
+                key={`faq-link-${key++}`}
+                href={href}
+                className="font-bold text-indigo-500 underline underline-offset-2 hover:text-indigo-600"
+            >
+                {label}
+            </Link>
+        );
+
+        lastIndex = match.index + fullMatch.length;
+    }
+
+    if (lastIndex < text.length) {
+        nodes.push(text.slice(lastIndex));
+    }
+
+    return nodes;
+};
+
+const FaqContentBlock = ({ block, question }: { block: FaqBlock; question: string }) => {
+    if (block.type === "text") {
+        return (
+            <p className="whitespace-pre-line text-sm leading-6 text-slate-600">
+                {renderFaqText(block.text)}
+            </p>
+        );
+    }
+
+    return (
+        <div
+            className={`grid gap-3 ${block.images.length > 1 ? "grid-cols-2" : "grid-cols-1"
+                }`}
+        >
+            {block.images.map((image, index) => (
+                <div
+                    key={index}
+                    className="relative h-40 w-full overflow-hidden rounded-xl border border-slate-100 bg-slate-50"
+                >
+                    <Image
+                        src={image.src}
+                        alt={image.alt ?? question}
+                        fill
+                        className="object-cover"
+                    />
+                </div>
+            ))}
+        </div>
+    );
+};
 
 export default function AboutFaqCard({ item }: AboutFaqCardProps) {
     const [isOpen, setIsOpen] = useState(false);
@@ -36,21 +106,14 @@ export default function AboutFaqCard({ item }: AboutFaqCardProps) {
                     }`}
             >
                 <div className="overflow-hidden">
-                    <div className="border-t border-slate-100 px-5 py-4">
-                        <p className="whitespace-pre-line text-sm leading-6 text-slate-600">
-                            {item.answer}
-                        </p>
-
-                        {item.imageSrc && (
-                            <div className="relative mt-4 h-48 w-full overflow-hidden rounded-xl border border-slate-100 bg-slate-50">
-                                <Image
-                                    src={item.imageSrc}
-                                    alt={item.question}
-                                    fill
-                                    className="object-cover"
-                                />
-                            </div>
-                        )}
+                    <div className="space-y-4 border-t border-slate-100 px-5 py-4">
+                        {item.content.map((block, index) => (
+                            <FaqContentBlock
+                                key={index}
+                                block={block}
+                                question={item.question}
+                            />
+                        ))}
                     </div>
                 </div>
             </div>

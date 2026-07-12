@@ -14,14 +14,14 @@ const AUDIENCE_LABEL: Record<FaqAudience, string> = {
 
 const getVisibleAudiences = (tab: AboutTab): FaqAudience[] => {
     if (tab === "student") {
-        return ["COMMON", "STUDENT"];
+        return ["STUDENT"];
     }
 
     if (tab === "teacher") {
-        return ["COMMON", "TEACHER"];
+        return ["TEACHER"];
     }
 
-    return ["COMMON", "STUDENT", "TEACHER"];
+    return ["COMMON"];
 };
 
 export default function AboutFaqSection({ tab }: AboutFaqSectionProps) {
