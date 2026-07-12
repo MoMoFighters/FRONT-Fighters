@@ -45,7 +45,7 @@ export default function StudentReviewList({
                                 </p>
 
                                 <span className="text-xs font-medium text-slate-400">
-                                    {review.createdAt}
+                                    {review.createdAt.slice(0, 10)}
                                 </span>
                             </div>
 
