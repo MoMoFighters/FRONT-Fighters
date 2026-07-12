@@ -5,6 +5,7 @@ import { getPendingTeacherById, getUserById } from "@/app/services/user/service"
 import AdminUserReportCount from "@/features/user/components/admin/AdminUserReportCount";
 import AdminUserReportLog from "@/features/user/components/admin/AdminUserReportLog";
 import PendingTeacherReviewPanel from "@/features/user/components/admin/PendingTeacherReviewPanel";
+import AdminMembershipBadge from "@/features/user/components/admin/AdminMembershipBadge";
 import { USER_ROLE_LABEL } from "@/features/user/type";
 import getCategoryMeta from "@/features/lecture/components/student/shared/category";
 
@@ -24,6 +25,14 @@ const formatAdminDateTime = (dateTime?: string | null) => {
     }
 
     return dateTime.replace("T", " ").slice(0, 16);
+};
+
+const formatAdminDateOnly = (dateTime?: string | null) => {
+    if (!dateTime) {
+        return "-";
+    }
+
+    return dateTime.slice(0, 10);
 };
 
 export default async function AdminUserDetailPage({ params, searchParams }: AdminUserDetailPageProps) {
@@ -90,7 +99,16 @@ export default async function AdminUserDetailPage({ params, searchParams }: Admi
             <div className="mt-6">
                 <div className="flex items-center gap-3">
                     <div className="flex size-11 items-center justify-center rounded-md bg-indigo-50 text-indigo-600"><UserRound className="size-5" /></div>
-                    <div><h1 className="text-2xl font-bold text-slate-950">{user.name}</h1><p className="mt-1 text-sm font-medium text-slate-500">회원 상세 정보 및 운영 이력</p></div>
+                    <div>
+                        <div className="flex flex-wrap items-center gap-2">
+                            <h1 className="text-2xl font-bold text-slate-950">{user.name}</h1>
+                            <AdminMembershipBadge membership={user.membership} />
+                            <span className="text-xs font-semibold text-slate-500">
+                                멤버십 시작 날짜: {formatAdminDateOnly(user.membershipStart)}
+                            </span>
+                        </div>
+                        <p className="mt-1 text-sm font-medium text-slate-500">회원 상세 정보 및 운영 이력</p>
+                    </div>
                 </div>
             </div>
             <section className="mt-7 grid grid-cols-2 gap-x-10 gap-y-6 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">

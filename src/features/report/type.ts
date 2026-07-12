@@ -58,6 +58,7 @@ export interface ReportDetail {
     detail: string;
     isResolved: boolean;
     resolvedAt?: string; // 신고 처리 시각
+    isDeleted?: boolean;
 }
 
 export interface CreateReportRequest {
@@ -107,6 +108,7 @@ export interface AdminReportDetail extends AdminReportListItem {
     targetDeleted?: boolean;
     targetDeletedAt?: string;
     resolvedAt?: string;
+    isDeleted?: boolean;
 }
 
 export type AdminReportListResponse = ReportListResponse;

@@ -30,15 +30,15 @@ interface AdminReportActionPanelProps {
 
 const actionCopy: Record<ReportAction, { title: string; description: string; label: string; tone: "indigo" | "rose" }> = {
     SANCTION: {
-        title: "제재 처리할까요?",
+        title: "신고 처리를 승인할까요?",
         description: "작성자의 제재 누적 횟수에 반영하고 이 신고를 처리 완료로 표시합니다.",
-        label: "제재 처리",
+        label: "신고 처리 승인",
         tone: "indigo",
     },
     DISMISS: {
-        title: "제재하지 않고 처리할까요?",
+        title: "신고 처리를 기각할까요?",
         description: "이 신고를 처리 완료로 표시하며 작성자 제재 누적 횟수에는 반영하지 않습니다.",
-        label: "제재하지 않음",
+        label: "신고 처리 기각",
         tone: "indigo",
     },
     DELETE: {
@@ -68,7 +68,7 @@ export default function AdminReportActionPanel({
     const [isSubmitting, setIsSubmitting] = useState(false);
     const isPageReport = ["LECTURE", "CHAPTER", "POST", "PAGE"].includes(report.targetType);
     const canDeleteContent = report.targetType === "REVIEW" || report.targetType === "COMMENT";
-    const isDeleted = Boolean(report.targetDeleted);
+    const isDeleted = Boolean(report.isDeleted);
     const action = pendingAction ? actionCopy[pendingAction] : null;
 
     const confirmAction = async () => {
@@ -93,7 +93,7 @@ export default function AdminReportActionPanel({
 
             if (pendingAction === "SANCTION") {
                 if (!report.reportedUserId) {
-                    toast.error("제재 처리할 사용자 정보가 없습니다.");
+                    toast.error("신고 처리를 승인할 사용자 정보가 없습니다.");
                     return;
                 }
 
@@ -151,17 +151,6 @@ export default function AdminReportActionPanel({
                                 관리자 화면 열기
                             </Button>
                         )}
-                        {report.originalPath && (
-                            <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => setPendingAction("OPEN_ORIGINAL")}
-                                className="h-9 w-full rounded-md border-slate-200 px-3 text-sm font-bold text-slate-700 hover:bg-slate-50"
-                            >
-                                <ExternalLink className="size-4" />
-                                원본 사용자 화면 열기
-                            </Button>
-                        )}
                     </>
                 ) : (
                     <>
@@ -172,7 +161,7 @@ export default function AdminReportActionPanel({
                                 className="h-9 w-full rounded-md bg-indigo-600 px-3 text-sm font-bold text-white hover:bg-indigo-700"
                             >
                                 <ShieldCheck className="size-4" />
-                                제재 처리
+                                신고 처리 승인
                             </Button>
                         )}
                         <Button
@@ -182,7 +171,7 @@ export default function AdminReportActionPanel({
                             className="h-9 w-full rounded-md border-slate-200 px-3 text-sm font-bold text-slate-700 hover:bg-slate-50"
                         >
                             <XCircle className="size-4" />
-                            제재하지 않음
+                            신고 처리 기각
                         </Button>
                         {!isDeleted && canDeleteContent && report.targetType !== "CHAT" && (
                             <Button

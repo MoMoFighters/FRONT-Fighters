@@ -13,12 +13,13 @@ export default function AdminUsersList({ users, view }: AdminUsersListProps) {
 
     return (
         <section className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
-            <div className={`grid min-w-[900px] ${isDeletedView ? "grid-cols-[1.1fr_.8fr_1.8fr_.9fr_.8fr]" : "grid-cols-[1.05fr_.75fr_1.8fr_.85fr_.75fr_.85fr_1.15fr]"} border-b border-slate-200 bg-slate-50 px-6 py-3 text-xs font-bold text-slate-500`}>
+            <div className={`grid min-w-[900px] ${isDeletedView ? "grid-cols-[1.1fr_.8fr_1.8fr_.9fr_.8fr]" : "grid-cols-[1.05fr_.75fr_1.8fr_.85fr_.75fr_.7fr_.85fr_1.15fr]"} border-b border-slate-200 bg-slate-50 px-6 py-3 text-xs font-bold text-slate-500`}>
                 <span>이름</span>
                 <span>사용자 유형</span>
                 <span>이메일</span>
                 <span>{isDeletedView ? "탈퇴일" : "가입일"}</span>
                 <span className="text-center">상태</span>
+                {isDeletedView ? null : <span className="text-center">멤버십</span>}
                 {isDeletedView ? null : <span className="text-center">제재 누적 횟수</span>}
                 {isDeletedView ? null : <span className="pl-6">정지 기간</span>}
             </div>

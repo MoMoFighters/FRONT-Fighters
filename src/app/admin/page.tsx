@@ -156,11 +156,6 @@ export default async function AdminDashboardPage({
                 </div>
             </div>
 
-            <AdminDashboardDynamic
-                data={monthlyDashboardData}
-                year={dashboardYear}
-            />
-
             <div className="mb-5 grid grid-cols-4 gap-5">
                 <AdminDashboardMetricCard
                     title="총 회원 수"
@@ -194,6 +189,11 @@ export default async function AdminDashboardPage({
                     description="승인 검토가 필요한 강사 수"
                 />
             </div>
+
+            <AdminDashboardDynamic
+                data={monthlyDashboardData}
+                year={dashboardYear}
+            />
 
             <AdminDashboardBelowFoldDynamic
                 monthlySubDashboardData={monthlySubDashboardData}

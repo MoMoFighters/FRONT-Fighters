@@ -81,6 +81,7 @@ const mapReportDetail = (report: ReportDetail): AdminReportDetail => ({
     adminTargetPath: createAdminTargetPath(report),
     targetAuthorName: report.reportedName,
     targetContent: report.targetContent,
+    isDeleted: report.isDeleted,
 });
 
 export default async function AdminReportDetailPage({
@@ -96,6 +97,7 @@ export default async function AdminReportDetailPage({
     const rawReport = await getReportDetail(reportId);
     const report = mapReportDetail(rawReport);
     const isPageReport = pageReportTypes.includes(report.targetType);
+    const isDeletableTarget = report.targetType === "COMMENT" || report.targetType === "REVIEW";
 
     return (
         <div className="mx-auto w-full max-w-300 pb-10">
@@ -146,7 +148,7 @@ export default async function AdminReportDetailPage({
                         <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
                             <div className="flex items-center gap-2">
                                 <Monitor className="size-5 text-indigo-500" />
-                                <h2 className="text-base font-bold text-slate-950">신고된 사용자 화면</h2>
+                                <h2 className="text-base font-bold text-slate-950">콘텐츠 확인 안내</h2>
                             </div>
 
                             <dl className="mt-5 grid grid-cols-[7rem_minmax(0,1fr)] gap-y-4 text-sm">
@@ -164,15 +166,20 @@ export default async function AdminReportDetailPage({
                                         <dd className="font-medium text-slate-700">{report.parentId}</dd>
                                     </>
                                 )}
-                                <dt className="font-bold text-slate-400">원본 경로</dt>
-                                <dd className="break-all font-medium text-slate-700">
-                                    {report.originalPath ?? "원본 링크가 제공되지 않았습니다."}
-                                </dd>
                             </dl>
 
                             <div className="mt-5 rounded-md border border-indigo-100 bg-indigo-50 px-4 py-3 text-sm leading-6 text-indigo-700">
                                 <ExternalLink className="mr-1 inline size-4" />
-                                페이지 단위 신고는 사용자 제재나 콘텐츠 삭제 없이, 원본 사용자 화면과 관리자 화면에서 내용을 확인합니다.
+                                해당 콘텐츠는 화면으로 이동하여 직접 확인 및 관리하세요.
+                                {report.adminTargetPath && (
+                                    <Link
+                                        href={report.adminTargetPath}
+                                        target="_blank"
+                                        className="ml-1 font-bold underline underline-offset-2"
+                                    >
+                                        관리자 화면 열기
+                                    </Link>
+                                )}
                             </div>
                         </section>
                     ) : (
@@ -189,6 +196,11 @@ export default async function AdminReportDetailPage({
                                 <dd className="font-medium text-slate-700">
                                     {report.targetAuthorName ?? "작성자 정보 없음"}
                                 </dd>
+                                {isDeletableTarget && report.isDeleted && (
+                                    <div className="col-span-2 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-600">
+                                        삭제된 콘텐츠입니다.
+                                    </div>
+                                )}
                                 <dt className="font-bold text-slate-400">콘텐츠 내용</dt>
                                 <dd className="rounded-md bg-slate-50 p-4 leading-7 text-slate-700">
                                     {report.targetContent?.trim() ? report.targetContent : "표시할 수 있는 콘텐츠 내용이 없습니다."}
