@@ -1,7 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import type { ApiResponse } from "@/lib/api";
 import {
     searchUserService,
@@ -138,6 +138,7 @@ export const updateFriendStatus = async (
             accessToken
         );
 
+        revalidateTag("friends-data", { expire: 0 });
         revalidatePath("/student/friends");
         revalidatePath("/teacher/ask");
 

@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(curl -s -D - -o /dev/null http://localhost:4444/student/mypage)",
-      "Bash(taskkill //PID 18156 //F //T)"
+      "Bash(taskkill //PID 18156 //F //T)",
+      "Bash(xargs grep -l \"revalidateTag\")",
+      "Bash(npx eslint *)"
     ]
   }
 }
