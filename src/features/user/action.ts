@@ -14,7 +14,7 @@ import { cookies } from "next/headers";
 import { ApiResponse } from "@/lib/api";
 import { Category } from "../lecture/type";
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 
 /* 401 에러 페이지 및 회원탈퇴에서 사용할
    토큰 죽이고, 로그인페이지로 리다이렉트 시키는 함수 */
@@ -65,7 +65,11 @@ export const getMyInfo = async (): Promise<MomoUserInfoResponse> => {
             redirect('/auth/login')
         }
 
-        const result = await getMyInfoService(accessToken);
+        const result = await unstable_cache(
+            () => getMyInfoService(accessToken),
+            ["my-info", accessToken],
+            { revalidate: 30, tags: ["my-info"] }
+        )();
         const userDetail = result.data.userDetail;
         const buildings = result.data.buildings ?? [];
         const points = userDetail.point ?? userDetail.points ?? result.data.point ?? result.data.points ?? 0;
@@ -159,6 +163,7 @@ export const editMyInfo = async (
         // 서비스 영역 함수 호출
         const result = await editMyInfoService(payload);
 
+        revalidateTag("my-info", { expire: 0 });
         revalidatePath("/student/mypage");
         revalidatePath("/student/mypage/edit");
 

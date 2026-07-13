@@ -50,18 +50,29 @@ export default async function StudentChatPage({
         redirect("/auth/login");
     }
 
-    const myInfo: MomoUserInfoResponse = await getMyInfo();
+    const [
+        myInfo,
+        roomResponse,
+        friendsResponse,
+        receivedResponse,
+        sentResponse,
+    ]: [
+        MomoUserInfoResponse,
+        Awaited<ReturnType<typeof getChatRoomsService>>,
+        Awaited<ReturnType<typeof getFriendsService>>,
+        Awaited<ReturnType<typeof getReceivedFriendRequestsService>>,
+        Awaited<ReturnType<typeof getSentFriendRequestsService>>,
+    ] = await Promise.all([
+        getMyInfo(),
+        getChatRoomsService(accessToken),
+        getFriendsService(accessToken),
+        getReceivedFriendRequestsService(accessToken),
+        getSentFriendRequestsService(accessToken),
+    ]);
 
-    const roomResponse = await getChatRoomsService(accessToken);
     const chatRoomData = roomResponse.status === 200 ? roomResponse.data ?? [] : [];
-
-    const friendsResponse = await getFriendsService(accessToken);
     const friends = friendsResponse.status === 200 ? friendsResponse.data ?? [] : [];
-
-    const receivedResponse = await getReceivedFriendRequestsService(accessToken);
     const received = receivedResponse.status === 200 ? receivedResponse.data ?? [] : [];
-
-    const sentResponse = await getSentFriendRequestsService(accessToken);
     const sent = sentResponse.status === 200 ? sentResponse.data ?? [] : [];
 
     const myChatRoom =

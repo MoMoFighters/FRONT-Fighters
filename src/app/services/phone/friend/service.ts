@@ -1,5 +1,10 @@
 import type { ApiResponse } from "@/lib/api";
 import type { StudentFriendData } from "@/features/friend/type";
+import { unstable_cache } from "next/cache";
+
+// 친구/친구요청 목록은 사용자별로 캐시하고, 요청 발생 시 revalidateTag("friends-data")로 무효화한다.
+const FRIEND_DATA_CACHE_TAGS = ["friends-data"];
+const FRIEND_DATA_REVALIDATE_SECONDS = 30;
 
 const BASE_SERVER_URL =
     process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -84,16 +89,24 @@ export interface FriendData {
 export const getFriendsService = async (
     accessToken: string
 ): Promise<ApiResponse<FriendData[]>> => {
-    return requestApi<FriendData[]>(
-        `${BASE_SERVER_URL}/api/v1/friends`,
+    return unstable_cache(
+        () =>
+            requestApi<FriendData[]>(
+                `${BASE_SERVER_URL}/api/v1/friends`,
+                {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                },
+                "친구 목록을 불러오지 못했습니다."
+            ),
+        ["friends-list", accessToken],
         {
-            method: "GET",
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-        },
-        "친구 목록을 불러오지 못했습니다."
-    );
+            revalidate: FRIEND_DATA_REVALIDATE_SECONDS,
+            tags: FRIEND_DATA_CACHE_TAGS,
+        }
+    )();
 };
 
 export const getStudentFriendsService = async (
@@ -129,16 +142,24 @@ export interface ReceivedFriendRequestData {
 export const getReceivedFriendRequestsService = async (
     accessToken: string
 ): Promise<ApiResponse<ReceivedFriendRequestData[]>> => {
-    return requestApi<ReceivedFriendRequestData[]>(
-        `${BASE_SERVER_URL}/api/v1/friends/received`,
+    return unstable_cache(
+        () =>
+            requestApi<ReceivedFriendRequestData[]>(
+                `${BASE_SERVER_URL}/api/v1/friends/received`,
+                {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                },
+                "받은 친구 요청을 불러오지 못했습니다."
+            ),
+        ["friends-received", accessToken],
         {
-            method: "GET",
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-        },
-        "받은 친구 요청을 불러오지 못했습니다."
-    );
+            revalidate: FRIEND_DATA_REVALIDATE_SECONDS,
+            tags: FRIEND_DATA_CACHE_TAGS,
+        }
+    )();
 };
 
 
@@ -159,16 +180,24 @@ export interface SentFriendRequestData {
 export const getSentFriendRequestsService = async (
     accessToken: string
 ): Promise<ApiResponse<SentFriendRequestData[]>> => {
-    return requestApi<SentFriendRequestData[]>(
-        `${BASE_SERVER_URL}/api/v1/friends/sent`,
+    return unstable_cache(
+        () =>
+            requestApi<SentFriendRequestData[]>(
+                `${BASE_SERVER_URL}/api/v1/friends/sent`,
+                {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                },
+                "보낸 친구 요청을 불러오지 못했습니다."
+            ),
+        ["friends-sent", accessToken],
         {
-            method: "GET",
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-        },
-        "보낸 친구 요청을 불러오지 못했습니다."
-    );
+            revalidate: FRIEND_DATA_REVALIDATE_SECONDS,
+            tags: FRIEND_DATA_CACHE_TAGS,
+        }
+    )();
 };
 
 
