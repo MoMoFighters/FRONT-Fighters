@@ -70,6 +70,19 @@ export interface SendMessageResponse {
     createdAt: string;
 }
 
+export interface ChatRoomMemberInfo {
+    userId: number;
+    name: string | null;
+    nickname: string;
+    role: ChatMemberRole;
+    status: ChatMemberStatus;
+    profileImageUrl: string;
+}
+
+export interface ChatRoomMembersResponse {
+    memberInfo: ChatRoomMemberInfo[];
+}
+
 
 
 

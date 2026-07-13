@@ -2,6 +2,7 @@ import type { ApiResponse } from "@/lib/api";
 import type {
     ChatMemberResponse,
     ChatRoomListResponse,
+    ChatRoomMembersResponse,
     ChatRoomResponse,
     Message,
     SendMessageResponse,
@@ -448,6 +449,33 @@ export const inviteChatRoomMembersService = async ({
     );
 
     const result: ApiResponse<InviteChatRoomMembersData> =
+        await response.json();
+
+    if (!response.ok && response.status >= 500) {
+        throw new Error("500 | 알 수 없는 문제가 발생했습니다.");
+    }
+
+    return result;
+};
+
+export type ChatRoomMembersData = ChatRoomMembersResponse;
+
+export const getChatRoomMembersService = async (
+    roomId: number,
+    accessToken: string
+): Promise<ApiResponse<ChatRoomMembersData>> => {
+    const response = await fetch(
+        `${BASE_SERVER_URL}/api/v3/messages/chatrooms/members/${roomId}`,
+        {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+            cache: "no-store",
+        }
+    );
+
+    const result: ApiResponse<ChatRoomMembersData> =
         await response.json();
 
     if (!response.ok && response.status >= 500) {
