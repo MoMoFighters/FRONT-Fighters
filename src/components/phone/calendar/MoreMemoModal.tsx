@@ -21,7 +21,7 @@ export default function MoreMemoModal({
             onClick={onClose}
         >
             <section
-                className="w-82 overflow-hidden rounded-lg bg-white p-5 shadow-xl"
+                className="w-82 overflow-hidden rounded-xl border border-slate-200 bg-white p-5 shadow-2xl"
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="mb-3 flex items-center justify-between border-b border-slate-300 pb-2">

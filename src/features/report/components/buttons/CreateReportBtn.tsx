@@ -190,7 +190,7 @@ export default function CreateReportBtn({
                     </Button>
                 )}
 
-                <DialogContent className="sm:max-w-sm">
+                <DialogContent className="sm:max-w-lg">
 
                     <div>
 
@@ -214,65 +214,69 @@ export default function CreateReportBtn({
 
                         <FieldGroup className="mt-4">
 
-                            <Field>
+                            <div className="flex flex-col gap-4 sm:flex-row">
 
-                                <Select
-                                    value={formData.reason}
-                                    onValueChange={(value) =>
-                                        setFormData((prev) => ({
-                                            ...prev,
-                                            reason: value as ReasonRequest,
-                                        }))}
-                                >
+                                <Field>
 
-                                    <SelectTrigger className="w-full max-w-48 cursor-pointer">
-                                        <SelectValue placeholder="신고 사유를 선택해주세요." className="text-sm!" />
-                                    </SelectTrigger>
+                                    <Select
+                                        value={formData.reason}
+                                        onValueChange={(value) =>
+                                            setFormData((prev) => ({
+                                                ...prev,
+                                                reason: value as ReasonRequest,
+                                            }))}
+                                    >
 
-                                    <SelectContent>
+                                        <SelectTrigger className="w-full max-w-48 cursor-pointer">
+                                            <SelectValue placeholder="신고 사유를 선택해주세요." className="text-sm!" />
+                                        </SelectTrigger>
 
-                                        <SelectGroup>
+                                        <SelectContent>
 
-                                            <SelectLabel>
-                                                신고 사유
-                                            </SelectLabel>
+                                            <SelectGroup>
 
-                                            {REPORT_REASON_OPTIONS.map((option) => (
-                                                <SelectItem
-                                                    key={option.value}
-                                                    value={option.value}
-                                                >
-                                                    {option.label}
-                                                </SelectItem>
-                                            ))}
+                                                <SelectLabel>
+                                                    신고 사유
+                                                </SelectLabel>
 
-                                        </SelectGroup>
+                                                {REPORT_REASON_OPTIONS.map((option) => (
+                                                    <SelectItem
+                                                        key={option.value}
+                                                        value={option.value}
+                                                    >
+                                                        {option.label}
+                                                    </SelectItem>
+                                                ))}
 
-                                    </SelectContent>
+                                            </SelectGroup>
 
-                                </Select>
+                                        </SelectContent>
 
-                            </Field>
+                                    </Select>
 
-                            <Field>
+                                </Field>
 
-                                <Label htmlFor="reasonDetail">
-                                    상세 내용
-                                </Label>
+                                <Field>
 
-                                <Input
-                                    id="reasonDetail"
-                                    placeholder="기타 사유 또는 닉네임 및 제목을 작성해주세요."
-                                    className="text-xs!"
-                                    value={formData.reasonDetail}
-                                    onChange={(e) =>
-                                        setFormData((prev) => ({
-                                            ...prev,
-                                            reasonDetail: e.target.value,
-                                        }))}
-                                />
+                                    <Label htmlFor="reasonDetail">
+                                        상세 내용
+                                    </Label>
 
-                            </Field>
+                                    <Input
+                                        id="reasonDetail"
+                                        placeholder="기타 사유 또는 닉네임 및 제목을 작성해주세요."
+                                        className="text-xs!"
+                                        value={formData.reasonDetail}
+                                        onChange={(e) =>
+                                            setFormData((prev) => ({
+                                                ...prev,
+                                                reasonDetail: e.target.value,
+                                            }))}
+                                    />
+
+                                </Field>
+
+                            </div>
 
                         </FieldGroup>
 

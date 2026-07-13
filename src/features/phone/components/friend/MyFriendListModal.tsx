@@ -121,7 +121,7 @@ export default function MyFriendListModal() {
                 onClick={closeModal}
             >
                 <div
-                    className="bg-white px-7 pb-8 pt-3 w-[40vw] h-[40vw] rounded flex flex-col align-middle"
+                    className="w-[40vw] h-[40vw] rounded-xl border border-slate-200 bg-white px-7 pb-8 pt-3 shadow-2xl flex flex-col align-middle"
                     onClick={(event) => event.stopPropagation()}
                 >
                     <div className="flex flex-row mt-2">
@@ -131,14 +131,14 @@ export default function MyFriendListModal() {
                             type="button"
                             onClick={closeModal}
                             aria-label={CLOSE_LABEL}
-                            className="flex h-7 w-7 cursor-pointer items-center justify-center text-slate-700 hover:text-slate-950"
+                            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700"
                         >
-                            <X className="h-6 w-6" aria-hidden="true" />
+                            <X className="h-5 w-5" aria-hidden="true" />
                         </button>
                     </div>
 
                     <div className="mt-2">
-                        <p className="font-bold text-center text-xl mb-2 border-b border-slate-300 pb-2">
+                        <p className="font-bold text-center text-lg mb-2 border-b border-slate-300 pb-2 text-slate-900">
                             {FRIEND_LIST_TITLE}
                         </p>
                     </div>
@@ -185,14 +185,14 @@ export default function MyFriendListModal() {
                             value={roomTitle}
                             onChange={(event) => setRoomTitle(event.target.value)}
                             disabled={selectedFriendIds.length < 2 || isSubmitting}
-                            className="border border-slate-400 flex-1 mr-2 p-2 disabled:bg-slate-100 disabled:text-slate-400"
+                            className="h-10 flex-1 mr-2 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm text-slate-700 outline-none placeholder:text-slate-400 focus:border-indigo-400 focus:bg-white focus:ring-4 focus:ring-indigo-100 disabled:bg-slate-100 disabled:text-slate-400"
                             placeholder={ROOM_TITLE_PLACEHOLDER}
                         />
                         <Button
                             type="button"
                             disabled={!canCreateGroupChat || isSubmitting}
                             onClick={handleCreateChatRoom}
-                            className="cursor-pointer h-full disabled:bg-indigo-300 bg-indigo-500 hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-60"
+                            className="cursor-pointer h-10 rounded-lg disabled:bg-indigo-300 bg-indigo-500 hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-60"
                         >
                             {isSubmitting ? SUBMITTING_LABEL : SUBMIT_LABEL}
                         </Button>

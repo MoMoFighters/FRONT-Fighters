@@ -35,7 +35,7 @@ export default async function Forbidden() {
     const role = getRole();
     return (
         <div className='relative w-screen min-h-[calc(100vh-140px)] overflow-hidden'>
-            <Image src={errorImg} alt='error' priority fill className='object-cover' />
+            <Image src={errorImg} alt='error' priority fill sizes="100vw" className='object-cover' />
             <h1 className='absolute top-60 left-20 text-6xl font-extrabold text-slate-700'>403</h1>
             <div className='absolute w-80 max-w-80 break-all top-80 left-20 text-lg text-slate-500 font-semibold'>접근 권한 없음</div>
             <Link href={`/${role}`}>

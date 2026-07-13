@@ -27,8 +27,8 @@ export interface User {
     isTempPwd: boolean;
     doNotDisturb: boolean;
     isPaid: boolean;
-    membership: Membership;
-    membershipStart: string;
+    membership?: Membership;
+    membershipStart?: string;
 
     deletedAt?: string;
     proof?: string[]; // 증빙자료 url

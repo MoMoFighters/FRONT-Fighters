@@ -9,7 +9,9 @@ import { notFound } from "next/navigation";
 export const getAccessLogs = async (page: number): Promise<AccessLogResponse> => {
     const params = new URLSearchParams();
     params.set("page", String(page));
-    const response = await fetchWithAuth(`/api/v1/logs/access?${params.toString()}`);
+    const response = await fetchWithAuth(`/api/v1/logs/access?${params.toString()}`, {
+        cache: "no-store",
+    });
 
     if (response.status === 404) {
         notFound();

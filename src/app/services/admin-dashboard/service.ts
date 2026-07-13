@@ -59,7 +59,9 @@ export const getMonthlyState = async (year?: number): Promise<MonthlyStateRespon
     }
 
     const queryString = params.toString();
-    const response = await fetchWithAuth(`/api/v1/dashboard/monthly-stats${queryString ? `?${queryString}` : ""}`);
+    const response = await fetchWithAuth(`/api/v1/dashboard/monthly-stats${queryString ? `?${queryString}` : ""}`, {
+        cache: "no-store",
+    });
     await handleErrorResponse(response);
     const result: ApiResponse<MonthlyStateResponse> = await response.json();
     return assertApiData(result);
@@ -77,7 +79,9 @@ export const getMonthlySubState = async (year?: number): Promise<MonthlyStateRes
     }
 
     const queryString = params.toString();
-    const response = await fetchWithAuth(`/api/v1/dashboard/monthly-stats/sub${queryString ? `?${queryString}` : ""}`);
+    const response = await fetchWithAuth(`/api/v1/dashboard/monthly-stats/sub${queryString ? `?${queryString}` : ""}`, {
+        cache: "no-store",
+    });
     await handleErrorResponse(response);
     const result: ApiResponse<MonthlyStateResponse> = await response.json();
     return assertApiData(result);
@@ -89,7 +93,9 @@ export const getMonthlySubState = async (year?: number): Promise<MonthlyStateRes
  */
 export const getDashboardSummary = async (): Promise<DashboardSummaryResponse> => {
 
-    const response = await fetchWithAuth('/api/v1/dashboard/summary');
+    const response = await fetchWithAuth('/api/v1/dashboard/summary', {
+        cache: "no-store",
+    });
     await handleErrorResponse(response);
     const result: ApiResponse<DashboardSummaryResponse> = await response.json();
     return assertApiData(result);

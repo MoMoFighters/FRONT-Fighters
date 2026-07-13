@@ -50,7 +50,7 @@ export default function GuestInquiryCard() {
       </div>
 
       {isOpen && (
-        <div className="absolute right-0 top-[calc(100%-0.5rem)] z-10 w-[min(15rem,calc(100vw-2.5rem))] rounded-xl border border-slate-200 bg-white p-4 text-xs shadow-lg sm:right-5">
+        <div className="absolute right-0 top-[calc(100%-11rem)] z-10 w-[min(15rem,calc(100vw-2.5rem))] rounded-xl border border-slate-200 bg-white p-4 text-xs shadow-lg sm:right-5">
           <p className="font-bold text-slate-950">
             문의 정보
           </p>

@@ -33,6 +33,7 @@ export default function GuestHeader() {
                             alt="MOMOCITY 로고"
                             fill
                             priority
+                            sizes="96px"
                         />
                     </Link>
 

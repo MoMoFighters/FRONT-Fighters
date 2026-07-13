@@ -64,7 +64,7 @@ export default function EmailInputModal() {
                 onClick={() => setIsModal(false)}
             >
                 <div
-                    className="relative w-full max-w-md rounded-2xl border border-slate-200 bg-white px-6 py-7 shadow-2xl"
+                    className="relative w-full max-w-md rounded-xl border border-slate-200 bg-white px-6 py-7 shadow-2xl"
                     onClick={(e) => e.stopPropagation()}
                 >
                     <button
@@ -133,7 +133,7 @@ export default function EmailInputModal() {
 
                             <Button
                                 onClick={() => setIsModal(false)}
-                                className="h-12 w-full rounded-xl bg-slate-900 text-base font-bold text-white transition-colors hover:bg-slate-800"
+                                className="h-12 w-full rounded-lg bg-indigo-500 text-base font-bold text-white transition-colors hover:bg-indigo-600"
                             >
                                 닫기
                             </Button>

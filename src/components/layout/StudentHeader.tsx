@@ -38,6 +38,7 @@ export default async function AuthHeader({ role }: { role: string }) {
                         alt="MOMOCITY 로고"
                         fill
                         priority
+                        sizes="96px"
                     />
                 </Link>
                 <div className="flex justify-end mr-4 items-center">

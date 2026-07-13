@@ -10,7 +10,7 @@ import {
     unPinNoticeById,
     updateNoticeById,
 } from "@/app/services/notice/service";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { CreateNoticeRequest, Notice, NoticeListResponse, UpdateNoticeRequest } from "./type";
 
 export type NoticeActionState = {
@@ -115,6 +115,7 @@ export const createNoticeFormAction = async (
     }
 
     revalidatePath("/admin/notices");
+    revalidateTag("notices", { expire: 0 });
 
     return {
         success: true,
@@ -155,6 +156,7 @@ export const updateNoticeFormAction = async (
 
     revalidatePath("/admin/notices");
     revalidatePath(`/admin/notices/${id}`);
+    revalidateTag("notices", { expire: 0 });
 
     return {
         success: true,
@@ -185,6 +187,7 @@ export const deleteNoticeAction = async (ids: string[]): Promise<NoticeActionSta
     }
 
     revalidatePath("/admin/notices");
+    revalidateTag("notices", { expire: 0 });
 
     return {
         success: true,
@@ -211,6 +214,7 @@ export const updateNoticePinAction = async (
 
     revalidatePath("/admin/notices");
     revalidatePath(`/admin/notices/${id}`);
+    revalidateTag("notices", { expire: 0 });
 
     return {
         success: true,

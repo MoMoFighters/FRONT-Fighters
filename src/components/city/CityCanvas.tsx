@@ -12,6 +12,7 @@ export default function CityCanvas({ children }: Readonly<{ children: React.Reac
                     quality={80}
                     priority
                     className="object-cover"
+                    sizes="100vw"
                 />
                 {children}
             </div>

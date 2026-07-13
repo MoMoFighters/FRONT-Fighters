@@ -41,7 +41,9 @@ const assertApiData = <T>(result: ApiResponse<T>): T => {
  */
 export const getMyBuildings = async () => {
     const response = await fetchWithAuth("/api/v1/user/buildings", {
-        cache: "no-store",
+        next: {
+            revalidate: false,
+        },
     });
     await handleErrorResponse(response);
     const result: ApiResponse<Building[]> = await response.json();
@@ -53,7 +55,9 @@ export const getMyBuildings = async () => {
  * @returns Building[]
  */
 export const getFriendBuildings = async (id: string) => {
-    const response = await fetchWithAuth(`/api/v1/user/${id}/buildings`);
+    const response = await fetchWithAuth(`/api/v1/user/${id}/buildings`, {
+        next: { revalidate: 60 },
+    });
     await handleErrorResponse(response);
     const result: ApiResponse<Building[]> = await response.json();
     return assertApiData(result);

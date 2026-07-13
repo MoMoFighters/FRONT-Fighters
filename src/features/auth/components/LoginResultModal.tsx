@@ -142,25 +142,25 @@ export default function LoginResultModal({
                         <div className="mt-2 grid w-full grid-cols-2 gap-2">
                             <Button
                                 type="button"
-                                className="h-11 cursor-pointer rounded-sm bg-indigo-500 font-bold text-white hover:bg-indigo-600"
-                                onClick={() => setIsApplyModal(true)}
+                                className="h-11 cursor-pointer rounded-lg border border-slate-200 bg-white font-semibold text-slate-700 hover:bg-slate-100"
+                                onClick={handleTeacherGiveup}
+                                disabled={isGiveupPending}
                             >
-                                강사 다시 신청
+                                {isGiveupPending ? "처리 중..." : "학생으로 전환"}
                             </Button>
                             <Button
                                 type="button"
-                                onClick={handleTeacherGiveup}
-                                disabled={isGiveupPending}
-                                className="h-11 cursor-pointer rounded-sm border border-slate-500 bg-slate-50 font-bold text-slate-900 hover:border-slate-900 hover:bg-slate-100"
+                                className="h-11 cursor-pointer rounded-lg bg-indigo-500 font-semibold text-white hover:bg-indigo-600"
+                                onClick={() => setIsApplyModal(true)}
                             >
-                                {isGiveupPending ? "처리 중..." : "학생으로 전환"}
+                                강사 다시 신청
                             </Button>
                         </div>
                     ) : (
                         <Button
                             type="button"
                             onClick={isActiveUser ? handleSuccessConfirm : handleCloseFailModal}
-                            className="mt-2 h-11 w-full cursor-pointer rounded-sm bg-slate-900 font-bold text-white hover:bg-slate-800"
+                            className="mt-2 h-11 w-full cursor-pointer rounded-lg bg-indigo-500 font-semibold text-white hover:bg-indigo-600"
                         >
                             확인
                         </Button>

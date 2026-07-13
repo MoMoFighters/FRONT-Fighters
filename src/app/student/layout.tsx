@@ -1,5 +1,5 @@
 import StudentHeader from "@/components/layout/StudentHeader";
-import Footer from "@/components/layout/Footer";
+import StudentFooter from "@/components/layout/StudentFooter";
 import StudentLayoutShell from "@/components/layout/StudentLayoutShell";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -36,7 +36,7 @@ export default async function StudentLayout({
     return (
         <StudentLayoutShell
             header={<StudentHeader role="student" />}
-            footer={<Footer />}
+            footer={<StudentFooter />}
         >
             {children}
         </StudentLayoutShell>

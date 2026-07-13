@@ -42,24 +42,24 @@ export default function AdminActionConfirmDialog({
 
     return (
         <AlertDialog open={open} onOpenChange={onOpenChange}>
-            <AlertDialogContent size="sm" className="overflow-hidden rounded-lg border border-slate-200 bg-white p-0 shadow-xl">
-                <AlertDialogHeader className="gap-3 px-6 pt-6">
-                    <AlertDialogMedia className={isRose ? "bg-rose-50 text-rose-600" : "bg-indigo-50 text-indigo-600"}>
+            <AlertDialogContent size="sm">
+                <AlertDialogHeader>
+                    <AlertDialogMedia className={isRose ? "bg-rose-100 text-rose-600" : "bg-indigo-100 text-indigo-600"}>
                         <AlertTriangle />
                     </AlertDialogMedia>
-                    <AlertDialogTitle className="font-bold text-slate-950">{title}</AlertDialogTitle>
-                    <AlertDialogDescription className="whitespace-pre-line text-slate-500">{description}</AlertDialogDescription>
+                    <AlertDialogTitle className="whitespace-pre-line">{title}</AlertDialogTitle>
+                    <AlertDialogDescription className="whitespace-pre-line">{description}</AlertDialogDescription>
                     {children}
                 </AlertDialogHeader>
-                <AlertDialogFooter className="!mx-0 !mb-0 mt-6 !flex !flex-row !justify-end gap-2 !border-0 !bg-transparent !px-6 !pb-6 !pt-0">
-                    <AlertDialogCancel className="h-9 cursor-pointer rounded-md border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-100">취소</AlertDialogCancel>
+                <AlertDialogFooter>
+                    <AlertDialogCancel variant="outline" className="cursor-pointer">취소</AlertDialogCancel>
                     <AlertDialogAction
-                        variant="outline"
+                        variant="ghost"
                         disabled={confirmDisabled}
                         onClick={onConfirm}
                         className={isRose
-                            ? "h-9 cursor-pointer rounded-md !border-rose-600 !bg-rose-600 px-4 text-sm font-bold !text-white hover:!bg-rose-700 hover:!text-white disabled:cursor-not-allowed disabled:!border-slate-200 disabled:!bg-slate-200 disabled:!text-slate-400"
-                            : "h-9 cursor-pointer rounded-md !border-indigo-600 !bg-indigo-600 px-4 text-sm font-bold !text-white hover:!bg-indigo-700 hover:!text-white disabled:cursor-not-allowed disabled:!border-slate-200 disabled:!bg-slate-200 disabled:!text-slate-400"}
+                            ? "bg-rose-500 text-white hover:text-white! hover:bg-rose-600!"
+                            : "bg-indigo-500 text-white hover:text-white! hover:bg-indigo-600!"}
                     >
                         {confirmLabel}
                     </AlertDialogAction>

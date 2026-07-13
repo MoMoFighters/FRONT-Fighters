@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, X } from "lucide-react";
+import { Check, CircleAlert, AlertTriangle, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -13,6 +13,7 @@ import {
     AlertDialogDescription,
     AlertDialogFooter,
     AlertDialogHeader,
+    AlertDialogMedia,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
@@ -117,10 +118,13 @@ export default function AdminLectureApprovalActions({
                 open={pendingAction !== null}
                 onOpenChange={(open) => !open && setPendingAction(null)}
             >
-                <AlertDialogContent size="sm" className="overflow-hidden rounded-lg border border-slate-200 bg-white p-0 shadow-xl">
-                    <AlertDialogHeader className="gap-3 px-6 pt-6">
-                        <AlertDialogTitle className="text-base font-bold text-slate-950">{title}</AlertDialogTitle>
-                        <AlertDialogDescription className="text-sm leading-6 text-slate-500">{description}</AlertDialogDescription>
+                <AlertDialogContent size="sm">
+                    <AlertDialogHeader>
+                        <AlertDialogMedia className={isApprove ? "bg-indigo-100 text-indigo-600" : "bg-rose-100 text-rose-600"}>
+                            {isApprove ? <CircleAlert /> : <AlertTriangle />}
+                        </AlertDialogMedia>
+                        <AlertDialogTitle className="whitespace-pre-line">{title}</AlertDialogTitle>
+                        <AlertDialogDescription className="whitespace-pre-line">{description}</AlertDialogDescription>
                         {!isApprove && (
                             <div className="mt-2 w-full text-left">
                                 <label htmlFor="lecture-rejection-reason" className="text-sm font-bold text-slate-700">
@@ -136,15 +140,15 @@ export default function AdminLectureApprovalActions({
                             </div>
                         )}
                     </AlertDialogHeader>
-                    <AlertDialogFooter className="!mx-0 !mb-0 mt-6 !flex !flex-row !justify-end gap-2 !border-0 !bg-transparent !px-6 !pb-6 !pt-0">
-                        <AlertDialogCancel className="h-9 rounded-md border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-100">취소</AlertDialogCancel>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel variant="outline" className="cursor-pointer">취소</AlertDialogCancel>
                         <AlertDialogAction
-                            variant="outline"
+                            variant="ghost"
                             disabled={isSubmitting || (!isApprove && !rejectionReason.trim())}
                             onClick={submit}
                             className={isApprove
-                                ? "h-9 rounded-md !border-indigo-600 !bg-indigo-600 px-4 text-sm font-bold !text-white hover:!bg-indigo-700 hover:!text-white"
-                                : "h-9 rounded-md !border-rose-600 !bg-rose-600 px-4 text-sm font-bold !text-white hover:!bg-rose-700 hover:!text-white"}
+                                ? "bg-indigo-500 text-white hover:text-white! hover:bg-indigo-600!"
+                                : "bg-rose-500 text-white hover:text-white! hover:bg-rose-600!"}
                         >
                             {isApprove ? "승인" : "미승인 처리"}
                         </AlertDialogAction>

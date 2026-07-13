@@ -18,6 +18,7 @@ export default function NotFound() {
                         alt="404 페이지"
                         fill
                         priority
+                        sizes="100vw"
                     />
                 </div>
                 <div onClick={() => router.back()}

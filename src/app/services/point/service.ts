@@ -21,6 +21,7 @@ export const getPointStoreItemsService = async ({
 
     const response = await fetchWithAuth(`/api/v1/store/product/list?${params.toString()}`, {
         method: "GET",
+        next: { revalidate: 60 },
     });
 
     const result: PointStoreListResponse = await response.json();
@@ -36,6 +37,7 @@ export const getProfileOrderListService =
     async (): Promise<ProfileOrderListResponse> => {
         const response = await fetchWithAuth("/api/v1/order/profile/list", {
             method: "GET",
+            cache: "no-store",
         });
 
         const result: ProfileOrderListResponse = await response.json();
@@ -48,6 +50,7 @@ export const getProfileOrderListService =
             "/api/v1/store/product/list?page=1&size=100",
             {
                 method: "GET",
+                cache: "no-store",
             }
         );
         const storeResult: PointStoreListResponse = storeResponse.ok
@@ -138,6 +141,7 @@ export const getPointHistoryListService =
         const queryString = params.toString();
         const response = await fetchWithAuth(`/api/v1/order/list${queryString ? `?${queryString}` : ""}`, {
             method: "GET",
+            cache: "no-store",
         });
 
         const result: PointHistoryListResponse = await response.json();

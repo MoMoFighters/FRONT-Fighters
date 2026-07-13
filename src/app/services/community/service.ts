@@ -119,6 +119,7 @@ export const getCommunityPostDetailService = async (
 ): Promise<GetCommunityPostDetailResponse> => {
     const response = await fetchWithAuth(`/api/v2/posts/${postId}`, {
         method: "GET",
+        cache: "no-store",
     });
 
     return parseApiResponse(response, "get post detail");
@@ -130,6 +131,7 @@ export const getCommunityPostRecommendationsService = async (
 ): Promise<GetCommunityPostRecommendationsResponse> => {
     const response = await fetchWithAuth(`/api/v2/posts/${postId}/recommendations`, {
         method: "GET",
+        cache: "no-store",
     });
 
     return parseApiResponse(response, "get post recommendations");
@@ -160,6 +162,7 @@ export const getCommunityPostCommentsService = async ({
         `/api/v2/posts/${postId}/comments?${params.toString()}`,
         {
             method: "GET",
+            cache: "no-store",
         }
     );
 
@@ -190,6 +193,7 @@ export const getCommunityPostRepliesService = async ({
         `/api/v2/posts/${postId}/comments/${commentId}/replies?${params.toString()}`,
         {
             method: "GET",
+            cache: "no-store",
         }
     );
 
