@@ -5,6 +5,7 @@ import type { ApiResponse } from "@/lib/api";
 import {
     createChatRoomService,
     getChatHistoryService,
+    getChatRoomMembersService,
     getChatRoomsService,
     inviteChatRoomMembersService,
     leaveChatroomService,
@@ -12,6 +13,7 @@ import {
     readMessageService,
     sendMessageService,
     type ChatRoomListData,
+    type ChatRoomMembersData,
     type CreateChatRoomRequest,
     type CreateChatRoomData,
     type InviteChatRoomMembersData,
@@ -150,6 +152,25 @@ export const readMessageAction = async (
         return createErrorResponse<ReadMessageData>(
             error,
             "읽음 처리에 실패했습니다."
+        );
+    }
+};
+
+export const getChatRoomMembersAction = async (
+    roomId: number
+): Promise<ApiResponse<ChatRoomMembersData>> => {
+    try {
+        const accessToken = await getAccessToken();
+
+        if (!accessToken) {
+            return createUnauthorizedResponse<ChatRoomMembersData>();
+        }
+
+        return await getChatRoomMembersService(roomId, accessToken);
+    } catch (error) {
+        return createErrorResponse<ChatRoomMembersData>(
+            error,
+            "채팅방 멤버 정보를 불러오지 못했습니다."
         );
     }
 };

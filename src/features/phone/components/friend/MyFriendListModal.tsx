@@ -1,14 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import FriendItem from "@/components/phone/friends/FriendItem";
-import { MessageCirclePlus, UserPlus, X } from "lucide-react";
+import { UserPlus, X } from "lucide-react";
 import { getStudentFriendListAction } from "@/features/friend/action";
 import { createChatRoomAction } from "@/features/chat/action";
 import { Button } from "@/components/ui/button";
 import type { StudentFriendData } from "@/features/friend/type";
+import emptyStartGroupChat from "@/app/assets/img/empty-start-group-chat.svg";
 
 const DEFAULT_EMPTY_MESSAGE = "\uC544\uC9C1 \uCE5C\uAD6C\uAC00 \uC5C6\uC5B4\uC694.";
 const ADD_FRIEND_LABEL = "\uCE5C\uAD6C \uCD94\uAC00";
@@ -100,8 +102,12 @@ export default function MyFriendListModal() {
 
     if (!isModal) {
         return (
-            <MessageCirclePlus
-                className="h-12 w-12 cursor-pointer text-slate-500"
+            <Image
+                src={emptyStartGroupChat}
+                alt="단체 채팅 시작하기"
+                width={140}
+                height={140}
+                className="cursor-pointer"
                 onClick={() => setIsModal(true)}
             />
         );

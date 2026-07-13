@@ -58,7 +58,6 @@ export default async function TeacherAskPage({
 
     return (
         <div className="flex flex-col h-160 max-w-6xl mx-auto my-3 w-full">
-            <h2>채팅</h2>
 
             <div
                 className="flex flex-row border border-slate-200 overflow-hidden flex-1 min-h-0 bg-white"
