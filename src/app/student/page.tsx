@@ -4,6 +4,7 @@ import BusStation from "@/components/city/BusStation";
 import PostBoard from "@/components/city/PostBoard";
 import CityCanvas from "@/components/city/CityCanvas";
 import StudentCityBuildings from "@/components/city/StudentCityBuildings";
+import FortuneSpot from "@/features/city/components/FortuneSpot";
 import { cookies } from "next/headers";
 import { getMyBuildings, getMyStreak } from "../services/city/service";
 import { getMyInfo } from "@/features/user/action";
@@ -26,6 +27,7 @@ export default async function StudentMainPage() {
             <Phone accessToken={accessToken} initialNotification={dnd} />
             <MonthlyStreakGarden initialStreak={monthlyStreak} />
             <StudentCityBuildings initialBuildings={buildings} />
+            <FortuneSpot />
         </CityCanvas>
     );
 }
