@@ -106,7 +106,7 @@ export default function PasswordChangeMenuItem() {
                         <DialogTitle>비밀번호 변경</DialogTitle>
                     </DialogHeader>
 
-                    <div className="mt-4 mb-2 space-y-4">
+                    <div className="">
                         <div className="space-y-1.5">
                             <Label htmlFor="currentPassword">현재 비밀번호</Label>
                             <div className="relative">

@@ -26,6 +26,7 @@ import {
 } from "@/features/point/type";
 import { getMyInfo } from "@/features/user/action";
 import PasswordChangeMenuItem from "@/features/user/components/mypage/PasswordChangeMenuItem";
+import TeacherRegistMenuItem from "@/features/auth/components/TeacherRegistMenuItem";
 
 const POINT_REASON_LABEL: Record<PointHistoryReason, string> = {
     COMPLETE: "강의 완료 보상",
@@ -158,6 +159,7 @@ export default async function StudentMyPage() {
                                 <ShieldCheck className="h-4 w-4" />
                                 멤버십 관리
                             </li>
+                            <TeacherRegistMenuItem nickName={userData.nickname} />
                         </ul>
                     </nav>
                 </aside>
