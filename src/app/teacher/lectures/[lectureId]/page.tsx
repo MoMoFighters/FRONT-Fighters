@@ -63,7 +63,7 @@ export default async function TeacherLectureDetailPage({
                 />
             </div>
 
-            {tab === "reviews" && reviewResponseData && (
+            {tab === "reviews" && reviewResponseData && reviewResponseData.totalPages > 1 && (
                 <Pagination className="mt-8">
                     <PaginationContent>
                         {currentPage > 1 && (

@@ -69,7 +69,8 @@ export const getMonthlyCalendar = async ({
     date: string;
 }): Promise<ApiResponse<GetMonthlyCalendarData>> => {
     const response = await fetchWithAuth(
-        `/api/v1/calendar/monthly?month=${date}`
+        `/api/v1/calendar/monthly?month=${date}`,
+        { cache: "no-store" }
     );
 
     await handleErrorResponse(response);
@@ -82,7 +83,8 @@ export const getTodoList = async ({
     date,
 }: GetTodoListRequest): Promise<ApiResponse<GetTodoListData>> => {
     const response = await fetchWithAuth(
-        `/api/v1/calendar/daily?date=${date}`
+        `/api/v1/calendar/daily?date=${date}`,
+        { cache: "no-store" }
     );
 
     await handleErrorResponse(response);

@@ -54,7 +54,7 @@ export default function BlockUserListModal({
                 onClick={() => setOpen(false)}
             >
                 <div
-                    className="bg-white px-7 pb-8 pt-3 w-[40vw] h-[40vw] rounded flex flex-col align-middle"
+                    className="w-[40vw] h-[40vw] rounded-xl border border-slate-200 bg-white px-7 pb-8 pt-3 shadow-2xl flex flex-col align-middle"
                     onClick={(e) => e.stopPropagation()}
                 >
                     <div className="flex flex-row mt-2">
@@ -64,14 +64,14 @@ export default function BlockUserListModal({
                             type="button"
                             onClick={() => setOpen(false)}
                             aria-label="닫기"
-                            className="flex h-7 w-7 cursor-pointer items-center justify-center text-slate-700 hover:text-slate-950"
+                            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700"
                         >
-                            <X className="h-6 w-6" aria-hidden="true" />
+                            <X className="h-5 w-5" aria-hidden="true" />
                         </button>
                     </div>
 
                     <div className="mt-2">
-                        <p className="font-bold text-center text-xl mb-2">
+                        <p className="font-bold text-center text-lg mb-2 text-slate-900">
                             차단 유저 목록
                         </p>
                     </div>

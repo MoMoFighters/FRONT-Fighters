@@ -13,6 +13,7 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: "500mb",
     },
+    optimizePackageImports: ["radix-ui"],
   },
 
   images: {

@@ -13,6 +13,7 @@ export const getNoticeTotalCountsService =
     async (): Promise<NoticeTotalCountsResponse> => {
         const response = await fetchWithAuth("/api/v2/notice/total-counts", {
             method: "GET",
+            cache: "no-store",
         });
 
         const result: NoticeTotalCountsResponse = await response.json();
@@ -28,6 +29,7 @@ export const getNoticeNotificationListService =
     async (): Promise<NoticeNotificationListResponse> => {
         const response = await fetchWithAuth("/api/v2/notice/notificationlist", {
             method: "GET",
+            cache: "no-store",
         });
 
         const result: NoticeNotificationListResponse = await response.json();
@@ -43,6 +45,7 @@ export const getNoticeAppCountsService =
     async (): Promise<NoticeAppCountsResponse> => {
         const response = await fetchWithAuth("/api/v2/notice/app-counts", {
             method: "GET",
+            cache: "no-store",
         });
 
         const result: NoticeAppCountsResponse = await response.json();

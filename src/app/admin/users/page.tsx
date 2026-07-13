@@ -54,11 +54,7 @@ export default async function UserManagePage({
     const currentViewUsers = currentView === "pending"
         ? pendingTeachersData?.applications ?? []
         : usersData?.users ?? [];
-    const currentPageSize = pendingTeachersData?.size ?? usersData?.size ?? 0;
-    const shouldShowPagination = totalPages > 1 && (
-        currentPage > 1 ||
-        currentViewUsers.length >= currentPageSize
-    );
+    const shouldShowPagination = totalPages > 1;
     const pageNumbers = getVisiblePageNumbers(currentPage, totalPages);
 
     const createPageHref = (

@@ -1,5 +1,4 @@
 import TeacherHeader from "../../components/layout/TeacherHeader";
-import Footer from "../../components/layout/Footer";
 import TeacherSidebar from "@/components/layout/TeacherSidebar";
 import LectureCreateFloatingWidget from "@/features/lecture/components/teacher/LectureCreateFloatingWidget";
 import { LectureCreateUploadProvider } from "@/features/lecture/components/teacher/LectureCreateUploadContext";
@@ -44,8 +43,6 @@ export default async function TeacherLayout({
                         <div className="min-h-0 flex-1 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                             {children}
                         </div>
-
-                        <Footer />
                     </main>
 
                     <LectureCreateFloatingWidget />

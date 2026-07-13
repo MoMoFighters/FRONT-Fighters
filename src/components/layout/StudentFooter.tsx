@@ -4,16 +4,16 @@ import icon from "@/app/icon.png";
 
 const serviceLinks = [
     {
-        label: "소개",
-        href: "/about",
-    },
-    {
-        label: "강의 둘러보기",
-        href: "/lectures",
+        label: "마이페이지",
+        href: "/student/mypage",
     },
     {
         label: "커뮤니티",
-        href: "/community",
+        href: "/student/community",
+    },
+    {
+        label: "일정",
+        href: "/student/calendar",
     },
 ];
 
@@ -23,13 +23,13 @@ const policyLinks = [
     "개인정보처리방침",
 ];
 
-export default function Footer() {
+export default function StudentFooter() {
     return (
         <footer className="shrink-0 bg-indigo-900">
             <div className="px-5 py-10 sm:px-8 lg:px-16 lg:py-12">
                 <div className="grid max-w-6xl grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-[1.5fr_0.8fr_0.9fr_0.8fr]">
                     <div className="sm:col-span-2 lg:col-span-1">
-                        <Link href="/" className="inline-flex items-center gap-3">
+                        <Link href="/student" className="inline-flex items-center gap-3">
                             <span className="relative h-9 w-9 shrink-0 overflow-hidden rounded-md bg-white">
                                 <Image
                                     src={icon}

@@ -16,6 +16,7 @@ import {
   LatestChapterInfoResponse,
 } from "@/features/lecture/type";
 import { ApiResponse, fetchWithAuth } from "@/lib/api";
+import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -128,7 +129,9 @@ export const getLecturesWithAuth = async (
         ])
     ).toString();
 
-  const response = await fetchWithAuth(`/api/v1/lectures?${queryString}`);
+  const response = await fetchWithAuth(`/api/v1/lectures?${queryString}`, {
+    next: { revalidate: 60 },
+  });
   await handleErrorResponse(response);
   const result: ApiResponse<LectureListResponse> = await response.json();
   return assertApiData(result);
@@ -140,7 +143,9 @@ export const getLecturesWithAuth = async (
  * @returns LectureDetailResponse
  */
 export const getLectureById = async (id: string): Promise<LectureDetailResponse> => {
-  const response = await fetchWithAuth(`/api/v1/lectures/${id}`);
+  const response = await fetchWithAuth(`/api/v1/lectures/${id}`, {
+    next: { revalidate: 60 },
+  });
 
   if (response.status === 401) {
     redirect('/auth/login');
@@ -180,7 +185,9 @@ export const getReviewsByLectureId = async (id: string, page: number) => {
   const params = new URLSearchParams();
   params.set("page", String(page));
 
-  const response = await fetchWithAuth(`/api/v1/lectures/${id}/reviews?${params.toString()}`);
+  const response = await fetchWithAuth(`/api/v1/lectures/${id}/reviews?${params.toString()}`, {
+    next: { revalidate: 60 },
+  });
   await handleErrorResponse(response);
   const result: ApiResponse<ReviewResponse> = await response.json();
   return assertApiData(result);
@@ -217,7 +224,9 @@ export const getProgressByCategory = async (category?: Category): Promise<AsideC
   }
 
   const queryString = params.toString();
-  const response = await fetchWithAuth(`/api/v1/enrollments/progress${queryString ? `?${queryString}` : ""}`);
+  const response = await fetchWithAuth(`/api/v1/enrollments/progress${queryString ? `?${queryString}` : ""}`, {
+    cache: "no-store",
+  });
   await handleErrorResponse(response);
   const result: ApiResponse<AsideCardInfoResponse> = await response.json();
   return assertApiData(result);
@@ -237,7 +246,9 @@ export const getLatestChapterInfo = async (
   }
 
   const queryString = params.toString();
-  const response = await fetchWithAuth(`/api/v1/enrollments/continue-learning${queryString ? `?${queryString}` : ""}`);
+  const response = await fetchWithAuth(`/api/v1/enrollments/continue-learning${queryString ? `?${queryString}` : ""}`, {
+    cache: "no-store",
+  });
   await handleErrorResponse(response);
   const result: ApiResponse<LatestChapterInfoResponse> = await response.json();
 
@@ -276,7 +287,9 @@ export const updateLectureStatus = async (
 export const getLectureMeta = async (
   lectureId: string
 ): Promise<LectureMetaResponse> => {
-  const response = await fetchWithAuth(`/api/v1/lectures/${lectureId}/meta`);
+  const response = await fetchWithAuth(`/api/v1/lectures/${lectureId}/meta`, {
+    next: { revalidate: 60 },
+  });
 
   await handleErrorResponse(response);
 
@@ -296,7 +309,8 @@ export const getVideoPlayer = async (
   chapterId: string
 ): Promise<VideoPlayerResponse> => {
   const response = await fetchWithAuth(
-    `/api/v1/lectures/${lectureId}/chapters/${chapterId}/stream`
+    `/api/v1/lectures/${lectureId}/chapters/${chapterId}/stream`,
+    { cache: "no-store" }
   );
 
   await handleErrorResponse(response);
@@ -431,3 +445,7 @@ export const deleteReviewById = async (id: string) => {
 
   return parseJsonOrNull(response);
 };
+
+export const test = () => {
+  revalidatePath('/lectures');
+}

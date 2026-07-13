@@ -25,6 +25,7 @@ export default async function AdminHeader() {
                         alt="MOMOCITY 로고"
                         fill
                         priority
+                        sizes="96px"
                     />
                 </Link>
                 <div className="flex items-center justify-end">

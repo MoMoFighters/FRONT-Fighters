@@ -71,6 +71,8 @@ const revalidateLectureProgressPaths = (
     lectureId: string,
     chapterId: string
 ) => {
+    revalidatePath('/student');
+
     revalidatePath(`/student/lectures/${lectureId}`);
     revalidatePath(`/student/mypage/lectures`);
     revalidatePath(`/student/mypage/lectures/${lectureId}`);

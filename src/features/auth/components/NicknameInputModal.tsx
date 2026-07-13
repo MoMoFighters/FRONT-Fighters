@@ -52,24 +52,24 @@ export default function NicknameInputModal({
 
     return (
         <div
-            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4"
         >
             <div
-                className="bg-white px-5 pb-8 pt-8 w-[40vw] rounded flex flex-col justify-center"
+                className="w-full max-w-md rounded-xl border border-slate-200 bg-white px-6 py-7 shadow-2xl"
             >
-                <h1 className="text-center text-2xl font-semibold mb-4">
+                <h1 className="mb-4 text-center text-lg font-bold text-slate-900">
                     📝 닉네임 설정
                 </h1>
 
                 <div className="flex justify-center">
-                    <p className="mb-5 mt-2 text-lg font-bold text-slate-900">
+                    <p className="mb-5 mt-2 text-sm font-semibold text-slate-600">
                         {message}
                     </p>
                 </div>
 
                 <div className="flex flex-row gap-3 mb-4 items-center px-2">
 
-                    <p>닉네임</p>
+                    <p className="text-sm font-semibold text-slate-700">닉네임</p>
 
                     <input
                         type="text"
@@ -80,12 +80,13 @@ export default function NicknameInputModal({
                             )
                         }
                         placeholder="닉네임 입력"
-                        className="border border-slate-300 py-2 px-2 flex-1 text-slate-700 placeholder:text-slate-400 focus:outline-none"
+                        className="h-10 flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm text-slate-700 outline-none placeholder:text-slate-400 focus:border-indigo-400 focus:bg-white focus:ring-4 focus:ring-indigo-100"
                     />
 
                     <Button
                         disabled={loading || !nickname.trim()}
                         onClick={handleSubmit}
+                        className="rounded-lg bg-indigo-500 text-sm font-semibold text-white hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                         {
                             loading

@@ -211,7 +211,9 @@ export const getUsers = async (
             ])
       ).toString();
 
-   const response = await fetchWithAuth(`/api/v1/user/list?${queryString}`);
+   const response = await fetchWithAuth(`/api/v1/user/list?${queryString}`, {
+      cache: "no-store",
+   });
    await handleErrorResponse(response);
    const result: ApiResponse<Omit<UserListResponse, "users"> & {
       users: Array<Omit<UserList, "userId"> & { id: number }>;
@@ -234,7 +236,9 @@ export const getUsers = async (
  */
 export const getUserById = async (id: string): Promise<userDetail> => {
 
-   const response = await fetchWithAuth(`/api/v1/user/list/detail/${id}`);
+   const response = await fetchWithAuth(`/api/v1/user/list/detail/${id}`, {
+      cache: "no-store",
+   });
    await handleErrorResponse(response);
    const result: ApiResponse<userDetail> = await response.json();
    return assertApiData(result);
@@ -262,7 +266,9 @@ export const getPendingTeachers = async (
             ])
       ).toString();
 
-   const response = await fetchWithAuth(`/api/v1/teacher-applications?${queryString}`);
+   const response = await fetchWithAuth(`/api/v1/teacher-applications?${queryString}`, {
+      cache: "no-store",
+   });
    await handleErrorResponse(response);
    const result: ApiResponse<PendingTeacherListResponse> = await response.json();
    return assertApiData(result);
@@ -275,7 +281,9 @@ export const getPendingTeachers = async (
  */
 export const getPendingTeacherById = async (id: string): Promise<PendingTeacherDetail> => {
 
-   const response = await fetchWithAuth(`/api/v1/teacher-application-detail/${id}`);
+   const response = await fetchWithAuth(`/api/v1/teacher-application-detail/${id}`, {
+      cache: "no-store",
+   });
    await handleErrorResponse(response);
    const result: ApiResponse<PendingTeacherDetail> = await response.json();
    return assertApiData(result);

@@ -78,7 +78,10 @@ export const getNotices = async (page: number): Promise<NoticeListResponse> => {
     const params = new URLSearchParams();
     params.set("page", String(page));
 
-    const response = await fetchWithAuth(`/api/v1/admin-notices?${params.toString()}`);
+    const response = await fetchWithAuth(`/api/v1/admin-notices?${params.toString()}`, {
+        cache: "force-cache",
+        next: { tags: ["notices"] },
+    });
     await handleErrorResponse(response);
     const result: ApiResponse<NoticeListResponse> = await response.json();
     return assertApiData(result);
@@ -90,7 +93,10 @@ export const getNotices = async (page: number): Promise<NoticeListResponse> => {
  * @returns Notice
  */
 export const getNoticeById = async (id: string): Promise<Notice> => {
-    const response = await fetchWithAuth(`/api/v1/admin-notices/${id}`);
+    const response = await fetchWithAuth(`/api/v1/admin-notices/${id}`, {
+        cache: "force-cache",
+        next: { tags: ["notices"] },
+    });
 
     await handleErrorResponse(response);
     const result: ApiResponse<Notice> = await response.json();

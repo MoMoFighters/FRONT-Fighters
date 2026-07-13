@@ -27,7 +27,9 @@ const parseResponse = async <T>(response: Response): Promise<T> => {
 };
 
 export const getReports = async (): Promise<Report[]> => {
-    const response = await fetchWithAuth('/api/v1/reports?limit=10');
+    const response = await fetchWithAuth('/api/v1/reports?limit=10', {
+        cache: "no-store",
+    });
 
     const result = await parseResponse<{ data: { items: Report[] } }>(response);
 

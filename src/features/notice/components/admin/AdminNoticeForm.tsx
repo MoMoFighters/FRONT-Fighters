@@ -6,6 +6,8 @@ import { useActionState, useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { toast } from "sonner";
 
+import { CircleAlert } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import {
     AlertDialog,
@@ -15,6 +17,7 @@ import {
     AlertDialogDescription,
     AlertDialogFooter,
     AlertDialogHeader,
+    AlertDialogMedia,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
@@ -158,25 +161,28 @@ export default function AdminNoticeForm({
             </form>
 
             <AlertDialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
-                <AlertDialogContent size="sm" className="overflow-hidden rounded-lg border border-slate-200 bg-white p-0 shadow-xl">
-                    <AlertDialogHeader className="gap-3 px-6 pt-6">
-                        <AlertDialogTitle className="text-base font-bold text-slate-950">
+                <AlertDialogContent size="sm">
+                    <AlertDialogHeader>
+                        <AlertDialogMedia className="bg-indigo-100 text-indigo-600">
+                            <CircleAlert />
+                        </AlertDialogMedia>
+                        <AlertDialogTitle className="whitespace-pre-line">
                             {isEditMode ? "공지사항을 수정하시겠습니까?" : "공지사항을 등록하시겠습니까?"}
                         </AlertDialogTitle>
-                        <AlertDialogDescription className="text-sm leading-6 text-slate-500">
+                        <AlertDialogDescription className="whitespace-pre-line">
                             {isEditMode
                                 ? "수정한 내용은 즉시 회원에게 표시됩니다."
                                 : "등록한 공지사항은 즉시 회원에게 표시됩니다."}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter className="!mx-0 !mb-0 mt-6 !flex !flex-row !justify-end gap-2 !border-0 !bg-transparent !px-6 !pb-6 !pt-0">
-                        <AlertDialogCancel className="h-9 rounded-md border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 hover:bg-slate-100">
+                    <AlertDialogFooter>
+                        <AlertDialogCancel variant="outline" className="cursor-pointer">
                             취소
                         </AlertDialogCancel>
                         <AlertDialogAction
-                            variant="outline"
+                            variant="ghost"
                             onClick={handleConfirmSubmit}
-                            className="h-9 rounded-md !border-indigo-600 !bg-indigo-600 px-4 text-sm font-bold !text-white hover:!bg-indigo-700 hover:!text-white"
+                            className="bg-indigo-500 text-white hover:text-white! hover:bg-indigo-600!"
                         >
                             {isEditMode ? "수정" : "등록"}
                         </AlertDialogAction>
