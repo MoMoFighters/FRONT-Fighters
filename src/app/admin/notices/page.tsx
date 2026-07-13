@@ -49,7 +49,7 @@ export default async function AdminNoticesPage({
                 </Button>
             </div>
 
-            <p className="mb-4 text-sm font-semibold text-slate-500">
+            <p className="mb-4 text-sm font-bold text-slate-500">
                 전체 공지사항 <span className="text-indigo-500">{noticeResponse.totalElements}</span>개
             </p>
 

@@ -127,7 +127,7 @@ function CommentItem({
                             </div>
                         </div>
 
-                        <p className={`${isReply ? "mt-2 text-xs leading-5" : "mt-2 text-sm leading-6"} whitespace-pre-wrap font-semibold text-slate-700`}>
+                        <p className={`${isReply ? "mt-2 text-xs leading-5" : "mt-2 text-sm leading-6"} whitespace-pre-wrap font-bold text-slate-700`}>
                             {content}
                         </p>
 

@@ -136,7 +136,7 @@ export default function LoginForm({
                     회원가입
                 </Link>
 
-                <div className="mt-3.5 flex items-center justify-center gap-3 text-[13px] font-semibold text-slate-500">
+                <div className="mt-3.5 flex items-center justify-center gap-3 text-[13px] font-bold text-slate-500">
                     <Link
                         href="/"
                         className="transition-colors hover:text-indigo-500"
@@ -151,7 +151,7 @@ export default function LoginForm({
                     <div className="flex w-full items-center gap-4">
                         <div className="flex-1 border-t border-slate-200" />
 
-                        <span className="shrink-0 text-[13px] font-semibold text-slate-500">
+                        <span className="shrink-0 text-[13px] font-bold text-slate-500">
                             SNS 계정으로 시작하기
                         </span>
 

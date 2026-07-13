@@ -62,7 +62,7 @@ export default function AdminLectureItem({
                     <p className="mt-1 line-clamp-1 text-sm font-medium text-slate-400">
                         {lecture.description}
                     </p>
-                    <p className="mt-2 text-xs font-semibold text-slate-400">
+                    <p className="mt-2 text-xs font-bold text-slate-400">
                         총 {chapterCount}개 챕터 · {formatAdminDateTime(lecture.createdAt)}
                     </p>
                 </Link>

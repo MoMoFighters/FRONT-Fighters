@@ -124,7 +124,7 @@ export default function HeaderProfileCard({
                         )}
                     </div>
 
-                    <span className="max-w-24 truncate text-sm font-semibold text-slate-800">
+                    <span className="max-w-24 truncate text-sm font-bold text-slate-800">
                         {nickname}
                     </span>
 
@@ -163,7 +163,7 @@ export default function HeaderProfileCard({
                             {role === "student" && <span
                                 className={`
                                     rounded-full px-2 py-0.5
-                                    text-[11px] font-semibold
+                                    text-[11px] font-bold
                                     ${membershipBadgeStyle[resolvedMembership]}
                                 `}
                             >

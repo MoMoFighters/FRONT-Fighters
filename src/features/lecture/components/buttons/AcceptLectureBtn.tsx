@@ -39,7 +39,7 @@ export default function AcceptLectureBtn({ id }: { id: number }) {
         <TwoButtonModal
             trigger={(
                 <Button
-                    className="bg-blue-400 cursor-pointer hover:bg-blue-500 text-white font-semibold text-md py-6 px-6 rounded-md!"
+                    className="bg-blue-400 cursor-pointer hover:bg-blue-500 text-white font-bold text-md py-6 px-6 rounded-md!"
                 >
                     강의 승인
                 </Button>

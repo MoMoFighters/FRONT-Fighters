@@ -210,7 +210,7 @@ export default function ChatRoomItem({
                 <div className="flex min-w-0 flex-1 flex-col">
                     <div className="flex items-center gap-2">
                         <div className="flex min-w-0 flex-1 items-center gap-1">
-                            <p className="truncate font-semibold text-slate-800">
+                            <p className="truncate font-bold text-slate-800">
                                 {title}
                             </p>
 
@@ -236,7 +236,7 @@ export default function ChatRoomItem({
 
             {unreadCount > 0 && (
                 <div className="flex h-5 min-w-5 items-center justify-center rounded-full bg-indigo-500 px-1.5">
-                    <p className="text-[11px] font-semibold text-white">
+                    <p className="text-[11px] font-bold text-white">
                         {unreadCount > 99 ? "99+" : unreadCount}
                     </p>
                 </div>

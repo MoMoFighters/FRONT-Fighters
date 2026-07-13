@@ -62,11 +62,11 @@ export default async function AdminUserDetailPage({ params, searchParams }: Admi
                     </div>
                 </div>
                 <section className="mt-7 grid grid-cols-2 gap-x-10 gap-y-6 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-                    <div><p className="text-xs font-bold text-slate-400">이메일</p><p className="mt-2 text-sm font-semibold text-slate-800">{user.email}</p></div>
-                    <div><p className="text-xs font-bold text-slate-400">사용자 유형</p><p className="mt-2 text-sm font-semibold text-slate-800">{USER_ROLE_LABEL[user.role]}</p></div>
-                    <div><p className="text-xs font-bold text-slate-400">가입일</p><p className="mt-2 text-sm font-semibold text-slate-800">{formatAdminDateTime(user.createdAt)}</p></div>
-                    <div><p className="text-xs font-bold text-slate-400">활동 카테고리</p><p className="mt-2 text-sm font-semibold text-slate-800">{categoryMeta.label}</p></div>
-                    <div><p className="text-xs font-bold text-slate-400">닉네임</p><p className="mt-2 text-sm font-semibold text-slate-800">{user.nickname}</p></div>
+                    <div><p className="text-xs font-bold text-slate-400">이메일</p><p className="mt-2 text-sm font-bold text-slate-800">{user.email}</p></div>
+                    <div><p className="text-xs font-bold text-slate-400">사용자 유형</p><p className="mt-2 text-sm font-bold text-slate-800">{USER_ROLE_LABEL[user.role]}</p></div>
+                    <div><p className="text-xs font-bold text-slate-400">가입일</p><p className="mt-2 text-sm font-bold text-slate-800">{formatAdminDateTime(user.createdAt)}</p></div>
+                    <div><p className="text-xs font-bold text-slate-400">활동 카테고리</p><p className="mt-2 text-sm font-bold text-slate-800">{categoryMeta.label}</p></div>
+                    <div><p className="text-xs font-bold text-slate-400">닉네임</p><p className="mt-2 text-sm font-bold text-slate-800">{user.nickname}</p></div>
                 </section>
 
                 <section className="mt-6 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
@@ -103,7 +103,7 @@ export default async function AdminUserDetailPage({ params, searchParams }: Admi
                         <div className="flex flex-wrap items-center gap-2">
                             <h1 className="text-2xl font-bold text-slate-950">{user.name}</h1>
                             <AdminMembershipBadge membership={user.membership} />
-                            <span className="text-xs font-semibold text-slate-500">
+                            <span className="text-xs font-bold text-slate-500">
                                 멤버십 시작 날짜: {formatAdminDateOnly(user.membershipStart)}
                             </span>
                         </div>
@@ -112,10 +112,10 @@ export default async function AdminUserDetailPage({ params, searchParams }: Admi
                 </div>
             </div>
             <section className="mt-7 grid grid-cols-2 gap-x-10 gap-y-6 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-                <div><p className="text-xs font-bold text-slate-400">이메일</p><p className="mt-2 text-sm font-semibold text-slate-800">{user.email}</p></div>
-                <div><p className="text-xs font-bold text-slate-400">사용자 유형</p><p className="mt-2 text-sm font-semibold text-slate-800">{USER_ROLE_LABEL[user.role]}</p></div>
-                <div><p className="text-xs font-bold text-slate-400">가입일</p><p className="mt-2 text-sm font-semibold text-slate-800">{formatAdminDateTime(user.createdAt)}</p></div>
-                <div><p className="text-xs font-bold text-slate-400">활동 카테고리</p><p className="mt-2 text-sm font-semibold text-slate-800">{categoryMeta?.label ?? "-"}</p></div>
+                <div><p className="text-xs font-bold text-slate-400">이메일</p><p className="mt-2 text-sm font-bold text-slate-800">{user.email}</p></div>
+                <div><p className="text-xs font-bold text-slate-400">사용자 유형</p><p className="mt-2 text-sm font-bold text-slate-800">{USER_ROLE_LABEL[user.role]}</p></div>
+                <div><p className="text-xs font-bold text-slate-400">가입일</p><p className="mt-2 text-sm font-bold text-slate-800">{formatAdminDateTime(user.createdAt)}</p></div>
+                <div><p className="text-xs font-bold text-slate-400">활동 카테고리</p><p className="mt-2 text-sm font-bold text-slate-800">{categoryMeta?.label ?? "-"}</p></div>
             </section>
 
             <div className="mt-6"><AdminUserReportLog reports={user.reports} /></div>

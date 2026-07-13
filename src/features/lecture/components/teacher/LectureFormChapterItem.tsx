@@ -99,7 +99,7 @@ export default function LectureFormChapterItem({ chapter, mode, onDelete }: Lect
                     placeholder="챕터 제목을 입력하세요"
                     defaultValue={title}
                     required
-                    className="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-semibold outline-none placeholder:text-slate-400 transition focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100"
+                    className="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold outline-none placeholder:text-slate-400 transition focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100"
                 />
             </div>
 
@@ -121,7 +121,7 @@ export default function LectureFormChapterItem({ chapter, mode, onDelete }: Lect
                         <div className="flex flex-col items-center">
                             <UploadCloud className="mb-2 h-9 w-9 text-slate-400" aria-hidden="true" />
                             <p className="text-sm font-black text-slate-500">챕터 썸네일 업로드</p>
-                            <p className="mt-1 text-xs font-semibold text-slate-400">선택 사항</p>
+                            <p className="mt-1 text-xs font-bold text-slate-400">선택 사항</p>
                         </div>
                     )}
                     <input

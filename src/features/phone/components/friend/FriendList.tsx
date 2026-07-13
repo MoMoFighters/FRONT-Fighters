@@ -39,7 +39,7 @@ export default function FriendList({
     return (
         <section className="flex min-h-0 flex-col bg-white">
             <div className="space-y-3 bg-white px-5 pb-2 pt-4">
-                <p className="font-semibold text-slate-900">
+                <p className="font-bold text-slate-900">
                     친구 목록
                 </p>
 

@@ -68,12 +68,12 @@ export default function StudentChapterListItem({
 
             <div className="flex w-56 items-center gap-3">
                 <Progress value={progress} />
-                <span className="w-9 text-right text-xs font-semibold text-slate-400">
+                <span className="w-9 text-right text-xs font-bold text-slate-400">
                     {progress}%
                 </span>
             </div>
 
-            <span className="w-14 text-right text-sm font-semibold text-slate-400">
+            <span className="w-14 text-right text-sm font-bold text-slate-400">
                 {formatDuration(chapter.durationSec)}
             </span>
         </>

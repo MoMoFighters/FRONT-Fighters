@@ -60,7 +60,7 @@ export default function StudentLectureDetailItem({
                         {lecture.description}
                     </p>
 
-                    <div className="mt-6 flex items-center gap-4 text-sm font-semibold text-slate-500">
+                    <div className="mt-6 flex items-center gap-4 text-sm font-bold text-slate-500">
                         <span className="flex items-center gap-1.5 text-slate-700">
                             <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
                             {lecture.averageRating ?? 0}
@@ -89,7 +89,7 @@ export default function StudentLectureDetailItem({
 
                                 <Progress value={progress} className="max-w-48" />
 
-                                <span className="text-sm font-semibold text-slate-500">
+                                <span className="text-sm font-bold text-slate-500">
                                     진도율 {progress}%
                                 </span>
 

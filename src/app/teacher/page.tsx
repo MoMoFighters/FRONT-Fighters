@@ -104,7 +104,7 @@ export default async function TeacherMainPage() {
                         <h1 className="mt-5 text-3xl font-black tracking-tight">
                             강사 대시보드
                         </h1>
-                        <p className="mt-3 max-w-160 text-sm font-semibold leading-6 text-slate-500">
+                        <p className="mt-3 max-w-160 text-sm font-bold leading-6 text-slate-500">
                             등록한 강의 현황과 수강생 질문을 한눈에 확인하고,
                             새로운 강의를 빠르게 개설할 수 있습니다.
                         </p>

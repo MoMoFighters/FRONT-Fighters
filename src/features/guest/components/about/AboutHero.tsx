@@ -2,7 +2,7 @@ export default function AboutHero() {
     return (
         <section className="border-b border-slate-200 bg-white py-12 sm:py-14">
             <div className="px-5 text-center sm:px-8 lg:px-16">
-                <p className="text-[11px] font-semibold text-indigo-500">
+                <p className="text-[11px] font-bold text-indigo-500">
                     ABOUT MOMOCITY
                 </p>
 

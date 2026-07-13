@@ -81,7 +81,7 @@ export default function GuestLectureDetailHero({
 
             <div className="grid grid-cols-3 divide-x divide-slate-100 px-7 py-5">
                 <div>
-                    <p className="text-xs font-semibold text-slate-400">
+                    <p className="text-xs font-bold text-slate-400">
                         평점
                     </p>
                     <p className="mt-2 flex items-center gap-1.5 text-sm font-bold text-slate-900">
@@ -92,7 +92,7 @@ export default function GuestLectureDetailHero({
                 </div>
 
                 <div className="px-6">
-                    <p className="text-xs font-semibold text-slate-400">
+                    <p className="text-xs font-bold text-slate-400">
                         커리큘럼
                     </p>
                     <p className="mt-2 text-sm font-bold text-slate-900">
@@ -101,7 +101,7 @@ export default function GuestLectureDetailHero({
                 </div>
 
                 <div className="px-6">
-                    <p className="text-xs font-semibold text-slate-400">
+                    <p className="text-xs font-bold text-slate-400">
                         예상 학습 시간
                     </p>
                     <p className="mt-2 flex items-center gap-1.5 text-sm font-bold text-slate-900">

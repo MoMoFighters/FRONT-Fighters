@@ -49,7 +49,7 @@ export default function AdminChapterList({
                                     {chapter.title}
                                 </p>
                             </div>
-                            <span className="text-sm font-semibold text-slate-400">
+                            <span className="text-sm font-bold text-slate-400">
                                 {formatDuration(chapter.durationSec)}
                             </span>
                         </Link>

@@ -85,7 +85,7 @@ export default function ChapterItem({
             <div className="w-24 h-13.5 bg-slate-200 rounded-lg overflow-hidden shrink-0" />
 
             <div className="flex-1 min-w-0">
-                <h3 className="text-slate-900 mb-2 text-md font-semibold">
+                <h3 className="text-slate-900 mb-2 text-md font-bold">
                     Chapter {chapter.orderNo}.
                 </h3>
 

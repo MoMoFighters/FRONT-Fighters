@@ -182,7 +182,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
                                 <div className="flex flex-col justify-between gap-1">
                                     <label
                                         htmlFor="teacherName"
-                                        className="text-sm font-semibold text-slate-700"
+                                        className="text-sm font-bold text-slate-700"
                                     >
                                         강사 활동명
                                     </label>
@@ -199,7 +199,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
                                 <div className="flex flex-col justify-between gap-1">
                                     <label
                                         htmlFor="category"
-                                        className="text-sm font-semibold text-slate-700"
+                                        className="text-sm font-bold text-slate-700"
                                     >
                                         카테고리
                                     </label>
@@ -237,7 +237,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
                             />
 
                             <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden mt-2">
-                                <label className="text-sm font-semibold text-slate-700">
+                                <label className="text-sm font-bold text-slate-700">
                                     증빙자료
                                 </label>
 
@@ -252,7 +252,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
                                             </span>
                                         </div>
 
-                                        <p className="mt-3 text-sm font-semibold text-slate-700">
+                                        <p className="mt-3 text-sm font-bold text-slate-700">
                                             클릭하여 파일 추가
                                         </p>
 
@@ -264,7 +264,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
                                     <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden">
                                         <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white p-4">
                                             <div className="mb-3 flex shrink-0 items-center justify-between gap-3">
-                                                <p className="text-sm font-semibold text-slate-700">
+                                                <p className="text-sm font-bold text-slate-700">
                                                     미리보기
                                                 </p>
 
@@ -293,7 +293,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
                                             <div className="flex-1" />
                                             <label
                                                 htmlFor="proofFile"
-                                                className="mr-2 flex shrink-0 cursor-pointer items-center justify-center text-sm font-semibold text-slate-400 transition-colors hover:text-slate-600"
+                                                className="mr-2 flex shrink-0 cursor-pointer items-center justify-center text-sm font-bold text-slate-400 transition-colors hover:text-slate-600"
                                             >
                                                 파일 변경하기
                                             </label>

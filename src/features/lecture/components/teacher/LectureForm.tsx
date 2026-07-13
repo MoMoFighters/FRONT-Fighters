@@ -175,7 +175,7 @@ export default function LectureForm({ mode, onUploadStart }: LectureFormProps) {
                         <h1 className="mt-3 text-3xl font-black tracking-tight">
                             {mode === 'create' ? "강의 등록" : "강의 수정"}
                         </h1>
-                        <p className="mt-2 text-sm font-semibold text-indigo-100">
+                        <p className="mt-2 text-sm font-bold text-indigo-100">
                             강의 기본 정보와 챕터 영상을 순서대로 등록하세요.
                         </p>
                     </div>
@@ -205,7 +205,7 @@ export default function LectureForm({ mode, onUploadStart }: LectureFormProps) {
                                 <>
                                     <UploadCloud className="mb-2 h-10 w-10 text-slate-400" aria-hidden="true" />
                                     <p className="text-sm font-black text-slate-500">이미지 업로드</p>
-                                    <p className="mt-1 text-xs font-semibold text-slate-400">최대 5MB</p>
+                                    <p className="mt-1 text-xs font-bold text-slate-400">최대 5MB</p>
                                 </>
                             )}
                             <input
@@ -263,7 +263,7 @@ export default function LectureForm({ mode, onUploadStart }: LectureFormProps) {
                             name="title"
                             placeholder="강의 제목을 입력하세요"
                             required
-                            className="h-11 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-semibold outline-none transition-all placeholder:text-slate-400 focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100"
+                            className="h-11 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold outline-none transition-all placeholder:text-slate-400 focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100"
                         />
                     </div>
 

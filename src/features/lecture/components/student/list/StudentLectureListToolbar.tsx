@@ -21,7 +21,7 @@ export default function StudentLectureListToolbar({
             </div>
 
             <div className="mb-4 flex items-center justify-between">
-                <p className="text-sm font-semibold text-slate-500">
+                <p className="text-sm font-bold text-slate-500">
                     전체{" "}
                     <span className="text-indigo-500">
                         {totalElements}

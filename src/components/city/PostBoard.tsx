@@ -500,7 +500,7 @@ function GuestbookDetailView({
             </div>
 
             <div className="mt-5 min-h-0 flex-1 overflow-y-auto rounded-2xl bg-slate-50 p-4 scrollbar-hidden">
-                <p className="whitespace-pre-line text-sm font-semibold leading-7 text-slate-700">
+                <p className="whitespace-pre-line text-sm font-bold leading-7 text-slate-700">
                     {guestbook.content}
                 </p>
             </div>
@@ -567,7 +567,7 @@ function NoticeDetailView({
             </div>
 
             <div className="min-h-0 flex-1 overflow-y-auto rounded-2xl bg-slate-50 p-4 scrollbar-hidden">
-                <div className="space-y-3 text-sm font-semibold leading-7 text-slate-700">
+                <div className="space-y-3 text-sm font-bold leading-7 text-slate-700">
                     {isLoading ? (
                         <p>공지사항 내용을 불러오는 중입니다.</p>
                     ) : content.map((paragraph, index) => (

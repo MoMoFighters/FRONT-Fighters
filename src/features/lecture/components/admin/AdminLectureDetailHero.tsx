@@ -46,7 +46,7 @@ export default function AdminLectureDetailHero({
                     <p className="mt-3 line-clamp-2 text-sm font-medium leading-6 text-slate-500">
                         {lecture.description}
                     </p>
-                    <div className="mt-6 flex items-center gap-4 text-sm font-semibold text-slate-500">
+                    <div className="mt-6 flex items-center gap-4 text-sm font-bold text-slate-500">
                         <span className="flex items-center gap-1.5 text-slate-700">
                             <Star className="size-4 fill-amber-400 text-amber-400" />
                             {lecture.averageRating ?? 0}
@@ -56,7 +56,7 @@ export default function AdminLectureDetailHero({
                         <span>수강평 {reviewCount}개</span>
                     </div>
                     <div className="mt-auto flex items-center justify-between border-t border-slate-100 pt-5">
-                        <span className="text-sm font-semibold text-slate-400">
+                        <span className="text-sm font-bold text-slate-400">
                             등록일 {formatAdminDateTime(lecture.createdAt)}
                         </span>
                         {lecture.lectureStatus === "WAITING" ? (

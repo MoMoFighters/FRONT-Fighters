@@ -30,7 +30,7 @@ export default function GuestInquiryCard() {
       ref={cardRef}
       className="relative rounded-xl border border-slate-200 bg-white/70 p-5 shadow-sm"
     >
-      <div className="mb-3 flex items-center gap-2 text-xs font-semibold text-slate-500">
+      <div className="mb-3 flex items-center gap-2 text-xs font-bold text-slate-500">
         <CircleQuestionMark className="h-4 w-4 text-indigo-400" />
         1:1 문의
       </div>
@@ -43,7 +43,7 @@ export default function GuestInquiryCard() {
         <button
           type="button"
           onClick={() => setIsOpen((prev) => !prev)}
-          className="min-w-16 cursor-pointer rounded-lg border border-indigo-400 bg-white px-1.5 py-1.5 text-xs font-semibold text-indigo-600 transition-colors hover:bg-indigo-50"
+          className="min-w-16 cursor-pointer rounded-lg border border-indigo-400 bg-white px-1.5 py-1.5 text-xs font-bold text-indigo-600 transition-colors hover:bg-indigo-50"
         >
           문의하기
         </button>
@@ -56,11 +56,11 @@ export default function GuestInquiryCard() {
           </p>
           <div className="mt-3 space-y-2 text-slate-600">
             <p>
-              <span className="font-semibold text-slate-900">이메일</span>
+              <span className="font-bold text-slate-900">이메일</span>
               <span className="ml-2">yourmomocity@gmail.com</span>
             </p>
             <p>
-              <span className="font-semibold text-slate-900">전화번호</span>
+              <span className="font-bold text-slate-900">전화번호</span>
               <span className="ml-2">02-123-4567</span>
             </p>
           </div>

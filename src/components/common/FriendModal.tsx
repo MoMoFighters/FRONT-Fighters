@@ -82,7 +82,7 @@ export default function FriendModal({ isOpen, onClose }: FriendModalProps) {
                     {mockFriends.map((friend) => (
                         <div key={friend.userId} className="flex items-center justify-between p-3 border border-slate-100 rounded-sm bg-slate-50">
                             <div>
-                                <span className="font-semibold text-slate-800">{friend.nickname}</span>
+                                <span className="font-bold text-slate-800">{friend.nickname}</span>
                                 <span className="text-xs text-slate-500 ml-1">
                                     {friend.role === 'teacher' ? '(강사)' : '(학생)'}
                                 </span>

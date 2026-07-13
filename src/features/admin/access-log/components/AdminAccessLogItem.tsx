@@ -67,13 +67,13 @@ export default function AdminAccessLogItem({
                         <div className="border-l-2 border-indigo-400 pl-4">
                             <div className="grid max-w-xl grid-cols-2 gap-x-10 gap-y-1 text-sm">
                                 <div>
-                                    <p className="text-xs font-semibold text-slate-400">접근 사용자</p>
+                                    <p className="text-xs font-bold text-slate-400">접근 사용자</p>
                                     <p className="mt-1 font-bold text-slate-700">
                                         {log.userName ?? `회원 ${log.userId}`}
                                     </p>
                                 </div>
                                 <div>
-                                    <p className="text-xs font-semibold text-slate-400">사용자 유형</p>
+                                    <p className="text-xs font-bold text-slate-400">사용자 유형</p>
                                     <p className="mt-1 font-bold text-slate-700">
                                         {log.userRole ? USER_ROLE_LABEL[log.userRole] : "-"}
                                     </p>

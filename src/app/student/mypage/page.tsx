@@ -284,7 +284,7 @@ export default async function StudentMyPage() {
                                             key={`${item.createdAt}-${item.reason}-${index}`}
                                             className="grid grid-cols-[144px_minmax(0,1fr)_112px] items-center gap-3 px-5 py-2.5 transition-colors hover:bg-slate-50"
                                         >
-                                            <p className="text-[11px] font-semibold text-slate-400">
+                                            <p className="text-[11px] font-bold text-slate-400">
                                                 {formatDateTime(item.createdAt)}
                                             </p>
 
@@ -307,7 +307,7 @@ export default async function StudentMyPage() {
                                                         {POINT_REASON_LABEL[item.reason] ??
                                                             item.reason}
                                                     </p>
-                                                    <p className="text-[10px] font-semibold text-slate-400">
+                                                    <p className="text-[10px] font-bold text-slate-400">
                                                         {POINT_TYPE_LABEL[item.type] ??
                                                             item.type}
                                                     </p>

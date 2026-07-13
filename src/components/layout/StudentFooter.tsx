@@ -29,7 +29,7 @@ export default function StudentFooter() {
             <div className="px-5 py-10 sm:px-8 lg:px-16 lg:py-12">
                 <div className="grid max-w-6xl grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-[1.5fr_0.8fr_0.9fr_0.8fr]">
                     <div className="sm:col-span-2 lg:col-span-1">
-                        <Link href="/student" className="inline-flex items-center gap-3">
+                        <Link href="/student" prefetch={false} className="inline-flex items-center gap-3">
                             <span className="relative h-9 w-9 shrink-0 overflow-hidden rounded-md bg-white">
                                 <Image
                                     src={icon}
@@ -58,6 +58,7 @@ export default function StudentFooter() {
                                 <Link
                                     key={link.href}
                                     href={link.href}
+                                    prefetch={false}
                                     className="w-fit text-sm font-medium text-slate-300 transition-colors hover:text-white"
                                 >
                                     {link.label}
@@ -102,7 +103,7 @@ export default function StudentFooter() {
                         {policyLinks.map((label) => (
                             <span
                                 key={label}
-                                className="text-xs font-semibold text-slate-300"
+                                className="text-xs font-bold text-slate-300"
                             >
                                 {label}
                             </span>

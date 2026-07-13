@@ -61,7 +61,7 @@ export default function MyPointItemCard({
                     {item.name}
                 </p>
                 {item.acquiredAt && (
-                    <p className="mt-1 text-[11px] font-semibold text-slate-400">
+                    <p className="mt-1 text-[11px] font-bold text-slate-400">
                         {item.acquiredAt} 구매
                     </p>
                 )}

@@ -37,7 +37,7 @@ export default function MyLectureBuildingsOverviewCard() {
                                 {categoryMeta.buildingName}
                             </p>
 
-                            <p className="mt-1 text-xs font-semibold text-slate-500">
+                            <p className="mt-1 text-xs font-bold text-slate-500">
                                 {categoryMeta.label} 강의 보기
                             </p>
                         </Link>

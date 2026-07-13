@@ -43,7 +43,7 @@ export default function LectureDetailNav({ href }: { href: string; }) {
                 onClick={() => handleClickTab()}
                 className={`
                     text-lg
-                    font-semibold
+                    font-bold
 
                     ${!searchStatus
                         ? "text-slate-900"
@@ -59,7 +59,7 @@ export default function LectureDetailNav({ href }: { href: string; }) {
                 onClick={() => handleClickTab("reviews")}
                 className={`
                     text-lg
-                    font-semibold
+                    font-bold
 
                     ${searchStatus === "reviews"
                         ? "text-slate-900"

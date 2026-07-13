@@ -55,7 +55,7 @@ export default function FriendSearchList() {
     return (
         <section className="flex min-h-0 flex-col bg-slate-50">
             <div className="border-b border-slate-200 bg-white px-5 py-3">
-                <p className="font-semibold text-slate-900">
+                <p className="font-bold text-slate-900">
                     요청하기
                 </p>
             </div>

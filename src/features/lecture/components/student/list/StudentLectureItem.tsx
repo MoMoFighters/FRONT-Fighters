@@ -62,7 +62,7 @@ export default function StudentLectureItem({
                 </p>
 
                 {shouldShowLearningStatus && (
-                    <div className="mt-auto flex items-center gap-3 text-xs font-semibold text-slate-400">
+                    <div className="mt-auto flex items-center gap-3 text-xs font-bold text-slate-400">
                         <Progress
                             value={progress}
                             id={`lecture-progress-${lecture.lectureId}`}
@@ -97,7 +97,7 @@ export default function StudentLectureItem({
                         {lecture.isCompleted ? "학습 완료" : "학습 중"}
                     </span>
                 ) : (
-                    <span className="text-sm font-semibold text-slate-500">
+                    <span className="text-sm font-bold text-slate-500">
                         총 {lecture.chapterCount}개 챕터
                     </span>
                 )}

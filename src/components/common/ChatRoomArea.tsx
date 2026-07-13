@@ -412,11 +412,11 @@ export default function ChatRoomArea({
             <div className="flex h-full max-h-full min-h-0 flex-col overflow-hidden">
                 <div className="h-14 shrink-0 border-b border-slate-200 bg-slate-50 pl-2 py-2 flex flex-row items-center gap-2">
                     <div className="flex items-center">
-                        <p className="ml-2 text-lg font-semibold text-slate-900">
+                        <p className="ml-2 text-lg font-bold text-slate-900">
                             {roomTitle}
                         </p>
                         {roomSubTitle && (
-                            <p className="text-[12px] ml-1 font-semibold text-slate-500">
+                            <p className="text-[12px] ml-1 font-bold text-slate-500">
                                 {roomSubTitle}
                             </p>
                         )}

@@ -21,7 +21,7 @@ export default function AdminDashboardNoticeList({
                         </p>
                     </div>
 
-                    <span className="whitespace-nowrap text-xs font-semibold text-slate-400">
+                    <span className="whitespace-nowrap text-xs font-bold text-slate-400">
                         {notice.date}
                     </span>
 
