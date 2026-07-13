@@ -51,7 +51,7 @@ export default function GuestLectureAside() {
                     {categoryGuides.map((category) => (
                         <span
                             key={category}
-                            className="rounded-full bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-500"
+                            className="rounded-full bg-slate-50 px-2.5 py-1 text-[11px] font-bold text-slate-500"
                         >
                             {category}
                         </span>

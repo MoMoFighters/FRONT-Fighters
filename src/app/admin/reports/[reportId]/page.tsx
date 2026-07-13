@@ -134,7 +134,7 @@ export default async function AdminReportDetailPage({
                         </div>
                         <dl className="mt-5 grid grid-cols-[7rem_minmax(0,1fr)] gap-y-4 text-sm">
                             <dt className="font-bold text-slate-400">신고 사유</dt>
-                            <dd className="font-semibold text-slate-800">{report.reason}</dd>
+                            <dd className="font-bold text-slate-800">{report.reason}</dd>
                             <dt className="font-bold text-slate-400">상세 내용</dt>
                             <dd className="leading-6 text-slate-700">{report.detail}</dd>
                             <dt className="font-bold text-slate-400">신고자</dt>
@@ -153,7 +153,7 @@ export default async function AdminReportDetailPage({
 
                             <dl className="mt-5 grid grid-cols-[7rem_minmax(0,1fr)] gap-y-4 text-sm">
                                 <dt className="font-bold text-slate-400">대상 유형</dt>
-                                <dd className="font-semibold text-slate-800">{targetLabels[report.targetType]}</dd>
+                                <dd className="font-bold text-slate-800">{targetLabels[report.targetType]}</dd>
                                 {report.targetId && (
                                     <>
                                         <dt className="font-bold text-slate-400">대상 ID</dt>
@@ -191,13 +191,13 @@ export default async function AdminReportDetailPage({
 
                             <dl className="mt-5 grid grid-cols-[7rem_minmax(0,1fr)] gap-y-4 text-sm">
                                 <dt className="font-bold text-slate-400">콘텐츠 유형</dt>
-                                <dd className="font-semibold text-slate-800">{targetLabels[report.targetType]}</dd>
+                                <dd className="font-bold text-slate-800">{targetLabels[report.targetType]}</dd>
                                 <dt className="font-bold text-slate-400">작성자</dt>
                                 <dd className="font-medium text-slate-700">
                                     {report.targetAuthorName ?? "작성자 정보 없음"}
                                 </dd>
                                 {isDeletableTarget && report.isDeleted && (
-                                    <div className="col-span-2 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-600">
+                                    <div className="col-span-2 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-600">
                                         삭제된 콘텐츠입니다.
                                     </div>
                                 )}

@@ -18,15 +18,15 @@ export default function AdminDashboardAccessLogList({
                     className="flex items-center justify-between gap-6 py-3 text-xs"
                 >
 
-                    <span className="min-w-28 font-semibold text-slate-500">
+                    <span className="min-w-28 font-bold text-slate-500">
                         {log.ip}
                     </span>
 
-                    <span className="min-w-24 font-semibold text-slate-500">
+                    <span className="min-w-24 font-bold text-slate-500">
                         {log.user}
                     </span>
 
-                    <span className="min-w-32 font-semibold text-slate-400">
+                    <span className="min-w-32 font-bold text-slate-400">
                         {log.accessedAt}
                     </span>
 

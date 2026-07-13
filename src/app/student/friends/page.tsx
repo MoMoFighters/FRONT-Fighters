@@ -102,7 +102,7 @@ export default async function StudentChatPage({
                             />
 
                             <div className="flex min-w-0 flex-1 flex-col">
-                                <p className="truncate font-semibold text-slate-800">
+                                <p className="truncate font-bold text-slate-800">
                                     {myInfo.data?.nickname}
                                 </p>
                                 <p className="text-sm text-slate-400">
@@ -133,7 +133,7 @@ export default async function StudentChatPage({
                 <div className="grid h-full max-h-full min-h-0 flex-1 grid-cols-[3fr_7fr] overflow-hidden">
                     <div className="flex min-h-0 flex-col overflow-hidden border-r border-slate-200 bg-white">
                         <div className="hidden">
-                            <p className="font-semibold text-slate-900">
+                            <p className="font-bold text-slate-900">
                                 채팅 목록
                             </p>
                         </div>

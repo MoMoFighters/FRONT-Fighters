@@ -330,7 +330,7 @@ export default function SignupForm() {
             </div>
 
             {errorActionState && (
-                <div className="mt-1 text-center text-sm font-semibold text-red-500">
+                <div className="mt-1 text-center text-sm font-bold text-red-500">
                     {errorActionState}
                 </div>
             )}
@@ -343,7 +343,7 @@ export default function SignupForm() {
                 {isPending ? "가입 처리 중..." : "회원가입"}
             </Button>
 
-            <div className="flex items-center justify-center gap-3 text-[13px] font-semibold text-slate-500">
+            <div className="flex items-center justify-center gap-3 text-[13px] font-bold text-slate-500">
                 <Link
                     href="/"
                     className="transition-colors hover:text-indigo-500"

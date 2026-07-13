@@ -30,7 +30,7 @@ export default function Error({
         <div className='relative w-screen min-h-[calc(100vh-140px)] overflow-hidden'>
             <Image src={errorImg} alt='error' priority fill sizes="100vw" className='object-cover' />
             <h1 className='absolute top-60 left-20 text-6xl font-extrabold text-slate-700'>{isApiError ? status : "에러 발생!"}</h1>
-            <div className='absolute w-80 max-w-80 break-all top-80 left-20 text-lg text-slate-500 font-semibold'>{isApiError ? message : "알 수 없는 오류가 발생했습니다."}</div>
+            <div className='absolute w-80 max-w-80 break-all top-80 left-20 text-lg text-slate-500 font-bold'>{isApiError ? message : "알 수 없는 오류가 발생했습니다."}</div>
             <Button onClick={() => router.back()}
                 className="absolute top-110 left-70 bg-indigo-500 py-2 px-4 hover:-translate-y-0.5 hover:drop-shadow-[0_4px_6px_rgba(0,0,0,0.12)] cursor-pointer transition-all hover:bg-indigo-600">
                 <CornerDownLeft /> 뒤로 가기

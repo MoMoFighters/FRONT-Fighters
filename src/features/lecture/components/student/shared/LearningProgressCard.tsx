@@ -25,7 +25,7 @@ export default function LearningProgressCard({
                             {progress}%
                         </span>
 
-                        <span className="mt-1 text-xs font-semibold text-slate-400">
+                        <span className="mt-1 text-xs font-bold text-slate-400">
                             전체 진도율
                         </span>
                     </div>

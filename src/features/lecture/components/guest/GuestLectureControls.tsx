@@ -124,7 +124,7 @@ export default function GuestLectureControls({
                         <Link
                             key={item.label}
                             href={createCategoryHref(item.value)}
-                            className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${isActive
+                            className={`rounded-full border px-3 py-1.5 text-xs font-bold transition-colors ${isActive
                                 ? "border-indigo-500 bg-indigo-50 text-indigo-600"
                                 : "border-slate-200 bg-white text-slate-500 hover:border-indigo-200 hover:text-indigo-500"
                                 }`}

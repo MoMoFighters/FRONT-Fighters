@@ -21,11 +21,11 @@ export default function AdminDashboardReportList({
                         {report.title}
                     </p>
 
-                    <span className="text-xs font-semibold text-slate-500">
+                    <span className="text-xs font-bold text-slate-500">
                         {report.reporter}
                     </span>
 
-                    <span className="text-xs font-semibold text-slate-400">
+                    <span className="text-xs font-bold text-slate-400">
                         {report.reportedAt}
                     </span>
 

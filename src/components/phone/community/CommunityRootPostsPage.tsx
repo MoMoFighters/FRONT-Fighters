@@ -213,7 +213,7 @@ export default function CommunityRootPostsPage({
                                 name="keyword"
                                 placeholder="검색어를 입력하세요"
                                 defaultValue={searchKeyword}
-                                className="h-9 w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-3 text-sm font-semibold text-slate-500 outline-none"
+                                className="h-9 w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-3 text-sm font-bold text-slate-500 outline-none"
                             />
                         </div>
 

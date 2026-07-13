@@ -39,8 +39,8 @@ export default function MomoResidentCard({ data }: ResidentCardProps) {
                 </div>
                 <div className="flex-1"></div>
                 <div className="flex flex-col justify-end">
-                    <p className="text-right text-sm text-slate-700 font-semibold">주민등록증</p>
-                    <p className="text-right text-sm text-slate-400 font-semibold">RESIDENT CARD</p>
+                    <p className="text-right text-sm text-slate-700 font-bold">주민등록증</p>
+                    <p className="text-right text-sm text-slate-400 font-bold">RESIDENT CARD</p>
                 </div>
             </div>
             {/* 메인 */}
@@ -64,7 +64,7 @@ export default function MomoResidentCard({ data }: ResidentCardProps) {
                     <div className="gap-3 flex flex-col">
                         <div className="flex flex-row gap-1 items-end">
                             <p className="text-[19px] font-bold text-slate-900">{data.name}</p>
-                            <p className="text-[16px] font-semibold text-slate-400">({data.nickname || '닉네임 없음'})</p>
+                            <p className="text-[16px] font-bold text-slate-400">({data.nickname || '닉네임 없음'})</p>
                         </div>
                         <div className="flex flex-col gap-[2.5px]">
                             <p className="text-[11px] text-slate-400">모모등록번호</p>

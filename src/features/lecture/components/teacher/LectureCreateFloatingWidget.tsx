@@ -99,7 +99,7 @@ export default function LectureCreateFloatingWidget() {
                                         {task.title}
                                     </p>
                                     {task.errorMessage && (
-                                        <p className="mt-1 truncate text-[11px] font-semibold text-rose-400">
+                                        <p className="mt-1 truncate text-[11px] font-bold text-rose-400">
                                             {task.errorMessage}
                                         </p>
                                     )}

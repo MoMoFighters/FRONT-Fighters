@@ -240,14 +240,14 @@ export default function AddMemoModal({ setIsMemoModalOpen, createMemo, onChanged
                     <button
                         type="button"
                         onClick={() => setIsMemoModalOpen(false)}
-                        className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 cursor-pointer hover:bg-slate-100"
+                        className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 cursor-pointer hover:bg-slate-100"
                     >
                         취소
                     </button>
 
                     <button
                         type="button"
-                        className="rounded-lg bg-indigo-500 px-4 py-2 text-sm font-semibold text-white disabled:bg-indigo-300 cursor-pointer disabled:cursor-auto hover:bg-indigo-600"
+                        className="rounded-lg bg-indigo-500 px-4 py-2 text-sm font-bold text-white disabled:bg-indigo-300 cursor-pointer disabled:cursor-auto hover:bg-indigo-600"
                         disabled={disabled || isSending}
                         onClick={createMemo ? (endSelected ? submitDateRangeMemo : submitDateMemo) : (endSelected ? editDateRangeMemo : editDateMemo)}
                     >

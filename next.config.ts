@@ -44,7 +44,7 @@ const nextConfig = {
       },
     ],
     formats: ['image/webp', 'image/avif'],
-    qualities: [70, 75, 80]
+    qualities: [40, 70, 75, 80]
   },
 } satisfies NextConfig;
 

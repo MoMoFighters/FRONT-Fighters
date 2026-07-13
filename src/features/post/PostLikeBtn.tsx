@@ -130,7 +130,7 @@ export default function PostLikeBtn({
                             좋아요
                         </DialogTitle>
 
-                        <DialogDescription className="text-sm font-semibold text-slate-400">
+                        <DialogDescription className="text-sm font-bold text-slate-400">
                             이 게시글을 좋아한 사람 목록입니다.
                         </DialogDescription>
                     </DialogHeader>

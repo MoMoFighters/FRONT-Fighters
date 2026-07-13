@@ -55,7 +55,7 @@ export default function MoreMemoModal({
                             <p className="truncate text-sm font-black text-slate-800">
                                 {memo.title}
                             </p>
-                            <p className="mt-0.5 text-xs font-semibold text-slate-400">
+                            <p className="mt-0.5 text-xs font-bold text-slate-400">
                                 {memo.start}
                                 {memo.end ? ` ~ ${memo.end}` : ""}
                             </p>

@@ -7,16 +7,17 @@ import ReactQueryProvider from '@/components/common/ReactQueryProvider';
 import KakaoSdkScript from '@/components/common/KakaoSdkScript';
 
 const ibmPlexSansKr = IBM_Plex_Sans_KR({
-  weight: ['400', '500', '600', '700'],
+  weight: ['500', '700'],
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-ibm-plex-sans-kr',
+  preload: false
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://momocity-six.vercel.app'),
+  metadataBase: new URL('https://momocity.kro.kr/'),
   verification: {
-    google: 'Q69RkDWPxAGWddUPSPmatEy4zD9TAer4HqypT26FR2g',
+    google: 'ZJg-yZS7Ufc5CbcYleXYqoJZhaTpJaegPH4TxlQouZY',
     other: {
       "naver-site-verification": "a4b3761c8ab37abd9a2dcce5d1751492e394d87f",
     },

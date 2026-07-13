@@ -85,7 +85,7 @@ export default function LectureSearchbar({ status, keyword, category, filter, po
                     </a>
                 )}
             </div>
-            <Button variant="outline" type="submit" className="h-12 px-4 text-slate-700 border-2 rounded-xl border-slate-300 font-semibold text-[16px] cursor-pointer">
+            <Button variant="outline" type="submit" className="h-12 px-4 text-slate-700 border-2 rounded-xl border-slate-300 font-bold text-[16px] cursor-pointer">
                 <Search className="w-6 h-6" />
                 검색
             </Button>

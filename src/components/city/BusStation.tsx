@@ -215,7 +215,7 @@ export default function BusStation({ mode }: BusStationProps) {
                                                 <p className="truncate text-sm font-black text-slate-800">
                                                     {friend.nickname}
                                                 </p>
-                                                <p className="mt-0.5 text-xs font-semibold text-slate-400">
+                                                <p className="mt-0.5 text-xs font-bold text-slate-400">
                                                     친구 도시로 이동하기
                                                 </p>
                                             </div>

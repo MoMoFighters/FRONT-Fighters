@@ -34,6 +34,7 @@ export default function GuestHeroSection() {
             alt="도시 배경"
             fill
             sizes="50vw"
+            quality={40}
             className="object-cover object-right opacity-55 saturate-90 contrast-95"
             preload
           />

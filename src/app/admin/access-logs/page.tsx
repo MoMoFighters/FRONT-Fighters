@@ -33,7 +33,7 @@ export default async function AdminAccessLogsPage({
                 description="서비스 접근 기록을 최근순으로 확인합니다."
             />
 
-            <p className="mb-4 text-sm font-semibold text-slate-500">
+            <p className="mb-4 text-sm font-bold text-slate-500">
                 전체 접근 기록 <span className="text-indigo-500">{accessLogResponse.totalElements}</span>건
             </p>
 

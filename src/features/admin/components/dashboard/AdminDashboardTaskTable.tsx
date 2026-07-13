@@ -35,10 +35,10 @@ export default function AdminDashboardTaskTable({
                                 <td className="truncate px-4 py-3 font-bold text-slate-800">
                                     {task.title}
                                 </td>
-                                <td className="px-4 py-3 font-semibold text-slate-500">
+                                <td className="px-4 py-3 font-bold text-slate-500">
                                     {task.requester}
                                 </td>
-                                <td className="px-4 py-3 font-semibold text-slate-500">
+                                <td className="px-4 py-3 font-bold text-slate-500">
                                     {task.requestedAt}
                                 </td>
                             </tr>

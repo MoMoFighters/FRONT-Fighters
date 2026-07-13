@@ -96,7 +96,7 @@ export default function MonthlyStreakGarden({
                         side="top"
                         className="w-auto rounded-md px-2.5 py-1.5 text-xs"
                     >
-                        <div className="font-semibold text-slate-900">{date}</div>
+                        <div className="font-bold text-slate-900">{date}</div>
                         <div className="text-[11px] text-slate-500">level {level}</div>
                     </HoverCardContent>
                 </HoverCard>

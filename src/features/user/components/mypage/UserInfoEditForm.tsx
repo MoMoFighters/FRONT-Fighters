@@ -151,7 +151,7 @@ export default function UserInfoEditForm({
         <div className="flex w-full flex-col gap-6">
             {/* 프로필 이미지 */}
             <div className="flex items-start gap-8 mb-4">
-                <p className="w-24 font-semibold text-slate-800 pt-1.5 text-right">
+                <p className="w-24 font-bold text-slate-800 pt-1.5 text-right">
                     프로필
                 </p>
                 <div className="relative w-28 h-28">
@@ -178,7 +178,7 @@ export default function UserInfoEditForm({
 
             {/* 이름 */}
             <div className="flex items-center gap-8">
-                <label htmlFor="name" className="w-24 font-semibold text-slate-800 text-right">
+                <label htmlFor="name" className="w-24 font-bold text-slate-800 text-right">
                     이름
                 </label>
                 <input
@@ -194,7 +194,7 @@ export default function UserInfoEditForm({
 
             {/* 닉네임 */}
             <div className="flex items-center gap-8">
-                <label htmlFor="nickname" className="w-24 font-semibold text-slate-800 text-right">
+                <label htmlFor="nickname" className="w-24 font-bold text-slate-800 text-right">
                     닉네임
                 </label>
                 <div className="flex items-center gap-3">
@@ -230,7 +230,7 @@ export default function UserInfoEditForm({
 
             {/* 이메일 (수정 불가 고정 영역) */}
             <div className="flex items-center gap-8">
-                <label htmlFor="email" className="w-24 font-semibold text-slate-800 text-right">
+                <label htmlFor="email" className="w-24 font-bold text-slate-800 text-right">
                     Email
                 </label>
                 <input
@@ -248,7 +248,7 @@ export default function UserInfoEditForm({
                 <Button
                     type="button"
                     disabled={isUnchanged}
-                    className="border border-slate-400 px-8 py-6 bg-white text-slate-800 font-semibold hover:bg-slate-100 rounded-none transition-colors text-base shadow-none disabled:bg-slate-100"
+                    className="border border-slate-400 px-8 py-6 bg-white text-slate-800 font-bold hover:bg-slate-100 rounded-none transition-colors text-base shadow-none disabled:bg-slate-100"
                     onClick={handleSubmit}
                 >
                     {isSubmitting ? "수정 중..." : "정보 수정"}

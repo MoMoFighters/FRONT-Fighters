@@ -77,7 +77,7 @@ export default function ChatRoomListPanel({
     return (
         <>
             <div className="flex items-center gap-3 border-b border-slate-100 px-4 py-3">
-                <p className="shrink-0 font-semibold text-slate-900">
+                <p className="shrink-0 font-bold text-slate-900">
                     채팅 목록
                 </p>
                 <input

@@ -85,7 +85,7 @@ export default function BuildingItem({
             />
 
             {!isPlaceholder && (
-                <span className="pointer-events-none absolute bottom-0 left-1/2 z-10 -translate-x-1/2 translate-y-1/2 whitespace-nowrap rounded-[0.3cqw] bg-white px-[0.4cqw] py-[0.08cqw] text-[0.65cqw] font-semibold text-slate-700 shadow-sm">
+                <span className="pointer-events-none absolute bottom-0 left-1/2 z-10 -translate-x-1/2 translate-y-1/2 whitespace-nowrap rounded-[0.3cqw] bg-white px-[0.4cqw] py-[0.08cqw] text-[0.65cqw] font-bold text-slate-700 shadow-sm">
                     {buildingInfo.buildingName}
                 </span>
             )}
@@ -108,7 +108,7 @@ export default function BuildingItem({
                 </Link>
             </HoverCardTrigger>
             <HoverCardContent className="flex w-64 flex-col gap-0.5" side="bottom">
-                <div className="font-semibold text-slate-700 text-[14px]">{buildingInfo.buildingName} {level ? `Lv.${level}` : ""}</div>
+                <div className="font-bold text-slate-700 text-[14px]">{buildingInfo.buildingName} {level ? `Lv.${level}` : ""}</div>
                 <div className="text-slate-500 text-[12px]">{buildingInfo.description}</div>
             </HoverCardContent>
         </HoverCard>

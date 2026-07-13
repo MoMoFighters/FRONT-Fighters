@@ -77,7 +77,7 @@ export default function EmailInputModal() {
                     </button>
 
                     <div className="mb-6 pr-10">
-                        <p className="text-sm font-semibold text-indigo-500">
+                        <p className="text-sm font-bold text-indigo-500">
                             Account Help
                         </p>
                         <h1 className="mt-1 text-2xl font-bold text-slate-900">
@@ -99,7 +99,7 @@ export default function EmailInputModal() {
                             <div className="flex flex-col gap-2">
                                 <label
                                     htmlFor="email"
-                                    className="text-sm font-semibold text-slate-700"
+                                    className="text-sm font-bold text-slate-700"
                                 >
                                     이메일 인증
                                 </label>

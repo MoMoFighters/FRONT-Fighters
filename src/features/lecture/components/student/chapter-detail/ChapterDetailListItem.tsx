@@ -58,7 +58,7 @@ export default function ChapterDetailListItem({
                     {chapter.title}
                 </p>
 
-                <p className="mt-1 text-xs font-semibold text-slate-400">
+                <p className="mt-1 text-xs font-bold text-slate-400">
                     {formatDuration(chapter.durationSec)}
                 </p>
             </div>

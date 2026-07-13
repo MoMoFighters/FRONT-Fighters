@@ -56,7 +56,7 @@ export default async function TeacherLectureList() {
                         <h1 className="mt-4 text-2xl font-black tracking-tight text-slate-950">
                             내 강의
                         </h1>
-                        <p className="mt-2 text-sm font-semibold text-slate-500">
+                        <p className="mt-2 text-sm font-bold text-slate-500">
                             등록한 강의를 상태별로 확인하고 관리할 수 있습니다.
                         </p>
                     </div>

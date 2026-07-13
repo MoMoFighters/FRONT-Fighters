@@ -49,7 +49,7 @@ export default function EnrollLectureBtn({
         <TwoButtonModal
             trigger={(
                 <Button
-                    className={className ?? "absolute right-6 bottom-6 cursor-pointer rounded-md! bg-blue-400 px-6 py-6 text-md font-semibold text-white hover:bg-blue-500"}
+                    className={className ?? "absolute right-6 bottom-6 cursor-pointer rounded-md! bg-blue-400 px-6 py-6 text-md font-bold text-white hover:bg-blue-500"}
                 >
                     수강 신청
                 </Button>

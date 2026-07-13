@@ -61,7 +61,7 @@ export default function GuestbookForm({
                 <h3 className="text-lg font-black text-slate-900">
                     방명록 작성
                 </h3>
-                <p className="mt-1 text-sm font-semibold text-slate-400">
+                <p className="mt-1 text-sm font-bold text-slate-400">
                     친구의 도시에 남길 메시지를 작성해주세요.
                 </p>
             </div>
@@ -70,7 +70,7 @@ export default function GuestbookForm({
                 value={content}
                 onChange={(event) => setContent(event.target.value)}
                 placeholder="방명록을 남겨보세요."
-                className="min-h-0 flex-1 resize-none rounded-2xl border border-indigo-100 bg-white p-4 text-sm font-semibold leading-6 text-slate-700 outline-none transition placeholder:text-slate-300 focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100"
+                className="min-h-0 flex-1 resize-none rounded-2xl border border-indigo-100 bg-white p-4 text-sm font-bold leading-6 text-slate-700 outline-none transition placeholder:text-slate-300 focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100"
                 maxLength={500}
             />
 

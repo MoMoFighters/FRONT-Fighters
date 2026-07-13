@@ -59,7 +59,7 @@ export default function LecturePreviewPlayer({
                 <p
                     className="
                         text-slate-200
-                        font-semibold
+                        font-bold
                         text-sm
                     "
                 >

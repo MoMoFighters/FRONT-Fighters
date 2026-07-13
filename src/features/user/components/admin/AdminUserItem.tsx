@@ -66,7 +66,7 @@ export default function AdminUserItem({ user, view }: AdminUserItemProps) {
                 </span>
             )}
             {!isDeletedView && (
-                <span className="pl-6 text-xs font-semibold text-slate-500">
+                <span className="pl-6 text-xs font-bold text-slate-500">
                     {getSuspensionPeriod(user)}
                 </span>
             )}

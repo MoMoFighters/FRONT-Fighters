@@ -12,7 +12,7 @@ export default function CreateBuildingBtn() {
                 </Link>
             </HoverCardTrigger>
             <HoverCardContent className="flex w-64 flex-col gap-0.5">
-                <div className="font-semibold text-slate-700 text-[14px]">강의 신청</div>
+                <div className="font-bold text-slate-700 text-[14px]">강의 신청</div>
                 <div className="text-slate-500 text-[12px]">새로운 강의를 수강하고 그에 맞는 건물을 건설하고, 성장시켜 보세요!</div>
             </HoverCardContent>
         </HoverCard>

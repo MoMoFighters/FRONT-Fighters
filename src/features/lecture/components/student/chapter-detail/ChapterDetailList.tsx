@@ -33,11 +33,11 @@ export default function ChapterDetailList({
 
             <div className="mt-5 border-t border-slate-100 pt-5">
                 <div className="mb-3 flex items-center justify-between">
-                    <span className="text-sm font-semibold text-slate-500">
+                    <span className="text-sm font-bold text-slate-500">
                         전체 {totalChapterCount}개 챕터
                     </span>
 
-                    <span className="text-sm font-semibold text-slate-500">
+                    <span className="text-sm font-bold text-slate-500">
                         {completedCount} / {totalChapterCount} 완료
                     </span>
                 </div>

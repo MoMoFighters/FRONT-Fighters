@@ -142,7 +142,7 @@ export default async function AdminDashboardPage({
                         </h1>
                     </div>
 
-                    <p className="mt-2 text-sm font-semibold text-slate-500">
+                    <p className="mt-2 text-sm font-bold text-slate-500">
                         MoMoCITY 운영 현황을 한눈에 확인하세요.
                     </p>
                 </div>

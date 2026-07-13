@@ -62,14 +62,14 @@ export default function NicknameInputModal({
                 </h1>
 
                 <div className="flex justify-center">
-                    <p className="mb-5 mt-2 text-sm font-semibold text-slate-600">
+                    <p className="mb-5 mt-2 text-sm font-bold text-slate-600">
                         {message}
                     </p>
                 </div>
 
                 <div className="flex flex-row gap-3 mb-4 items-center px-2">
 
-                    <p className="text-sm font-semibold text-slate-700">닉네임</p>
+                    <p className="text-sm font-bold text-slate-700">닉네임</p>
 
                     <input
                         type="text"
@@ -86,7 +86,7 @@ export default function NicknameInputModal({
                     <Button
                         disabled={loading || !nickname.trim()}
                         onClick={handleSubmit}
-                        className="rounded-lg bg-indigo-500 text-sm font-semibold text-white hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-60"
+                        className="rounded-lg bg-indigo-500 text-sm font-bold text-white hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                         {
                             loading

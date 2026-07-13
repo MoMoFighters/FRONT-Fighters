@@ -180,7 +180,7 @@ export default function LectureItem({
                 {role === "teacher" && lectureStatus === "HOLD" && (
                     <div>
                         <Link href={`/teacher/lectures/${lecture.lectureId}/edit`}>
-                            <Button className="absolute bottom-6 right-36 cursor-pointer rounded-md! bg-blue-400 px-6 py-6 text-md font-semibold text-white hover:bg-blue-500">
+                            <Button className="absolute bottom-6 right-36 cursor-pointer rounded-md! bg-blue-400 px-6 py-6 text-md font-bold text-white hover:bg-blue-500">
                                 수정하기
                             </Button>
                         </Link>

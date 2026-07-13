@@ -92,7 +92,7 @@ export default function UpdateLectureStatusBtn({
                 <span
                     className="
                     px-3 py-1.5 rounded-lg
-                    font-semibold text-sm
+                    font-bold text-sm
                     bg-emerald-100 text-emerald-700
                 "
                 >
@@ -112,7 +112,7 @@ export default function UpdateLectureStatusBtn({
                             <Button
                                 className="
                             px-3 py-1.5 rounded-lg
-                            font-semibold text-sm
+                            font-bold text-sm
                             bg-amber-100 text-amber-700
                             hover:bg-amber-200
                             cursor-pointer

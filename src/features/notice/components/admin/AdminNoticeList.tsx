@@ -194,7 +194,7 @@ export default function AdminNoticeList({ notices: initialNotices }: AdminNotice
 
                             <Link
                                 href={`/admin/notices/${notice.noticeId}`}
-                                className="truncate font-semibold text-slate-700 hover:text-indigo-600"
+                                className="truncate font-bold text-slate-700 hover:text-indigo-600"
                             >
                                 {notice.title}
                             </Link>
