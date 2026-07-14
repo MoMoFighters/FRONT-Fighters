@@ -16,6 +16,7 @@ import {
     PaginationPrevious,
 } from "@/components/ui/pagination";
 import { getPointHistoryListAction } from "@/features/point/action";
+import PointGuideButton from "@/features/point/components/PointGuideButton";
 import {
     PointHistoryReason,
     PointHistoryTransactionType,
@@ -105,9 +106,12 @@ export default async function MypagePointPage({
                 <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
                     <div className="flex items-center justify-between gap-6">
                         <div>
-                            <h1 className="text-2xl font-black tracking-tight text-slate-900">
-                                포인트 현황
-                            </h1>
+                            <div className="flex items-center gap-1.5">
+                                <h1 className="text-2xl font-black tracking-tight text-slate-900">
+                                    포인트 현황
+                                </h1>
+                                <PointGuideButton />
+                            </div>
 
                             <p className="mt-2 text-sm font-medium leading-6 text-slate-500">
                                 포인트 적립 및 사용 내역을 확인할 수 있습니다.
