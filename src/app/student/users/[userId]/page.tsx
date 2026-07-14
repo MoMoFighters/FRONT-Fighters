@@ -6,6 +6,7 @@ import CityCanvas from "@/components/city/CityCanvas";
 import BuildingItem from "@/components/city/BuildingItem";
 import { cookies } from "next/headers";
 import { getFriendBuildings, getFriendStreak } from "@/app/services/city/service";
+import { getGuestbooksAction } from "@/features/guestbook/action";
 
 const buildingSlots = [
     {
@@ -48,16 +49,22 @@ export default async function StudentMainPage({ params }: {
     const { userId } = await params;
     const cookieStore = await cookies();
     const accessToken = cookieStore.get("accessToken")?.value;
-    const monthlyStreak = await getFriendStreak(userId);
 
-    const buildings = await getFriendBuildings(userId);
-
-
+    const [monthlyStreak, buildings, guestbookResponse] = await Promise.all([
+        getFriendStreak(userId),
+        getFriendBuildings(userId),
+        getGuestbooksAction(Number(userId)),
+    ]);
+    const guestbooks = guestbookResponse.data ?? [];
 
     return (
         <CityCanvas>
-            <BusStation mode='FRIEND' />
-            <PostBoard mode="FRIEND" ownerId={Number(userId)} />
+            <BusStation mode='FRIEND' currentOwnerId={Number(userId)} />
+            <PostBoard
+                mode="FRIEND"
+                ownerId={Number(userId)}
+                initialGuestbooks={guestbooks}
+            />
             <Phone accessToken={accessToken} />
             <MonthlyStreakGarden
                 initialStreak={monthlyStreak}

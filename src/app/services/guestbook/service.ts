@@ -1,67 +1,39 @@
+import type { ApiResponse } from "@/lib/api";
+import type {
+    CreateGuestbookResponse,
+    GuestbookListItem,
+} from "@/features/guestbook/type";
+
 const BASE_SERVER_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-export interface GuestbookApiResponse<T> {
-    success?: boolean;
-    status?: number;
-    statusCode?: number;
-    code?: string;
-    message: string;
-    data?: T;
-    errors?: Record<string, unknown>;
-    timestamp?: string;
-}
+export const getGuestbooksService = async (
+    accessToken: string,
+    cityOwnerId?: number
+): Promise<ApiResponse<GuestbookListItem[]>> => {
+    const queryString =
+        cityOwnerId !== undefined ? `?cityOwnerId=${cityOwnerId}` : "";
 
-export interface GuestbookListItemResponse {
-    bookId: number;
-    writerId: number;
-    nickname: string;
-    content: string;
-    createdAt: string;
-}
+    const response = await fetch(
+        `${BASE_SERVER_URL}/api/v3/friends/guests${queryString}`,
+        {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+            cache: "no-store",
+        }
+    );
 
-export interface CreateGuestbookResponse {
-    bookId: number;
-    ownerId: number;
-    nickname: string;
-    content: string;
-    createdAt: string;
-}
-
-const parseGuestbookResponse = async <T>(
-    response: Response,
-    fallbackMessage: string
-): Promise<GuestbookApiResponse<T>> => {
-    const result = await response.json();
-
-    if (response.status >= 500) {
-        throw new Error("500 | 알수없는문제가 발생했습니다.");
-    }
+    const result: ApiResponse<GuestbookListItem[]> = await response.json();
 
     if (!response.ok) {
-        return result;
+        throw new Error(
+            result.message ||
+            "방명록 목록 불러오기에 실패했습니다."
+        );
     }
 
-    return result ?? {
-        success: false,
-        statusCode: response.status,
-        message: fallbackMessage,
-    };
-};
-
-export const getGuestbooksService = async (
-    accessToken: string
-): Promise<GuestbookApiResponse<GuestbookListItemResponse[]>> => {
-    const response = await fetch(`${BASE_SERVER_URL}/api/v2/friends/guest`, {
-        method: "GET",
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
-        },
-    });
-
-    return parseGuestbookResponse<GuestbookListItemResponse[]>(
-        response,
-        "방명록 목록 불러오기에 실패했습니다."
-    );
+    return result;
 };
 
 export const createGuestbookService = async ({
@@ -72,7 +44,7 @@ export const createGuestbookService = async ({
     ownerId: number;
     content: string;
     accessToken: string;
-}): Promise<GuestbookApiResponse<CreateGuestbookResponse>> => {
+}): Promise<ApiResponse<CreateGuestbookResponse>> => {
     const response = await fetch(
         `${BASE_SERVER_URL}/api/v2/friends/guests/register/${ownerId}`,
         {
@@ -85,8 +57,14 @@ export const createGuestbookService = async ({
         }
     );
 
-    return parseGuestbookResponse<CreateGuestbookResponse>(
-        response,
-        "방명록 작성에 실패했습니다."
-    );
+    const result: ApiResponse<CreateGuestbookResponse> = await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            result.message ||
+            "방명록 작성에 실패했습니다."
+        );
+    }
+
+    return result;
 };

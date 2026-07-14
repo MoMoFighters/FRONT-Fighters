@@ -29,7 +29,7 @@ export default function GuestBookItem({
                     {guestbook.writerName}
                 </span>
                 <time className="shrink-0">
-                    {guestbook.createdAt}
+                    {guestbook.createdAt.split('T')[0]}
                 </time>
             </div>
         </button>

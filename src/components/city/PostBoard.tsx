@@ -15,12 +15,13 @@ import { Notice, NoticeListResponse } from "@/features/notice/type";
 import { getGuestbooksAction } from "@/features/guestbook/action";
 import {
     CreateGuestbookResponse,
-    GuestbookListItemResponse,
-} from "@/app/services/guestbook/service";
+    GuestbookListItem,
+} from "@/features/guestbook/type";
 
 interface PostBoardProps {
     mode: "MY" | "FRIEND";
     ownerId?: number;
+    initialGuestbooks?: GuestbookListItem[];
 }
 
 type PostBoardMode = "guestbook" | "notice";
@@ -60,7 +61,7 @@ const normalizeNoticeContent = (content?: string) => {
 };
 
 const toGuestbookDetail = (
-    guestbook: GuestbookListItemResponse
+    guestbook: GuestbookListItem
 ): GuestBookDetail => ({
     guestbookId: guestbook.bookId,
     writerName: guestbook.nickname,
@@ -79,12 +80,14 @@ const toCreatedGuestbookDetail = (
     createdAt: guestbook.createdAt,
 });
 
-export default function PostBoard({ mode, ownerId }: PostBoardProps) {
+export default function PostBoard({ mode, ownerId, initialGuestbooks = [] }: PostBoardProps) {
     const [isModal, setIsModal] = useState(false);
     const [nav, setNav] = useState<PostBoardMode>("guestbook");
     const [panelView, setPanelView] = useState<PanelView>("list");
     const [currentPage, setCurrentPage] = useState(1);
-    const [guestbooks, setGuestbooks] = useState<GuestBookDetail[]>([]);
+    const [guestbooks, setGuestbooks] = useState<GuestBookDetail[]>(
+        () => initialGuestbooks.map(toGuestbookDetail)
+    );
     const [noticeResponse, setNoticeResponse] =
         useState<NoticeListResponse>(EMPTY_NOTICE_RESPONSE);
     const [isGuestbookLoading, setIsGuestbookLoading] = useState(false);
@@ -118,9 +121,8 @@ export default function PostBoard({ mode, ownerId }: PostBoardProps) {
 
         try {
             const response = await getGuestbooksAction();
-            const status = response.statusCode ?? response.status ?? 200;
 
-            if (status >= 400) {
+            if (response.status >= 400) {
                 alert(response.message);
                 setGuestbooks([]);
                 return;
@@ -312,7 +314,7 @@ export default function PostBoard({ mode, ownerId }: PostBoardProps) {
                             {mode === "FRIEND" ? (
                                 <Button
                                     type="button"
-                                    className="cursor-pointer rounded-xl bg-indigo-500 py-4 font-black hover:bg-indigo-600"
+                                    className="cursor-pointer rounded-xl bg-indigo-500 py-4 text-xs font-black hover:bg-indigo-600"
                                     onClick={() => setPanelView("guestbook-form")}
                                 >
                                     <Plus />
@@ -494,7 +496,8 @@ function GuestbookDetailView({
                         {guestbook.writerName}
                     </p>
                     <time className="text-xs font-bold text-slate-400">
-                        {guestbook.createdAt}
+                        {guestbook.createdAt.split('T')[0]}
+                        <span className="ml-1">{guestbook.createdAt.split('T')[1]}</span>
                     </time>
                 </div>
             </div>

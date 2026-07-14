@@ -8,22 +8,25 @@ import FortuneSpot from "@/features/city/components/FortuneSpot";
 import { cookies } from "next/headers";
 import { getMyBuildings, getMyStreak } from "../services/city/service";
 import { getMyInfo } from "@/features/user/action";
+import { getGuestbooksAction } from "@/features/guestbook/action";
 
 export default async function StudentMainPage() {
     const cookieStore = await cookies();
     const accessToken = cookieStore.get("accessToken")?.value;
 
-    const [buildings, myInfo, monthlyStreak] = await Promise.all([
+    const [buildings, myInfo, monthlyStreak, guestbookResponse] = await Promise.all([
         getMyBuildings(),
         getMyInfo(),
         getMyStreak(),
+        getGuestbooksAction(),
     ]);
     const dnd = myInfo.data?.doNotDisturb;
+    const guestbooks = guestbookResponse.data ?? [];
 
     return (
         <CityCanvas>
             <BusStation mode="MY" />
-            <PostBoard mode="MY" />
+            <PostBoard mode="MY" initialGuestbooks={guestbooks} />
             <Phone accessToken={accessToken} initialNotification={dnd} />
             <MonthlyStreakGarden initialStreak={monthlyStreak} />
             <StudentCityBuildings initialBuildings={buildings} />
