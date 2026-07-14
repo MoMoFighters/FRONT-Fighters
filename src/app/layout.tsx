@@ -1,18 +1,16 @@
 import { Toaster } from 'sonner';
 import type { Metadata } from 'next';
-import localFont from 'next/font/local';
+import { IBM_Plex_Sans_KR } from 'next/font/google';
 import '../app/globals.css'
 import { TooltipProvider } from '@/components/ui/tooltip';
 import ReactQueryProvider from '@/components/common/ReactQueryProvider';
 import KakaoSdkScript from '@/components/common/KakaoSdkScript';
 
-const pretendard = localFont({
-  src: [
-    { path: './assets/fonts/Pretendard-Medium.woff2', weight: '500', style: 'normal' },
-    { path: './assets/fonts/Pretendard-Bold.woff2', weight: '700', style: 'normal' },
-  ],
+const ibmPlexSansKr = IBM_Plex_Sans_KR({
+  weight: ['500', '700'],
+  subsets: ['latin'],
   display: 'swap',
-  variable: '--font-pretendard',
+  variable: '--font-ibm-plex-sans-kr',
   preload: false
 });
 
@@ -96,7 +94,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" className={pretendard.variable}>
+    <html lang="ko" className={ibmPlexSansKr.variable}>
       <body className="min-h-screen flex flex-col">
 
         <KakaoSdkScript
