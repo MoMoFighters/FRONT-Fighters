@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import {
     ArrowDownLeft,
@@ -11,7 +10,6 @@ import {
     Settings,
     ShieldCheck,
     Store,
-    UserRound,
 } from "lucide-react";
 
 import { getLecturesWithAuth } from "@/app/services/lecture/service";
@@ -26,6 +24,7 @@ import {
     PointHistoryTransactionType,
 } from "@/features/point/type";
 import { getMyInfo } from "@/features/user/action";
+import MyPageProfileAvatar from "@/features/user/components/mypage/MyPageProfileAvatar";
 import PasswordChangeMenuItem from "@/features/user/components/mypage/PasswordChangeMenuItem";
 import TeacherRegistMenuItem from "@/features/auth/components/TeacherRegistMenuItem";
 
@@ -101,22 +100,12 @@ export default async function StudentMyPage() {
     return (
         <main className="min-h-[calc(100vh-137px)] bg-white px-8 py-8">
             <div className="mx-auto flex w-full max-w-360 gap-6">
-                <aside className="sticky top-22 z-0 mb-auto w-68 shrink-0 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-                    <div className="border-b border-slate-100 p-6">
+                <aside className="sticky top-22 z-20 mb-auto w-68 shrink-0 rounded-3xl border border-slate-200 bg-white shadow-sm">
+                    <div className="rounded-t-3xl border-b border-slate-100 p-6">
                         <div className="flex items-center gap-4">
-                            <div className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-slate-100 text-slate-400 ring-1 ring-slate-200">
-                                {userData.profileImageUrl ? (
-                                    <Image
-                                        src={userData.profileImageUrl}
-                                        alt="프로필 이미지"
-                                        fill
-                                        sizes="64px"
-                                        className="object-cover"
-                                    />
-                                ) : (
-                                    <UserRound className="h-8 w-8" />
-                                )}
-                            </div>
+                            <MyPageProfileAvatar
+                                profileImageUrl={userData.profileImageUrl}
+                            />
 
                             <div className="min-w-0 w-full flex flex-row gap-2 items-center">
                                 <p className="truncate text-lg font-black text-slate-900">
@@ -169,7 +158,7 @@ export default async function StudentMyPage() {
                 </aside>
 
                 <section className="min-w-0 flex-1 space-y-6">
-                    <section className="grid grid-cols-[630px_1fr] gap-6">
+                    <section className="grid grid-cols-2 gap-6">
                         <div className="relative z-0 overflow-hidden rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
                             <div className="mb-4 flex items-center gap-2">
                                 <CreditCard className="h-5 w-5 text-indigo-500" />

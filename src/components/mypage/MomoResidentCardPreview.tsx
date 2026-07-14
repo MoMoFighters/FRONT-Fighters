@@ -19,8 +19,8 @@ export default function MomoResidentCardPreview({
             </h3>
 
             <div className="h-[292px] w-[452px] overflow-visible">
-                <div className="origin-top-left scale-[0.78]">
-                <MomoResidentCard data={data} />
+                <div className="w-145 origin-top-left scale-[0.78]">
+                    <MomoResidentCard data={data} />
                 </div>
             </div>
         </div>
