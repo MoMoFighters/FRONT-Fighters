@@ -14,6 +14,7 @@ import { UserRole } from '@/features/user/type';
 
 interface BusStationProps {
     mode: 'MY' | "FRIEND";
+    currentOwnerId?: number;
 }
 
 interface CityFriend {
@@ -23,7 +24,7 @@ interface CityFriend {
     profileImageUrl?: string;
 }
 
-export default function BusStation({ mode }: BusStationProps) {
+export default function BusStation({ mode, currentOwnerId }: BusStationProps) {
 
     const [isModal, setIsModal] = useState(false);
     const [searchedValue, setSearchedValue] = useState("");
@@ -86,30 +87,17 @@ export default function BusStation({ mode }: BusStationProps) {
                 closeDelay={50}
             >
                 <HoverCardTrigger asChild>
-                    {mode === 'FRIEND' ? (
-                        <Link
-                            href='/student'
-                            className="absolute left-[22.5%] top-[18.5%] z-10 aspect-square w-[9.375%] cursor-pointer"
-                            style={{
-                                transform: "rotate(-8deg) skewX(-5deg) scaleY(0.92)",
-                                transformOrigin: "center",
-                            }}
-                        >
-                            <BusStationVisual />
-                        </Link>
-                    ) : (
-                        <button
-                            type="button"
-                            onClick={() => setIsModal(true)}
-                            className="absolute left-[22.5%] top-[18.5%] z-10 aspect-square w-[9.375%] cursor-pointer border-0 bg-transparent p-0"
-                            style={{
-                                transform: "rotate(-8deg) skewX(-5deg) scaleY(0.92)",
-                                transformOrigin: "center",
-                            }}
-                        >
-                            <BusStationVisual />
-                        </button>
-                    )}
+                    <button
+                        type="button"
+                        onClick={() => setIsModal(true)}
+                        className="absolute left-[22.5%] top-[18.5%] z-10 aspect-square w-[9.375%] cursor-pointer border-0 bg-transparent p-0"
+                        style={{
+                            transform: "rotate(-8deg) skewX(-5deg) scaleY(0.92)",
+                            transformOrigin: "center",
+                        }}
+                    >
+                        <BusStationVisual />
+                    </button>
                 </HoverCardTrigger>
                 <HoverCardContent
                     side="bottom"
@@ -121,7 +109,9 @@ export default function BusStation({ mode }: BusStationProps) {
                             버스정류장
                         </p>
                         <p className="text-xs font-medium text-slate-500">
-                            {mode === 'MY' ? "친구의 도시로 이동해보세요" : "내 도시로 이동합니다"}
+                            {mode === 'MY'
+                                ? "친구의 도시로 이동해보세요"
+                                : "다른 친구의 도시로 이동하거나 내 도시로 돌아가보세요"}
                         </p>
                     </div>
                 </HoverCardContent>
@@ -146,15 +136,25 @@ export default function BusStation({ mode }: BusStationProps) {
                             <X className="h-4 w-4" />
                         </button>
 
-                        <div className="mb-5 pr-10">
+                        <div className="mb-5 flex items-start justify-between gap-3 pr-10">
+                            <div>
+                                <h2 className="text-2xl font-black text-slate-900">
+                                    친구 도시로 이동하기
+                                </h2>
 
-                            <h2 className="text-2xl font-black text-slate-900">
-                                친구 도시로 이동하기
-                            </h2>
+                                <p className="mt-1 text-sm font-medium text-slate-400">
+                                    방문할 친구를 검색하고 도시로 이동해보세요.
+                                </p>
+                            </div>
 
-                            <p className="mt-1 text-sm font-medium text-slate-400">
-                                방문할 친구를 검색하고 도시로 이동해보세요.
-                            </p>
+                            {mode === "FRIEND" && (
+                                <Link
+                                    href="/student"
+                                    className="flex shrink-0 items-center gap-1 rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-black text-indigo-500 transition hover:bg-indigo-100"
+                                >
+                                    내 도시로 돌아가기
+                                </Link>
+                            )}
                         </div>
 
                         <form
@@ -193,34 +193,68 @@ export default function BusStation({ mode }: BusStationProps) {
                                 </div>
                             ) : (
                                 <div className="grid grid-cols-3 gap-2">
-                                    {filteredFriends.map((friend) => (
-                                        <Link
-                                            key={friend.userId}
-                                            href={`/student/users/${friend.userId}`}
-                                            className="flex h-20 w-full cursor-pointer items-center gap-3 rounded-2xl border border-indigo-100 bg-white p-3 text-left shadow-sm transition hover:border-indigo-200 hover:bg-indigo-50/60"
-                                        >
-                                            <div className="flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-indigo-100 text-sm font-black text-indigo-500">
-                                                {friend.profileImageUrl ? (
-                                                    <img
-                                                        src={friend.profileImageUrl}
-                                                        alt={`${friend.nickname} 프로필`}
-                                                        className="h-full w-full object-cover"
-                                                    />
-                                                ) : (
-                                                    friend.nickname.slice(0, 1)
-                                                )}
-                                            </div>
+                                    {filteredFriends.map((friend) => {
+                                        const isCurrentCity = friend.userId === currentOwnerId;
 
-                                            <div className="min-w-0">
-                                                <p className="truncate text-sm font-black text-slate-800">
-                                                    {friend.nickname}
-                                                </p>
-                                                <p className="mt-0.5 text-xs font-bold text-slate-400">
-                                                    친구 도시로 이동하기
-                                                </p>
-                                            </div>
-                                        </Link>
-                                    ))}
+                                        if (isCurrentCity) {
+                                            return (
+                                                <div
+                                                    key={friend.userId}
+                                                    className="flex h-20 w-full items-center gap-3 rounded-2xl border border-indigo-200 bg-indigo-50 p-3 text-left"
+                                                >
+                                                    <div className="flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-indigo-100 text-sm font-black text-indigo-500">
+                                                        {friend.profileImageUrl ? (
+                                                            <img
+                                                                src={friend.profileImageUrl}
+                                                                alt={`${friend.nickname} 프로필`}
+                                                                className="h-full w-full object-cover"
+                                                            />
+                                                        ) : (
+                                                            friend.nickname.slice(0, 1)
+                                                        )}
+                                                    </div>
+
+                                                    <div className="min-w-0">
+                                                        <p className="truncate text-sm font-black text-slate-800">
+                                                            {friend.nickname}
+                                                        </p>
+                                                        <p className="mt-0.5 text-xs font-bold text-indigo-500">
+                                                            현재 위치한 도시
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            );
+                                        }
+
+                                        return (
+                                            <Link
+                                                key={friend.userId}
+                                                href={`/student/users/${friend.userId}`}
+                                                className="flex h-20 w-full cursor-pointer items-center gap-3 rounded-2xl border border-indigo-100 bg-white p-3 text-left shadow-sm transition hover:border-indigo-200 hover:bg-indigo-50/60"
+                                            >
+                                                <div className="flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-indigo-100 text-sm font-black text-indigo-500">
+                                                    {friend.profileImageUrl ? (
+                                                        <img
+                                                            src={friend.profileImageUrl}
+                                                            alt={`${friend.nickname} 프로필`}
+                                                            className="h-full w-full object-cover"
+                                                        />
+                                                    ) : (
+                                                        friend.nickname.slice(0, 1)
+                                                    )}
+                                                </div>
+
+                                                <div className="min-w-0">
+                                                    <p className="truncate text-sm font-black text-slate-800">
+                                                        {friend.nickname}
+                                                    </p>
+                                                    <p className="mt-0.5 text-xs font-bold text-slate-400">
+                                                        친구 도시로 이동하기
+                                                    </p>
+                                                </div>
+                                            </Link>
+                                        );
+                                    })}
                                 </div>
                             )}
                         </div>
