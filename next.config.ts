@@ -46,6 +46,7 @@ const nextConfig = {
     formats: ['image/webp', 'image/avif'],
     qualities: [40, 70, 75, 80]
   },
+  output: 'standalone',
 } satisfies NextConfig;
 
 export default withBundleAnalyzer(nextConfig);
