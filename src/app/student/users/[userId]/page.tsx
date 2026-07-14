@@ -59,7 +59,7 @@ export default async function StudentMainPage({ params }: {
 
     return (
         <CityCanvas>
-            <BusStation mode='FRIEND' />
+            <BusStation mode='FRIEND' currentOwnerId={Number(userId)} />
             <PostBoard
                 mode="FRIEND"
                 ownerId={Number(userId)}

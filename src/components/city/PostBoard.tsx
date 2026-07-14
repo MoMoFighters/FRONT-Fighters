@@ -314,7 +314,7 @@ export default function PostBoard({ mode, ownerId, initialGuestbooks = [] }: Pos
                             {mode === "FRIEND" ? (
                                 <Button
                                     type="button"
-                                    className="cursor-pointer rounded-xl bg-indigo-500 py-4 font-black hover:bg-indigo-600"
+                                    className="cursor-pointer rounded-xl bg-indigo-500 py-4 text-xs font-black hover:bg-indigo-600"
                                     onClick={() => setPanelView("guestbook-form")}
                                 >
                                     <Plus />
@@ -496,7 +496,8 @@ function GuestbookDetailView({
                         {guestbook.writerName}
                     </p>
                     <time className="text-xs font-bold text-slate-400">
-                        {guestbook.createdAt}
+                        {guestbook.createdAt.split('T')[0]}
+                        <span className="ml-1">{guestbook.createdAt.split('T')[1]}</span>
                     </time>
                 </div>
             </div>
