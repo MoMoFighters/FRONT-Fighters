@@ -20,6 +20,7 @@ import PointStoreLink from "@/components/mypage/PointStoreLink";
 import StudentLectureItem from "@/features/lecture/components/student/list/StudentLectureItem";
 import { Lecture } from "@/features/lecture/type";
 import { getPointHistoryListAction } from "@/features/point/action";
+import PointGuideButton from "@/features/point/components/PointGuideButton";
 import {
     PointHistoryReason,
     PointHistoryTransactionType,
@@ -131,12 +132,13 @@ export default async function StudentMyPage() {
                             <p className="text-xs font-black text-indigo-500">
                                 보유 포인트
                             </p>
-                            <p className="text-xl font-black text-slate-900">
+                            <p className="text-xl font-black text-slate-900 ml-auto">
                                 {userData.points.toLocaleString()}
                                 <span className="ml-1 text-sm text-indigo-500">
                                     P
                                 </span>
                             </p>
+                            <PointGuideButton />
                         </div>
                     </div>
 
