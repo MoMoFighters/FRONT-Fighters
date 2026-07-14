@@ -1,51 +1,51 @@
 "use server";
 
 import { cookies } from "next/headers";
+import type { ApiResponse } from "@/lib/api";
 import {
     createGuestbookService,
     getGuestbooksService,
-    type CreateGuestbookResponse,
-    type GuestbookApiResponse,
-    type GuestbookListItemResponse,
 } from "@/app/services/guestbook/service";
-
-const createUnauthorizedResponse = <T>(): GuestbookApiResponse<T> => ({
-    success: false,
-    statusCode: 401,
-    message: "다시 로그인 해주세요.",
-    data: undefined,
-    errors: {},
-});
-
-const createErrorResponse = <T>(
-    error: unknown,
-    fallbackMessage: string
-): GuestbookApiResponse<T> => ({
-    success: false,
-    statusCode: 500,
-    message: error instanceof Error ? error.message : fallbackMessage,
-    data: undefined,
-    errors: {},
-});
+import type {
+    CreateGuestbookResponse,
+    GuestbookListItem,
+} from "@/features/guestbook/type";
 
 const getAccessToken = async () => {
     const cookieStore = await cookies();
     return cookieStore.get("accessToken")?.value;
 };
 
-export const getGuestbooksAction = async (): Promise<
-    GuestbookApiResponse<GuestbookListItemResponse[]>
-> => {
+const createErrorResponse = <T>(
+    error: unknown,
+    message: string
+): ApiResponse<T> => ({
+    timestamp: new Date().toISOString(),
+    status: 500,
+    code: "INTERNAL_SERVER_ERROR",
+    message: error instanceof Error ? error.message : message,
+});
+
+const createUnauthorizedResponse = <T>(): ApiResponse<T> => ({
+    timestamp: new Date().toISOString(),
+    status: 401,
+    code: "UNAUTHORIZED",
+    message: "로그인이 필요합니다.",
+});
+
+export const getGuestbooksAction = async (
+    cityOwnerId?: number
+): Promise<ApiResponse<GuestbookListItem[]>> => {
     try {
         const accessToken = await getAccessToken();
 
         if (!accessToken) {
-            return createUnauthorizedResponse<GuestbookListItemResponse[]>();
+            return createUnauthorizedResponse<GuestbookListItem[]>();
         }
 
-        return await getGuestbooksService(accessToken);
+        return await getGuestbooksService(accessToken, cityOwnerId);
     } catch (error) {
-        return createErrorResponse<GuestbookListItemResponse[]>(
+        return createErrorResponse<GuestbookListItem[]>(
             error,
             "방명록 목록 불러오기에 실패했습니다."
         );
@@ -58,7 +58,7 @@ export const createGuestbookAction = async ({
 }: {
     ownerId: number;
     content: string;
-}): Promise<GuestbookApiResponse<CreateGuestbookResponse>> => {
+}): Promise<ApiResponse<CreateGuestbookResponse>> => {
     try {
         const accessToken = await getAccessToken();
 

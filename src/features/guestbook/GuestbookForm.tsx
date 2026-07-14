@@ -3,7 +3,7 @@
 import { FormEvent, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { createGuestbookAction } from "./action";
-import { CreateGuestbookResponse } from "@/app/services/guestbook/service";
+import { CreateGuestbookResponse } from "./type";
 
 interface GuestbookFormProps {
     ownerId?: number;
@@ -36,9 +36,7 @@ export default function GuestbookForm({
                 content: trimmedContent,
             });
 
-            const status = response.statusCode ?? response.status ?? 500;
-
-            if (status >= 400) {
+            if (response.status >= 400) {
                 alert(response.message);
                 return;
             }
