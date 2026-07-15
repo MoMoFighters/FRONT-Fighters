@@ -2,7 +2,7 @@
 // 공통
 // ====================
 
-// 열품타 API 공통 응답 형식 (statusCode 필드 사용)
+// 팀 스터디 API 공통 응답 형식 (statusCode 필드 사용)
 export interface StudyApiResponse<T> {
     timestamp: string;
     statusCode: number;

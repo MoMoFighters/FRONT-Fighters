@@ -139,7 +139,7 @@ export default function GroupStudyRoomView({
                             href: "/student",
                         },
                         {
-                            label: "열품타",
+                            label: "팀 스터디",
                             href: "/student/group-study",
                         },
                         {

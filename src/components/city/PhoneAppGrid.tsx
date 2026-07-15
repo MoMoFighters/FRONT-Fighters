@@ -72,10 +72,11 @@ export default function PhoneAppGrid({ notification }: PhoneAppGridProps) {
                 <HoverCardTrigger asChild>
                     <Link
                         href="/student/group-study"
-                        aria-label="튜토리얼"
+                        aria-label="팀 스터디"
                         className="relative h-14 w-14 rounded-2xl shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
                     >
-                        <Image src={study} alt="팀스터디" fill sizes="56px" />
+                        <Image src={study} alt="팀 스터디" fill sizes="56px" />
+                        <Badge count={notification.studyCount} />
                     </Link>
                 </HoverCardTrigger>
 

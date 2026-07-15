@@ -27,6 +27,7 @@ const EMPTY_COUNTS: NoticeAppCountsData = {
     totalMsgFriendCount: 0,
     calendarCount: 0,
     communityCount: 0,
+    studyCount: 0,
 };
 
 const PhoneAppGridSkeleton = () => (
@@ -166,6 +167,7 @@ export default function Phone({
                                 totalMsgFriendCount: data.totalMsgFriendCount ?? 0,
                                 calendarCount: data.calendarCount ?? 0,
                                 communityCount: data.communityCount ?? 0,
+                                studyCount: data.studyCount ?? 0,
                             });
                         }
                     );

@@ -37,7 +37,7 @@ export default async function SoloStudyPage() {
                             href: "/student",
                         },
                         {
-                            label: "열품타",
+                            label: "팀 스터디",
                             href: "/student/group-study",
                         },
                         {
