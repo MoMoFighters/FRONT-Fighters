@@ -9,7 +9,6 @@ import TwoButtonModal from "@/features/modal/TwoButtonModal";
 import { createPointOrderAction, getPointStoreItemsAction } from "../action";
 import { POINT_STORE_CATEGORIES, POINT_STORE_PAGE_SIZE, toPointStoreItem } from "../data";
 import { PointStoreItem, PointStoreTab } from "../type";
-import PointGuideButton from "./PointGuideButton";
 import PointStoreItemCard from "./PointStoreItemCard";
 
 interface PointStorePurchaseSectionProps {
@@ -112,7 +111,6 @@ export default function PointStorePurchaseSection({
                         <p className="flex items-center gap-1.5 text-xs font-black text-slate-500">
                             <Coins className="h-3.5 w-3.5 text-amber-400" />
                             보유 포인트
-                            <PointGuideButton />
                         </p>
                         <p className="mt-1 text-right text-2xl font-black text-slate-950">
                             {points.toLocaleString()}
