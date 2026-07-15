@@ -127,7 +127,7 @@ export default function BuildingItem({
                         <button
                             type="button"
                             onClick={() => setIsMypageChoiceOpen(true)}
-                            className="relative block h-full w-full border-0 bg-transparent p-0 transition-all hover:scale-110"
+                            className="relative block h-full w-full cursor-pointer border-0 bg-transparent p-0 transition-all hover:scale-110"
                         >
                             {visual}
                         </button>
