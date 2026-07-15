@@ -127,11 +127,10 @@ export default function PointStorePurchaseSection({
                             key={category.value}
                             type="button"
                             onClick={() => setActiveTab(category.value)}
-                            className={`cursor-pointer rounded-full px-4 py-2 text-sm font-black transition ${
-                                activeTab === category.value
+                            className={`cursor-pointer rounded-full px-4 py-2 text-sm font-black transition ${activeTab === category.value
                                     ? "bg-indigo-500 text-white shadow-sm shadow-indigo-200"
                                     : "bg-slate-100 text-slate-500 hover:bg-indigo-50 hover:text-indigo-500"
-                            }`}
+                                }`}
                         >
                             {category.label}
                         </button>
