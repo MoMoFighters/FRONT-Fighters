@@ -33,85 +33,31 @@ export const getPointStoreItemsService = async ({
     return result;
 };
 
-export const getProfileOrderListService =
-    async (): Promise<ProfileOrderListResponse> => {
-        const response = await fetchWithAuth("/api/v1/order/profile/list", {
-            method: "GET",
-            cache: "no-store",
-        });
+export const getProfileOrderListService = async ({
+    page,
+    size,
+}: {
+    page: number;
+    size: number;
+}): Promise<ProfileOrderListResponse> => {
+    const params = new URLSearchParams({
+        page: String(page),
+        size: String(size),
+    });
 
-        const result: ProfileOrderListResponse = await response.json();
+    const response = await fetchWithAuth(`/api/v1/order/profile/list?${params.toString()}`, {
+        method: "GET",
+        cache: "no-store",
+    });
 
-        if (!response.ok) {
-            throw new Error(result.message || "프로필 아이템 목록을 불러오지 못했습니다.");
-        }
+    const result: ProfileOrderListResponse = await response.json();
 
-        const storeResponse = await fetchWithAuth(
-            "/api/v1/store/product/list?page=1&size=100",
-            {
-                method: "GET",
-                cache: "no-store",
-            }
-        );
-        const storeResult: PointStoreListResponse = storeResponse.ok
-            ? await storeResponse.json()
-            : {
-                timestamp: new Date().toISOString(),
-                status: storeResponse.status,
-                code: "POINT-STORE-LIST-FAILED",
-                message: "",
-            };
-        const storeNameByImageUrl = new Map(
-            (storeResult.data?.stores ?? [])
-                .filter((item) => item.url && item.name)
-                .map((item) => [item.url, item.name])
-        );
+    if (!response.ok) {
+        throw new Error(result.message || "프로필 아이템 목록을 불러오지 못했습니다.");
+    }
 
-        const normalizeProfileItems = (
-            items: Array<{
-                itemName?: string | null;
-                item_name?: string | null;
-                name?: string | null;
-                productName?: string | null;
-                product_name?: string | null;
-                imageUrl?: string | null;
-                image_url?: string | null;
-            }> = []
-        ) =>
-            items
-                .map((item) => {
-                    const imageUrl =
-                        item.imageUrl ?? item.image_url ?? null;
-                    const itemName =
-                        item.itemName ??
-                        item.item_name ??
-                        item.name ??
-                        item.productName ??
-                        item.product_name ??
-                        (imageUrl ? storeNameByImageUrl.get(imageUrl) : "") ??
-                        "";
-
-                    return {
-                        itemName,
-                        imageUrl,
-                    };
-                })
-                .filter(
-                    (item) =>
-                        item.itemName.trim().length > 0 &&
-                        Boolean(item.imageUrl)
-                );
-
-        return {
-            ...result,
-            data: result.data
-                ? {
-                    owned: normalizeProfileItems(result.data.owned),
-                    notOwned: normalizeProfileItems(result.data.notOwned),
-                }
-                : result.data,
-        };
-    };
+    return result;
+};
 
 export const createPointOrderService = async (
     payload: CreatePointOrderRequest

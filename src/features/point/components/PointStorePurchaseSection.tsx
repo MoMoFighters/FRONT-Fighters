@@ -5,39 +5,32 @@ import { Coins, ShoppingBag } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-import {
-    Pagination,
-    PaginationContent,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
-} from "@/components/ui/pagination";
 import TwoButtonModal from "@/features/modal/TwoButtonModal";
-import { createPointOrderAction } from "../action";
-import { POINT_STORE_CATEGORIES } from "../data";
+import { createPointOrderAction, getPointStoreItemsAction } from "../action";
+import { POINT_STORE_CATEGORIES, POINT_STORE_PAGE_SIZE, toPointStoreItem } from "../data";
 import { PointStoreItem, PointStoreTab } from "../type";
+import PointGuideButton from "./PointGuideButton";
 import PointStoreItemCard from "./PointStoreItemCard";
-import { getVisiblePageNumbers } from "@/lib/pagination";
 
 interface PointStorePurchaseSectionProps {
     points: number;
-    items: PointStoreItem[];
-    currentPage: number;
-    totalPages: number;
+    initialItems: PointStoreItem[];
+    initialTotalPages: number;
 }
 
 export default function PointStorePurchaseSection({
     points,
-    items,
-    currentPage,
-    totalPages,
+    initialItems,
+    initialTotalPages,
 }: PointStorePurchaseSectionProps) {
     const router = useRouter();
     const [activeTab, setActiveTab] = useState<PointStoreTab>("ALL");
+    const [items, setItems] = useState<PointStoreItem[]>(initialItems);
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(initialTotalPages);
+    const [isLoadingMore, setIsLoadingMore] = useState(false);
     const [selectedItem, setSelectedItem] = useState<PointStoreItem | null>(null);
     const [isPurchasing, setIsPurchasing] = useState(false);
-    const pageNumbers = getVisiblePageNumbers(currentPage, totalPages);
 
     const filteredItems = useMemo(() => {
         if (activeTab === "ALL") {
@@ -46,6 +39,35 @@ export default function PointStorePurchaseSection({
 
         return items.filter((item) => item.category === activeTab);
     }, [activeTab, items]);
+
+    const handleLoadMore = async () => {
+        if (isLoadingMore || page >= totalPages) {
+            return;
+        }
+
+        setIsLoadingMore(true);
+
+        try {
+            const nextPage = page + 1;
+            const response = await getPointStoreItemsAction({
+                page: nextPage,
+                size: POINT_STORE_PAGE_SIZE,
+            });
+
+            if (response.status >= 400) {
+                toast.error(response.message || "상품 목록을 불러오지 못했습니다.");
+                return;
+            }
+
+            const nextItems = response.data?.stores.map(toPointStoreItem) ?? [];
+
+            setItems((prev) => [...prev, ...nextItems]);
+            setPage(nextPage);
+            setTotalPages(Math.max(response.data?.totalPages ?? totalPages, 1));
+        } finally {
+            setIsLoadingMore(false);
+        }
+    };
 
     const handleConfirmPurchase = async () => {
         if (!selectedItem || isPurchasing) {
@@ -73,9 +95,6 @@ export default function PointStorePurchaseSection({
         }
     };
 
-    const createPageHref = (pageNumber: number) =>
-        `/student/point-store?page=${pageNumber}`;
-
     return (
         <section className="flex min-h-150 flex-1 flex-col rounded-3xl border border-slate-200 bg-white shadow-sm">
             <div className="border-b border-slate-100 p-5">
@@ -93,6 +112,7 @@ export default function PointStorePurchaseSection({
                         <p className="flex items-center gap-1.5 text-xs font-black text-slate-500">
                             <Coins className="h-3.5 w-3.5 text-amber-400" />
                             보유 포인트
+                            <PointGuideButton />
                         </p>
                         <p className="mt-1 text-right text-2xl font-black text-slate-950">
                             {points.toLocaleString()}
@@ -139,46 +159,15 @@ export default function PointStorePurchaseSection({
                     </div>
                 )}
 
-                {totalPages > 1 && (
-                    <Pagination className="mt-auto pt-6">
-                        <PaginationContent>
-                            {currentPage > 1 && (
-                                <PaginationItem>
-                                    <PaginationPrevious
-                                        href={createPageHref(currentPage - 1)}
-                                        text=""
-                                        className="h-8 w-8 border border-slate-200 bg-white p-0 text-slate-500 hover:text-slate-900"
-                                    />
-                                </PaginationItem>
-                            )}
-
-                            {pageNumbers.map((pageNumber) => (
-                                <PaginationItem key={pageNumber}>
-                                    <PaginationLink
-                                        href={createPageHref(pageNumber)}
-                                        isActive={currentPage === pageNumber}
-                                        className={
-                                            currentPage === pageNumber
-                                                ? "h-8 w-8 border-indigo-300 bg-indigo-50 text-indigo-500 hover:bg-indigo-50"
-                                                : "h-8 w-8 text-slate-500 hover:border-slate-200 hover:bg-white hover:text-slate-900"
-                                        }
-                                    >
-                                        {pageNumber}
-                                    </PaginationLink>
-                                </PaginationItem>
-                            ))}
-
-                            {currentPage < totalPages && (
-                                <PaginationItem>
-                                    <PaginationNext
-                                        href={createPageHref(currentPage + 1)}
-                                        text=""
-                                        className="h-8 w-8 border border-slate-200 bg-white p-0 text-slate-500 hover:text-slate-900"
-                                    />
-                                </PaginationItem>
-                            )}
-                        </PaginationContent>
-                    </Pagination>
+                {page < totalPages && (
+                    <button
+                        type="button"
+                        disabled={isLoadingMore}
+                        onClick={handleLoadMore}
+                        className="mt-6 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-black text-slate-500 transition hover:bg-slate-100 disabled:cursor-wait disabled:opacity-60"
+                    >
+                        {isLoadingMore ? "불러오는 중" : "상품 더보기"}
+                    </button>
                 )}
             </div>
 
