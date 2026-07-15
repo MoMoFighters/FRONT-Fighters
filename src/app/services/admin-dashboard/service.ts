@@ -1,4 +1,4 @@
-import { DashboardSummaryResponse, MonthlyStateResponse } from "@/features/admin/components/dashboard/type";
+import { DashboardSummaryResponse, MonthlyMembershipsResponse, MonthlyPaymentsResponse, MonthlyStateResponse, TotalPaymentsResponse } from "@/features/admin/components/dashboard/type";
 import { ApiResponse, fetchWithAuth } from "@/lib/api";
 import { notFound } from "next/navigation";
 
@@ -98,5 +98,44 @@ export const getDashboardSummary = async (): Promise<DashboardSummaryResponse> =
     });
     await handleErrorResponse(response);
     const result: ApiResponse<DashboardSummaryResponse> = await response.json();
+    return assertApiData(result);
+};
+
+/**
+ * 총 매출 조회 api
+ * @returns TotalPaymentsResponse
+ */
+export const getTotalPayments = async (): Promise<TotalPaymentsResponse> => {
+    const response = await fetchWithAuth("/api/v3/payment/sales/total", {
+        cache: "no-store",
+    });
+    await handleErrorResponse(response);
+    const result: ApiResponse<TotalPaymentsResponse> = await response.json();
+    return assertApiData(result);
+};
+
+/**
+ * 올해 월별 매출 현황 조회 api
+ * @returns MonthlyPaymentsResponse[]
+ */
+export const getMonthlyPayments = async (): Promise<MonthlyPaymentsResponse[]> => {
+    const response = await fetchWithAuth("/api/v3/payment/sales/monthly", {
+        cache: "no-store",
+    });
+    await handleErrorResponse(response);
+    const result: ApiResponse<MonthlyPaymentsResponse[]> = await response.json();
+    return assertApiData(result);
+};
+
+/**
+ * 올해 월별 멤버십 등급 분포 현황 조회 api
+ * @returns MonthlyMembershipsResponse[]
+ */
+export const getMonthlyMemberships = async (): Promise<MonthlyMembershipsResponse[]> => {
+    const response = await fetchWithAuth("/api/v3/payment/plandistribution", {
+        cache: "no-store",
+    });
+    await handleErrorResponse(response);
+    const result: ApiResponse<MonthlyMembershipsResponse[]> = await response.json();
     return assertApiData(result);
 };

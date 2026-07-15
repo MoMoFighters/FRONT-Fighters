@@ -11,6 +11,7 @@ import {
 import AdminDashboardAccessLogList from "./AdminDashboardAccessLogList";
 import AdminDashboardCard from "./AdminDashboardCard";
 import AdminDashboardMonthlyBarChart from "./AdminDashboardMonthlyBarChart";
+import AdminDashboardMonthlyRevenueChart from "./AdminDashboardMonthlyRevenueChart";
 import AdminDashboardNoticeList from "./AdminDashboardNoticeList";
 import AdminDashboardReportList from "./AdminDashboardReportList";
 import AdminDashboardSystemStatusList from "./AdminDashboardSystemStatusList";
@@ -18,6 +19,7 @@ import AdminDashboardTaskTable from "./AdminDashboardTaskTable";
 import {
     AdminDashboardAccessLog,
     AdminDashboardMonthlyDatum,
+    AdminDashboardMonthlyRevenueDatum,
     AdminDashboardNotice,
     AdminDashboardReport,
     AdminDashboardSystemStatus,
@@ -26,6 +28,7 @@ import {
 
 interface AdminDashboardBelowFoldContentProps {
     monthlySubDashboardData: AdminDashboardMonthlyDatum[];
+    monthlyRevenueData: AdminDashboardMonthlyRevenueDatum[];
     pendingTasks: AdminDashboardTask[];
     notices: AdminDashboardNotice[];
     reports: AdminDashboardReport[];
@@ -35,6 +38,7 @@ interface AdminDashboardBelowFoldContentProps {
 
 export default function AdminDashboardBelowFoldContent({
     monthlySubDashboardData,
+    monthlyRevenueData,
     pendingTasks,
     notices,
     reports,
@@ -44,6 +48,8 @@ export default function AdminDashboardBelowFoldContent({
     return (
         <>
             <AdminDashboardMonthlyBarChart data={monthlySubDashboardData} />
+
+            <AdminDashboardMonthlyRevenueChart data={monthlyRevenueData} />
 
             <div className="grid grid-cols-[minmax(0,1.1fr)_minmax(440px,0.96fr)] gap-5">
                 <div className="space-y-5">

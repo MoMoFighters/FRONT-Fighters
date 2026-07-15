@@ -21,7 +21,15 @@ export interface AdminDashboardMonthlyDatum {
     totalPosts: number | null;
 }
 
-// 대시보드 카드 값 타입 정의 -> 카드 미사용으로 추후에 api에서도 없어질 값이지만 현재 api에 맞게 정의
+// 대시보드 월별 매출·멤버십 분포 통합 차트 화면 데이터 타입 정의
+export interface AdminDashboardMonthlyRevenueDatum {
+    month: string;
+    sales: number | null;
+    basic: number | null;
+    plus: number | null;
+    pro: number | null;
+}
+
 export interface DashboardCard {
     totalUsers: number;
     unresolvedReports: number;
@@ -123,4 +131,23 @@ export interface DashboardSummaryResponse {
     recentNotices: DashboardRecentNotices[];
     recentAccessLogs: DashboardRecentAccessLogs[];
     systemHealth: DashboardSystemHealth;
+}
+
+// 총 매출 타입 정의
+export interface TotalPaymentsResponse {
+    totalSales: number;
+}
+
+// 올해 월별 매출 타입 정의
+export interface MonthlyPaymentsResponse {
+    month: number;
+    sales: number;
+}
+
+// 올해 월별 멤버십 등급 분포 타입 정의
+export interface MonthlyMembershipsResponse {
+    month: number;
+    basic: number;
+    plus: number;
+    pro: number;
 }
