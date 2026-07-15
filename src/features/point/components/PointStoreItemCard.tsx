@@ -17,10 +17,21 @@ export default function PointStoreItemCard({
     return (
         <button
             type="button"
-            onClick={() => onSelect(item)}
-            className="group flex min-h-38 cursor-pointer flex-col rounded-2xl border border-slate-100 bg-white p-3 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-md"
+            onClick={() => {
+                if (!item.isOwned) {
+                    onSelect(item);
+                }
+            }}
+            disabled={item.isOwned}
+            className="group flex min-h-38 flex-col rounded-2xl border border-slate-100 bg-white p-3 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:border-slate-100 disabled:hover:shadow-sm cursor-pointer"
         >
             <div className={`relative flex h-24 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br ${item.accentClassName}`}>
+                {item.isOwned && (
+                    <span className="absolute left-2 top-2 z-10 rounded-full bg-white/95 px-2 py-1 text-[10px] font-black text-indigo-500 shadow-sm ring-1 ring-indigo-100">
+                        보유중
+                    </span>
+                )}
+
                 {item.imageUrl ? (
                     <Image
                         src={item.imageUrl}

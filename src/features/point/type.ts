@@ -14,6 +14,7 @@ export interface PointStoreItem {
     category: PointItemCategory;
     price: number;
     imageUrl?: string | null;
+    isOwned: boolean;
     accentClassName: string;
 }
 
@@ -23,6 +24,7 @@ export interface PointStoreApiItem {
     price: number;
     url: string | null;
     type: PointItemCategory;
+    isOwned: boolean;
 }
 
 export interface PointStoreListData {
@@ -39,11 +41,15 @@ export type PointStoreListResponse =
 export interface ProfileOrderItem {
     itemName: string;
     imageUrl: string | null;
+    isOwned: boolean;
 }
 
 export interface ProfileOrderListData {
-    owned: ProfileOrderItem[];
-    notOwned: ProfileOrderItem[];
+    items: ProfileOrderItem[];
+    page: number;
+    size: number;
+    totalElements: number;
+    totalPages: number;
 }
 
 export type ProfileOrderListResponse =
