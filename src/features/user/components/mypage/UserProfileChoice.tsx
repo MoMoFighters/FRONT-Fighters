@@ -9,6 +9,8 @@ import { useEffect, useRef, useState } from "react";
 import { getProfileOrderListAction } from "@/features/point/action";
 import { ProfileOrderItem } from "@/features/point/type";
 
+const PAGE_SIZE = 8;
+
 export default function UserProfileChoice({ profileChangeOpen, setProfileChangeOpen, onSelectProfileImage }: {
     profileChangeOpen: boolean;
     setProfileChangeOpen: (a: boolean) => void;
@@ -16,11 +18,15 @@ export default function UserProfileChoice({ profileChangeOpen, setProfileChangeO
 }) {
     const containerRef =
         useRef<HTMLDivElement>(null);
-    const [ownedItems, setOwnedItems] =
+    const [items, setItems] =
         useState<ProfileOrderItem[]>([]);
-    const [notOwnedItems, setNotOwnedItems] =
-        useState<ProfileOrderItem[]>([]);
+    const [page, setPage] =
+        useState(1);
+    const [totalPages, setTotalPages] =
+        useState(1);
     const [isLoading, setIsLoading] =
+        useState(false);
+    const [isLoadingMore, setIsLoadingMore] =
         useState(false);
 
     useEffect(() => {
@@ -53,6 +59,9 @@ export default function UserProfileChoice({ profileChangeOpen, setProfileChangeO
 
     useEffect(() => {
         if (!profileChangeOpen) {
+            setItems([]);
+            setPage(1);
+            setTotalPages(1);
             return;
         }
 
@@ -63,14 +72,18 @@ export default function UserProfileChoice({ profileChangeOpen, setProfileChangeO
 
             try {
                 const response =
-                    await getProfileOrderListAction();
+                    await getProfileOrderListAction({
+                        page: 1,
+                        size: PAGE_SIZE,
+                    });
 
                 if (ignore) {
                     return;
                 }
 
-                setOwnedItems(response.data?.owned ?? []);
-                setNotOwnedItems(response.data?.notOwned ?? []);
+                setItems(response.data?.items ?? []);
+                setPage(1);
+                setTotalPages(Math.max(response.data?.totalPages ?? 1, 1));
             } finally {
                 if (!ignore) {
                     setIsLoading(false);
@@ -84,6 +97,28 @@ export default function UserProfileChoice({ profileChangeOpen, setProfileChangeO
             ignore = true;
         };
     }, [profileChangeOpen]);
+
+    const handleLoadMore = async () => {
+        if (isLoadingMore || page >= totalPages) {
+            return;
+        }
+
+        setIsLoadingMore(true);
+
+        try {
+            const nextPage = page + 1;
+            const response = await getProfileOrderListAction({
+                page: nextPage,
+                size: PAGE_SIZE,
+            });
+
+            setItems((prev) => [...prev, ...(response.data?.items ?? [])]);
+            setPage(nextPage);
+            setTotalPages(Math.max(response.data?.totalPages ?? totalPages, 1));
+        } finally {
+            setIsLoadingMore(false);
+        }
+    };
 
     if (!profileChangeOpen) {
         return ""
@@ -110,14 +145,18 @@ export default function UserProfileChoice({ profileChangeOpen, setProfileChangeO
                     </Link>
                 </div>
 
-                <div className="scrollbar-none grid max-h-60 w-full grid-cols-4 gap-2 overflow-y-auto rounded-xl border border-slate-100 bg-slate-50/80 p-1">
+                <div className="grid min-h-[166px] w-full grid-cols-4 content-start gap-2 rounded-xl border border-slate-100 bg-slate-50/80 p-1">
                     {isLoading ? (
                         <div className="col-span-4 flex h-24 items-center justify-center text-xs font-bold text-slate-400">
                             불러오는 중...
                         </div>
+                    ) : items.length === 0 ? (
+                        <div className="col-span-4 flex h-24 items-center justify-center text-xs font-bold text-slate-400">
+                            보유 중인 프로필 아이템이 없습니다.
+                        </div>
                     ) : (
-                        <>
-                            {ownedItems.map((item) => (
+                        items.map((item) => (
+                            item.isOwned ? (
                                 <button
                                     key={`owned-${item.itemName}`}
                                     type="button"
@@ -144,9 +183,7 @@ export default function UserProfileChoice({ profileChangeOpen, setProfileChangeO
                                         <ImageIcon className="h-7 w-7 text-slate-300" />
                                     )}
                                 </button>
-                            ))}
-
-                            {notOwnedItems.map((item) => (
+                            ) : (
                                 <HoverCard
                                     key={`not-owned-${item.itemName}`}
                                     openDelay={50}
@@ -185,10 +222,21 @@ export default function UserProfileChoice({ profileChangeOpen, setProfileChangeO
                                         </div>
                                     </HoverCardContent>
                                 </HoverCard>
-                            ))}
-                        </>
+                            )
+                        ))
                     )}
                 </div>
+
+                {page < totalPages && (
+                    <button
+                        type="button"
+                        disabled={isLoadingMore}
+                        onClick={handleLoadMore}
+                        className="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-black text-slate-500 transition hover:bg-slate-100 disabled:cursor-wait disabled:opacity-60"
+                    >
+                        {isLoadingMore ? "불러오는 중" : "프로필 아이템 더보기"}
+                    </button>
+                )}
             </div>
         </div>
     );
