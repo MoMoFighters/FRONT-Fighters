@@ -37,9 +37,8 @@ export const getNoticeTotalCountsAction =
 export const getNoticeNotificationListAction =
     async (): Promise<NoticeNotificationListResponse> => {
         try {
-            const a = await getNoticeNotificationListService();
-            console.log(a)
-            return a
+            const result = await getNoticeNotificationListService();
+            return result
         } catch (error) {
             return {
                 timestamp: new Date().toISOString(),

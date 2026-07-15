@@ -41,22 +41,27 @@ export const getPointStoreItemsAction = async ({
     }
 };
 
-export const getProfileOrderListAction =
-    async (): Promise<ProfileOrderListResponse> => {
-        try {
-            return await getProfileOrderListService();
-        } catch (error) {
-            return {
-                timestamp: new Date().toISOString(),
-                status: 500,
-                code: "PROFILE-ORDER-LIST-FAILED",
-                message:
-                    error instanceof Error
-                        ? error.message
-                        : "프로필 아이템 목록을 불러오지 못했습니다.",
-            };
-        }
-    };
+export const getProfileOrderListAction = async ({
+    page,
+    size,
+}: {
+    page: number;
+    size: number;
+}): Promise<ProfileOrderListResponse> => {
+    try {
+        return await getProfileOrderListService({ page, size });
+    } catch (error) {
+        return {
+            timestamp: new Date().toISOString(),
+            status: 500,
+            code: "PROFILE-ORDER-LIST-FAILED",
+            message:
+                error instanceof Error
+                    ? error.message
+                    : "프로필 아이템 목록을 불러오지 못했습니다.",
+        };
+    }
+};
 
 export const getPointHistoryListAction =
     async (page?: number): Promise<PointHistoryListResponse> => {

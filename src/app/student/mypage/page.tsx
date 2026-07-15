@@ -152,7 +152,10 @@ export default async function StudentMyPage() {
                                     멤버십 관리
                                 </li>
                             </Link>
-                            <TeacherRegistMenuItem nickName={userData.nickname} />
+                            {myInfoResponse.data?.buildings === 0 ? (
+                                <TeacherRegistMenuItem nickName={userData.nickname} />
+                            ) : ""}
+
                         </ul>
                     </nav>
                 </aside>
