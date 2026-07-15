@@ -164,7 +164,7 @@ export default function StudyUserItem({
                 />
             )}
 
-            <div className="absolute left-1/2 top-2 z-0 flex h-14 w-14 -translate-x-1/2 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-slate-100 text-sm font-black text-slate-400 shadow-sm">
+            <div className="absolute left-1/2 top-1 z-3 flex h-14 w-14 -translate-x-1/2 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-slate-100 text-sm font-black text-slate-400 shadow-sm">
                 {user.nickname.slice(0, 1)}
             </div>
 
@@ -211,8 +211,8 @@ export default function StudyUserItem({
 
             <div
                 className={`mt-2 truncate rounded-lg border py-1.5 text-center text-sm font-bold ${user.isMe
-                        ? "border-orange-200 bg-orange-50 text-orange-600"
-                        : "border-slate-200 bg-slate-50 text-slate-600"
+                    ? "border-orange-200 bg-orange-50 text-orange-600"
+                    : "border-slate-200 bg-slate-50 text-slate-600"
                     }`}
             >
                 {user.isMe ? "나" : user.nickname}
