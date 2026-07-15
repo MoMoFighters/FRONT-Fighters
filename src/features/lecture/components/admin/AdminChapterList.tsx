@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { PlayCircle } from "lucide-react";
 
@@ -38,8 +39,18 @@ export default function AdminChapterList({
                             href={`/admin/lectures/${lectureId}/chapters/${chapter.chapterId}`}
                             className="flex min-w-0 flex-1 items-center gap-4"
                         >
-                            <div className={`flex size-11 shrink-0 items-center justify-center rounded-xl ${isCurrent ? "bg-indigo-500 text-white" : "bg-slate-100 text-indigo-500"}`}>
-                                <PlayCircle className="size-5" />
+                            <div className={`relative flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-100 text-indigo-500 ${isCurrent ? "ring-2 ring-indigo-500" : ""}`}>
+                                {chapter.chapterThumbnailUrl ? (
+                                    <Image
+                                        src={chapter.chapterThumbnailUrl}
+                                        alt={`${chapter.title} 썸네일`}
+                                        fill
+                                        sizes="44px"
+                                        className="object-cover"
+                                    />
+                                ) : (
+                                    <PlayCircle className="size-5" />
+                                )}
                             </div>
                             <div className="min-w-0 flex-1">
                                 <p className={`text-sm font-bold ${isCurrent ? "text-indigo-600" : "text-slate-950"}`}>

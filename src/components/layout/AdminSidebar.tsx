@@ -10,6 +10,7 @@ import {
     ShieldAlert,
     ShieldCheck,
     Users,
+    BadgeDollarSign
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 
@@ -36,6 +37,11 @@ const ADMIN_NAV_ITEMS = [
         icon: FolderOpen,
     },
     {
+        label: "매출 관리",
+        href: "/admin/payment",
+        icon: BadgeDollarSign
+    },
+    {
         label: "커뮤니티 관리",
         href: "/admin/community",
         icon: MessageSquareText,
@@ -49,7 +55,7 @@ const ADMIN_NAV_ITEMS = [
         label: "접근 로그",
         href: "/admin/access-logs",
         icon: FileText,
-    },
+    }
 ];
 
 export default function AdminSidebar() {
