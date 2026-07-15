@@ -2,75 +2,61 @@
 
 import {
     Bar,
-    BarChart,
     CartesianGrid,
+    ComposedChart,
+    Line,
     ResponsiveContainer,
     Tooltip,
     XAxis,
     YAxis,
 } from "recharts";
-import { AdminDashboardMonthlyDatum } from "./type";
+import { AdminDashboardMonthlyRevenueDatum } from "./type";
 
-interface AdminDashboardMonthlyBarChartProps {
-    data: AdminDashboardMonthlyDatum[];
+interface AdminDashboardMonthlyRevenueChartProps {
+    data: AdminDashboardMonthlyRevenueDatum[];
 }
 
-const SERIES = [
-    {
-        key: "totalUsers",
-        label: "신규 회원 수",
-        color: "#10b981",
-        unit: "명",
-    },
-    {
-        key: "totalLectures",
-        label: "신규 강의 수",
-        color: "#6366f1",
-        unit: "개",
-    },
-    {
-        key: "totalPosts",
-        label: "신규 게시글 수",
-        color: "#f59e0b",
-        unit: "개",
-    },
+const MEMBERSHIP_SERIES = [
+    { key: "basic", label: "BASIC", color: "#94a3b8" },
+    { key: "plus", label: "PLUS", color: "#6366f1" },
+    { key: "pro", label: "PRO", color: "#8b5cf6" },
 ] as const;
 
-const SERIES_META = SERIES.reduce<Record<string, { label: string; unit: string }>>((labels, series) => {
-    labels[series.key] = {
-        label: series.label,
-        unit: series.unit,
-    };
-    return labels;
-}, {});
+const SALES_COLOR = "#f43f5e";
 
-export default function AdminDashboardMonthlyBarChart({
+const SERIES_META: Record<string, { label: string; unit: string }> = {
+    basic: { label: "BASIC 가입자 수", unit: "명" },
+    plus: { label: "PLUS 가입자 수", unit: "명" },
+    pro: { label: "PRO 가입자 수", unit: "명" },
+    sales: { label: "총 매출", unit: "원" },
+};
+
+export default function AdminDashboardMonthlyRevenueChart({
     data,
-}: AdminDashboardMonthlyBarChartProps) {
+}: AdminDashboardMonthlyRevenueChartProps) {
     const year = new Date().getFullYear();
     const hasData = data.some((datum) =>
-        (datum.totalLectures ?? 0) > 0 ||
-        (datum.totalUsers ?? 0) > 0 ||
-        (datum.totalPosts ?? 0) > 0
+        (datum.basic ?? 0) > 0 ||
+        (datum.plus ?? 0) > 0 ||
+        (datum.pro ?? 0) > 0 ||
+        (datum.sales ?? 0) > 0
     );
 
     return (
         <section className="mb-5 rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
             <div className="mb-5 flex items-start justify-between gap-6">
                 <div>
-                    <div className="flex items-center gap-2">
-                        <h2 className="text-base font-black text-slate-950">
-                            올해 월별 신규 유입 지표
-                        </h2>
-                    </div>
+                    <h2 className="text-base font-black text-slate-950">
+                        올해 월별 매출·멤버십 분포
+                    </h2>
 
                     <p className="mt-1 text-xs font-bold text-slate-400">
-                        해당 월에 새로 생성된 회원, 강의, 게시글 수를 비교합니다.
+                        월별 멤버십 등급 가입 현황과 총 매출 추이를 함께 비교합니다.
                     </p>
                 </div>
 
                 <div className="flex flex-wrap items-center justify-end gap-4">
-                    {SERIES.map((series) => (
+                    {MEMBERSHIP_SERIES.map((series) => (
                         <div
                             key={series.key}
                             className="flex items-center gap-2 text-xs font-bold text-slate-500"
@@ -82,26 +68,25 @@ export default function AdminDashboardMonthlyBarChart({
                             {series.label}
                         </div>
                     ))}
+
+                    <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
+                        <span
+                            className="h-2.5 w-2.5 rounded-full"
+                            style={{ backgroundColor: SALES_COLOR }}
+                        />
+                        총 매출
+                    </div>
                 </div>
             </div>
 
             <div className="h-80">
                 {hasData ? (
                     <ResponsiveContainer width="100%" height="100%">
-                        <BarChart
+                        <ComposedChart
                             data={data}
-                            margin={{
-                                top: 8,
-                                right: 8,
-                                bottom: 0,
-                                left: 0,
-                            }}
+                            margin={{ top: 8, right: 8, bottom: 0, left: 0 }}
                         >
-                            <CartesianGrid
-                                stroke="#e2e8f0"
-                                strokeDasharray="4 4"
-                                vertical={false}
-                            />
+                            <CartesianGrid stroke="#e2e8f0" strokeDasharray="4 4" vertical={false} />
                             <XAxis
                                 dataKey="month"
                                 axisLine={false}
@@ -110,10 +95,20 @@ export default function AdminDashboardMonthlyBarChart({
                                 dy={10}
                             />
                             <YAxis
+                                yAxisId="left"
                                 axisLine={false}
                                 tickLine={false}
                                 tick={{ fill: "#94a3b8", fontSize: 12, fontWeight: 700 }}
                                 tickFormatter={(value: number) => value.toLocaleString()}
+                                width={54}
+                            />
+                            <YAxis
+                                yAxisId="right"
+                                orientation="right"
+                                axisLine={false}
+                                tickLine={false}
+                                tick={{ fill: "#94a3b8", fontSize: 12, fontWeight: 700 }}
+                                tickFormatter={(value: number) => `${(value / 10000).toLocaleString()}만`}
                                 width={58}
                             />
                             <Tooltip
@@ -132,23 +127,31 @@ export default function AdminDashboardMonthlyBarChart({
                                     SERIES_META[String(name)]?.label ?? name,
                                 ]}
                                 labelFormatter={(label) => `${year}년 ${label}`}
-                                labelStyle={{
-                                    color: "#0f172a",
-                                    fontWeight: 900,
-                                    marginBottom: 6,
-                                }}
+                                labelStyle={{ color: "#0f172a", fontWeight: 900, marginBottom: 6 }}
                             />
-                            {SERIES.map((series) => (
+                            {MEMBERSHIP_SERIES.map((series) => (
                                 <Bar
                                     key={series.key}
+                                    yAxisId="left"
                                     dataKey={series.key}
                                     name={series.key}
                                     fill={series.color}
                                     radius={[4, 4, 0, 0]}
-                                    barSize={18}
+                                    barSize={14}
                                 />
                             ))}
-                        </BarChart>
+                            <Line
+                                yAxisId="right"
+                                type="monotone"
+                                dataKey="sales"
+                                name="sales"
+                                stroke={SALES_COLOR}
+                                strokeWidth={3}
+                                connectNulls={false}
+                                dot={{ r: 3, strokeWidth: 2, fill: "#ffffff" }}
+                                activeDot={{ r: 5, strokeWidth: 2 }}
+                            />
+                        </ComposedChart>
                     </ResponsiveContainer>
                 ) : (
                     <div className="flex h-full items-center justify-center rounded-md border border-dashed border-slate-200 bg-slate-50 text-sm font-bold text-slate-400">
