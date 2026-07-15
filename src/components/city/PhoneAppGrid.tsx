@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/hover-card";
 import message from "@/app/assets/img/phone-message.png";
 import calendar from "@/app/assets/img/phone-calendar.png";
-import tutorial from "@/app/assets/img/phone-tutorial.png";
+import study from "@/app/assets/img/phone-study.png";
 import community from "@/app/assets/img/phone-community.png";
 import { NoticeAppCountsData } from "@/features/user/components/notification/type";
 
@@ -71,16 +71,16 @@ export default function PhoneAppGrid({ notification }: PhoneAppGridProps) {
             <HoverCard openDelay={200} closeDelay={100}>
                 <HoverCardTrigger asChild>
                     <Link
-                        href="/student/tutorial"
+                        href="/student/group-study"
                         aria-label="튜토리얼"
                         className="relative h-14 w-14 rounded-2xl shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
                     >
-                        <Image src={tutorial} alt="튜토리얼" fill sizes="56px" />
+                        <Image src={study} alt="팀스터디" fill sizes="56px" />
                     </Link>
                 </HoverCardTrigger>
 
                 <HoverCardContent side="left" className="w-auto px-3 py-2">
-                    튜토리얼
+                    팀 스터디
                 </HoverCardContent>
             </HoverCard>
 
