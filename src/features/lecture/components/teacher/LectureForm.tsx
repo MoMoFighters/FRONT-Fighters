@@ -431,7 +431,7 @@ export default function LectureForm({ mode, onUploadStart, lectureId, initialLec
                             <p className="mt-1 text-xs font-bold text-slate-400">
                                 {mode === 'create'
                                     ? `최대 ${MAX_CHAPTER_COUNT}개까지 등록할 수 있습니다. 현재 ${chapters.length}개`
-                                    : `챕터 제목만 수정할 수 있습니다. 현재 ${initialLecture?.chapters.length ?? 0}개`}
+                                    : `챕터 제목 수정 및 삭제가 가능합니다. 현재 ${editChapters.length}개`}
                             </p>
                         </div>
                         <div className="flex items-center gap-3">
@@ -472,9 +472,11 @@ export default function LectureForm({ mode, onUploadStart, lectureId, initialLec
                             )}
                         </>
                     ) : (
-                        editChapters.map((chapter) => (
+                        lectureId && editChapters.map((chapter) => (
                             <LectureEditChapterItem
                                 key={chapter.chapterId}
+                                lectureId={lectureId}
+                                chapterId={chapter.chapterId}
                                 orderNo={chapter.orderNo}
                                 title={chapter.title}
                                 thumbnailUrl={chapter.chapterThumbnailUrl}
@@ -483,6 +485,11 @@ export default function LectureForm({ mode, onUploadStart, lectureId, initialLec
                                         item.chapterId === chapter.chapterId
                                             ? { ...item, title: value }
                                             : item
+                                    ));
+                                }}
+                                onDeleted={() => {
+                                    setEditChapters((prev) => prev.filter((item) =>
+                                        item.chapterId !== chapter.chapterId
                                     ));
                                 }}
                             />

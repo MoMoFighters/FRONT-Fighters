@@ -18,7 +18,6 @@ import {
   UpdateLectureResponse,
   DeleteLectureResponse,
   UpdateChapterRequest,
-  DeleteChapterResponse,
 } from "@/features/lecture/type";
 import { ApiResponse, fetchWithAuth } from "@/lib/api";
 import { revalidatePath } from "next/cache";
@@ -468,19 +467,20 @@ export const updateChapterByIds = async (
 };
 
 /**
- * 챕터 삭제 api
+ * 챕터 동영상 삭제 api -> 영상이 챕터의 필수 요소라 이 요청이 성공하면 챕터 자체가 함께 삭제된다.
+ * 영상만 삭제하는 별도 api는 없으므로, 챕터 삭제는 이 api 하나로 처리한다.
  * @param lectureId 삭제할 챕터가 속한 강의 id
  * @param chapterId 삭제할 챕터 id
  * @returns
  */
-export const deleteChapterByIds = async (lectureId: string, chapterId: string) => {
-  const response = await fetchWithAuth(`/api/v1/lectures/${lectureId}/chapters/${chapterId}`, {
+export const deleteChapterVideoById = async (lectureId: string, chapterId: string) => {
+  const response = await fetchWithAuth(`/api/v1/lectures/${lectureId}/chapters/${chapterId}/video`, {
     method: "DELETE",
   });
 
   await handleErrorResponse(response, { notFoundOn404: false });
 
-  return parseJsonOrNull<ApiResponse<DeleteChapterResponse>>(response);
+  return parseJsonOrNull<ApiResponse<null>>(response);
 };
 
 /**

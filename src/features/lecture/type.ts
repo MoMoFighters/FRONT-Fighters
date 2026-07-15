@@ -246,13 +246,6 @@ export interface UpdateChapterRequest {
     orderNo: number;
 }
 
-// 챕터 삭제 응답 타입 정의
-export interface DeleteChapterResponse {
-    lectureId: number;
-    chapterId: number;
-    updatedAt: string;
-}
-
 export interface LectureEnrollResponse {
     enrollmentId: number;
     lectureId: number;

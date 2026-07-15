@@ -2,7 +2,7 @@
 
 import {
     createReviewByLectureId,
-    deleteChapterByIds,
+    deleteChapterVideoById,
     deleteLectureById,
     deleteReviewById,
     enrollLectureById,
@@ -239,17 +239,23 @@ export const deleteChapterAction = async (
     chapterId: string,
 ): Promise<LectureDeleteActionResult> => {
     try {
-        await deleteChapterByIds(lectureId, chapterId);
+        // 챕터 동영상 삭제 api가 성공하면 백엔드에서 챕터 자체도 함께 삭제된다.
+        await deleteChapterVideoById(lectureId, chapterId);
         revalidatePath("/admin/lectures");
-        revalidatePath("/lectures");
-        revalidatePath(`/lectures/${lectureId}`);
         revalidatePath(`/admin/lectures/${lectureId}`);
         revalidatePath(`/admin/lectures/${lectureId}/chapters/${chapterId}`);
+        revalidatePath("/teacher/lectures");
+        revalidatePath(`/teacher/lectures/${lectureId}`);
+        revalidatePath(`/teacher/lectures/${lectureId}/edit`);
+        revalidatePath("/lectures");
+        revalidatePath(`/lectures/${lectureId}`);
         revalidateTag("lectures", { expire: 0 });
 
         return {
             success: true,
-            message: "챕터를 삭제했습니다.",
+            // 백엔드 응답 메시지("챕터 동영상이 삭제되었습니다")는 영상만 지워진 것으로
+            // 오해할 수 있어, 챕터 전체가 삭제됐음을 명확히 알리는 문구로 대체한다.
+            message: "챕터가 삭제되었습니다.",
         };
     } catch (error) {
         return {
