@@ -6,11 +6,21 @@ import {
     deleteLectureById,
     deleteReviewById,
     enrollLectureById,
+    updateChapterByIds,
+    updateLectureById,
     updateLectureStatus,
     updateVideoProgress,
     updateVideoProgressByExit,
 } from "@/app/services/lecture/service";
-import { CreateReviewRequest, LectureStatus, UpdateVideoProgressByExitRequest, UpdateVideoProgressRequest } from "./type";
+import {
+    CreateReviewRequest,
+    LectureStatus,
+    UpdateChapterRequest,
+    UpdateLectureRequest,
+    UpdateLectureResponse,
+    UpdateVideoProgressByExitRequest,
+    UpdateVideoProgressRequest,
+} from "./type";
 import { revalidatePath, revalidateTag } from "next/cache";
 
 
@@ -138,6 +148,67 @@ const getLectureActionErrorMessage = (error: unknown) => {
     }
 
     return "요청 처리 중 오류가 발생했습니다.";
+};
+
+export type LectureUpdateActionResult = {
+    success: boolean;
+    message?: string;
+    data?: UpdateLectureResponse;
+};
+
+export const updateLectureAction = async (
+    lectureId: string,
+    payload: UpdateLectureRequest,
+): Promise<LectureUpdateActionResult> => {
+    try {
+        const data = await updateLectureById(lectureId, payload);
+        revalidatePath("/admin/lectures");
+        revalidatePath("/teacher/lectures");
+        revalidatePath("/lectures");
+        revalidatePath(`/lectures/${lectureId}`);
+        revalidatePath(`/admin/lectures/${lectureId}`);
+        revalidatePath(`/teacher/lectures/${lectureId}`);
+        revalidatePath(`/teacher/lectures/${lectureId}/edit`);
+        revalidateTag("lectures", { expire: 0 });
+
+        return {
+            success: true,
+            message: "강의를 수정했습니다.",
+            data: data ?? undefined,
+        };
+    } catch (error) {
+        return {
+            success: false,
+            message: getLectureActionErrorMessage(error),
+        };
+    }
+};
+
+export const updateChapterAction = async (
+    lectureId: string,
+    chapterId: string,
+    payload: UpdateChapterRequest,
+): Promise<LectureDeleteActionResult> => {
+    try {
+        await updateChapterByIds(lectureId, chapterId, payload);
+        revalidatePath("/admin/lectures");
+        revalidatePath(`/admin/lectures/${lectureId}`);
+        revalidatePath(`/admin/lectures/${lectureId}/chapters/${chapterId}`);
+        revalidatePath("/teacher/lectures");
+        revalidatePath(`/teacher/lectures/${lectureId}`);
+        revalidatePath(`/teacher/lectures/${lectureId}/edit`);
+        revalidateTag("lectures", { expire: 0 });
+
+        return {
+            success: true,
+            message: "챕터를 수정했습니다.",
+        };
+    } catch (error) {
+        return {
+            success: false,
+            message: getLectureActionErrorMessage(error),
+        };
+    }
 };
 
 export const deleteLectureAction = async (

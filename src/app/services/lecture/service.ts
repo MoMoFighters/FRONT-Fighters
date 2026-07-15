@@ -14,6 +14,11 @@ import {
   Category,
   AsideCardInfoResponse,
   LatestChapterInfoResponse,
+  UpdateLectureRequest,
+  UpdateLectureResponse,
+  DeleteLectureResponse,
+  UpdateChapterRequest,
+  DeleteChapterResponse,
 } from "@/features/lecture/type";
 import { ApiResponse, fetchWithAuth } from "@/lib/api";
 import { revalidatePath } from "next/cache";
@@ -401,9 +406,31 @@ export const enrollLectureById = async (
 };
 
 /**
+ * 강의 수정 api -> 제목, 설명만 수정 가능
+ * @param id 수정할 강의 id
+ * @param payload 수정할 제목, 설명
+ * @returns UpdateLectureResponse
+ */
+export const updateLectureById = async (
+  id: string,
+  payload: UpdateLectureRequest
+): Promise<UpdateLectureResponse | null> => {
+  const response = await fetchWithAuth(`/api/v1/lectures/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+
+  await handleErrorResponse(response);
+
+  const result: ApiResponse<UpdateLectureResponse> = await response.json();
+
+  return result.data ?? null;
+};
+
+/**
  * 강의 삭제 api
  * @param id 삭제할 강의 id
- * @returns 
+ * @returns
  */
 export const deleteLectureById = async (id: string) => {
   const response = await fetchWithAuth(`/api/v1/lectures/${id}`, {
@@ -412,14 +439,39 @@ export const deleteLectureById = async (id: string) => {
 
   await handleErrorResponse(response, { notFoundOn404: false });
 
-  return parseJsonOrNull(response);
+  return parseJsonOrNull<ApiResponse<DeleteLectureResponse>>(response);
+};
+
+/**
+ * 챕터 수정 api -> 제목만 수정 가능하지만, orderNo도 함께 전달
+ * @param lectureId 수정할 챕터가 속한 강의 id
+ * @param chapterId 수정할 챕터 id
+ * @param payload 수정할 제목, 기존 orderNo
+ * @returns
+ */
+export const updateChapterByIds = async (
+  lectureId: string,
+  chapterId: string,
+  payload: UpdateChapterRequest
+) => {
+  const response = await fetchWithAuth(
+    `/api/v1/lectures/${lectureId}/chapters/${chapterId}`,
+    {
+      method: "PATCH",
+      body: JSON.stringify(payload),
+    }
+  );
+
+  await handleErrorResponse(response);
+
+  return response.json();
 };
 
 /**
  * 챕터 삭제 api
  * @param lectureId 삭제할 챕터가 속한 강의 id
  * @param chapterId 삭제할 챕터 id
- * @returns 
+ * @returns
  */
 export const deleteChapterByIds = async (lectureId: string, chapterId: string) => {
   const response = await fetchWithAuth(`/api/v1/lectures/${lectureId}/chapters/${chapterId}`, {
@@ -428,7 +480,7 @@ export const deleteChapterByIds = async (lectureId: string, chapterId: string) =
 
   await handleErrorResponse(response, { notFoundOn404: false });
 
-  return parseJsonOrNull(response);
+  return parseJsonOrNull<ApiResponse<DeleteChapterResponse>>(response);
 };
 
 /**
