@@ -102,12 +102,12 @@ export default async function StudentMainPage({ params }: {
             >
                 <BuildingItem common="point" imageSizes="13vw" interactive={false} />
             </div>
-            {/* 집 고정 자리 */}
+            {/* 집 고정 자리 (친구 도시에서는 그룹 스터디로만 이동) */}
             <div
                 className="absolute"
                 style={commonBuildingSlots.mypage}
             >
-                <BuildingItem common="mypage" imageSizes="14vw" interactive={false} />
+                <BuildingItem common="mypage" imageSizes="14vw" mode="FRIEND" />
             </div>
         </CityCanvas>
     );
