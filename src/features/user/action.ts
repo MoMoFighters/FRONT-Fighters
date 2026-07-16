@@ -40,6 +40,7 @@ export interface MomoUserInfo {
     doNotDisturb: boolean;
     membership: 'BASIC' | 'PLUS' | 'PRO';
     membershipStart: string | null;
+    membershipUntil: string | null;
     isPaid: boolean;
 }
 
@@ -96,6 +97,7 @@ export const getMyInfo = async (): Promise<MomoUserInfoResponse> => {
                 doNotDisturb: userDetail.doNotDisturb ?? false,
                 membership,
                 membershipStart: userDetail.membershipStart ?? null,
+                membershipUntil: userDetail.membershipUntil ?? null,
                 isPaid: membership !== "BASIC",
             },
         };
