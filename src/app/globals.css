@@ -310,3 +310,22 @@
 .animate-coin-toss {
   animation: coin-toss 1.1s ease-in-out;
 }
+
+/*
+  STT 음성 인식 중 음파 막대 애니메이션
+*/
+@keyframes stt-wave {
+  0%,
+  100% {
+    transform: scaleY(0.4);
+  }
+
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+.animate-stt-wave {
+  animation: stt-wave 0.9s ease-in-out infinite;
+  transform-origin: bottom;
+}

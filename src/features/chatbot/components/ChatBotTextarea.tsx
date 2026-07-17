@@ -46,6 +46,15 @@ export default function ChatBotTextarea({ onClose }: ChatBotTextareaProps) {
         }
     };
 
+    // STT로 인식이 끝나면 인풋에 채우기만 하지 않고, 인식된 텍스트로 바로 질문을 전송한다
+    const handleSTTResult = (text: string) => {
+        const combined = `${input}${text}`.trim();
+        setInput("");
+        if (combined && !isChatting) {
+            void sendMessage(combined);
+        }
+    };
+
     return (
         <div className="fixed bottom-6 right-6 top-[72px] z-[100] flex w-[min(50vw,480px)] min-w-[360px] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
             <div className="flex items-center gap-2 border-b border-slate-200 bg-white px-4 py-3">
@@ -78,11 +87,12 @@ export default function ChatBotTextarea({ onClose }: ChatBotTextareaProps) {
                         value={input}
                         onChange={(event) => setInput(event.target.value)}
                         onKeyDown={handleKeyDown}
-                        placeholder="질문을 입력하고 Enter로 전송..."
+                        placeholder={isChatting ? "답변을 기다리는 중..." : "질문을 입력하고 Enter로 전송..."}
                         rows={1}
-                        className="min-h-6 resize-none border-none bg-transparent px-0 py-0 text-[13px] text-slate-800 shadow-none focus-visible:ring-0"
+                        disabled={isChatting}
+                        className="min-h-6 resize-none border-none bg-transparent px-0 py-0 text-[13px] text-slate-800 shadow-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-60"
                     />
-                    <STTTriggerButton onResult={(text) => setInput((prev) => `${prev}${text}`)} />
+                    <STTTriggerButton onResult={handleSTTResult} disabled={isChatting} />
                 </div>
 
                 <div className="mt-1.5 flex justify-end">
