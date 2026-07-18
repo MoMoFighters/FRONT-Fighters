@@ -187,12 +187,6 @@ export default async function TeacherMainPage() {
                                 <p className="mt-3 text-sm font-black text-slate-500">
                                     아직 진행중인 강의가 없습니다.
                                 </p>
-                                <Link
-                                    href="/teacher/lectures/create"
-                                    className="mt-4 rounded-full bg-indigo-500 px-4 py-2 text-xs font-black text-white transition hover:bg-indigo-600"
-                                >
-                                    첫 강의 등록하기
-                                </Link>
                             </div>
                         )}
                     </div>

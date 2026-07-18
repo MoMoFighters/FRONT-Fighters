@@ -122,15 +122,31 @@ export function LectureCreateUploadProvider({
 }: {
     children: ReactNode;
 }) {
-    const [tasks, setTasks] = useState<LectureUploadTask[]>(loadStoredTasks);
+    const [tasks, setTasks] = useState<LectureUploadTask[]>([]);
+    const [isHydrated, setIsHydrated] = useState(false);
     const abortControllerByTaskIdRef = useRef(new Map<string, AbortController>());
 
+    // localStorage는 클라이언트에서만 읽을 수 있으므로, 서버 렌더링과 동일한
+    // 빈 배열로 초기 렌더를 맞춘 뒤 마운트 이후에 불러와야 하이드레이션 불일치가 발생하지 않는다.
     useEffect(() => {
+        const hydrateTasks = async () => {
+            setTasks(loadStoredTasks());
+            setIsHydrated(true);
+        };
+
+        void hydrateTasks();
+    }, []);
+
+    useEffect(() => {
+        if (!isHydrated) {
+            return;
+        }
+
         window.localStorage.setItem(
             LECTURE_UPLOAD_TASKS_STORAGE_KEY,
             JSON.stringify(tasks)
         );
-    }, [tasks]);
+    }, [tasks, isHydrated]);
 
     const startUpload = useCallback(async (formData: FormData) => {
         const title = String(formData.get("title") ?? "").trim();

@@ -196,6 +196,56 @@ export interface ResumeResponse {
 }
 
 
+// 강의 수정 요청 타입 정의 -> 제목, 설명만 수정 가능하지만, category도 함께 전달해야 함
+export interface UpdateLectureRequest {
+    title: string;
+    description: string;
+    category: Category;
+}
+
+// 강의 수정 응답에 포함되는 챕터 타입 정의
+export interface UpdateLectureChapterItem {
+    chapterId: number;
+    lectureId: number;
+    title: string;
+    orderNo: number;
+    videoUrl: string;
+    videoSizeBytes: number;
+    chapterThumbnailUrl: string;
+    durationSec: number;
+    originalFilename: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+// 강의 수정 응답 타입 정의
+export interface UpdateLectureResponse {
+    lectureId: number;
+    teacherId: number;
+    title: string;
+    description: string;
+    thumbnailUrl: string;
+    category: Category;
+    lectureStatus: LectureStatus;
+    completedUserCount: number;
+    chapters: UpdateLectureChapterItem[];
+    createdAt: string;
+    updatedAt: string;
+}
+
+// 강의 삭제 응답 타입 정의
+export interface DeleteLectureResponse {
+    lectureId: number;
+    lectureStatus: LectureStatus;
+    updatedAt: string;
+}
+
+// 챕터 수정 요청 타입 정의 -> 제목만 수정 가능하지만, orderNo도 함께 전달해야 함
+export interface UpdateChapterRequest {
+    title: string;
+    orderNo: number;
+}
+
 export interface LectureEnrollResponse {
     enrollmentId: number;
     lectureId: number;

@@ -2,15 +2,25 @@
 
 import {
     createReviewByLectureId,
-    deleteChapterByIds,
+    deleteChapterVideoById,
     deleteLectureById,
     deleteReviewById,
     enrollLectureById,
+    updateChapterByIds,
+    updateLectureById,
     updateLectureStatus,
     updateVideoProgress,
     updateVideoProgressByExit,
 } from "@/app/services/lecture/service";
-import { CreateReviewRequest, LectureStatus, UpdateVideoProgressByExitRequest, UpdateVideoProgressRequest } from "./type";
+import {
+    CreateReviewRequest,
+    LectureStatus,
+    UpdateChapterRequest,
+    UpdateLectureRequest,
+    UpdateLectureResponse,
+    UpdateVideoProgressByExitRequest,
+    UpdateVideoProgressRequest,
+} from "./type";
 import { revalidatePath, revalidateTag } from "next/cache";
 
 
@@ -140,6 +150,67 @@ const getLectureActionErrorMessage = (error: unknown) => {
     return "요청 처리 중 오류가 발생했습니다.";
 };
 
+export type LectureUpdateActionResult = {
+    success: boolean;
+    message?: string;
+    data?: UpdateLectureResponse;
+};
+
+export const updateLectureAction = async (
+    lectureId: string,
+    payload: UpdateLectureRequest,
+): Promise<LectureUpdateActionResult> => {
+    try {
+        const data = await updateLectureById(lectureId, payload);
+        revalidatePath("/admin/lectures");
+        revalidatePath("/teacher/lectures");
+        revalidatePath("/lectures");
+        revalidatePath(`/lectures/${lectureId}`);
+        revalidatePath(`/admin/lectures/${lectureId}`);
+        revalidatePath(`/teacher/lectures/${lectureId}`);
+        revalidatePath(`/teacher/lectures/${lectureId}/edit`);
+        revalidateTag("lectures", { expire: 0 });
+
+        return {
+            success: true,
+            message: "강의를 수정했습니다.",
+            data: data ?? undefined,
+        };
+    } catch (error) {
+        return {
+            success: false,
+            message: getLectureActionErrorMessage(error),
+        };
+    }
+};
+
+export const updateChapterAction = async (
+    lectureId: string,
+    chapterId: string,
+    payload: UpdateChapterRequest,
+): Promise<LectureDeleteActionResult> => {
+    try {
+        await updateChapterByIds(lectureId, chapterId, payload);
+        revalidatePath("/admin/lectures");
+        revalidatePath(`/admin/lectures/${lectureId}`);
+        revalidatePath(`/admin/lectures/${lectureId}/chapters/${chapterId}`);
+        revalidatePath("/teacher/lectures");
+        revalidatePath(`/teacher/lectures/${lectureId}`);
+        revalidatePath(`/teacher/lectures/${lectureId}/edit`);
+        revalidateTag("lectures", { expire: 0 });
+
+        return {
+            success: true,
+            message: "챕터를 수정했습니다.",
+        };
+    } catch (error) {
+        return {
+            success: false,
+            message: getLectureActionErrorMessage(error),
+        };
+    }
+};
+
 export const deleteLectureAction = async (
     lectureId: string,
 ): Promise<LectureDeleteActionResult> => {
@@ -168,17 +239,23 @@ export const deleteChapterAction = async (
     chapterId: string,
 ): Promise<LectureDeleteActionResult> => {
     try {
-        await deleteChapterByIds(lectureId, chapterId);
+        // 챕터 동영상 삭제 api가 성공하면 백엔드에서 챕터 자체도 함께 삭제된다.
+        await deleteChapterVideoById(lectureId, chapterId);
         revalidatePath("/admin/lectures");
-        revalidatePath("/lectures");
-        revalidatePath(`/lectures/${lectureId}`);
         revalidatePath(`/admin/lectures/${lectureId}`);
         revalidatePath(`/admin/lectures/${lectureId}/chapters/${chapterId}`);
+        revalidatePath("/teacher/lectures");
+        revalidatePath(`/teacher/lectures/${lectureId}`);
+        revalidatePath(`/teacher/lectures/${lectureId}/edit`);
+        revalidatePath("/lectures");
+        revalidatePath(`/lectures/${lectureId}`);
         revalidateTag("lectures", { expire: 0 });
 
         return {
             success: true,
-            message: "챕터를 삭제했습니다.",
+            // 백엔드 응답 메시지("챕터 동영상이 삭제되었습니다")는 영상만 지워진 것으로
+            // 오해할 수 있어, 챕터 전체가 삭제됐음을 명확히 알리는 문구로 대체한다.
+            message: "챕터가 삭제되었습니다.",
         };
     } catch (error) {
         return {

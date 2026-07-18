@@ -6,15 +6,20 @@ import { sendMessageAction } from "../../../chat/action";
 import { toast } from "sonner";
 import { Send } from "lucide-react";
 
+const TYPING_STOP_DELAY_MS = 3000;
+
 interface Props {
     chatRoomId: number | null;
+    onTypingChange?: (isTyping: boolean) => void;
 }
 
-export default function MessageInputBox({ chatRoomId }: Props) {
+export default function MessageInputBox({ chatRoomId, onTypingChange }: Props) {
 
     const inputRef = useRef<HTMLInputElement>(null);
     const [isSending, setIsSending] = useState(false);
     const [content, setContent] = useState("");
+    const isTypingRef = useRef(false);
+    const typingTimeoutRef = useRef<number | null>(null);
 
     const focusInput = () => {
         requestAnimationFrame(() => {
@@ -22,10 +27,49 @@ export default function MessageInputBox({ chatRoomId }: Props) {
         });
     };
 
+    const stopTyping = () => {
+        if (typingTimeoutRef.current !== null) {
+            window.clearTimeout(typingTimeoutRef.current);
+            typingTimeoutRef.current = null;
+        }
+
+        if (isTypingRef.current) {
+            isTypingRef.current = false;
+            onTypingChange?.(false);
+        }
+    };
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setContent(value);
+
+        if (!onTypingChange) return;
+
+        if (!value.trim()) {
+            stopTyping();
+            return;
+        }
+
+        if (!isTypingRef.current) {
+            isTypingRef.current = true;
+            onTypingChange(true);
+        }
+
+        if (typingTimeoutRef.current !== null) {
+            window.clearTimeout(typingTimeoutRef.current);
+        }
+
+        typingTimeoutRef.current = window.setTimeout(
+            stopTyping,
+            TYPING_STOP_DELAY_MS
+        );
+    };
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!content.trim() || !chatRoomId || isSending) return;
 
+        stopTyping();
         setIsSending(true);
         const response = await sendMessageAction(chatRoomId, content);
 
@@ -43,6 +87,11 @@ export default function MessageInputBox({ chatRoomId }: Props) {
 
     useEffect(() => {
         focusInput();
+
+        return () => {
+            stopTyping();
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [chatRoomId]);
 
     return (
@@ -70,7 +119,7 @@ export default function MessageInputBox({ chatRoomId }: Props) {
             "
                     placeholder="메시지를 입력하세요..."
                     value={content}
-                    onChange={(e) => setContent(e.target.value)}
+                    onChange={handleChange}
                     disabled={isSending || !chatRoomId}
                     autoFocus={true}
                 />
