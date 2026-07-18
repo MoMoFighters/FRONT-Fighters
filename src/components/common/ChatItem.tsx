@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import CreateReportBtn from "@/features/report/components/buttons/CreateReportBtn";
+import TTSTriggerButton from "@/features/chatbot/components/TTSTriggerButton";
 
 interface MessageData {
     id: number;
@@ -92,13 +93,16 @@ export default function ChatItem({
                     </div>
 
                     {isHover && (
-                        <CreateReportBtn
-                            triggerLabel="신고"
-                            triggerClassName="mt-auto cursor-pointer rounded-sm px-1.5 py-0.5 text-xs font-bold text-rose-400 transition-colors hover:bg-rose-50 hover:text-rose-500"
-                            targetType="CHAT"
-                            targetId={id}
-                            reportedUserId={senderId ?? undefined}
-                        />
+                        <div className="mt-auto flex shrink-0 items-center gap-1">
+                            <TTSTriggerButton text={message} />
+                            <CreateReportBtn
+                                triggerLabel="신고"
+                                triggerClassName="cursor-pointer rounded-sm px-1.5 py-0.5 text-xs font-bold text-rose-400 transition-colors hover:bg-rose-50 hover:text-rose-500"
+                                targetType="CHAT"
+                                targetId={id}
+                                reportedUserId={senderId ?? undefined}
+                            />
+                        </div>
                     )}
                 </>
             ) : (
