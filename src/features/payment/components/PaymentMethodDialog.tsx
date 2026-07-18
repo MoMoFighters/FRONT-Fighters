@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
@@ -22,6 +23,8 @@ import {
     PORTONE_STORE_ID,
     PortOneEasyPayProvider,
 } from "@/features/payment/config";
+import kakaoPayLogo from "@/app/assets/img/kakaoPay.png";
+import tossPayLogo from "@/app/assets/img/tossPay.png";
 
 interface PaymentMethodDialogProps {
     plan: MembershipPlan | null;
@@ -29,10 +32,33 @@ interface PaymentMethodDialogProps {
     onOpenChange: (open: boolean) => void;
 }
 
-const PAYMENT_METHODS: { provider: PortOneEasyPayProvider; label: string }[] = [
-    { provider: PORTONE_EASY_PAY_PROVIDER.KAKAOPAY, label: "카카오페이" },
-    { provider: PORTONE_EASY_PAY_PROVIDER.TOSSPAY, label: "토스페이" },
-];
+const PAYMENT_METHODS: {
+    provider: PortOneEasyPayProvider;
+    label: string;
+    logo: typeof kakaoPayLogo;
+    logoClassName: string;
+    buttonClassName: string;
+    textClassName: string;
+}[] = [
+        {
+            provider: PORTONE_EASY_PAY_PROVIDER.KAKAOPAY,
+            label: "카카오페이",
+            logo: kakaoPayLogo,
+            logoClassName: "h-6 w-auto",
+            buttonClassName:
+                "cursor-pointer border border-[#F4DC34] bg-[#F4DC34] hover:border-[#3C1E1E]/30 hover:-translate-y-0.5 focus-visible:ring-[#F4DC34]/50",
+            textClassName: "text-[#3C1E1E]",
+        },
+        {
+            provider: PORTONE_EASY_PAY_PROVIDER.TOSSPAY,
+            label: "토스페이",
+            logo: tossPayLogo,
+            logoClassName: "h-6 w-auto",
+            buttonClassName:
+                "cursor-pointer border border-[#1B64DA]/25 bg-white hover:border-[#1B64DA] hover:-translate-y-0.5 focus-visible:ring-[#1B64DA]/30",
+            textClassName: "text-[#1B64DA]",
+        },
+    ];
 
 export default function PaymentMethodDialog({
     plan,
@@ -146,20 +172,30 @@ export default function PaymentMethodDialog({
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-3">
                     {PAYMENT_METHODS.map((method) => (
                         <Button
                             key={method.provider}
                             type="button"
-                            variant="outline"
                             disabled={isProcessing}
                             onClick={() => void handlePay(method.provider)}
-                            className="h-12 w-full justify-center rounded-xl text-sm font-bold"
+                            className={`h-14 w-full justify-center gap-2.5 rounded-2xl text-sm font-bold shadow-none transition-all duration-150 ${method.buttonClassName}`}
                         >
                             {isProcessing ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
+                                <Loader2
+                                    className={`h-4 w-4 animate-spin ${method.textClassName}`}
+                                />
                             ) : (
-                                `${method.label}로 결제하기`
+                                <>
+                                    <Image
+                                        src={method.logo}
+                                        alt={method.label}
+                                        className={`${method.logoClassName} object-contain`}
+                                    />
+                                    <span className={method.textClassName}>
+                                        결제하기
+                                    </span>
+                                </>
                             )}
                         </Button>
                     ))}
