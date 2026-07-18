@@ -44,6 +44,19 @@ export const getChatRoomSubscribeDestination = (
     roomId: number
 ) => `/user/sub/chat/room/${roomId}`;
 
+export const getTypingPublishDestination = (
+    roomId: number
+) => `/pub/chat/typing/${roomId}`;
+
+export const getTypingSubscribeDestination = (
+    roomId: number
+) => `/user/sub/chat/typing/${roomId}`;
+
+export interface TypingStatusData {
+    message: string;
+    typingUserIds: number[];
+}
+
 export const normalizeChatRoomListData = (
     rooms?: RawChatRoomListResponseData | null
 ): ChatRoomListData[] => {
