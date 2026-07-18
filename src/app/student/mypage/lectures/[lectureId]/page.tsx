@@ -103,7 +103,7 @@ export default async function MyLectureDetailPage({
                                 <div className="flex justify-end border-b border-slate-100 px-5 py-4">
                                     <CreateReviewBtn
                                         lectureId={lecture.lectureId}
-                                        disabled={lecture.isCompleted !== true}
+                                        disabled={false} // TEMP: 수강 완료 체크 임시 해제, 테스트 끝나면 원복 필요
                                     />
                                 </div>
                             )}
