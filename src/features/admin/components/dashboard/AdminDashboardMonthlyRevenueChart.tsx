@@ -17,9 +17,9 @@ interface AdminDashboardMonthlyRevenueChartProps {
 }
 
 const MEMBERSHIP_SERIES = [
-    { key: "basic", label: "BASIC", color: "#94a3b8" },
+    { key: "basic", label: "BASIC", color: "#10b981" },
     { key: "plus", label: "PLUS", color: "#6366f1" },
-    { key: "pro", label: "PRO", color: "#8b5cf6" },
+    { key: "pro", label: "PRO", color: "#f59e0b" },
 ] as const;
 
 const SALES_COLOR = "#f43f5e";

@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { Check, Crown, Rocket, Sparkles } from "lucide-react";
 
+import { formatMembershipUntil } from "@/components/common/MembershipBadge";
 import { MembershipPlan, MembershipTier } from "../type";
 
 const TIER_ORDER: Record<MembershipTier, number> = {
@@ -22,7 +23,7 @@ interface MembershipPlanCardProps {
     mode?: "student" | "guest";
     currentTier?: MembershipTier;
     isActive?: boolean;
-    endAt?: string | null;
+    membershipUntil?: string | null;
     onSelect?: (plan: MembershipPlan) => void;
 }
 
@@ -31,7 +32,7 @@ export default function MembershipPlanCard({
     mode = "student",
     currentTier = "BASIC",
     isActive,
-    endAt,
+    membershipUntil,
     onSelect,
 }: MembershipPlanCardProps) {
     const router = useRouter();
@@ -39,6 +40,7 @@ export default function MembershipPlanCard({
     const isGuest = mode === "guest";
     const isCurrent = !isGuest && plan.tier === currentTier;
     const isUpgrade = TIER_ORDER[plan.tier] > TIER_ORDER[currentTier];
+    const formattedMembershipUntil = formatMembershipUntil(membershipUntil);
 
     const isHighlighted = isActive;
 
@@ -100,7 +102,7 @@ export default function MembershipPlanCard({
                     }`}
             >
                 {isCurrent
-                    ? `현재 플랜 ${endAt ? `(~${endAt})` : ``}`
+                    ? `현재 플랜 ${formattedMembershipUntil ? `(~${formattedMembershipUntil})` : ``}`
                     : isGuest
                         ? `${plan.name}로 시작하기`
                         : isUpgrade

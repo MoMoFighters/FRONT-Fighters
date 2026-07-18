@@ -17,6 +17,7 @@ import {
 } from "@/app/services/phone/friend/service";
 
 import { getMyInfo, MomoUserInfoResponse } from "@/features/user/action";
+import { getNoticeNotificationListAction } from "@/features/user/components/notification/action";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Image from "next/image";
@@ -56,24 +57,34 @@ export default async function StudentChatPage({
         friendsResponse,
         receivedResponse,
         sentResponse,
+        notificationListResponse,
     ]: [
         MomoUserInfoResponse,
         Awaited<ReturnType<typeof getChatRoomsService>>,
         Awaited<ReturnType<typeof getFriendsService>>,
         Awaited<ReturnType<typeof getReceivedFriendRequestsService>>,
         Awaited<ReturnType<typeof getSentFriendRequestsService>>,
+        Awaited<ReturnType<typeof getNoticeNotificationListAction>>,
     ] = await Promise.all([
         getMyInfo(),
         getChatRoomsService(accessToken),
         getFriendsService(accessToken),
         getReceivedFriendRequestsService(accessToken),
         getSentFriendRequestsService(accessToken),
+        getNoticeNotificationListAction(),
     ]);
 
     const chatRoomData = roomResponse.status === 200 ? roomResponse.data ?? [] : [];
     const friends = friendsResponse.status === 200 ? friendsResponse.data ?? [] : [];
     const received = receivedResponse.status === 200 ? receivedResponse.data ?? [] : [];
     const sent = sentResponse.status === 200 ? sentResponse.data ?? [] : [];
+    const notifications = notificationListResponse.data ?? [];
+    const hasUnreadFriendRequest = notifications.some(
+        (notification) => notification.type === "FRIEND_REQUEST" && !notification.isRead
+    );
+    const hasUnreadChatMessage = notifications.some(
+        (notification) => notification.type === "MESSAGE" && !notification.isRead
+    );
 
     const myChatRoom =
         chatRoomData.length > 0
@@ -86,7 +97,11 @@ export default async function StudentChatPage({
 
     return (
         <div className="mx-3 flex h-[calc(100vh-137px)] max-h-[calc(100vh-137px)] min-h-0 flex-col overflow-hidden   bg-white">
-            <FriendNav status={currentStatus} />
+            <FriendNav
+                status={currentStatus}
+                hasUnreadRequest={hasUnreadFriendRequest}
+                hasUnreadChat={hasUnreadChatMessage}
+            />
 
             {currentStatus === "friend" && (
                 <div className="min-h-0 flex-1 grid grid-cols-[3fr_7fr] overflow-hidden">

@@ -27,6 +27,7 @@ import { getMyInfo } from "@/features/user/action";
 import MyPageProfileAvatar from "@/features/user/components/mypage/MyPageProfileAvatar";
 import PasswordChangeMenuItem from "@/features/user/components/mypage/PasswordChangeMenuItem";
 import TeacherRegistMenuItem from "@/features/auth/components/TeacherRegistMenuItem";
+import MembershipBadge from "@/components/common/MembershipBadge";
 
 const POINT_REASON_LABEL: Record<PointHistoryReason, string> = {
     COMPLETE: "강의 완료 보상",
@@ -39,17 +40,6 @@ const POINT_REASON_LABEL: Record<PointHistoryReason, string> = {
 const POINT_TYPE_LABEL: Record<PointHistoryTransactionType, string> = {
     GAINED: "적립",
     USED: "사용",
-};
-
-const membershipBadgeStyle = {
-    BASIC:
-        'border border-zinc-300 bg-zinc-200/50 text-zinc-700',
-
-    PLUS:
-        'border border-zinc-400 text-zinc-800 bg-[linear-gradient(135deg,#ffffff_0%,#e5e7eb_25%,#9ca3af_50%,#e5e7eb_75%,#ffffff_100%)] shadow-[inset_0_1px_1px_rgba(255,255,255,.7),0_1px_2px_rgba(0,0,0,.12)]',
-
-    PRO:
-        'border border-yellow-500 text-yellow-900 bg-[linear-gradient(135deg,#fff7cc_0%,#fcd34d_25%,#f59e0b_50%,#fcd34d_75%,#fff7cc_100%)] shadow-[inset_0_1px_1px_rgba(255,255,255,.6),0_1px_2px_rgba(0,0,0,.12)]',
 };
 
 const formatDateTime = (createdAt: string) => {
@@ -88,7 +78,8 @@ export default async function StudentMyPage() {
         profileImageUrl: userInfo?.profileImageUrl || "",
         createdAt: userInfo?.createdAt || new Date().toISOString(),
         points: userInfo?.points ?? 0,
-        membership: userInfo?.membership
+        membership: userInfo?.membership,
+        membershipUntil: userInfo?.membershipUntil,
     };
     const lectures = (lectureResponse.content ?? []) as Lecture[];
     const pointHistory = pointHistoryResponse.data?.list ?? [];
@@ -111,9 +102,11 @@ export default async function StudentMyPage() {
                                 <p className="truncate text-lg font-black text-slate-900">
                                     {userData.nickname}
                                 </p>
-                                <p className={`px-2 py-1 rounded-lg text-xs ${membershipBadgeStyle[userData.membership || 'BASIC']}`}>
-                                    {userData.membership}
-                                </p>
+                                <MembershipBadge
+                                    membership={userData.membership}
+                                    membershipUntil={userData.membershipUntil}
+                                    className="rounded-lg px-2 py-1 text-xs"
+                                />
                             </div>
                         </div>
 
