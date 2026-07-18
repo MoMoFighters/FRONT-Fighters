@@ -258,7 +258,7 @@ export default function ChatRoomOptionsMenu({
                     </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-32">
-                    {room.memberInfo[0].role === "TEACHER" ? "" : (
+                    {room.memberInfo[0]?.role === "TEACHER" ? "" : (
                         <DropdownMenuItem onClick={() => void openInviteDialog()}>
                             초대하기
                         </DropdownMenuItem>

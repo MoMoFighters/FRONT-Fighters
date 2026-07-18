@@ -59,20 +59,20 @@ export default async function StudentChatPage({
         sentResponse,
         notificationListResponse,
     ]: [
-        MomoUserInfoResponse,
-        Awaited<ReturnType<typeof getChatRoomsService>>,
-        Awaited<ReturnType<typeof getFriendsService>>,
-        Awaited<ReturnType<typeof getReceivedFriendRequestsService>>,
-        Awaited<ReturnType<typeof getSentFriendRequestsService>>,
-        Awaited<ReturnType<typeof getNoticeNotificationListAction>>,
-    ] = await Promise.all([
-        getMyInfo(),
-        getChatRoomsService(accessToken),
-        getFriendsService(accessToken),
-        getReceivedFriendRequestsService(accessToken),
-        getSentFriendRequestsService(accessToken),
-        getNoticeNotificationListAction(),
-    ]);
+            MomoUserInfoResponse,
+            Awaited<ReturnType<typeof getChatRoomsService>>,
+            Awaited<ReturnType<typeof getFriendsService>>,
+            Awaited<ReturnType<typeof getReceivedFriendRequestsService>>,
+            Awaited<ReturnType<typeof getSentFriendRequestsService>>,
+            Awaited<ReturnType<typeof getNoticeNotificationListAction>>,
+        ] = await Promise.all([
+            getMyInfo(),
+            getChatRoomsService(accessToken),
+            getFriendsService(accessToken),
+            getReceivedFriendRequestsService(accessToken),
+            getSentFriendRequestsService(accessToken),
+            getNoticeNotificationListAction(),
+        ]);
 
     const chatRoomData = roomResponse.status === 200 ? roomResponse.data ?? [] : [];
     const friends = friendsResponse.status === 200 ? friendsResponse.data ?? [] : [];
@@ -96,7 +96,7 @@ export default async function StudentChatPage({
         friends.find(friend => friend.userId === currentFriendId) ?? null;
 
     return (
-        <div className="mx-3 flex h-[calc(100vh-137px)] max-h-[calc(100vh-137px)] min-h-0 flex-row overflow-hidden   bg-white">
+        <div className="mx-3 flex h-[calc(100vh-134px)] max-h-[calc(100vh-134px)] min-h-0 flex-row overflow-hidden   bg-white">
             <FriendNav
                 status={currentStatus}
                 hasUnreadRequest={hasUnreadFriendRequest}
