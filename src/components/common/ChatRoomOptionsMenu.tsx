@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useMemo, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { EllipsisVertical } from "lucide-react";
 import { toast } from "sonner";
 
@@ -58,6 +58,7 @@ export default function ChatRoomOptionsMenu({
 }: ChatRoomOptionsMenuProps) {
     const router = useRouter();
     const pathname = usePathname();
+    const searchParams = useSearchParams();
     const isGroupRoom = Boolean(room.roomTitle?.trim());
     const lockedMemberIds = useMemo(
         () => new Set(room.memberInfo.map((member) => member.userId)),
@@ -208,7 +209,13 @@ export default function ChatRoomOptionsMenu({
         }
 
         toast(response.message);
-        router.push(getChatBaseHref(pathname));
+
+        const currentRoomId = searchParams.get("roomId");
+
+        if (currentRoomId !== null && Number(currentRoomId) === room.roomId) {
+            router.push(getChatBaseHref(pathname));
+        }
+
         router.refresh();
     };
 

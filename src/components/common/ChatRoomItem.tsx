@@ -4,7 +4,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { ChatRoomListData } from "@/app/services/phone/chat/service";
+import {
+    ChatRoomListData,
+    UNKNOWN_CHAT_PARTNER_NAME,
+} from "@/app/services/phone/chat/service";
 import { ChatMemberResponse } from "@/features/chat/type";
 import ChatRoomOptionsMenu from "./ChatRoomOptionsMenu";
 
@@ -12,7 +15,7 @@ const getInitial = (name?: string | null) =>
     name?.trim().charAt(0) || "?";
 
 const getMemberDisplayName = (member?: ChatMemberResponse) =>
-    member?.nickname?.trim() || member?.name?.trim() || "채팅방";
+    member?.nickname?.trim() || member?.name?.trim() || UNKNOWN_CHAT_PARTNER_NAME;
 
 const formatChatRoomCreatedAt = (createdAt?: string | null) => {
     if (!createdAt) {
