@@ -26,7 +26,7 @@ interface HeaderProfileCardProps {
     role: string;
     profileImageUrl?: string | null;
     nickname: string;
-    membership?: 'BASIC' | 'PRO' | 'PLUS';
+    membership?: 'BASIC' | 'PLUS' | 'PRO';
     membershipUntil?: string | null;
     mode: 'student' | 'teacher';
 }
