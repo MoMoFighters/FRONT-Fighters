@@ -1,6 +1,7 @@
 import StudentHeader from "@/components/layout/StudentHeader";
 import StudentFooter from "@/components/layout/StudentFooter";
 import StudentLayoutShell from "@/components/layout/StudentLayoutShell";
+import OpenChatBotBtn from "@/features/chatbot/components/OpenChatBotBtn";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
@@ -34,11 +35,14 @@ export default async function StudentLayout({
     }
 
     return (
-        <StudentLayoutShell
-            header={<StudentHeader role="student" />}
-            footer={<StudentFooter />}
-        >
-            {children}
-        </StudentLayoutShell>
+        <>
+            <StudentLayoutShell
+                header={<StudentHeader role="student" />}
+                footer={<StudentFooter />}
+            >
+                {children}
+            </StudentLayoutShell>
+            <OpenChatBotBtn />
+        </>
     );
 }
