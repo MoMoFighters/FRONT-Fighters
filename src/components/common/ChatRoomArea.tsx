@@ -27,6 +27,7 @@ import {
     getTypingSubscribeDestination,
     normalizeChatHistoryData,
     TypingStatusData,
+    UNKNOWN_CHAT_PARTNER_NAME,
 } from "@/app/services/phone/chat/service";
 import {
     getChatHistoryAction,
@@ -436,11 +437,9 @@ export default function ChatRoomArea({
     const roomTitle =
         roomInfo?.roomTitle ??
         (
-            isMine ||
-                roomInfo?.inMemberCount === 1 ||
-                opponent?.status === "me"
+            isMine
                 ? "나와의 채팅"
-                : opponent?.nickname ?? "채팅방"
+                : opponent?.nickname ?? UNKNOWN_CHAT_PARTNER_NAME
         );
     const roomSubTitle =
         roomInfo?.roomTitle
