@@ -14,8 +14,8 @@ import {
 import StudyUserItem from "@/components/study/StudyUserItem";
 import StudyTimer from "@/features/study/components/StudyTimer";
 import {
-    getSoloStudyHistory,
     getSoloStudyLabList,
+    getTimerAvailability,
     pauseSoloStudyTimer,
     startSoloStudyTimer,
     stopSoloStudyTimer,
@@ -23,7 +23,6 @@ import {
 import { formatStudyTime } from "@/features/study/utils";
 import type {
     SoloCurrentSessionResult,
-    SoloStudyHistoryItem,
     StudyRoomSeatUser,
     StudyTimerLap,
 } from "@/features/study/type";
@@ -46,13 +45,13 @@ export default function SoloStudyView({
     const [laps, setLaps] = useState<StudyTimerLap[]>([]);
     const [isHistoryOpen, setIsHistoryOpen] = useState(false);
     const [isHistoryLoading, setIsHistoryLoading] = useState(false);
-    const [history, setHistory] = useState<SoloStudyHistoryItem[]>([]);
 
     const meSeat: StudyRoomSeatUser = {
         userId: 0,
         nickname: myNickname ?? "나",
         status: "JOINED",
         timerStatus: isRunning ? "STUDYING" : "RESTING",
+        totalSeconds: seconds,
         isHost: false,
         isMe: true,
     };
@@ -106,6 +105,13 @@ export default function SoloStudyView({
             return;
         }
 
+        const availability = await getTimerAvailability();
+
+        if (availability.statusCode < 400 && availability.data?.canStartTimer === false) {
+            toast.error("이미 다른 곳에서 타이머를 진행 중입니다.");
+            return;
+        }
+
         const response = await startSoloStudyTimer();
 
         if (response.statusCode >= 400) {
@@ -136,15 +142,7 @@ export default function SoloStudyView({
         setIsHistoryLoading(true);
 
         try {
-            const response = await getSoloStudyHistory();
-
-            if (response.statusCode >= 400) {
-                toast.error(response.message || "세션 이력을 불러오지 못했습니다.");
-                setHistory([]);
-                return;
-            }
-
-            setHistory(response.data);
+            await refreshLaps();
         } finally {
             setIsHistoryLoading(false);
         }
@@ -226,7 +224,7 @@ export default function SoloStudyView({
                     <DialogHeader>
                         <DialogTitle>솔로 세션 기록</DialogTitle>
                         <DialogDescription>
-                            지난 솔로 세션 기록을 확인할 수 있습니다.
+                            이번 세션에서 기록한 랩 목록입니다.
                         </DialogDescription>
                     </DialogHeader>
 
@@ -235,21 +233,21 @@ export default function SoloStudyView({
                             <div className="py-6 text-center text-xs font-bold text-slate-400">
                                 불러오는 중...
                             </div>
-                        ) : history.length === 0 ? (
+                        ) : laps.length === 0 ? (
                             <div className="py-6 text-center text-xs font-bold text-slate-400">
-                                지난 세션 기록이 없습니다.
+                                기록된 랩이 없습니다.
                             </div>
                         ) : (
-                            history.map((session) => (
+                            [...laps].reverse().map((lap) => (
                                 <div
-                                    key={session.sessionId}
+                                    key={lap.lapNumber}
                                     className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2"
                                 >
                                     <span className="text-xs font-bold text-slate-500">
-                                        {session.startTime.slice(0, 10)}
+                                        Lap {lap.lapNumber}
                                     </span>
                                     <span className="font-mono text-sm font-black text-slate-800">
-                                        {formatStudyTime(session.totalSeconds)}
+                                        {lap.seconds === null ? "진행 중" : formatStudyTime(lap.seconds)}
                                     </span>
                                 </div>
                             ))

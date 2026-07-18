@@ -1,30 +1,25 @@
-import { cookies } from "next/headers";
-
 import StudentPageHeader from "@/features/student/components/StudentPageHeader";
 import {
     getCurrentSoloStudySessionService,
     getDailyStudyTimeService,
     getMonthlyStudyTimeService,
 } from "@/app/services/study/service";
-import {
-    getNicknameFromAccessToken,
-    getThisYearMonthString,
-    getTodayDateString,
-} from "@/features/study/utils";
+import { getThisYearMonthString, getTodayDateString } from "@/features/study/utils";
+import { getMyInfo } from "@/features/user/action";
 import SoloStudyView from "./SoloStudyView";
 
 export default async function SoloStudyPage() {
-    const cookieStore = await cookies();
-    const accessToken = cookieStore.get("accessToken")?.value;
-    const myNickname = getNicknameFromAccessToken(accessToken);
-
     const today = new Date();
 
-    const [currentSessionResponse, dailyTimeResponse, monthlyTimeResponse] = await Promise.all([
-        getCurrentSoloStudySessionService(),
-        getDailyStudyTimeService(getTodayDateString(today)),
-        getMonthlyStudyTimeService(getThisYearMonthString(today)),
-    ]);
+    const [currentSessionResponse, dailyTimeResponse, monthlyTimeResponse, myInfoResponse] =
+        await Promise.all([
+            getCurrentSoloStudySessionService(),
+            getDailyStudyTimeService(getTodayDateString(today)),
+            getMonthlyStudyTimeService(getThisYearMonthString(today)),
+            getMyInfo(),
+        ]);
+
+    const myNickname = myInfoResponse.data?.nickname ?? null;
 
     return (
         <main className="min-h-[calc(100vh-137px)] bg-white px-8 py-8">
@@ -37,7 +32,7 @@ export default async function SoloStudyPage() {
                             href: "/student",
                         },
                         {
-                            label: "열품타",
+                            label: "팀 스터디",
                             href: "/student/group-study",
                         },
                         {

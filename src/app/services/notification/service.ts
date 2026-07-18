@@ -43,7 +43,7 @@ export const getNoticeNotificationListService =
 
 export const getNoticeAppCountsService =
     async (): Promise<NoticeAppCountsResponse> => {
-        const response = await fetchWithAuth("/api/v2/notice/app-counts", {
+        const response = await fetchWithAuth("/api/v3/notice/app-counts", {
             method: "GET",
             cache: "no-store",
         });

@@ -1,73 +1,40 @@
 import Link from "next/link";
 import { CalendarDays, Clock } from "lucide-react";
 
-// TODO: 백엔드 준비되면 주석 해제
-// import {
-//     getDailyStudyTimeService,
-//     getMonthlyStudyTimeService,
-//     getMyGroupStudyListService,
-//     getMyStudyInviteListService,
-// } from "@/app/services/study/service";
 import GroupStudyActionsPanel from "@/components/study/GroupStudyActionsPanel";
-import { formatStudyTime } from "@/features/study/utils";
-import type { MyGroupStudyRoomItem, MyStudyInvitationItem } from "@/features/study/type";
-
-// 더미 목데이터 (서비스 연동 전까지 화면 확인용)
-const MOCK_MY_ROOMS: MyGroupStudyRoomItem[] = [
-    {
-        roomId: 1,
-        hostUserId: 8,
-        hostNickname: "상희",
-        memberCount: 2,
-        status: "ACTIVE",
-    },
-    {
-        roomId: 2,
-        hostUserId: 12,
-        hostNickname: "민수",
-        memberCount: 3,
-        status: "ENDED",
-    },
-];
-
-const MOCK_MY_INVITES: MyStudyInvitationItem[] = [
-    {
-        invitationId: 101,
-        roomId: 5,
-        hostUserId: 20,
-        hostNickname: "현우",
-        invitedAt: "2026-07-12T07:50:00.000000Z",
-    },
-];
-
-const MOCK_DAILY_SECONDS = 9840;
-const MOCK_MONTHLY_SECONDS = 302400;
+import {
+    getDailyStudyTime,
+    getMonthlyStudyTime,
+    getMyGroupStudyList,
+    getMyStudyInviteList,
+} from "@/features/study/actions";
+import {
+    formatStudyTime,
+    getThisYearMonthString,
+    getTodayDateString,
+} from "@/features/study/utils";
 
 export default async function GroupStudyMainPage() {
-    // TODO: 백엔드 준비되면 주석 해제
-    // const today = new Date();
-    //
-    // const [myRoomsResponse, myInvitesResponse, dailyResponse, monthlyResponse] = await Promise.all([
-    //     getMyGroupStudyListService(),
-    //     getMyStudyInviteListService(),
-    //     getDailyStudyTimeService(getTodayDateString(today)),
-    //     getMonthlyStudyTimeService(getThisYearMonthString(today)),
-    // ]);
-    //
-    // const myRooms = myRoomsResponse.data ?? [];
-    // const myInvites = myInvitesResponse.data ?? [];
+    const today = new Date();
 
-    const myRooms = MOCK_MY_ROOMS;
-    const myInvites = MOCK_MY_INVITES;
-    const dailySeconds = MOCK_DAILY_SECONDS;
-    const monthlySeconds = MOCK_MONTHLY_SECONDS;
+    const [myRoomsResponse, myInvitesResponse, dailyResponse, monthlyResponse] = await Promise.all([
+        getMyGroupStudyList(),
+        getMyStudyInviteList(),
+        getDailyStudyTime(getTodayDateString(today)),
+        getMonthlyStudyTime(getThisYearMonthString(today)),
+    ]);
+
+    const myRooms = Array.isArray(myRoomsResponse.data) ? myRoomsResponse.data : [];
+    const myInvites = Array.isArray(myInvitesResponse.data) ? myInvitesResponse.data : [];
+    const dailySeconds = dailyResponse.data?.totalSeconds ?? 0;
+    const monthlySeconds = monthlyResponse.data?.totalSeconds ?? 0;
 
     return (
         <main className="min-h-[calc(100vh-137px)] bg-white px-8 py-12">
             <div className="mx-auto flex w-full max-w-240 flex-col gap-8">
                 <div>
                     <h1 className="text-3xl font-black text-slate-900">
-                        팀스터디
+                        팀 스터디
                     </h1>
                     <p className="mt-2 text-sm font-bold text-slate-400">
                         친구들과 함께, 또는 혼자서 공부 시간을 기록해보세요.
@@ -126,8 +93,8 @@ export default async function GroupStudyMainPage() {
                                     href={`/student/group-study/${room.roomId}`}
                                     className="rounded-2xl border border-slate-200 bg-white p-5 transition hover:border-indigo-200 hover:bg-indigo-50/60"
                                 >
-                                    <p className="text-sm font-black text-slate-900">
-                                        스터디룸 #{room.roomId}
+                                    <p className="truncate text-sm font-black text-slate-900">
+                                        {room.title}
                                     </p>
                                     <p className="mt-1 text-xs font-bold text-slate-400">
                                         방장 {room.hostNickname} · {room.memberCount}명 ·{" "}

@@ -10,6 +10,7 @@ import StudyUserItem from "@/components/study/StudyUserItem";
 import StudyTimer from "@/features/study/components/StudyTimer";
 import StudentPageHeader from "@/features/student/components/StudentPageHeader";
 import {
+    getTimerAvailability,
     leaveGroupStudy,
     pauseGroupStudyTimer,
     startGroupStudyTimer,
@@ -18,6 +19,7 @@ import {
 import { buildRoomSeats, formatStudyTime } from "@/features/study/utils";
 import type {
     GroupStudyDetail,
+    MySentStudyInvitationItem,
     StudyRankingEntry,
     StudyRoomSeatUser,
 } from "@/features/study/type";
@@ -28,6 +30,7 @@ interface GroupStudyRoomViewProps {
     myNickname: string | null;
     dailyRanking: StudyRankingEntry[];
     monthlyRanking: StudyRankingEntry[];
+    initialSentInvitations?: MySentStudyInvitationItem[];
 }
 
 export default function GroupStudyRoomView({
@@ -36,6 +39,7 @@ export default function GroupStudyRoomView({
     myNickname,
     dailyRanking,
     monthlyRanking,
+    initialSentInvitations = [],
 }: GroupStudyRoomViewProps) {
     const router = useRouter();
     const [detail, setDetail] = useState(initialDetail);
@@ -47,6 +51,30 @@ export default function GroupStudyRoomView({
     const seats = useMemo(
         () => buildRoomSeats(detail, myNickname),
         [detail, myNickname]
+    );
+
+    // 빈 좌석에 순서대로 보낸 초대를 매칭한다 (초대가 seat 위치 정보를 갖고 있지 않으므로 순번으로 대응).
+    const seatSentInvites = useMemo(
+        () =>
+            seats.reduce<{
+                results: (MySentStudyInvitationItem | undefined)[];
+                usedCount: number;
+            }>(
+                (acc, seat) => {
+                    if (seat) {
+                        return { results: [...acc.results, undefined], usedCount: acc.usedCount };
+                    }
+
+                    const nextInvite = initialSentInvitations[acc.usedCount];
+
+                    return {
+                        results: [...acc.results, nextInvite],
+                        usedCount: nextInvite ? acc.usedCount + 1 : acc.usedCount,
+                    };
+                },
+                { results: [], usedCount: 0 }
+            ).results,
+        [seats, initialSentInvitations]
     );
 
     useEffect(() => {
@@ -81,6 +109,13 @@ export default function GroupStudyRoomView({
 
             setSeconds(response.data.accumulatedSeconds);
             setIsRunning(false);
+            return;
+        }
+
+        const availability = await getTimerAvailability();
+
+        if (availability.statusCode < 400 && availability.data?.canStartTimer === false) {
+            toast.error("이미 다른 곳에서 타이머를 진행 중입니다.");
             return;
         }
 
@@ -139,14 +174,14 @@ export default function GroupStudyRoomView({
                             href: "/student",
                         },
                         {
-                            label: "열품타",
+                            label: "팀 스터디",
                             href: "/student/group-study",
                         },
                         {
-                            label: "스터디룸",
+                            label: detail.title,
                         },
                     ]}
-                    title="스터디룸"
+                    title={detail.title}
                 />
             </div>
 
@@ -179,15 +214,27 @@ export default function GroupStudyRoomView({
                     </div>
 
                     <div className="mt-8 grid grid-cols-2 gap-x-10 gap-y-12">
-                        {seats.map((seat, index) => (
-                            <StudyUserItem
-                                key={seat?.userId ?? `empty-${index}`}
-                                roomId={roomId}
-                                user={seat}
-                                canKick={viewerIsHost}
-                                onKick={handleKickMember}
-                            />
-                        ))}
+                        {seats.map((seat, index) => {
+                            const sentInvite = seatSentInvites[index];
+
+                            return (
+                                <StudyUserItem
+                                    key={seat?.userId ?? `empty-${index}`}
+                                    roomId={roomId}
+                                    user={seat}
+                                    canKick={viewerIsHost}
+                                    onKick={handleKickMember}
+                                    initialPendingInvite={
+                                        sentInvite
+                                            ? {
+                                                nickname: sentInvite.inviteeNickname,
+                                                invitationId: sentInvite.invitationId,
+                                            }
+                                            : undefined
+                                    }
+                                />
+                            );
+                        })}
                     </div>
                 </section>
 

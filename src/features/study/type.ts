@@ -1,15 +1,14 @@
+import type { ApiResponse } from "@/lib/api";
+
 // ====================
 // 공통
 // ====================
 
-// 열품타 API 공통 응답 형식 (statusCode 필드 사용)
-export interface StudyApiResponse<T> {
-    timestamp: string;
+// 팀 스터디 API 공통 응답 형식 (다른 도메인 공용 ApiResponse와 필드는 같지만, status가 아니라 statusCode를 쓰고 data가 항상 옴)
+export type StudyApiResponse<T> = Omit<ApiResponse<T>, "status" | "data"> & {
     statusCode: number;
-    code: string;
-    message: string;
     data: T;
-}
+};
 
 // ====================
 // Group Study
@@ -25,11 +24,17 @@ export type StudyRoomMemberTimerStatus = 'STUDYING' | 'RESTING' | null;
 // 초대 상태
 export type StudyInvitationStatus = 'INVITED' | 'CANCELED' | 'JOINED' | 'REJECTED';
 
+// 그룹방 생성 요청 body
+export interface CreateGroupStudyRequest {
+    title: string;
+}
+
 // 그룹방 기본 정보 (그룹방 생성 응답에서 사용)
 export interface GroupStudyInfo {
     roomId: number;
     hostUserId: number;
     hostNickname: string;
+    title: string;
     status: StudyRoomStatus;
     maxMember: number;
 }
@@ -40,11 +45,25 @@ export interface GroupStudyRoomMember {
     nickname: string;
     status: StudyRoomMemberStatus;
     timerStatus: StudyRoomMemberTimerStatus;
+    // 이 방(group_room_member)에서 지금까지 누적한 공부 시간(초)
+    totalSeconds: number;
 }
 
 // 그룹방 상세 정보 (그룹방 상세 조회 응답에서 사용)
 export interface GroupStudyDetail extends GroupStudyInfo {
+    title: string;
     members: GroupStudyRoomMember[];
+}
+
+// 그룹방 제목 수정 요청 body
+export interface UpdateGroupStudyTitleRequest {
+    title: string;
+}
+
+// 그룹방 제목 수정 응답
+export interface UpdateGroupStudyTitleResult {
+    roomId: number;
+    title: string;
 }
 
 // 내가 속한 그룹방 목록 아이템
@@ -52,8 +71,11 @@ export interface MyGroupStudyRoomItem {
     roomId: number;
     hostUserId: number;
     hostNickname: string;
+    title: string;
     memberCount: number;
     status: StudyRoomStatus;
+    // 로그인 유저 본인의 이 방에서의 타이머 상태. null이면 켠 적 없거나 이미 종료함
+    myTimerStatus: StudyRoomMemberTimerStatus;
 }
 
 // 그룹방 나가기 응답
@@ -116,7 +138,23 @@ export interface MyStudyInvitationItem {
     roomId: number;
     hostUserId: number;
     hostNickname: string;
+    title: string;
     invitedAt: string;
+}
+
+// 내가 방장으로서 보낸 초대 목록 아이템 (status=INVITED 인 것만)
+export interface MySentStudyInvitationItem {
+    invitationId: number;
+    roomId: number;
+    title: string;
+    inviteeId: number;
+    inviteeNickname: string;
+    invitedAt: string;
+}
+
+// 내가 보낸 초대 목록 조회 응답
+export interface MySentStudyInvitationListResult {
+    invitations: MySentStudyInvitationItem[];
 }
 
 // ====================
@@ -125,6 +163,11 @@ export interface MyStudyInvitationItem {
 
 // 시작/재개 액션 구분
 export type StudyTimerAction = 'STARTED' | 'RESUMED';
+
+// 타이머 시작 가능 여부 조회 응답 (그룹방/솔로 세션 어느 화면에서 부르든 동일)
+export interface TimerAvailabilityResult {
+    canStartTimer: boolean;
+}
 
 // 랩 정보 (그룹/솔로 타이머 응답에서 공통으로 사용)
 export interface StudyTimerLap {
@@ -247,14 +290,6 @@ export interface SoloCurrentSessionResult {
     status: SoloSessionStatus;
     startTime: string;
     accumulatedSeconds: number;
-}
-
-// 솔로 세션 이력 아이템
-export interface SoloStudyHistoryItem {
-    sessionId: number;
-    startTime: string;
-    endTime: string;
-    totalSeconds: number;
 }
 
 // 일별 누적 공부시간 조회 응답

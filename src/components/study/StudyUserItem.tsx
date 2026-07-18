@@ -11,7 +11,6 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import type { StudentFriendData } from "@/features/friend/type";
 import {
     cancelStudyInvite,
     getGroupStudyLabList,
@@ -21,17 +20,18 @@ import type { StudyRoomSeatUser, StudyTimerLap } from "@/features/study/type";
 import { formatLapSeconds } from "@/features/study/utils";
 import StudyUserInviteModal from "./StudyUserInviteModal";
 
+interface PendingInvite {
+    nickname: string;
+    invitationId: number;
+}
+
 interface StudyUserItemProps {
     roomId: number;
     user?: StudyRoomSeatUser;
     canKick?: boolean;
     onKick?: (user: StudyRoomSeatUser) => void;
     showLapButton?: boolean;
-}
-
-interface PendingInvite {
-    friend: StudentFriendData;
-    invitationId: number;
+    initialPendingInvite?: PendingInvite;
 }
 
 export default function StudyUserItem({
@@ -40,12 +40,15 @@ export default function StudyUserItem({
     canKick = false,
     onKick,
     showLapButton = true,
+    initialPendingInvite,
 }: StudyUserItemProps) {
     const [isInviteOpen, setIsInviteOpen] = useState(false);
     const [isLapModalOpen, setIsLapModalOpen] = useState(false);
     const [isLapLoading, setIsLapLoading] = useState(false);
     const [laps, setLaps] = useState<StudyTimerLap[]>([]);
-    const [pendingInvite, setPendingInvite] = useState<PendingInvite | null>(null);
+    const [pendingInvite, setPendingInvite] = useState<PendingInvite | null>(
+        initialPendingInvite ?? null
+    );
 
     const handleCancelInvite = async () => {
         if (!pendingInvite) {
@@ -59,7 +62,7 @@ export default function StudyUserItem({
             return;
         }
 
-        toast(response.message || `${pendingInvite.friend.nickname}님에게 보낸 초대를 취소했습니다.`);
+        toast(response.message || `${pendingInvite.nickname}님에게 보낸 초대를 취소했습니다.`);
         setPendingInvite(null);
     };
 
@@ -108,7 +111,7 @@ export default function StudyUserItem({
                 <div className="relative pt-7">
                     <div className="flex h-28 w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-indigo-200 bg-indigo-50/60 text-indigo-400">
                         <span className="text-xs font-bold">
-                            {pendingInvite.friend.nickname}님에게 초대를 보냈어요
+                            {pendingInvite.nickname}님에게 초대를 보냈어요
                         </span>
                         <button
                             type="button"
@@ -147,7 +150,7 @@ export default function StudyUserItem({
                     open={isInviteOpen}
                     onOpenChange={setIsInviteOpen}
                     onInvited={(friend, invitationId) => {
-                        setPendingInvite({ friend, invitationId });
+                        setPendingInvite({ nickname: friend.nickname, invitationId });
                         setIsInviteOpen(false);
                     }}
                 />
@@ -215,7 +218,7 @@ export default function StudyUserItem({
                     : "border-slate-200 bg-slate-50 text-slate-600"
                     }`}
             >
-                {user.isMe ? "나" : user.nickname}
+                {user.isMe ? `${user.nickname} (나)` : user.nickname}
             </div>
 
             <Dialog open={isLapModalOpen} onOpenChange={setIsLapModalOpen}>

@@ -1,6 +1,7 @@
 import { fetchWithAuth } from "@/lib/api";
 import type {
     StudyApiResponse,
+    CreateGroupStudyRequest,
     GroupStudyInfo,
     GroupStudyDetail,
     MyGroupStudyRoomItem,
@@ -12,6 +13,10 @@ import type {
     StudyInvitationAcceptResult,
     StudyInvitationRejectResult,
     MyStudyInvitationItem,
+    MySentStudyInvitationListResult,
+    UpdateGroupStudyTitleRequest,
+    UpdateGroupStudyTitleResult,
+    TimerAvailabilityResult,
     GroupStudyTimerStartResult,
     GroupStudyTimerPauseResult,
     GroupStudyTimerEndResult,
@@ -23,7 +28,6 @@ import type {
     SoloStudyTimerEndResult,
     SoloStudyLapsResult,
     SoloCurrentSessionResult,
-    SoloStudyHistoryItem,
     DailyStudyTimeResult,
     MonthlyStudyTimeResult,
 } from "@/features/study/type";
@@ -33,9 +37,12 @@ import type {
 // ====================
 
 // 그룹방 생성
-export const createGroupStudyService = async (): Promise<StudyApiResponse<GroupStudyInfo>> => {
+export const createGroupStudyService = async (
+    body: CreateGroupStudyRequest
+): Promise<StudyApiResponse<GroupStudyInfo>> => {
     const response = await fetchWithAuth("/api/v3/study/rooms", {
         method: "POST",
+        body: JSON.stringify(body),
     });
 
     if (!response.ok) {
@@ -50,7 +57,27 @@ export const createGroupStudyService = async (): Promise<StudyApiResponse<GroupS
 export const getGroupStudyDetailService = async (
     roomId: number
 ): Promise<StudyApiResponse<GroupStudyDetail>> => {
-    const response = await fetchWithAuth(`/api/v3/study/rooms/${roomId}`);
+    const response = await fetchWithAuth(`/api/v3/study/rooms/${roomId}`, {
+        cache: "no-store",
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`${errorData.status}|${errorData.message}` || "500|알 수 없는 오류가 발생했습니다")
+    }
+    return response.json();
+};
+
+
+// 그룹방 제목 수정 (방장만 가능)
+export const updateGroupStudyTitleService = async (
+    roomId: number,
+    body: UpdateGroupStudyTitleRequest
+): Promise<StudyApiResponse<UpdateGroupStudyTitleResult>> => {
+    const response = await fetchWithAuth(`/api/v3/study/rooms/${roomId}`, {
+        method: "PATCH",
+        body: JSON.stringify(body),
+    });
 
     if (!response.ok) {
         const errorData = await response.json();
@@ -62,7 +89,9 @@ export const getGroupStudyDetailService = async (
 
 // 내가 속한 그룹방 목록 조회
 export const getMyGroupStudyListService = async (): Promise<StudyApiResponse<MyGroupStudyRoomItem[]>> => {
-    const response = await fetchWithAuth("/api/v3/study/rooms/my");
+    const response = await fetchWithAuth("/api/v3/study/rooms/my", {
+        cache: "no-store",
+    });
 
     if (!response.ok) {
         const errorData = await response.json();
@@ -178,7 +207,41 @@ export const denyStudyInviteService = async (
 
 // 내가 받은 초대 목록 조회
 export const getMyStudyInviteListService = async (): Promise<StudyApiResponse<MyStudyInvitationItem[]>> => {
-    const response = await fetchWithAuth("/api/v3/study/members/invitations");
+    const response = await fetchWithAuth("/api/v3/study/members/invitations", {
+        cache: "no-store",
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`${errorData.status}|${errorData.message}` || "500|알 수 없는 오류가 발생했습니다")
+    }
+    return response.json();
+};
+
+
+// 내가 방장으로서 보낸 초대 목록 조회 (roomId 파라미터 없이 전체 조회)
+export const getSentStudyInviteListService = async (): Promise<StudyApiResponse<MySentStudyInvitationListResult>> => {
+    const response = await fetchWithAuth("/api/v3/study/members/invitations/sent", {
+        cache: "no-store",
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`${errorData.status}|${errorData.message}` || "500|알 수 없는 오류가 발생했습니다")
+    }
+    return response.json();
+};
+
+
+// ====================
+// Group / Solo Timer 공통
+// ====================
+
+// 타이머 시작 가능 여부 조회 (그룹방/솔로 세션 어느 화면에서 부르든 동일한 로직)
+export const getTimerAvailabilityService = async (): Promise<StudyApiResponse<TimerAvailabilityResult>> => {
+    const response = await fetchWithAuth("/api/v3/study/timer-availability", {
+        cache: "no-store",
+    });
 
     if (!response.ok) {
         const errorData = await response.json();
@@ -249,7 +312,9 @@ export const getGroupStudyLabListService = async (
     roomId: number,
     targetUserId: number
 ): Promise<StudyApiResponse<GroupStudyMemberLapsResult>> => {
-    const response = await fetchWithAuth(`/api/v3/study/rooms/${roomId}/members/${targetUserId}/laps`);
+    const response = await fetchWithAuth(`/api/v3/study/rooms/${roomId}/members/${targetUserId}/laps`, {
+        cache: "no-store",
+    });
 
     if (!response.ok) {
         const errorData = await response.json();
@@ -263,7 +328,9 @@ export const getGroupStudyLabListService = async (
 export const getGroupStudyDailyRankingService = async (
     roomId: number
 ): Promise<StudyApiResponse<GroupStudyDailyRankingResult>> => {
-    const response = await fetchWithAuth(`/api/v3/study/rooms/${roomId}/ranking/daily`);
+    const response = await fetchWithAuth(`/api/v3/study/rooms/${roomId}/ranking/daily`, {
+        cache: "no-store",
+    });
 
     if (!response.ok) {
         const errorData = await response.json();
@@ -277,7 +344,9 @@ export const getGroupStudyDailyRankingService = async (
 export const getGroupStudyMonthlyRankingService = async (
     roomId: number
 ): Promise<StudyApiResponse<GroupStudyMonthlyRankingResult>> => {
-    const response = await fetchWithAuth(`/api/v3/study/rooms/${roomId}/ranking/monthly`);
+    const response = await fetchWithAuth(`/api/v3/study/rooms/${roomId}/ranking/monthly`, {
+        cache: "no-store",
+    });
 
     if (!response.ok) {
         const errorData = await response.json();
@@ -339,7 +408,9 @@ export const stopSoloStudyTimerService = async (): Promise<StudyApiResponse<Solo
 
 // 개인 랩 목록 조회
 export const getSoloStudyLabListService = async (): Promise<StudyApiResponse<SoloStudyLapsResult>> => {
-    const response = await fetchWithAuth("/api/v3/study/solo/laps");
+    const response = await fetchWithAuth("/api/v3/study/solo/laps", {
+        cache: "no-store",
+    });
 
     if (!response.ok) {
         const errorData = await response.json();
@@ -351,19 +422,9 @@ export const getSoloStudyLabListService = async (): Promise<StudyApiResponse<Sol
 
 // 현재 진행 중인 솔로 세션 조회
 export const getCurrentSoloStudySessionService = async (): Promise<StudyApiResponse<SoloCurrentSessionResult | null>> => {
-    const response = await fetchWithAuth("/api/v3/study/solo/current");
-
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`${errorData.status}|${errorData.message}` || "500|알 수 없는 오류가 발생했습니다")
-    }
-    return response.json();
-};
-
-
-// 솔로 세션 이력 조회
-export const getSoloStudyHistoryService = async (): Promise<StudyApiResponse<SoloStudyHistoryItem[]>> => {
-    const response = await fetchWithAuth("/api/v3/study/solo/history");
+    const response = await fetchWithAuth("/api/v3/study/solo/current", {
+        cache: "no-store",
+    });
 
     if (!response.ok) {
         const errorData = await response.json();
@@ -377,7 +438,9 @@ export const getSoloStudyHistoryService = async (): Promise<StudyApiResponse<Sol
 export const getDailyStudyTimeService = async (
     date: string
 ): Promise<StudyApiResponse<DailyStudyTimeResult>> => {
-    const response = await fetchWithAuth(`/api/v3/study/records/daily?date=${encodeURIComponent(date)}`);
+    const response = await fetchWithAuth(`/api/v3/study/records/daily?date=${encodeURIComponent(date)}`, {
+        cache: "no-store",
+    });
 
     if (!response.ok) {
         const errorData = await response.json();
@@ -391,7 +454,9 @@ export const getDailyStudyTimeService = async (
 export const getMonthlyStudyTimeService = async (
     yearMonth: string
 ): Promise<StudyApiResponse<MonthlyStudyTimeResult>> => {
-    const response = await fetchWithAuth(`/api/v3/study/records/monthly?yearMonth=${encodeURIComponent(yearMonth)}`);
+    const response = await fetchWithAuth(`/api/v3/study/records/monthly?yearMonth=${encodeURIComponent(yearMonth)}`, {
+        cache: "no-store",
+    });
 
     if (!response.ok) {
         const errorData = await response.json();

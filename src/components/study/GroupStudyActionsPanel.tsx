@@ -7,6 +7,14 @@ import { Check, Plus, Users, X } from "lucide-react";
 import { toast } from "sonner";
 
 import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import {
     acceptStudyInvite,
     createGroupStudy,
     denyStudyInvite,
@@ -23,16 +31,20 @@ export default function GroupStudyActionsPanel({
     const router = useRouter();
     const [invites, setInvites] = useState(initialInvites);
     const [isCreating, setIsCreating] = useState(false);
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [title, setTitle] = useState("");
 
     const handleCreateGroupRoom = async () => {
-        if (isCreating) {
+        const trimmedTitle = title.trim();
+
+        if (isCreating || !trimmedTitle) {
             return;
         }
 
         setIsCreating(true);
 
         try {
-            const response = await createGroupStudy();
+            const response = await createGroupStudy({ title: trimmedTitle });
 
             if (response.statusCode >= 400) {
                 toast.error(response.message || "그룹방 생성에 실패했습니다.");
@@ -40,6 +52,7 @@ export default function GroupStudyActionsPanel({
             }
 
             toast.success(response.message || "그룹방을 생성했습니다.");
+            setIsCreateModalOpen(false);
             router.push(`/student/group-study/${response.data.roomId}`);
         } finally {
             setIsCreating(false);
@@ -96,15 +109,14 @@ export default function GroupStudyActionsPanel({
 
                     <button
                         type="button"
-                        disabled={isCreating}
-                        onClick={() => void handleCreateGroupRoom()}
-                        className="flex cursor-pointer flex-col items-start gap-3 rounded-2xl border border-slate-200 bg-white p-5 text-left transition hover:border-indigo-200 hover:bg-indigo-50/60 disabled:cursor-wait disabled:opacity-60"
+                        onClick={() => setIsCreateModalOpen(true)}
+                        className="flex cursor-pointer flex-col items-start gap-3 rounded-2xl border border-slate-200 bg-white p-5 text-left transition hover:border-indigo-200 hover:bg-indigo-50/60"
                     >
                         <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-100 text-indigo-500">
                             <Users className="h-5 w-5" />
                         </span>
                         <span className="text-sm font-black text-slate-800">
-                            {isCreating ? "생성 중..." : "단체 세션 만들기"}
+                            단체 세션 만들기
                         </span>
                         <span className="text-xs font-medium text-slate-400">
                             방을 만들고 들어가서 친구를 초대합니다.
@@ -112,6 +124,51 @@ export default function GroupStudyActionsPanel({
                     </button>
                 </div>
             </section>
+
+            <Dialog
+                open={isCreateModalOpen}
+                onOpenChange={(nextOpen) => {
+                    if (isCreating) {
+                        return;
+                    }
+
+                    setIsCreateModalOpen(nextOpen);
+
+                    if (!nextOpen) {
+                        setTitle("");
+                    }
+                }}
+            >
+                <DialogContent className="sm:max-w-sm">
+                    <DialogHeader>
+                        <DialogTitle>단체 세션 만들기</DialogTitle>
+                        <DialogDescription>
+                            방 제목을 입력하고 스터디룸을 만들어보세요.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <input
+                        type="text"
+                        value={title}
+                        onChange={(event) => setTitle(event.target.value)}
+                        placeholder="예) 스터디룸 #1"
+                        maxLength={30}
+                        autoFocus
+                        className="h-11 w-full rounded-xl border border-slate-200 px-4 text-sm font-bold outline-none placeholder:text-slate-400 focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100"
+                    />
+
+                    <DialogFooter>
+                        <button
+                            type="button"
+                            disabled={isCreating || !title.trim()}
+                            onClick={() => void handleCreateGroupRoom()}
+                            className="flex h-10 cursor-pointer items-center justify-center rounded-xl bg-indigo-500 px-4 text-sm font-bold text-white transition hover:bg-indigo-600 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
+                        >
+                            {isCreating ? "생성 중..." : "만들기"}
+                        </button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
 
             <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
                 <h2 className="text-lg font-black text-slate-900">
@@ -131,7 +188,7 @@ export default function GroupStudyActionsPanel({
                             >
                                 <div className="min-w-0">
                                     <p className="truncate text-sm font-black text-slate-900">
-                                        스터디룸 #{invite.roomId}
+                                        {invite.title}
                                     </p>
                                     <p className="mt-0.5 text-xs font-bold text-slate-400">
                                         {invite.hostNickname}님이 초대했어요
