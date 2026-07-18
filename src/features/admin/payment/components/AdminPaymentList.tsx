@@ -8,13 +8,13 @@ interface AdminPaymentListProps {
 export default function AdminPaymentList({ payments }: AdminPaymentListProps) {
     return (
         <section className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
-            <div className="grid min-w-[900px] grid-cols-[1.4fr_.8fr_.9fr_1.2fr] gap-x-6 border-b border-slate-200 bg-slate-50 px-6 py-3 text-xs font-bold text-slate-500">
+            <div className="grid min-w-[900px] grid-cols-[1.2fr_.9fr_3fr] gap-x-6 border-b border-slate-200 bg-slate-50 px-6 py-3 text-xs font-bold text-slate-500">
                 <span>이름</span>
-                <span className="text-center">유형</span>
-                <span className="text-center">멤버십</span>
-                <div className="flex items-center justify-end gap-10">
+                <span>멤버십</span>
+                <div className="flex items-center justify-between">
+                    <span className="w-16 text-center">유형</span>
                     <span className="w-24">가격</span>
-                    <span className="w-36">결제/환불일</span>
+                    <span className="w-40">결제/환불일</span>
                 </div>
             </div>
 
@@ -24,8 +24,8 @@ export default function AdminPaymentList({ payments }: AdminPaymentListProps) {
                         결제 내역이 없습니다.
                     </div>
                 ) : (
-                    payments.map((payment) => (
-                        <AdminPaymentItem key={payment.paymentId} payment={payment} />
+                    payments.map((payment, index) => (
+                        <AdminPaymentItem key={index} payment={payment} />
                     ))
                 )}
             </div>

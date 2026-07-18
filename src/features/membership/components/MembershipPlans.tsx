@@ -9,13 +9,13 @@ import MembershipPlanCard from "./MembershipPlanCard";
 interface MembershipPlansProps {
     mode?: "student" | "guest";
     currentTier?: MembershipTier;
-    endAt?: string | null;
+    membershipUntil?: string | null;
 }
 
 export default function MembershipPlans({
     mode = "student",
     currentTier = "BASIC",
-    endAt,
+    membershipUntil,
 }: MembershipPlansProps) {
     const handleSelect = (plan: MembershipPlan) => {
         toast.info(`${plan.name} 플랜 전환은 준비 중인 기능입니다.`, {
@@ -32,7 +32,7 @@ export default function MembershipPlans({
                     mode={mode}
                     currentTier={currentTier}
                     isActive={mode === "student" && plan.tier === currentTier}
-                    endAt={mode === "student" && plan.tier === currentTier ? endAt : undefined}
+                    membershipUntil={mode === "student" && plan.tier === currentTier ? membershipUntil : undefined}
                     onSelect={handleSelect}
                 />
             ))}

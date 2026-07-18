@@ -20,18 +20,18 @@ interface AdminDashboardMonthlyLineChartProps {
 
 const SERIES = [
     {
-        key: "totalLectures",
-        label: "총 강의수",
-        color: "#6366f1",
-        unit: "개",
-        yAxisId: "right",
-    },
-    {
         key: "totalUsers",
         label: "총 회원수",
         color: "#10b981",
         unit: "명",
         yAxisId: "left",
+    },
+    {
+        key: "totalLectures",
+        label: "총 강의수",
+        color: "#6366f1",
+        unit: "개",
+        yAxisId: "right",
     },
     {
         key: "totalPosts",
