@@ -27,7 +27,10 @@ export default async function Membership() {
             />
 
             <section className="mt-8">
-                <MembershipPlans currentTier={currentTier} />
+                <MembershipPlans
+                    currentTier={currentTier}
+                    membershipUntil={myInfoResponse.data?.membershipUntil}
+                />
             </section>
         </main>
     );

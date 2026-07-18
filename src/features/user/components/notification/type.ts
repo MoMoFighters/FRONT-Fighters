@@ -12,6 +12,7 @@ export type NoticeNotificationType =
     | "FRIEND_REQUEST"
     | "COMMUNITY"
     | "CALENDAR"
+    | "STUDY_INVITE"
     | string;
 
 export interface NoticeNotification {
@@ -30,6 +31,7 @@ export interface NoticeAppCountsData {
     totalMsgFriendCount: number;
     calendarCount: number;
     communityCount: number;
+    studyCount: number;
 }
 
 export interface NoticeAppCountsResponse {

@@ -1,12 +1,14 @@
 'use client'
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { Star } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { createReviewAction } from "@/features/lecture/action";
+import { useReviewSentimentModel } from "@/features/lecture/hooks/useReviewSentimentModel";
 import {
     Dialog,
     DialogContent,
@@ -22,6 +24,11 @@ interface CreateReviewBtnProps {
     disabled?: boolean;
 }
 
+interface ReviewNotice {
+    type: "positive-low" | "negative-high";
+    rating: number;
+}
+
 export default function CreateReviewBtn({
     lectureId,
     disabled = false,
@@ -32,10 +39,42 @@ export default function CreateReviewBtn({
     const [isPending, startTransition] = useTransition();
     const router = useRouter();
 
-    const handleSubmit = () => {
+    const aiCheck = useReviewSentimentModel();
+    const [notice, setNotice] = useState<ReviewNotice | null>(null);
+    const [noticeShown, setNoticeShown] = useState(false);
+    // 등록 버튼을 눌러서 실제로 분석을 기다리는 중인지 (모델 로딩 대기 포함)
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+    // 별점/내용을 다시 고치면 화면에 남은 안내 문구만 지운다 (noticeShown은 유지)
+    useEffect(() => {
+        setNotice(null);
+    }, [rating, content]);
+
+    const handleSubmit = async () => {
         if (!content.trim()) {
             toast.error("수강평 내용을 입력해주세요.");
             return;
+        }
+
+        if (aiCheck.enabled && !noticeShown) {
+            setIsAnalyzing(true);
+            try {
+                // 모델이 아직 다운로드 중이면 analyze 내부에서 완료될 때까지 기다린다
+                const predictedStar = await aiCheck.analyze(content);
+
+                if (predictedStar !== null && Math.abs(predictedStar - rating) >= 2) {
+                    setNotice({
+                        type: predictedStar > rating ? "positive-low" : "negative-high",
+                        rating,
+                    });
+                    setNoticeShown(true);
+                    return;
+                }
+            } catch {
+                // 분석 중 에러가 나도 등록은 그대로 진행한다
+            } finally {
+                setIsAnalyzing(false);
+            }
         }
 
         startTransition(async () => {
@@ -49,6 +88,8 @@ export default function CreateReviewBtn({
                 setOpen(false);
                 setRating(5);
                 setContent("");
+                setNotice(null);
+                setNoticeShown(false);
                 router.refresh();
             } catch (error) {
                 const message = error instanceof Error
@@ -59,6 +100,14 @@ export default function CreateReviewBtn({
             }
         });
     };
+
+    const submitLabel = isPending
+        ? "등록 중"
+        : isAnalyzing
+            ? (aiCheck.isLoading ? `모델 설치 중 ${aiCheck.progress}%` : "AI 검토 중...")
+            : noticeShown
+                ? "이대로 등록하기"
+                : "등록";
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -72,6 +121,15 @@ export default function CreateReviewBtn({
             </DialogTrigger>
 
             <DialogContent className="sm:max-w-md">
+                <div className="flex items-center gap-2 pr-8">
+                    <Switch
+                        checked={aiCheck.enabled}
+                        onCheckedChange={aiCheck.toggle}
+                        aria-label="AI 검토 모드"
+                    />
+                    <span className="text-xs font-medium text-slate-600">AI 검토 모드</span>
+                </div>
+
                 <DialogHeader>
                     <DialogTitle>수강평 등록하기</DialogTitle>
                     <DialogDescription>
@@ -121,6 +179,19 @@ export default function CreateReviewBtn({
                             className="min-h-32 w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-300 focus:bg-white focus:ring-4 focus:ring-indigo-100"
                         />
                     </div>
+
+                    {notice && (
+                        <div className="rounded-xl border border-green-100 bg-green-50 px-3.5 py-2.5">
+                            <p className="whitespace-pre-line text-xs leading-relaxed text-green-700">
+                                {notice.type === "positive-low"
+                                    ? `작성해주신 후기는 긍정적인 내용으로 보이는데, 별점은 ${notice.rating}점이에요. \n 혹시 별점을 잘못 선택하신 건 아닌지 확인해주세요!😊`
+                                    : `작성해주신 후기는 다소 아쉬운 점이 느껴지는데, 별점은 ${notice.rating}점이에요. \n 혹시 별점을 잘못 선택하신 건 아닌지 확인해주세요!😊`}
+                            </p>
+                            <p className="mt-1 text-[11px] text-slate-400">
+                                AI 분석 결과는 정확하지 않을 수 있어요!
+                            </p>
+                        </div>
+                    )}
                 </div>
 
                 <DialogFooter>
@@ -137,9 +208,9 @@ export default function CreateReviewBtn({
                         type="button"
                         className="cursor-pointer bg-indigo-500 text-white hover:bg-indigo-600"
                         onClick={handleSubmit}
-                        disabled={isPending}
+                        disabled={isPending || isAnalyzing}
                     >
-                        {isPending ? "등록 중" : "등록"}
+                        {submitLabel}
                     </Button>
                 </DialogFooter>
             </DialogContent>

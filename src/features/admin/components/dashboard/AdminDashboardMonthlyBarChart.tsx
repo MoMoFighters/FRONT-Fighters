@@ -60,7 +60,7 @@ export default function AdminDashboardMonthlyBarChart({
                 <div>
                     <div className="flex items-center gap-2">
                         <h2 className="text-base font-black text-slate-950">
-                            월별 신규 유입 지표
+                            올해 월별 신규 유입 지표
                         </h2>
                     </div>
 

@@ -63,6 +63,7 @@ export interface GetMyInfoResponse {
          doNotDisturb?: boolean;
          membership?: string;
          membershipStart?: string | null;
+         membershipUntil?: string | null;
          nickname: string | null;
          isTempPwd: boolean;
          createdAt: string;
