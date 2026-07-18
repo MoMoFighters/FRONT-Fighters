@@ -1,6 +1,5 @@
 // 관리자 결제 내역 타입 정의
 export interface AdminPayment {
-    paymentId: number;
     userName: string;
     price: number;
     status: "SUCCESS" | "REFUND";

@@ -11,9 +11,14 @@ import {
 import AdminDashboardBelowFoldDynamic from "@/features/admin/components/dashboard/AdminDashboardBelowFoldDynamic";
 import AdminDashboardDynamic from "@/features/admin/components/dashboard/AdminDashboardDynamic";
 import AdminDashboardMetricCard from "@/features/admin/components/dashboard/AdminDashboardMetricCard";
-import { getDashboardSummary, getMonthlyState, getMonthlySubState } from "@/app/services/admin-dashboard/service";
-// 총 매출 관련 3개 API는 백엔드 완성 전까지 더미 데이터로 대체합니다. 완성되면 아래 import를 활성화하세요.
-// import { getMonthlyMemberships, getMonthlyPayments, getTotalPayments } from "@/app/services/admin-dashboard/service";
+import {
+    getDashboardSummary,
+    getMonthlyMemberships,
+    getMonthlyPayments,
+    getMonthlyState,
+    getMonthlySubState,
+    getTotalPayments,
+} from "@/app/services/admin-dashboard/service";
 import {
     AdminDashboardAccessLog,
     AdminDashboardMonthlyDatum,
@@ -26,8 +31,6 @@ import {
     DashboardSummaryResponse,
     DashboardSystemHealth,
     MonthlyCount,
-    MonthlyMembershipsResponse,
-    MonthlyPaymentsResponse,
     MonthlyStateResponse,
     TotalPaymentsResponse,
 } from "@/features/admin/components/dashboard/type";
@@ -72,6 +75,8 @@ const EMPTY_DASHBOARD_SUMMARY: DashboardSummaryResponse = {
     systemHealth: { webService: "정상", database: "비정상", fileStorage: "비정상", mailService: "비정상" },
 };
 
+const EMPTY_TOTAL_PAYMENTS: TotalPaymentsResponse = { totalSales: 0 };
+
 interface AdminDashboardPageProps {
     searchParams: Promise<{
         year?: string;
@@ -85,55 +90,37 @@ export default async function AdminDashboardPage({
     const dashboardYear = Number(year) || new Date().getFullYear();
 
     // Promise.allSettled: 병렬 호출은 유지하면서, 하나가 실패해도 나머지 결과를 기다려 개별 성공/실패를 판단합니다.
-    const [monthlyStateResult, monthlySubStateResult, dashboardSummaryResult] = await Promise.allSettled([
+    const [
+        monthlyStateResult,
+        monthlySubStateResult,
+        dashboardSummaryResult,
+        totalPaymentsResult,
+        monthlyPaymentsResult,
+        monthlyMembershipsResult,
+    ] = await Promise.allSettled([
         getMonthlyState(dashboardYear),
         getMonthlySubState(),
         getDashboardSummary(),
-        // 백엔드 완성되면 아래 3개를 이 배열에 추가하고,
-        // 바로 아래 더미 데이터 3개를 지운 뒤 이 결과를 구조분해로 받으면 됩니다.
-        // getTotalPayments(),
-        // getMonthlyPayments(),
-        // getMonthlyMemberships(),
+        getTotalPayments(),
+        getMonthlyPayments(),
+        getMonthlyMemberships(),
     ]);
 
     const monthlyState = monthlyStateResult.status === "fulfilled" ? monthlyStateResult.value : EMPTY_MONTHLY_STATE;
     const monthlySubState = monthlySubStateResult.status === "fulfilled" ? monthlySubStateResult.value : EMPTY_MONTHLY_STATE;
     const dashboardSummary = dashboardSummaryResult.status === "fulfilled" ? dashboardSummaryResult.value : EMPTY_DASHBOARD_SUMMARY;
+    const totalPayments = totalPaymentsResult.status === "fulfilled" ? totalPaymentsResult.value : EMPTY_TOTAL_PAYMENTS;
+    const monthlyPayments = monthlyPaymentsResult.status === "fulfilled" ? monthlyPaymentsResult.value : [];
+    const monthlyMemberships = monthlyMembershipsResult.status === "fulfilled" ? monthlyMembershipsResult.value : [];
 
-    const isWebServiceHealthy = [monthlyStateResult, monthlySubStateResult, dashboardSummaryResult].every(
-        (result) => result.status === "fulfilled"
-    );
-
-    // 총 매출/월별 매출/월별 멤버십 더미 데이터 (백엔드 API 완성 전 화면 확인용)
-    const totalPayments: TotalPaymentsResponse = { totalSales: 82450000 };
-    const monthlyPayments: MonthlyPaymentsResponse[] = [
-        { month: 1, sales: 5200000 },
-        { month: 2, sales: 4800000 },
-        { month: 3, sales: 6100000 },
-        { month: 4, sales: 5900000 },
-        { month: 5, sales: 7200000 },
-        { month: 6, sales: 6800000 },
-        { month: 7, sales: 8100000 },
-        { month: 8, sales: 7900000 },
-        { month: 9, sales: 8600000 },
-        { month: 10, sales: 9200000 },
-        { month: 11, sales: 8800000 },
-        { month: 12, sales: 9500000 },
-    ];
-    const monthlyMemberships: MonthlyMembershipsResponse[] = [
-        { month: 1, basic: 120, plus: 60, pro: 20 },
-        { month: 2, basic: 125, plus: 65, pro: 22 },
-        { month: 3, basic: 130, plus: 70, pro: 25 },
-        { month: 4, basic: 128, plus: 75, pro: 28 },
-        { month: 5, basic: 135, plus: 80, pro: 30 },
-        { month: 6, basic: 140, plus: 85, pro: 33 },
-        { month: 7, basic: 145, plus: 90, pro: 36 },
-        { month: 8, basic: 150, plus: 95, pro: 40 },
-        { month: 9, basic: 155, plus: 100, pro: 44 },
-        { month: 10, basic: 160, plus: 105, pro: 48 },
-        { month: 11, basic: 158, plus: 110, pro: 52 },
-        { month: 12, basic: 165, plus: 115, pro: 56 },
-    ];
+    const isWebServiceHealthy = [
+        monthlyStateResult,
+        monthlySubStateResult,
+        dashboardSummaryResult,
+        totalPaymentsResult,
+        monthlyPaymentsResult,
+        monthlyMembershipsResult,
+    ].every((result) => result.status === "fulfilled");
 
     const memberCountMap = createMonthlyCountMap(monthlyState.memberCounts);
     const lectureCountMap = createMonthlyCountMap(monthlyState.lectureCounts);
