@@ -10,12 +10,13 @@ export default function MyStudentLectureList({
 }: MyStudentLectureListProps) {
     return (
         <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-            {lectures.map((lecture) => (
+            {lectures.map((lecture, index) => (
                 <StudentLectureItem
                     key={lecture.lectureId}
                     lecture={lecture}
                     href={`/student/mypage/lectures/${lecture.lectureId}`}
                     showLearningStatus
+                    priority={index === 0}
                 />
             ))}
         </div>

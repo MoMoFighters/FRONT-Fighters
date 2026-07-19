@@ -1,4 +1,5 @@
-﻿import Link from "next/link";
+﻿import Image from "next/image";
+import Link from "next/link";
 import { Edit, Star } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -54,14 +55,17 @@ export default function LectureItem({
                                 ? "pr-8"
                                 : ""
                         }`}>
-                        <div
-                            className="h-12 w-16 shrink-0 rounded-lg border border-slate-50 bg-cover bg-center"
-                            style={{
-                                backgroundImage: lecture.thumbnailUrl
-                                    ? `url(${lecture.thumbnailUrl})`
-                                    : "none",
-                            }}
-                        />
+                        <div className="relative h-12 w-16 shrink-0 overflow-hidden rounded-lg border border-slate-50 bg-slate-100">
+                            {lecture.thumbnailUrl && (
+                                <Image
+                                    src={lecture.thumbnailUrl}
+                                    alt={lecture.title}
+                                    fill
+                                    sizes="64px"
+                                    className="object-cover"
+                                />
+                            )}
+                        </div>
 
                         <div className="min-w-0 flex-1">
                             <h4 className="mb-1 truncate text-[12px] font-bold text-slate-900">
@@ -122,14 +126,18 @@ export default function LectureItem({
         return (
             <div className="relative rounded-lg border border-slate-200 bg-white p-6">
                 <div className="grid grid-cols-[400px_1fr] gap-8">
-                    <div
-                        className="h-56.25 max-w-100 rounded-2xl border border-slate-50 bg-cover bg-center"
-                        style={{
-                            backgroundImage: lecture.thumbnailUrl
-                                ? `url(${lecture.thumbnailUrl})`
-                                : "none",
-                        }}
-                    />
+                    <div className="relative h-56.25 max-w-100 overflow-hidden rounded-2xl border border-slate-50 bg-slate-100">
+                        {lecture.thumbnailUrl && (
+                            <Image
+                                src={lecture.thumbnailUrl}
+                                alt={lecture.title}
+                                fill
+                                sizes="400px"
+                                priority
+                                className="object-cover"
+                            />
+                        )}
+                    </div>
 
                     <div className="space-y-2">
                         <div className="flex items-center">
@@ -210,14 +218,17 @@ export default function LectureItem({
             <div className="relative mb-2.5 rounded-xl border border-slate-200 bg-white transition-all hover:-translate-y-0.5 hover:shadow-md">
                 <Link href={href} className="block p-4">
                     <div className="flex min-w-0 items-center gap-4">
-                        <div
-                            className="h-16 w-24 shrink-0 rounded-lg border border-slate-50 bg-cover bg-center"
-                            style={{
-                                backgroundImage: lecture.thumbnailUrl
-                                    ? `url(${lecture.thumbnailUrl})`
-                                    : "none",
-                            }}
-                        />
+                        <div className="relative h-16 w-24 shrink-0 overflow-hidden rounded-lg border border-slate-50 bg-slate-100">
+                            {lecture.thumbnailUrl && (
+                                <Image
+                                    src={lecture.thumbnailUrl}
+                                    alt={lecture.title}
+                                    fill
+                                    sizes="96px"
+                                    className="object-cover"
+                                />
+                            )}
+                        </div>
 
                         <div className="min-w-0 flex-1">
                             <div className="mb-1 flex min-w-0 items-center gap-3">

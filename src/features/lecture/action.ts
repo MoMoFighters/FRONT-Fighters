@@ -13,10 +13,10 @@ import {
     updateVideoProgress,
     updateVideoProgressByExit,
 } from "@/app/services/lecture/service";
-import { CreateReviewRequest, LectureStatus, Review, UpdateVideoProgressByExitRequest, UpdateVideoProgressRequest } from "./type";
 import {
     CreateReviewRequest,
     LectureStatus,
+    Review,
     UpdateChapterRequest,
     UpdateLectureRequest,
     UpdateLectureResponse,

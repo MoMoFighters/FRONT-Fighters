@@ -46,7 +46,15 @@ export default async function LectureDetailPage({
     const { lectureId } = await params;
     const { tab, page, position } = await searchParams;
 
-    const lecture = await getLectureById(lectureId);
+    const currentTab = tab === "reviews" ? "reviews" : "chapters";
+    const currentPage = Number(page) || 1;
+
+    const [lecture, reviewResponseData] = await Promise.all([
+        getLectureById(lectureId),
+        currentTab === "reviews"
+            ? getReviewsByLectureId(lectureId, currentPage)
+            : Promise.resolve(undefined),
+    ]);
 
     if (!lecture) {
         notFound();
@@ -60,13 +68,6 @@ export default async function LectureDetailPage({
     const category = lecture.category.toLowerCase();
 
     const chapters = lecture.chapters;
-
-    const currentTab = tab === "reviews" ? "reviews" : "chapters";
-    const currentPage = Number(page) || 1;
-
-    const reviewResponseData = currentTab === "reviews"
-        ? await getReviewsByLectureId(lectureId, currentPage)
-        : undefined;
 
     const createReviewPageHref = (pageNumber: number) => {
         const params = new URLSearchParams();

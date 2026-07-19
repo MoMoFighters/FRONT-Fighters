@@ -1,5 +1,7 @@
 'use client'
 
+import { useRouter, usePathname } from "next/navigation";
+import { useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Search, X } from "lucide-react";
 
@@ -12,82 +14,70 @@ interface LectureSearchbarProps {
 }
 
 export default function LectureSearchbar({ status, keyword, category, filter, position }: LectureSearchbarProps) {
+    const router = useRouter();
+    const pathname = usePathname();
+    const [isPending, startTransition] = useTransition();
 
-    const urlParams = new URLSearchParams();
+    const buildHref = (nextKeyword?: string) => {
+        const params = new URLSearchParams();
 
-    if (status) {
-        urlParams.set("status", status);
-    }
+        if (status) params.set("status", status);
+        if (category) params.set("category", category);
+        if (filter) params.set("filter", filter);
+        if (position) params.set("position", position);
+        if (nextKeyword) params.set("keyword", nextKeyword);
 
-    if (category) {
-        urlParams.set("category", category);
-    }
+        const queryString = params.toString();
+        return queryString ? `${pathname}?${queryString}` : pathname;
+    };
 
-    if (filter) {
-        urlParams.set("filter", filter);
-    }
+    // form 기본 제출(브라우저 풀 리로드) 대신 클라이언트 사이드 네비게이션으로 처리한다
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        const nextKeyword = String(formData.get("keyword") ?? "").trim();
 
-    if (position) {
-        urlParams.set("position", position);
-    }
+        startTransition(() => {
+            router.push(buildHref(nextKeyword || undefined));
+        });
+    };
 
-    const clearHref = `?${urlParams.toString()}`;
+    const handleClear = () => {
+        startTransition(() => {
+            router.push(buildHref(undefined));
+        });
+    };
 
     return (
-        <form method="GET" className=" flex items-center gap-3 flex-1">
-            <div className="flex-1 relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                {status ? <input
-                    type="hidden"
-                    name="status"
-                    defaultValue={status}
-                /> : ""}
-                {category ? <input
-                    type="hidden"
-                    name="category"
-                    defaultValue={category}
-                /> : ""}
-                {filter ? <input
-                    type="hidden"
-                    name="filter"
-                    defaultValue={filter}
-                /> : ""}
-                {position ? (
-                    <input
-                        type="hidden"
-                        name="position"
-                        defaultValue={position}
-                    />
-                ) : ""}
+        <form onSubmit={handleSubmit} className="flex flex-1 items-center gap-3">
+            <div className="relative flex-1">
+                <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                 <input
                     type="text"
                     name="keyword"
                     defaultValue={keyword}
                     placeholder="강의명 또는 강의 설명으로 검색..."
-                    className="w-full h-12 pl-12 pr-10 border-2 border-slate-300 rounded-xl bg-white
-                        text-sm font-medium text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-slate-400 transition-colors"
+                    className="h-12 w-full rounded-xl border-2 border-slate-300 bg-white pl-12 pr-10 text-sm font-medium text-slate-700 transition-colors placeholder:text-slate-400 focus:border-slate-400 focus:outline-none"
                 />
                 {keyword && (
-                    <a
-                        href={clearHref}
-                        className="
-                                absolute
-                                right-3 top-1/2
-                                -translate-y-1/2
-
-                                text-slate-400
-                                hover:text-slate-600
-
-                                transition-colors
-                            "
+                    <button
+                        type="button"
+                        onClick={handleClear}
+                        aria-label="검색어 초기화"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-slate-400 transition-colors hover:text-slate-600"
                     >
-                        <X className="w-4 h-4" />
-                    </a>
+                        <X className="h-4 w-4" />
+                    </button>
                 )}
             </div>
-            <Button variant="outline" type="submit" className="h-12 px-4 text-slate-700 border-2 rounded-xl border-slate-300 font-bold text-[16px] cursor-pointer">
-                <Search className="w-6 h-6" />
-                검색
+            <Button
+                variant="outline"
+                type="submit"
+                disabled={isPending}
+                className="h-12 cursor-pointer rounded-xl border-2 border-slate-300 px-4 text-[16px] font-bold text-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+                <Search className="h-6 w-6" />
+                {isPending ? "검색 중..." : "검색"}
             </Button>
         </form>
     );

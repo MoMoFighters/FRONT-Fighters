@@ -31,6 +31,7 @@ export default function AdminLectureDetailHero({
                             alt={lecture.title}
                             fill
                             sizes="320px"
+                            priority
                             className="object-cover"
                         />
                     )}

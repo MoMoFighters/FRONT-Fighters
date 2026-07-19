@@ -467,7 +467,7 @@ export default function VideoPlayer({
                     onProgress={handleCanPlay}
                     onTimeUpdate={handleTimeUpdate}
                     onEnded={handleVideoEnded}
-                    preload="auto"
+                    preload="metadata"
                     className="aspect-video w-full bg-black"
                 >
                     <source
