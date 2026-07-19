@@ -24,15 +24,17 @@ export default async function AdminLectureDetailPage({
     const { tab, page } = await searchParams;
     const currentTab = tab === "reviews" ? "reviews" : "chapters";
     const currentPage = Number(page) || 1;
-    const lecture = await getLectureById(lectureId);
+
+    const [lecture, reviewResponseData] = await Promise.all([
+        getLectureById(lectureId),
+        currentTab === "reviews"
+            ? getReviewsByLectureId(lectureId, currentPage)
+            : Promise.resolve(undefined),
+    ]);
 
     if (!lecture) notFound();
 
     const canDeleteLectureContent = lecture.lectureStatus !== "WAITING";
-
-    const reviewResponseData = currentTab === "reviews"
-        ? await getReviewsByLectureId(lectureId, currentPage)
-        : undefined;
 
     const createReviewPageHref = (pageNumber: number) => (
         `?tab=reviews&page=${pageNumber}`

@@ -10,10 +10,11 @@ export default function AdminLectureList({
 }: AdminLectureListProps) {
     return (
         <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-            {lectures.map((lecture) => (
+            {lectures.map((lecture, index) => (
                 <AdminLectureItem
                     key={lecture.lectureId}
                     lecture={lecture}
+                    priority={index === 0}
                 />
             ))}
         </section>

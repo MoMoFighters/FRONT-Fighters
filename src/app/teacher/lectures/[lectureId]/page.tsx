@@ -34,11 +34,14 @@ export default async function TeacherLectureDetailPage({
     const { lectureId } = await params;
     const { tab, page } = await searchParams;
     const currentPage = Number(page) || 1;
-    const lecture = await getLectureById(lectureId);
 
-    const reviewResponseData = tab === "reviews"
-        ? await getReviewsByLectureId(lectureId, currentPage)
-        : undefined;
+    const [lecture, reviewResponseData] = await Promise.all([
+        getLectureById(lectureId),
+        tab === "reviews"
+            ? getReviewsByLectureId(lectureId, currentPage)
+            : Promise.resolve(undefined),
+    ]);
+
     const pageNumbers = getVisiblePageNumbers(
         currentPage,
         reviewResponseData?.totalPages ?? 1,

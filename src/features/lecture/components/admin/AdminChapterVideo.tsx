@@ -26,7 +26,7 @@ export default function AdminChapterVideo({
     return (
         <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
             <div className="bg-black">
-                <video controls className="aspect-video w-full bg-black">
+                <video controls preload="metadata" className="aspect-video w-full bg-black">
                     <source src={presignedUrl} type="video/mp4" />
                     브라우저가 video 태그를 지원하지 않습니다.
                 </video>
