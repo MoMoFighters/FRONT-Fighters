@@ -1,10 +1,18 @@
 'use client'
 
-import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { nicknameRegistAction } from "../action";
+import { useRouter } from "next/navigation";
 
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { nicknameRegistAction } from "../action";
 
 export default function NicknameInputModal() {
     const router = useRouter();
@@ -41,30 +49,23 @@ export default function NicknameInputModal() {
         }
     };
 
-    if (isClosed) {
-        return null;
-    }
-
     return (
-        <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4"
-        >
-            <div
-                className="w-full max-w-md rounded-xl border border-slate-200 bg-white px-6 py-7 shadow-2xl"
+        <Dialog open={!isClosed} onOpenChange={() => { }}>
+            <DialogContent
+                showCloseButton={false}
+                onEscapeKeyDown={(event) => event.preventDefault()}
+                onPointerDownOutside={(event) => event.preventDefault()}
+                onInteractOutside={(event) => event.preventDefault()}
             >
-                <h1 className="mb-4 text-center text-lg font-bold text-slate-900">
-                    📝 닉네임 설정
-                </h1>
+                <DialogHeader>
+                    <DialogTitle>닉네임 설정</DialogTitle>
+                    <DialogDescription>{message}</DialogDescription>
+                </DialogHeader>
 
-                <div className="flex justify-center">
-                    <p className="mb-5 mt-2 text-sm font-bold text-slate-600">
-                        {message}
+                <div className="flex items-center gap-3 px-1">
+                    <p className="shrink-0 text-sm font-bold text-slate-700">
+                        닉네임
                     </p>
-                </div>
-
-                <div className="flex flex-row gap-3 mb-4 items-center px-2">
-
-                    <p className="text-sm font-bold text-slate-700">닉네임</p>
 
                     <input
                         type="text"
@@ -77,11 +78,13 @@ export default function NicknameInputModal() {
                         placeholder="닉네임 입력"
                         className="h-10 flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm text-slate-700 outline-none placeholder:text-slate-400 focus:border-indigo-400 focus:bg-white focus:ring-4 focus:ring-indigo-100"
                     />
+                </div>
 
+                <DialogFooter>
                     <Button
                         disabled={loading || !nickname.trim()}
-                        onClick={handleSubmit}
-                        className="rounded-lg bg-indigo-500 text-sm font-bold text-white hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-60"
+                        onClick={() => void handleSubmit()}
+                        className="bg-indigo-500 text-sm font-bold text-white hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                         {
                             loading
@@ -89,9 +92,8 @@ export default function NicknameInputModal() {
                                 : '등록'
                         }
                     </Button>
-
-                </div>
-            </div>
-        </div>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     );
 }
