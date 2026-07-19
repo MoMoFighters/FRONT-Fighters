@@ -13,9 +13,10 @@ export const MEMBERSHIP_PLANS: MembershipPlan[] = [
         ],
     },
     {
-        tier: "PRO",
-        name: "PRO",
-        price: 10000,
+        tier: "PLUS",
+        name: "PLUS",
+        price: 29900,
+        originalPrice: 34900,
         description: "강의와 커뮤니티를 폭넓게 이용",
         features: [
             "BASIC 혜택 모두 포함",
@@ -25,12 +26,13 @@ export const MEMBERSHIP_PLANS: MembershipPlan[] = [
         ],
     },
     {
-        tier: "PLUS",
-        name: "PLUS",
-        price: 30000,
+        tier: "PRO",
+        name: "PRO",
+        price: 49900,
+        originalPrice: 64900,
         description: "챗봇을 마음껏, 제한 없이",
         features: [
-            "PRO 혜택 모두 포함",
+            "PLUS 혜택 모두 포함",
             "챗봇 무제한 이용",
         ],
     },
