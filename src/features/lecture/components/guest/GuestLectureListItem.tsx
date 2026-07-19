@@ -22,7 +22,7 @@ export default function GuestLectureListItem({
     return (
         <Link
             href={`/lectures/${lecture.lectureId}`}
-            className="group grid grid-cols-[144px_minmax(0,1fr)] items-center gap-5 border-b border-slate-100 px-4 py-3 transition-colors last:border-b-0 hover:bg-slate-50"
+            className="group grid grid-cols-1 items-center gap-3 border-b border-slate-100 px-4 py-3 transition-colors last:border-b-0 hover:bg-slate-50 md:grid-cols-[144px_minmax(0,1fr)] md:gap-5"
         >
             <div className="relative h-21 overflow-hidden rounded-sm bg-slate-100">
                 {lecture.thumbnailUrl ? (

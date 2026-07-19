@@ -31,7 +31,7 @@ export default async function AdminChapterDetailPage({
     if (!currentChapter) notFound();
 
     return (
-        <main className="mx-auto grid w-full max-w-360 grid-cols-[minmax(0,1fr)_360px] gap-8 pb-10">
+        <main className="mx-auto grid w-full max-w-360 grid-cols-1 gap-8 px-4 pb-10 md:grid-cols-[minmax(0,1fr)_360px] md:px-0">
             <section className="min-w-0">
                 <StudentPageHeader
                     backHref={`/admin/lectures/${lectureId}`}

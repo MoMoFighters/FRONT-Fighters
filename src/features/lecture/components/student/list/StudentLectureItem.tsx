@@ -29,11 +29,12 @@ export default function StudentLectureItem({
         <Link
             href={href}
             className="
-                group grid grid-cols-[184px_minmax(0,1fr)_160px]
-                items-center gap-6 border-b border-slate-100
+                group grid grid-cols-1
+                items-center gap-4 border-b border-slate-100
                 p-4 transition
                 last:border-b-0
                 hover:bg-slate-50
+                md:grid-cols-[184px_minmax(0,1fr)_160px] md:gap-6
             "
         >
             <div className="relative h-28 overflow-hidden rounded-xl bg-slate-100">
