@@ -55,10 +55,13 @@ export default async function LectureByCategoryDetail({
     const currentTab = tab === "reviews" ? "reviews" : "chapters";
     const currentPage = Number(page) || 1;
 
-    const [lecture, progressInfo, latestChapterInfo] = await Promise.all([
+    const [lecture, progressInfo, latestChapterInfo, reviewResponseData] = await Promise.all([
         getLectureById(lectureId),
         getProgressByCategory(categoryApiValue),
         getLatestChapterInfo(categoryApiValue),
+        currentTab === "reviews"
+            ? getReviewsByLectureId(lectureId, currentPage)
+            : Promise.resolve(undefined),
     ]);
 
     if (!lecture) {
@@ -68,10 +71,6 @@ export default async function LectureByCategoryDetail({
     if (lecture.lectureStatus !== "ACTIVE") {
         throw new Error('403|접근할 수 없는 상태의 강의입니다.');
     }
-
-    const reviewResponseData = currentTab === "reviews"
-        ? await getReviewsByLectureId(lectureId, currentPage)
-        : undefined;
 
     const createReviewPageHref = (pageNumber: number) => {
         const params = new URLSearchParams();

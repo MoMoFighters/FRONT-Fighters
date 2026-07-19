@@ -33,6 +33,7 @@ export default function StudentLectureDetailItem({
                             alt={lecture.title}
                             fill
                             sizes="320px"
+                            priority
                             className="object-cover"
                         />
                     )}

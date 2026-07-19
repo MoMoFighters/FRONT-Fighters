@@ -14,12 +14,13 @@ export default function StudentLectureList({
 }: StudentLectureListProps) {
     return (
         <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-            {lectures.map((lecture) => (
+            {lectures.map((lecture, index) => (
                 <StudentLectureItem
                     key={lecture.lectureId}
                     lecture={lecture}
                     href={getHref ? getHref(lecture) : `/student/lectures/${lecture.lectureId}`}
                     showLearningStatus={showLearningStatus}
+                    priority={index === 0}
                 />
             ))}
         </div>

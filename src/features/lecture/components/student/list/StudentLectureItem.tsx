@@ -10,12 +10,14 @@ interface StudentLectureItemProps {
     lecture: Lecture;
     href: string;
     showLearningStatus?: boolean;
+    priority?: boolean;
 }
 
 export default function StudentLectureItem({
     lecture,
     href,
     showLearningStatus = true,
+    priority = false,
 }: StudentLectureItemProps) {
     const categoryMeta = getCategoryMeta(lecture.category);
     const progress = lecture.lectureProgress ?? 0;
@@ -41,6 +43,7 @@ export default function StudentLectureItem({
                         alt={lecture.title}
                         fill
                         sizes="184px"
+                        priority={priority}
                         className="object-cover"
                     />
                 )}

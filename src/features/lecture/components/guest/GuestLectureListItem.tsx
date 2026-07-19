@@ -7,10 +7,12 @@ import { Lecture } from "@/features/lecture/type";
 
 interface GuestLectureListItemProps {
     lecture: Lecture;
+    priority?: boolean;
 }
 
 export default function GuestLectureListItem({
     lecture,
+    priority = false,
 }: GuestLectureListItemProps) {
     const categoryMeta = getCategoryMeta(lecture.category);
     const chapterCount = lecture.chapterCount ?? lecture.totalChapterCount ?? 0;
@@ -30,6 +32,7 @@ export default function GuestLectureListItem({
                         fill
                         sizes="144px"
                         quality={70}
+                        priority={priority}
                         className="object-cover"
                     />
                 ) : (

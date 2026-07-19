@@ -10,10 +10,11 @@ export default function GuestLectureList({
 }: GuestLectureListProps) {
     return (
         <div className="overflow-hidden rounded-md border border-slate-200 bg-white">
-            {lectures.map((lecture) => (
+            {lectures.map((lecture, index) => (
                 <GuestLectureListItem
                     key={lecture.lectureId}
                     lecture={lecture}
+                    priority={index === 0}
                 />
             ))}
         </div>

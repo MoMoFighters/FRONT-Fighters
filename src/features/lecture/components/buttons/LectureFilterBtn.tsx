@@ -4,12 +4,14 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Filter } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useTransition } from "react";
 
 export default function LectureFilterBtn() {
 
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
+    const [isPending, startTransition] = useTransition();
 
     const handleFilter = (category?: string) => {
         const params = new URLSearchParams(searchParams);
@@ -24,10 +26,12 @@ export default function LectureFilterBtn() {
 
         const queryString = params.toString();
 
-        router.push(queryString
-            ? `${pathname}?${queryString}`
-            : pathname
-        );
+        startTransition(() => {
+            router.push(queryString
+                ? `${pathname}?${queryString}`
+                : pathname
+            );
+        });
     };
 
     return (
@@ -36,7 +40,11 @@ export default function LectureFilterBtn() {
             <DropdownMenuTrigger asChild>
 
                 <div>
-                    <Button variant="outline" className="h-12 px-4 text-slate-700 border-2 rounded-xl border-slate-300 font-bold text-[16px] cursor-pointer">
+                    <Button
+                        variant="outline"
+                        disabled={isPending}
+                        className="h-12 px-4 text-slate-700 border-2 rounded-xl border-slate-300 font-bold text-[16px] cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
+                    >
                         <Filter className="w-5 h-5" />
                         필터
                     </Button>

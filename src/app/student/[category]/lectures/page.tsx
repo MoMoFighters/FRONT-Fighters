@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { BookOpen, SearchX } from "lucide-react";
 
 import {
@@ -17,6 +18,7 @@ import getCategoryMeta from "@/features/lecture/components/student/shared/catego
 import LearningProgressCard from "@/features/lecture/components/student/shared/LearningProgressCard";
 import ResumeLectureCard from "@/features/lecture/components/student/shared/ResumeLectureCard";
 import StudentLectureList from "@/features/lecture/components/student/list/StudentLectureList";
+import StudentLectureListSkeleton from "@/features/lecture/components/student/list/StudentLectureListSkeleton";
 import StudentLectureListToolbar from "@/features/lecture/components/student/list/StudentLectureListToolbar";
 import StudentPageHeader from "@/features/student/components/StudentPageHeader";
 
@@ -37,10 +39,77 @@ export default async function LectureListByCategory({
     params,
 }: LectureListByCategoryProps) {
     const { category } = await params;
+    const categoryApiValue = category.toUpperCase() as Category;
+    const categoryMeta = getCategoryMeta(categoryApiValue);
+
+    // 사이드바 데이터는 검색/필터 조건과 무관하므로 목록 fetch와 분리해서
+    // 목록이 로딩되는 동안 기다리지 않고 먼저 렌더링될 수 있게 한다
+    const [progressInfo, latestChapterInfo] = await Promise.all([
+        getProgressByCategory(categoryApiValue),
+        getLatestChapterInfo(categoryApiValue),
+    ]);
+
+    return (
+        <main className="mx-auto grid w-full max-w-360 grid-cols-[minmax(0,1fr)_320px] gap-8 px-12 py-12">
+            <section className="min-w-0">
+                <StudentPageHeader
+                    backHref="/student"
+                    breadcrumbs={[
+                        {
+                            label: "홈",
+                            href: "/student",
+                        },
+                        {
+                            label: `${categoryMeta.label} 강의`,
+                        },
+                    ]}
+                    title={`${categoryMeta.label} 강의`}
+                />
+
+                <Suspense fallback={<StudentLectureListSkeleton />}>
+                    <CategoryLectureListContent searchParams={searchParams} params={params} />
+                </Suspense>
+            </section>
+
+            <aside className="sticky mt-4 top-10 self-start space-y-5">
+                <CategoryBuildingCard
+                    category={category}
+                    buildingName={categoryMeta.buildingName}
+                    buildingImage={progressInfo.buildingUrl}
+                    level={progressInfo.buildingLevel!}
+                    currentExp={progressInfo.buildingCurrentExp!}
+                    maxExp={progressInfo.buildingTotalExp!}
+                />
+
+                <LearningProgressCard
+                    categoryLabel={categoryMeta.label}
+                    progress={progressInfo.progressByCategory!}
+                />
+
+                {latestChapterInfo ? (
+                    <ResumeLectureCard
+                        href={`/student/${category}/lectures/${latestChapterInfo.lectureId}/chapters/${latestChapterInfo.chapterId}`}
+                        thumbnail={latestChapterInfo.chapterThumbnailUrl}
+                        title={latestChapterInfo.lectureTitle}
+                        description={latestChapterInfo.chapterTitle}
+                        progress={latestChapterInfo.chapterProgress}
+                    />
+                ) : (
+                    <ResumeLectureCard empty />
+                )}
+            </aside>
+        </main>
+    );
+}
+
+async function CategoryLectureListContent({
+    searchParams,
+    params,
+}: LectureListByCategoryProps) {
+    const { category } = await params;
     const { keyword, filter, page } = await searchParams;
 
     const categoryApiValue = category.toUpperCase() as Category;
-    const categoryMeta = getCategoryMeta(categoryApiValue);
 
     const payload: LectureListRequest = {
         category: categoryApiValue,
@@ -48,25 +117,13 @@ export default async function LectureListByCategory({
         page: Number(page) || 1,
     };
 
-    const [
-        responseData,
-        progressInfo,
-        latestChapterInfo,
-    ] = await Promise.all([
-        filter === "my"
-            ? getLecturesWithAuth(payload)
-            : getLectures(payload),
-        getProgressByCategory(categoryApiValue),
-        getLatestChapterInfo(categoryApiValue),
-    ]);
+    const responseData = filter === "my"
+        ? await getLecturesWithAuth(payload)
+        : await getLectures(payload);
 
     const lectures = responseData.content;
     const currentPage = Number(page) || 1;
     const totalPages = responseData.totalPages;
-
-    const categoryLabel = categoryMeta.label;
-    const buildingName = categoryMeta.buildingName;
-    const buildingImage = progressInfo.buildingUrl;
 
     const createPageHref = (pageNumber: number) => {
         const params = new URLSearchParams();
@@ -85,86 +142,42 @@ export default async function LectureListByCategory({
     };
 
     return (
-        <main className="mx-auto grid w-full max-w-360 grid-cols-[minmax(0,1fr)_320px] gap-8 px-12 py-12">
-            <section className="min-w-0">
-                <StudentPageHeader
-                    backHref="/student"
-                    breadcrumbs={[
-                        {
-                            label: "홈",
-                            href: "/student",
-                        },
-                        {
-                            label: `${categoryLabel} 강의`,
-                        },
-                    ]}
-                    title={`${categoryLabel} 강의`}
-                />
+        <>
+            <StudentLectureListToolbar
+                keyword={keyword}
+                filter={filter}
+                totalElements={responseData.totalElements}
+            />
 
-                <StudentLectureListToolbar
-                    keyword={keyword}
-                    filter={filter}
-                    totalElements={responseData.totalElements}
-                />
-
-                {lectures.length > 0 ? (
-                    <>
-                        <StudentLectureList
-                            lectures={lectures}
-                            getHref={(lecture) => `/student/${category}/lectures/${lecture.lectureId}`}
-                            showLearningStatus={filter === "my"}
-                        />
-
-                        <ListPagination
-                            currentPage={currentPage}
-                            totalPages={totalPages}
-                            createHref={createPageHref}
-                        />
-                    </>
-                ) : (
-                    <div className="flex h-72 flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-slate-200 bg-white text-slate-400">
-                        {filter === "my" ? (
-                            <BookOpen className="h-12 w-12" />
-                        ) : (
-                            <SearchX className="h-12 w-12" />
-                        )}
-
-                        <p className="text-lg font-bold">
-                            {filter === "my"
-                                ? "아직 신청한 강의가 없습니다."
-                                : "검색 결과가 없습니다."}
-                        </p>
-                    </div>
-                )}
-            </section>
-
-            <aside className="sticky mt-4 top-10 self-start space-y-5">
-                <CategoryBuildingCard
-                    category={category}
-                    buildingName={buildingName}
-                    buildingImage={buildingImage}
-                    level={progressInfo.buildingLevel!}
-                    currentExp={progressInfo.buildingCurrentExp!}
-                    maxExp={progressInfo.buildingTotalExp!}
-                />
-
-                <LearningProgressCard
-                    categoryLabel={categoryLabel}
-                    progress={progressInfo.progressByCategory!}
-                />
-
-                {latestChapterInfo ? (
-                    <ResumeLectureCard
-                        href={`/student/${category}/lectures/${latestChapterInfo.lectureId}/chapters/${latestChapterInfo.chapterId}`}
-                        thumbnail={latestChapterInfo.chapterThumbnailUrl}
-                        title={latestChapterInfo.lectureTitle}
-                        description={latestChapterInfo.chapterTitle}
-                        progress={latestChapterInfo.chapterProgress}
+            {lectures.length > 0 ? (
+                <>
+                    <StudentLectureList
+                        lectures={lectures}
+                        getHref={(lecture) => `/student/${category}/lectures/${lecture.lectureId}`}
+                        showLearningStatus={filter === "my"}
                     />
-                ) : (
-                    <ResumeLectureCard empty />
-                )}
-            </aside>
-        </main>
+
+                    <ListPagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        createHref={createPageHref}
+                    />
+                </>
+            ) : (
+                <div className="flex h-72 flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-slate-200 bg-white text-slate-400">
+                    {filter === "my" ? (
+                        <BookOpen className="h-12 w-12" />
+                    ) : (
+                        <SearchX className="h-12 w-12" />
+                    )}
+
+                    <p className="text-lg font-bold">
+                        {filter === "my"
+                            ? "아직 신청한 강의가 없습니다."
+                            : "검색 결과가 없습니다."}
+                    </p>
+                </div>
+            )}
+        </>
     );
 }
