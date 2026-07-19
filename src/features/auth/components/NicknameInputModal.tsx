@@ -3,15 +3,10 @@
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { logoutAction, nicknameRegistAction } from "../action";
+import { nicknameRegistAction } from "../action";
 
-interface NicknameInputModalProps {
-    nickIsNull: boolean;
-}
 
-export default function NicknameInputModal({
-    nickIsNull
-}: NicknameInputModalProps) {
+export default function NicknameInputModal() {
     const router = useRouter();
 
     const [isClosed, setIsClosed] =
@@ -46,7 +41,7 @@ export default function NicknameInputModal({
         }
     };
 
-    if (!nickIsNull || isClosed) {
+    if (isClosed) {
         return null;
     }
 
