@@ -16,7 +16,7 @@ export default function StudentLectureListSkeleton() {
                 {Array.from({ length: 5 }).map((_, index) => (
                     <div
                         key={index}
-                        className="grid grid-cols-[184px_minmax(0,1fr)_160px] items-center gap-6 border-b border-slate-100 p-4 last:border-b-0"
+                        className="grid grid-cols-1 items-center gap-4 border-b border-slate-100 p-4 last:border-b-0 md:grid-cols-[184px_minmax(0,1fr)_160px] md:gap-6"
                     >
                         <Skeleton className="h-28 rounded-xl" />
 

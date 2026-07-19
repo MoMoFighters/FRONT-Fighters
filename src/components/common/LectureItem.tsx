@@ -125,7 +125,7 @@ export default function LectureItem({
     if (mode === "detail") {
         return (
             <div className="relative rounded-lg border border-slate-200 bg-white p-6">
-                <div className="grid grid-cols-[400px_1fr] gap-8">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-[400px_1fr] md:gap-8">
                     <div className="relative h-56.25 max-w-100 overflow-hidden rounded-2xl border border-slate-50 bg-slate-100">
                         {lecture.thumbnailUrl && (
                             <Image
@@ -146,7 +146,7 @@ export default function LectureItem({
                             </span>
                         </div>
 
-                        <h1 className="text-2xl font-bold text-slate-900">
+                        <h1 className="text-xl font-bold text-slate-900 md:text-2xl">
                             {lecture.title}
                         </h1>
 

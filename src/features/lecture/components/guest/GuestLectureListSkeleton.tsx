@@ -30,7 +30,7 @@ export default function GuestLectureListSkeleton() {
                 {Array.from({ length: 5 }).map((_, index) => (
                     <div
                         key={index}
-                        className="grid grid-cols-[144px_minmax(0,1fr)_120px] items-center gap-5 border-b border-slate-100 px-4 py-3 last:border-b-0"
+                        className="grid grid-cols-1 items-center gap-3 border-b border-slate-100 px-4 py-3 last:border-b-0 md:grid-cols-[144px_minmax(0,1fr)_120px] md:gap-5"
                     >
                         <Skeleton className="h-21 rounded-sm" />
 

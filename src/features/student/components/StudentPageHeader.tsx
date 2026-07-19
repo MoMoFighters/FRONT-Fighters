@@ -46,7 +46,7 @@ export default function StudentPageHeader({
 
             <div className="mb-7 flex justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight text-slate-950">
+                    <h1 className="text-2xl font-bold tracking-tight text-slate-950 md:text-3xl">
                         {title}
                     </h1>
                 </div>
