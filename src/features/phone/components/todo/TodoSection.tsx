@@ -25,7 +25,7 @@ export default function TodoSection({
     )
 
     return (
-        <div className="p-4  flex flex-col gap-3 border-b border-slate-400 ml-3 h-[295px]">
+        <div className="p-4 flex flex-col gap-3 border-b border-slate-400 h-full">
 
             {/* 날짜 */}
             <div>
