@@ -8,7 +8,7 @@ const STORAGE_KEY = "momocity-chatbot-messages";
 function loadMessages(): ChatMessage[] {
     if (typeof window === "undefined") return [];
     try {
-        const raw = window.localStorage.getItem(STORAGE_KEY);
+        const raw = window.sessionStorage.getItem(STORAGE_KEY);
         return raw ? (JSON.parse(raw) as ChatMessage[]) : [];
     } catch {
         return [];
@@ -16,7 +16,7 @@ function loadMessages(): ChatMessage[] {
 }
 
 function saveMessages(messages: ChatMessage[]) {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+    window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
 }
 
 export function useChatBotMessages() {

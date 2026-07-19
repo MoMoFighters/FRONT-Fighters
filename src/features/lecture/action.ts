@@ -6,12 +6,14 @@ import {
     deleteLectureById,
     deleteReviewById,
     enrollLectureById,
+    getReviewsByLectureId,
     updateChapterByIds,
     updateLectureById,
     updateLectureStatus,
     updateVideoProgress,
     updateVideoProgressByExit,
 } from "@/app/services/lecture/service";
+import { CreateReviewRequest, LectureStatus, Review, UpdateVideoProgressByExitRequest, UpdateVideoProgressRequest } from "./type";
 import {
     CreateReviewRequest,
     LectureStatus,
@@ -130,6 +132,28 @@ export const createReviewAction = async (
     revalidatePath(`/lectures/${lectureId}`);
     revalidateTag("lectures", { expire: 0 });
 }
+
+// 수강평 요약 기능을 위해 페이지네이션된 수강평 전체를 모아오는 액션 함수
+export const getAllReviewsForSummaryAction = async (
+    lectureId: string
+): Promise<Review[]> => {
+    // 1. 첫 페이지를 불러와서 전체 페이지 수를 확인한다
+    const firstPage = await getReviewsByLectureId(lectureId, 1);
+
+    if (firstPage.totalPages <= 1) {
+        return firstPage.content;
+    }
+
+    // 2. 나머지 페이지를 병렬로 불러온다
+    const remainingPages = await Promise.all(
+        Array.from({ length: firstPage.totalPages - 1 }, (_, index) =>
+            getReviewsByLectureId(lectureId, index + 2)
+        )
+    );
+
+    // 3. 모든 페이지의 수강평을 하나의 배열로 합친다
+    return [firstPage, ...remainingPages].flatMap((page) => page.content);
+};
 
 export type LectureDeleteActionResult = {
     success: boolean;
