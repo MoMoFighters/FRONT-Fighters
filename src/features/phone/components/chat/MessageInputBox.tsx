@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { sendMessageAction } from "../../../chat/action";
 import { toast } from "sonner";
 import { Send } from "lucide-react";
+import STTTriggerButton from "@/features/chatbot/components/STTTriggerButton";
 
 const TYPING_STOP_DELAY_MS = 3000;
 
@@ -65,6 +66,11 @@ export default function MessageInputBox({ chatRoomId, onTypingChange }: Props) {
         );
     };
 
+    const handleSTTResult = (text: string) => {
+        setContent((prev) => (prev.trim() ? `${prev} ${text}` : text));
+        focusInput();
+    };
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!content.trim() || !chatRoomId || isSending) return;
@@ -122,6 +128,11 @@ export default function MessageInputBox({ chatRoomId, onTypingChange }: Props) {
                     onChange={handleChange}
                     disabled={isSending || !chatRoomId}
                     autoFocus={true}
+                />
+
+                <STTTriggerButton
+                    onResult={handleSTTResult}
+                    disabled={isSending || !chatRoomId}
                 />
 
                 <Button
