@@ -103,10 +103,10 @@ export default function PasswordChangeMenuItem() {
             <DialogContent className="sm:max-w-sm">
                 <form onSubmit={handleSubmit}>
                     <DialogHeader>
-                        <DialogTitle>비밀번호 변경</DialogTitle>
+                        <DialogTitle className="mb-6">비밀번호 변경</DialogTitle>
                     </DialogHeader>
 
-                    <div className="">
+                    <div className="flex gap-3 flex-col">
                         <div className="space-y-1.5">
                             <Label htmlFor="currentPassword">현재 비밀번호</Label>
                             <div className="relative">
@@ -166,7 +166,7 @@ export default function PasswordChangeMenuItem() {
                                 </button>
                             </div>
                             {passwordConfirm ? (
-                                <p className={`text-right text-xs font-bold ${passwordInvalid ? "text-red-500" : "text-emerald-500"}`}>
+                                <p className={`pb-3 text-right text-xs font-bold ${passwordInvalid ? "text-red-500" : "text-emerald-500"}`}>
                                     {passwordInvalid ? "비밀번호가 일치하지 않습니다." : "비밀번호가 일치합니다."}
                                 </p>
                             ) : <div className="h-4"></div>}

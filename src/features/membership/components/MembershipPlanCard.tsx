@@ -8,14 +8,14 @@ import { MembershipPlan, MembershipTier } from "../type";
 
 const TIER_ORDER: Record<MembershipTier, number> = {
     BASIC: 0,
-    PRO: 1,
-    PLUS: 2,
+    PLUS: 1,
+    PRO: 2,
 };
 
 const TIER_ICON: Record<MembershipTier, typeof Sparkles> = {
     BASIC: Sparkles,
-    PRO: Rocket,
-    PLUS: Crown,
+    PLUS: Rocket,
+    PRO: Crown,
 };
 
 interface MembershipPlanCardProps {
@@ -43,6 +43,9 @@ export default function MembershipPlanCard({
     const formattedMembershipUntil = formatMembershipUntil(membershipUntil);
 
     const isHighlighted = isActive;
+    const discountPercent = plan.originalPrice
+        ? Math.round((1 - plan.price / plan.originalPrice) * 100)
+        : 0;
 
     const handleClick = () => {
         if (isGuest) {
@@ -79,7 +82,18 @@ export default function MembershipPlanCard({
                 {plan.name}
             </h3>
 
-            <div className="mt-4 flex items-end gap-1">
+            {plan.originalPrice && discountPercent > 0 && (
+                <div className="mt-4 flex items-center gap-2">
+                    <span className="text-sm font-bold text-slate-300 line-through">
+                        ₩{plan.originalPrice.toLocaleString()}
+                    </span>
+                    <span className="rounded-full bg-rose-50 px-2 py-0.5 text-xs font-bold text-rose-500">
+                        {discountPercent}% 할인
+                    </span>
+                </div>
+            )}
+
+            <div className={`flex items-end gap-1 ${discountPercent > 0 ? "mt-1" : "mt-4"}`}>
                 <span className="text-3xl font-black tracking-tight text-slate-900">
                     ₩{plan.price.toLocaleString()}
                 </span>

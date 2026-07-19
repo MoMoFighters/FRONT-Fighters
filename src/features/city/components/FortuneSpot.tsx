@@ -19,7 +19,7 @@ export default function FortuneSpot() {
                     <button
                         type="button"
                         onClick={() => setIsOpen(true)}
-                        className="absolute top-83 right-35 z-10 h-40 w-40 cursor-pointer border-0 bg-transparent p-0"
+                        className="absolute top-[44%] right-[11.5%] z-10 h-40 w-40 cursor-pointer border-0 p-0 bg-transparent"
                         aria-label="운세 보기"
                     />
                 </HoverCardTrigger>

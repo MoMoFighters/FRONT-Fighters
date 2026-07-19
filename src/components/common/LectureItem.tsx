@@ -48,7 +48,12 @@ export default function LectureItem({
         return (
             <div className="relative cursor-pointer rounded-xl border border-slate-200 bg-white p-4 transition-all hover:bg-slate-50 hover:shadow-md">
                 <Link href={href}>
-                    <div className={`flex items-center gap-3 ${lectureStatus === "ACTIVE" || lectureStatus === "HOLD" ? "pr-8" : ""}`}>
+                    <div className={`flex items-center gap-3 ${lectureStatus === "HOLD" || lectureStatus === "WAITING"
+                            ? "pr-16"
+                            : lectureStatus === "ACTIVE"
+                                ? "pr-8"
+                                : ""
+                        }`}>
                         <div
                             className="h-12 w-16 shrink-0 rounded-lg border border-slate-50 bg-cover bg-center"
                             style={{
@@ -87,22 +92,27 @@ export default function LectureItem({
                     </div>
                 </Link>
 
-                {(lectureStatus === "ACTIVE" || lectureStatus === "HOLD") && (
-                    <div className="absolute right-2 top-2 z-10">
+                {(lectureStatus === "ACTIVE" || lectureStatus === "HOLD" || lectureStatus === "WAITING") && (
+                    <div className="absolute right-2 top-1/2 z-10 flex -translate-y-1/2 items-center gap-1">
+                        {(lectureStatus === "HOLD" || lectureStatus === "WAITING") && (
+                            <Button
+                                asChild
+                                variant="ghost"
+                                size="icon"
+                                className="p-1.5 rounded-lg text-slate-400 transition-all hover:bg-indigo-50 hover:text-indigo-500"
+                            >
+                                <Link href={`/teacher/lectures/${lecture.lectureId}/edit`}>
+                                    <Edit className="h-4 w-4" />
+                                </Link>
+                            </Button>
+                        )}
+
                         <DeleteLectureBtn
                             mode="icon"
                             id={lecture.lectureId}
                             successHref="/teacher/lectures"
                         />
                     </div>
-                )}
-
-                {lectureStatus === "HOLD" && (
-                    <button className="absolute bottom-3 right-3 ml-auto">
-                        <Link href={`/teacher/lectures/${lecture.lectureId}/edit`}>
-                            <Edit className="h-3 w-3 text-red-500 hover:text-red-700" />
-                        </Link>
-                    </button>
                 )}
             </div>
         );
@@ -177,7 +187,7 @@ export default function LectureItem({
                     />
                 )}
 
-                {role === "teacher" && lectureStatus === "HOLD" && (
+                {role === "teacher" && (lectureStatus === "HOLD" || lectureStatus === "WAITING") && (
                     <div>
                         <Link href={`/teacher/lectures/${lecture.lectureId}/edit`}>
                             <Button className="absolute bottom-6 right-36 cursor-pointer rounded-md! bg-blue-400 px-6 py-6 text-md font-bold text-white hover:bg-blue-500">
