@@ -9,6 +9,7 @@ import { cookies } from "next/headers";
 import { getMyBuildings, getMyStreak } from "../services/city/service";
 import { getMyInfo } from "@/features/user/action";
 import { getGuestbooksAction } from "@/features/guestbook/action";
+import NicknameInputModal from "@/features/auth/components/NicknameInputModal";
 
 export default async function StudentMainPage() {
     const cookieStore = await cookies();
@@ -20,11 +21,15 @@ export default async function StudentMainPage() {
         getMyStreak(),
         getGuestbooksAction(),
     ]);
+    console.log(myInfo)
     const dnd = myInfo.data?.doNotDisturb;
     const guestbooks = guestbookResponse.data ?? [];
 
     return (
         <CityCanvas>
+            {!myInfo.data?.nickname &&
+                <NicknameInputModal />
+            }
             <BusStation mode="MY" />
             <PostBoard mode="MY" initialGuestbooks={guestbooks} />
             <Phone accessToken={accessToken} initialNotification={dnd} />

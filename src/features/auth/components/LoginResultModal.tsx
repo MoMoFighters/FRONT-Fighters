@@ -107,12 +107,16 @@ export default function LoginResultModal({
             setIsGiveupPending(false);
         }
     };
+    const closeResultModal = () => {
+        if (isActiveUser) return;
+        setIsModal(false)
+    }
 
     return (
         <>
             <div
                 className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
-                onClick={() => setIsModal(false)}
+                onClick={closeResultModal}
             >
                 <div
                     className="flex w-[420px] flex-col items-center gap-4 rounded-xl border border-slate-200 bg-white p-8 shadow-2xl"
