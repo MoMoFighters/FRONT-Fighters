@@ -13,15 +13,22 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
+import {
+    HoverCard,
+    HoverCardContent,
+    HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { Button } from "@/components/ui/button";
 import { cancelPaymentAction } from "@/features/payment/action";
 
 interface CancelSubscriptionButtonProps {
     paymentId?: string;
+    disabledReason?: string | null;
 }
 
 export default function CancelSubscriptionButton({
     paymentId,
+    disabledReason,
 }: CancelSubscriptionButtonProps) {
     const router = useRouter();
     const [open, setOpen] = useState(false);
@@ -57,16 +64,41 @@ export default function CancelSubscriptionButton({
         }
     };
 
+    const isDisabled = Boolean(disabledReason);
+
+    const triggerButton = (
+        <Button
+            type="button"
+            variant="outline"
+            disabled={isDisabled}
+            onClick={() => setOpen(true)}
+            className="h-10 rounded-xl border-rose-200 text-sm font-bold text-rose-500 hover:bg-rose-50 hover:text-rose-600 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400 disabled:hover:bg-transparent"
+        >
+            구독 취소
+        </Button>
+    );
+
+    if (isDisabled) {
+        return (
+            <HoverCard openDelay={100} closeDelay={0}>
+                <HoverCardTrigger asChild>
+                    <span className="inline-block cursor-not-allowed">
+                        {triggerButton}
+                    </span>
+                </HoverCardTrigger>
+                <HoverCardContent
+                    side="top"
+                    className="w-auto px-3 py-1.5 text-sm font-medium text-rose-500"
+                >
+                    {disabledReason}
+                </HoverCardContent>
+            </HoverCard>
+        );
+    }
+
     return (
         <>
-            <Button
-                type="button"
-                variant="outline"
-                onClick={() => setOpen(true)}
-                className="h-10 rounded-xl border-rose-200 text-sm font-bold text-rose-500 hover:bg-rose-50 hover:text-rose-600"
-            >
-                구독 취소
-            </Button>
+            {triggerButton}
 
             <Dialog open={open} onOpenChange={(next) => !isSubmitting && setOpen(next)}>
                 <DialogContent>

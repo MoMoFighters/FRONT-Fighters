@@ -1,3 +1,6 @@
+import Link from "next/link";
+import { Receipt } from "lucide-react";
+
 import StudentPageHeader from "@/features/student/components/StudentPageHeader";
 import MembershipPlans from "@/features/membership/components/MembershipPlans";
 import { getMyInfo } from "@/features/user/action";
@@ -26,7 +29,17 @@ export default async function Membership() {
                 title="멤버십"
             />
 
-            <section className="mt-8">
+            <div className="mt-4 flex justify-end">
+                <Link
+                    href="/student/mypage/payment"
+                    className="flex items-center gap-1.5 text-sm font-bold text-indigo-500 transition-colors hover:text-indigo-600"
+                >
+                    <Receipt className="h-4 w-4" />
+                    결제 내역 보기
+                </Link>
+            </div>
+
+            <section className="mt-4">
                 <MembershipPlans
                     currentTier={currentTier}
                     membershipUntil={myInfoResponse.data?.membershipUntil}

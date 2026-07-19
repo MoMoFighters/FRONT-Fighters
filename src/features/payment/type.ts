@@ -13,8 +13,7 @@ export interface VerifyPaymentData {
 export type UserPaymentStatus = "PENDING" | "SUCCESS" | "FAILED" | "REFUND";
 
 export interface UserPaymentItem {
-    // 문서화된 응답에는 없지만, 취소(환불) 시 필요한 값이라 실제 응답에 포함되어 있다고 가정한다.
-    paymentId?: string;
+    paymentId: string;
     price: number;
     plan: MembershipTier;
     status: UserPaymentStatus;
