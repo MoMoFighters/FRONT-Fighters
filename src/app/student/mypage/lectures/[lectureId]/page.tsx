@@ -8,6 +8,7 @@ import {
 } from "@/app/services/lecture/service";
 import ListPagination from "@/components/common/ListPagination";
 import CreateReviewBtn from "@/features/lecture/components/buttons/CreateReviewBtn";
+import ReviewSummaryButton from "@/features/lecture/components/buttons/ReviewSummaryButton";
 import StudentChapterList from "@/features/lecture/components/student/detail/StudentChapterList";
 import StudentLectureDetailItem from "@/features/lecture/components/student/detail/StudentLectureDetailItem";
 import StudentLectureDetailTabs from "@/features/lecture/components/student/detail/StudentLectureDetailTabs";
@@ -99,14 +100,16 @@ export default async function MyLectureDetailPage({
                         />
                     ) : reviewResponseData && (
                         <>
-                            {lecture.isEnrolled && (
-                                <div className="flex justify-end border-b border-slate-100 px-5 py-4">
-                                    <CreateReviewBtn
-                                        lectureId={lecture.lectureId}
-                                        disabled={false} // TEMP: 수강 완료 체크 임시 해제, 테스트 끝나면 원복 필요
-                                    />
-                                </div>
-                            )}
+                            <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+                                <ReviewSummaryButton
+                                    lectureId={String(lecture.lectureId)}
+                                    reviewCount={lecture.reviewCount}
+                                />
+
+                                {lecture.isEnrolled && lecture.isCompleted && (
+                                    <CreateReviewBtn lectureId={lecture.lectureId} />
+                                )}
+                            </div>
 
                             <StudentReviewList reviews={reviewResponseData.content} />
 
