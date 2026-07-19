@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -39,6 +39,8 @@ const PAYMENT_METHODS: {
     logoClassName: string;
     buttonClassName: string;
     textClassName: string;
+    // PG사마다 PC에서 지원하는 결제창 유형이 달라서 (토스페이는 IFRAME 미지원) 개별 지정한다.
+    pcWindowType: "IFRAME" | "POPUP" | "REDIRECTION";
 }[] = [
         {
             provider: PORTONE_EASY_PAY_PROVIDER.KAKAOPAY,
@@ -48,6 +50,7 @@ const PAYMENT_METHODS: {
             buttonClassName:
                 "cursor-pointer border border-[#F4DC34] bg-[#F4DC34] hover:border-[#3C1E1E]/30 hover:-translate-y-0.5 focus-visible:ring-[#F4DC34]/50",
             textClassName: "text-[#3C1E1E]",
+            pcWindowType: "IFRAME",
         },
         {
             provider: PORTONE_EASY_PAY_PROVIDER.TOSSPAY,
@@ -57,6 +60,7 @@ const PAYMENT_METHODS: {
             buttonClassName:
                 "cursor-pointer border border-[#1B64DA]/25 bg-white hover:border-[#1B64DA] hover:-translate-y-0.5 focus-visible:ring-[#1B64DA]/30",
             textClassName: "text-[#1B64DA]",
+            pcWindowType: "POPUP",
         },
     ];
 
@@ -67,24 +71,41 @@ export default function PaymentMethodDialog({
 }: PaymentMethodDialogProps) {
     const router = useRouter();
     const [isProcessing, setIsProcessing] = useState(false);
+    const attemptIdRef = useRef(0);
 
     const handleClose = (nextOpen: boolean) => {
-        if (isProcessing) {
-            return;
+        if (!nextOpen && isProcessing) {
+            // 결제창(카카오/토스 iframe)이 응답 없이 멈추는 경우를 대비해,
+            // 진행 중이어도 항상 닫을 수 있게 하고 이후 응답은 무시한다.
+            attemptIdRef.current += 1;
+            setIsProcessing(false);
+            toast.info(
+                "결제 창을 닫았습니다. \"이미 진행 중인 결제가 있습니다\" 오류가 뜬다면 잠시 후 다시 시도해주세요."
+            );
         }
 
         onOpenChange(nextOpen);
     };
 
-    const handlePay = async (provider: PortOneEasyPayProvider) => {
+    const handlePay = async (
+        provider: PortOneEasyPayProvider,
+        pcWindowType: "IFRAME" | "POPUP" | "REDIRECTION"
+    ) => {
         if (!plan || isProcessing) {
             return;
         }
+
+        const attemptId = ++attemptIdRef.current;
+        const isStale = () => attemptId !== attemptIdRef.current;
 
         setIsProcessing(true);
 
         try {
             const prepareResult = await preparePaymentAction(plan.tier);
+
+            if (isStale()) {
+                return;
+            }
 
             if (
                 prepareResult.status !== 200 &&
@@ -106,6 +127,10 @@ export default function PaymentMethodDialog({
 
             const PortOne = (await import("@portone/browser-sdk/v2")).default;
 
+            if (isStale()) {
+                return;
+            }
+
             const redirectUrl =
                 `${window.location.origin}/student/mypage/membership` +
                 `?paymentId=${encodeURIComponent(paymentId)}`;
@@ -120,11 +145,15 @@ export default function PaymentMethodDialog({
                 payMethod: "EASY_PAY",
                 easyPay: { easyPayProvider: provider },
                 windowType: {
-                    pc: "IFRAME",
+                    pc: pcWindowType,
                     mobile: "REDIRECTION",
                 },
                 redirectUrl,
             });
+
+            if (isStale()) {
+                return;
+            }
 
             // 모바일 REDIRECTION 방식은 페이지 이동으로 처리되므로
             // 이 아래 로직은 PC(IFRAME/POPUP) 응답에만 도달한다.
@@ -137,6 +166,10 @@ export default function PaymentMethodDialog({
 
             const verifyResult = await verifyPaymentAction(paymentId);
 
+            if (isStale()) {
+                return;
+            }
+
             if (verifyResult.status !== 200 && verifyResult.status !== 201) {
                 toast.error(
                     verifyResult.message || "결제 검증에 실패했습니다."
@@ -148,13 +181,19 @@ export default function PaymentMethodDialog({
             onOpenChange(false);
             router.refresh();
         } catch (error) {
+            if (isStale()) {
+                return;
+            }
+
             toast.error(
                 error instanceof Error
                     ? error.message
                     : "결제 처리 중 오류가 발생했습니다."
             );
         } finally {
-            setIsProcessing(false);
+            if (!isStale()) {
+                setIsProcessing(false);
+            }
         }
     };
 
@@ -178,7 +217,7 @@ export default function PaymentMethodDialog({
                             key={method.provider}
                             type="button"
                             disabled={isProcessing}
-                            onClick={() => void handlePay(method.provider)}
+                            onClick={() => void handlePay(method.provider, method.pcWindowType)}
                             className={`h-14 w-full justify-center gap-2.5 rounded-2xl text-sm font-bold shadow-none transition-all duration-150 ${method.buttonClassName}`}
                         >
                             {isProcessing ? (
@@ -205,10 +244,9 @@ export default function PaymentMethodDialog({
                     <Button
                         type="button"
                         variant="outline"
-                        disabled={isProcessing}
                         onClick={() => handleClose(false)}
                     >
-                        취소
+                        {isProcessing ? "닫기" : "취소"}
                     </Button>
                 </DialogFooter>
             </DialogContent>
