@@ -6,6 +6,7 @@ const withBundleAnalyzer = bundleAnalyzer({
 });
 
 const nextConfig = {
+  output: "standalone",
   // 아래꺼 주석으로 하고 개발
   devIndicators: false,
   // 위에꺼 주석으로 하고 개발
