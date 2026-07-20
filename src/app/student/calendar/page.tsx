@@ -27,7 +27,7 @@ export default async function CalendarPage({
     }
 
     return (
-        <div className="flex h-[calc(100vh-137px)] max-h-[calc(100vh-137px)] min-h-0 w-full overflow-hidden">
+        <div className="flex h-[calc(100vh-55px)] max-h-[calc(100vh-55px)] min-h-0 w-full overflow-hidden">
             <CalendarLoader
                 selectedDate={date}
             />
