@@ -55,7 +55,7 @@ export default async function MyChapterViewPage({
         : undefined;
 
     return (
-        <main className="mx-auto grid w-full max-w-360 grid-cols-[minmax(0,1fr)_360px] gap-8 px-12 py-12">
+        <main className="mx-auto grid w-full max-w-360 grid-cols-1 gap-8 px-4 py-8 md:grid-cols-[minmax(0,1fr)_360px] md:px-12 md:py-12">
             <section className="min-w-0">
                 <StudentPageHeader
                     backHref={`/student/mypage/lectures/${lectureId}`}

@@ -9,6 +9,7 @@ import AdminLectureApprovalActions from "./AdminLectureApprovalActions";
 
 interface AdminLectureItemProps {
     lecture: Lecture;
+    priority?: boolean;
 }
 
 const formatAdminDateTime = (dateTime: string) => {
@@ -17,6 +18,7 @@ const formatAdminDateTime = (dateTime: string) => {
 
 export default function AdminLectureItem({
     lecture,
+    priority = false,
 }: AdminLectureItemProps) {
     const categoryMeta = getCategoryMeta(lecture.category);
     const chapterCount =
@@ -43,6 +45,7 @@ export default function AdminLectureItem({
                         alt={lecture.title}
                         fill
                         sizes="160px"
+                        priority={priority}
                         className="object-cover"
                     />
                 )}

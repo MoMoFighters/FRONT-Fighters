@@ -9,7 +9,7 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import type { DateClickArg } from '@fullcalendar/interaction'
 import interactionPlugin from '@fullcalendar/interaction'
 import FullCalendar from '@fullcalendar/react'
-import { memo, useCallback, useMemo } from 'react'
+import { memo, useCallback, useMemo, useRef } from 'react'
 
 import type { ScheduleItem } from '@/features/calendar/type'
 
@@ -55,12 +55,25 @@ function FullCalendarMonthView({
     onMoreClick,
     onAddMemo,
 }: FullCalendarMonthViewProps) {
+    const calendarRef = useRef<FullCalendar>(null)
+
+    const handleTodayClick = useCallback(() => {
+        const calendarApi = calendarRef.current?.getApi()
+
+        calendarApi?.today()
+        onDateClick(formatLocalDate(new Date()))
+    }, [onDateClick])
+
     const customButtons = useMemo(() => ({
         addMemoButton: {
             text: "메모 추가",
             click: onAddMemo,
         },
-    }), [onAddMemo])
+        today: {
+            text: "today",
+            click: handleTodayClick,
+        },
+    }), [onAddMemo, handleTodayClick])
 
     const handleDatesSet = useCallback((info: DatesSetArg) => {
         onDatesSet(formatLocalDate(info.view.currentStart))
@@ -98,6 +111,7 @@ function FullCalendarMonthView({
 
     return (
         <FullCalendar
+            ref={calendarRef}
             plugins={FULL_CALENDAR_PLUGINS}
             initialView="dayGridMonth"
             initialDate={initialDate}

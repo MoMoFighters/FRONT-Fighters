@@ -1,4 +1,8 @@
+'use client'
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useTransition } from "react";
 import { Search, X } from "lucide-react";
 
 const categories = [
@@ -39,6 +43,9 @@ export default function GuestLectureControls({
     category,
     totalElements,
 }: GuestLectureControlsProps) {
+    const router = useRouter();
+    const [isPending, startTransition] = useTransition();
+
     const createCategoryHref = (nextCategory?: string) => {
         const params = new URLSearchParams();
 
@@ -67,6 +74,23 @@ export default function GuestLectureControls({
         return queryString ? `/lectures?${queryString}` : "/lectures";
     };
 
+    // form 기본 제출(브라우저 풀 리로드) 대신 클라이언트 사이드 네비게이션으로 처리한다
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        const nextKeyword = String(formData.get("keyword") ?? "").trim();
+
+        const params = new URLSearchParams();
+        if (category) params.set("category", category);
+        if (nextKeyword) params.set("keyword", nextKeyword);
+
+        const queryString = params.toString();
+
+        startTransition(() => {
+            router.push(queryString ? `/lectures?${queryString}` : "/lectures");
+        });
+    };
+
     return (
         <div className="mb-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
             <div className="mb-4 flex items-center justify-between gap-4">
@@ -79,11 +103,7 @@ export default function GuestLectureControls({
                     </p>
                 </div>
 
-                <form method="GET" action="/lectures" className="flex w-full max-w-md items-center gap-2">
-                    {category && (
-                        <input type="hidden" name="category" defaultValue={category} />
-                    )}
-
+                <form onSubmit={handleSubmit} className="flex w-full max-w-md items-center gap-2">
                     <div className="relative flex-1">
                         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                         <input
@@ -106,9 +126,10 @@ export default function GuestLectureControls({
 
                     <button
                         type="submit"
-                        className="h-10 rounded-lg bg-slate-900 px-4 text-xs font-bold text-white transition-colors hover:bg-slate-800"
+                        disabled={isPending}
+                        className="h-10 rounded-lg bg-slate-900 px-4 text-xs font-bold text-white transition-colors hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                        검색
+                        {isPending ? "검색 중..." : "검색"}
                     </button>
                 </form>
             </div>

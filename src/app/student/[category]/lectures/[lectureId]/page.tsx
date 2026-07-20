@@ -8,6 +8,7 @@ import {
 } from "@/app/services/lecture/service";
 import ListPagination from "@/components/common/ListPagination";
 import CreateReviewBtn from "@/features/lecture/components/buttons/CreateReviewBtn";
+import ReviewSummaryButton from "@/features/lecture/components/buttons/ReviewSummaryButton";
 import StudentChapterList from "@/features/lecture/components/student/detail/StudentChapterList";
 import StudentLectureDetailItem from "@/features/lecture/components/student/detail/StudentLectureDetailItem";
 import StudentLectureDetailTabs from "@/features/lecture/components/student/detail/StudentLectureDetailTabs";
@@ -54,10 +55,13 @@ export default async function LectureByCategoryDetail({
     const currentTab = tab === "reviews" ? "reviews" : "chapters";
     const currentPage = Number(page) || 1;
 
-    const [lecture, progressInfo, latestChapterInfo] = await Promise.all([
+    const [lecture, progressInfo, latestChapterInfo, reviewResponseData] = await Promise.all([
         getLectureById(lectureId),
         getProgressByCategory(categoryApiValue),
         getLatestChapterInfo(categoryApiValue),
+        currentTab === "reviews"
+            ? getReviewsByLectureId(lectureId, currentPage)
+            : Promise.resolve(undefined),
     ]);
 
     if (!lecture) {
@@ -68,10 +72,6 @@ export default async function LectureByCategoryDetail({
         throw new Error('403|접근할 수 없는 상태의 강의입니다.');
     }
 
-    const reviewResponseData = currentTab === "reviews"
-        ? await getReviewsByLectureId(lectureId, currentPage)
-        : undefined;
-
     const createReviewPageHref = (pageNumber: number) => {
         const params = new URLSearchParams();
         params.set("tab", "reviews");
@@ -81,7 +81,7 @@ export default async function LectureByCategoryDetail({
     };
 
     return (
-        <main className="mx-auto grid w-full max-w-360 grid-cols-[minmax(0,1fr)_320px] gap-8 px-12 py-12">
+        <main className="mx-auto grid w-full max-w-360 grid-cols-1 gap-8 px-4 py-8 md:grid-cols-[minmax(0,1fr)_320px] md:px-12 md:py-12">
             <section className="min-w-0">
                 <StudentPageHeader
                     backHref={`/student/${category}/lectures`}
@@ -123,14 +123,16 @@ export default async function LectureByCategoryDetail({
                         />
                     ) : reviewResponseData && (
                         <>
-                            {lecture.isEnrolled && (
-                                <div className="flex justify-end border-b border-slate-100 px-5 py-4">
-                                    <CreateReviewBtn
-                                        lectureId={lecture.lectureId}
-                                        disabled={false} // TEMP: 수강 완료 체크 임시 해제, 테스트 끝나면 원복 필요
-                                    />
-                                </div>
-                            )}
+                            <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+                                <ReviewSummaryButton
+                                    lectureId={String(lecture.lectureId)}
+                                    reviewCount={lecture.reviewCount}
+                                />
+
+                                {lecture.isEnrolled && lecture.isCompleted && (
+                                    <CreateReviewBtn lectureId={lecture.lectureId} />
+                                )}
+                            </div>
 
                             <StudentReviewList reviews={reviewResponseData.content} />
 

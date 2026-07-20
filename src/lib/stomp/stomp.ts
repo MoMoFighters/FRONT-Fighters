@@ -4,11 +4,12 @@ import { Client, type StompSubscription } from "@stomp/stompjs";
 
 type StompMessageHandler = (body: string) => void;
 
-interface MomoStompClient {
+export interface MomoStompClient {
     subscribe: (
         destination: string,
         onMessage: StompMessageHandler
     ) => StompSubscription;
+    publish: (destination: string, body: string) => void;
     disconnect: () => void;
 }
 
@@ -81,6 +82,19 @@ const createClientProxy = (): MomoStompClient => ({
                 : undefined
         );
     },
+    publish: (destination, body) => {
+        if (!sharedStompClient || !isConnected) {
+            throw new Error("STOMP 연결이 완료되지 않았습니다.");
+        }
+
+        sharedStompClient.publish({
+            destination,
+            body,
+            headers: sharedAccessToken
+                ? getAuthHeaders(sharedAccessToken)
+                : undefined,
+        });
+    },
     disconnect: () => {
         referenceCount = Math.max(referenceCount - 1, 0);
 
@@ -148,8 +162,10 @@ export const connectNoticeStomp = ({
         createSharedStompClient(accessToken);
     }
 
+    const proxy = createClientProxy();
     const client: MomoStompClient = {
-        subscribe: createClientProxy().subscribe,
+        subscribe: proxy.subscribe,
+        publish: proxy.publish,
         disconnect: () => {
             connectListeners.delete(onConnect);
             referenceCount = Math.max(referenceCount - 1, 0);

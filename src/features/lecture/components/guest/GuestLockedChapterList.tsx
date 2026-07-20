@@ -45,7 +45,7 @@ export default function GuestLockedChapterList({
                 return (
                     <article
                         key={chapter.chapterId}
-                        className="grid grid-cols-[112px_minmax(0,1fr)_120px] items-center gap-4 px-5 py-4"
+                        className="grid grid-cols-1 items-center gap-3 px-5 py-4 md:grid-cols-[112px_minmax(0,1fr)_120px] md:gap-4"
                     >
                         <div className="relative h-16 overflow-hidden rounded-lg bg-slate-100">
                             {thumbnail ? (

@@ -44,6 +44,21 @@ export const getChatRoomSubscribeDestination = (
     roomId: number
 ) => `/user/sub/chat/room/${roomId}`;
 
+export const UNKNOWN_CHAT_PARTNER_NAME = "먼저 떠난 친구";
+
+export const getTypingPublishDestination = (
+    roomId: number
+) => `/pub/chat/typing/${roomId}`;
+
+export const getTypingSubscribeDestination = (
+    roomId: number
+) => `/user/sub/chat/typing/${roomId}`;
+
+export interface TypingStatusData {
+    message: string;
+    typingUserIds: number[];
+}
+
 export const normalizeChatRoomListData = (
     rooms?: RawChatRoomListResponseData | null
 ): ChatRoomListData[] => {

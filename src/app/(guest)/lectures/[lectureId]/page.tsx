@@ -62,7 +62,7 @@ export default async function GuestLectureDetailPage({
     }
 
     return (
-        <main className="mx-auto grid w-full max-w-360 grid-cols-[minmax(0,1fr)_300px] gap-8 px-16 py-8">
+        <main className="mx-auto grid w-full max-w-360 grid-cols-1 gap-8 px-4 py-8 md:grid-cols-[minmax(0,1fr)_300px] md:px-16">
             <section className="min-w-0">
                 <GuestLectureDetailHero lecture={lecture} />
 

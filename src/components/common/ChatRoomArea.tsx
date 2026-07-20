@@ -23,7 +23,11 @@ import {
     ChatRoomInfoData,
     ChatRoomMemberData,
     getChatRoomSubscribeDestination,
+    getTypingPublishDestination,
+    getTypingSubscribeDestination,
     normalizeChatHistoryData,
+    TypingStatusData,
+    UNKNOWN_CHAT_PARTNER_NAME,
 } from "@/app/services/phone/chat/service";
 import {
     getChatHistoryAction,
@@ -32,7 +36,7 @@ import {
 } from "@/features/chat/action";
 import type { ChatRoomMemberInfo } from "@/features/chat/type";
 import MyFriendListModal from "@/features/phone/components/friend/MyFriendListModal";
-import { connectNoticeStomp } from "@/lib/stomp/stomp";
+import { connectNoticeStomp, type MomoStompClient } from "@/lib/stomp/stomp";
 
 interface ChatRoomAreaProps {
     currentRoomId: number | null;
@@ -108,6 +112,7 @@ export default function ChatRoomArea({
     const isReadMessagePendingRef = useRef(false);
     const lastReadRequestedMessageIdRef = useRef<number | null>(null);
     const lastEnteredRoomIdRef = useRef<number | null>(null);
+    const stompClientRef = useRef<MomoStompClient | null>(null);
 
     const [isBottom, setIsBottom] = useState(true);
     const [isLoadingOld, setIsLoadingOld] = useState(false);
@@ -117,6 +122,7 @@ export default function ChatRoomArea({
     const [isMemberDialogOpen, setIsMemberDialogOpen] = useState(false);
     const [isMembersLoading, setIsMembersLoading] = useState(false);
     const [roomMembers, setRoomMembers] = useState<ChatRoomMemberInfo[]>([]);
+    const [typingStatus, setTypingStatus] = useState<TypingStatusData | null>(null);
 
     const href = pathname.startsWith("/teacher")
         ? "/teacher/ask"
@@ -234,16 +240,25 @@ export default function ChatRoomArea({
     ]);
 
     useEffect(() => {
+        const resetTypingFrameId = window.requestAnimationFrame(() => {
+            setTypingStatus(null);
+        });
+
         if (!currentRoomId) {
-            return;
+            return () => window.cancelAnimationFrame(resetTypingFrameId);
         }
 
         let subscription:
             | ReturnType<ReturnType<typeof connectNoticeStomp>["subscribe"]>
             | undefined;
+        let typingSubscription:
+            | ReturnType<ReturnType<typeof connectNoticeStomp>["subscribe"]>
+            | undefined;
         const client = connectNoticeStomp({
             accessToken,
             onConnect: (stompClient) => {
+                stompClientRef.current = stompClient;
+
                 subscription = stompClient.subscribe(
                     getChatRoomSubscribeDestination(currentRoomId),
                     (body) => {
@@ -264,6 +279,13 @@ export default function ChatRoomArea({
                     }
                 );
 
+                typingSubscription = stompClient.subscribe(
+                    getTypingSubscribeDestination(currentRoomId),
+                    (body) => {
+                        setTypingStatus(JSON.parse(body) as TypingStatusData);
+                    }
+                );
+
                 if (lastEnteredRoomIdRef.current !== currentRoomId) {
                     lastEnteredRoomIdRef.current = currentRoomId;
                     lastReadRequestedMessageIdRef.current = null;
@@ -272,7 +294,10 @@ export default function ChatRoomArea({
             },
         });
         return () => {
+            window.cancelAnimationFrame(resetTypingFrameId);
             subscription?.unsubscribe();
+            typingSubscription?.unsubscribe();
+            stompClientRef.current = null;
             client.disconnect();
         };
     }, [
@@ -282,6 +307,24 @@ export default function ChatRoomArea({
         requestReadMessage,
         readCurrentRoomMessage,
     ]);
+
+    const sendTypingStatus = useCallback(
+        (isTyping: boolean) => {
+            if (!currentRoomId || !stompClientRef.current) {
+                return;
+            }
+
+            try {
+                stompClientRef.current.publish(
+                    getTypingPublishDestination(currentRoomId),
+                    JSON.stringify({ isTyping })
+                );
+            } catch {
+                // STOMP 연결이 아직 준비되지 않은 경우 조용히 무시합니다.
+            }
+        },
+        [currentRoomId]
+    );
 
     useEffect(() => {
         return () => {
@@ -394,11 +437,9 @@ export default function ChatRoomArea({
     const roomTitle =
         roomInfo?.roomTitle ??
         (
-            isMine ||
-                roomInfo?.inMemberCount === 1 ||
-                opponent?.status === "me"
+            isMine
                 ? "나와의 채팅"
-                : opponent?.nickname ?? "채팅방"
+                : opponent?.nickname ?? UNKNOWN_CHAT_PARTNER_NAME
         );
     const roomSubTitle =
         roomInfo?.roomTitle
@@ -489,9 +530,15 @@ export default function ChatRoomArea({
                 </div>
 
                 <div className="shrink-0 border-t border-slate-200 bg-white">
+                    {typingStatus?.message && (
+                        <p className="px-4 pt-2 text-xs text-slate-400">
+                            {typingStatus.message}
+                        </p>
+                    )}
                     <MessageInputBox
                         key={currentRoomId}
                         chatRoomId={currentRoomId}
+                        onTypingChange={sendTypingStatus}
                     />
                 </div>
             </div>

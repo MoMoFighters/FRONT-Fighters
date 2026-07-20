@@ -23,7 +23,7 @@ export default function AdminLectureDetailHero({
 
     return (
         <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <div className="grid grid-cols-[320px_minmax(0,1fr)] gap-8">
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-[320px_minmax(0,1fr)]">
                 <div className="relative h-56 overflow-hidden rounded-xl bg-slate-100">
                     {lecture.thumbnailUrl && (
                         <Image
@@ -31,6 +31,7 @@ export default function AdminLectureDetailHero({
                             alt={lecture.title}
                             fill
                             sizes="320px"
+                            priority
                             className="object-cover"
                         />
                     )}
@@ -40,7 +41,7 @@ export default function AdminLectureDetailHero({
                     <span className="w-fit rounded-full bg-indigo-50 px-3 py-1 text-sm font-bold text-indigo-500">
                         {categoryMeta.label} 강의
                     </span>
-                    <h2 className="mt-4 text-3xl font-bold tracking-tight text-slate-950">
+                    <h2 className="mt-4 text-2xl font-bold tracking-tight text-slate-950 md:text-3xl">
                         {lecture.title}
                     </h2>
                     <p className="mt-3 line-clamp-2 text-sm font-medium leading-6 text-slate-500">

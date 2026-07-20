@@ -467,7 +467,7 @@ export default function VideoPlayer({
                     onProgress={handleCanPlay}
                     onTimeUpdate={handleTimeUpdate}
                     onEnded={handleVideoEnded}
-                    preload="auto"
+                    preload="metadata"
                     className="aspect-video w-full bg-black"
                 >
                     <source
@@ -479,7 +479,7 @@ export default function VideoPlayer({
                 </video>
             </div>
 
-            <div className="grid grid-cols-[1fr_1fr_140px_auto] gap-6 p-5">
+            <div className="grid grid-cols-1 gap-4 p-5 md:grid-cols-[1fr_1fr_140px_auto] md:gap-6">
                 <div>
                     <p className="text-xs font-bold text-slate-400">
                         강의명

@@ -9,7 +9,9 @@ const IMAGE_BACKGROUND_PATHS = [
     "/student/cook",
     "/student/fitness",
     "/student/beauty",
-    "/student/users"
+    "/student/users",
+    "/student/friends",
+    "/student/calendar"
 ];
 
 export default function StudentLayoutShell({

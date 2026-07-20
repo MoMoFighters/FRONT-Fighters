@@ -145,98 +145,100 @@ export default function UserProfileChoice({ profileChangeOpen, setProfileChangeO
                     </Link>
                 </div>
 
-                <div className="grid min-h-[166px] w-full grid-cols-4 content-start gap-2 rounded-xl border border-slate-100 bg-slate-50/80 p-1">
-                    {isLoading ? (
-                        <div className="col-span-4 flex h-24 items-center justify-center text-xs font-bold text-slate-400">
-                            불러오는 중...
-                        </div>
-                    ) : items.length === 0 ? (
-                        <div className="col-span-4 flex h-24 items-center justify-center text-xs font-bold text-slate-400">
-                            보유 중인 프로필 아이템이 없습니다.
-                        </div>
-                    ) : (
-                        items.map((item) => (
-                            item.isOwned ? (
-                                <button
-                                    key={`owned-${item.itemName}`}
-                                    type="button"
-                                    onClick={() => {
-                                        if (item.imageUrl && item.itemName) {
-                                            onSelectProfileImage(
-                                                item.imageUrl,
-                                                item.itemName
-                                            );
-                                        }
-                                    }}
-                                    disabled={!item.imageUrl}
-                                    className="relative flex h-[75px] w-[75px] cursor-pointer items-center justify-center overflow-hidden rounded-xl border border-indigo-100 bg-white text-sm font-bold text-slate-600 transition-colors hover:bg-indigo-50"
-                                >
-                                    {item.imageUrl ? (
-                                        <Image
-                                            src={item.imageUrl}
-                                            alt={item.itemName}
-                                            fill
-                                            sizes="75px"
-                                            className="object-cover"
-                                        />
-                                    ) : (
-                                        <ImageIcon className="h-7 w-7 text-slate-300" />
-                                    )}
-                                </button>
-                            ) : (
-                                <HoverCard
-                                    key={`not-owned-${item.itemName}`}
-                                    openDelay={50}
-                                    closeDelay={50}
-                                >
-                                    <HoverCardTrigger asChild>
-                                        <div className="relative flex h-[75px] w-[75px] cursor-not-allowed items-center justify-center overflow-hidden rounded-xl border border-indigo-100 bg-white text-sm font-bold text-slate-600 transition-colors">
-                                            {item.imageUrl ? (
-                                                <Image
-                                                    src={item.imageUrl}
-                                                    alt={item.itemName}
-                                                    fill
-                                                    sizes="75px"
-                                                    className="object-cover opacity-35 grayscale"
-                                                />
-                                            ) : (
-                                                <ImageIcon className="h-7 w-7 text-slate-300" />
-                                            )}
-                                            <div className="absolute inset-0 flex items-center justify-center bg-white/25">
-                                                <LockKeyholeIcon className="h-7 w-7 text-slate-700/70" />
-                                            </div>
-                                        </div>
-                                    </HoverCardTrigger>
-                                    <HoverCardContent
-                                        side="left"
-                                        align="center"
-                                        sideOffset={8}
+                <div className="scrollbar-none flex h-[200px] w-full flex-col gap-2 overflow-y-auto rounded-xl border border-slate-100 bg-slate-50/80 p-1">
+                    <div className="grid w-full grid-cols-4 content-start gap-2">
+                        {isLoading ? (
+                            <div className="col-span-4 flex h-24 items-center justify-center text-xs font-bold text-slate-400">
+                                불러오는 중...
+                            </div>
+                        ) : items.length === 0 ? (
+                            <div className="col-span-4 flex h-24 items-center justify-center text-xs font-bold text-slate-400">
+                                보유 중인 프로필 아이템이 없습니다.
+                            </div>
+                        ) : (
+                            items.map((item) => (
+                                item.isOwned ? (
+                                    <button
+                                        key={`owned-${item.itemName}`}
+                                        type="button"
+                                        onClick={() => {
+                                            if (item.imageUrl && item.itemName) {
+                                                onSelectProfileImage(
+                                                    item.imageUrl,
+                                                    item.itemName
+                                                );
+                                            }
+                                        }}
+                                        disabled={!item.imageUrl}
+                                        className="relative flex h-[75px] w-[75px] cursor-pointer items-center justify-center overflow-hidden rounded-xl border border-indigo-100 bg-white text-sm font-bold text-slate-600 transition-colors hover:bg-indigo-50"
                                     >
-                                        <div className="space-y-1">
-                                            <p className="text-sm font-bold text-slate-900">
-                                                보유 중이지 않은 아이템
-                                            </p>
-                                            <p className="text-xs font-medium text-slate-500">
-                                                상점에서 포인트로 구매할 수 있습니다.
-                                            </p>
-                                        </div>
-                                    </HoverCardContent>
-                                </HoverCard>
-                            )
-                        ))
+                                        {item.imageUrl ? (
+                                            <Image
+                                                src={item.imageUrl}
+                                                alt={item.itemName}
+                                                fill
+                                                sizes="75px"
+                                                className="object-cover"
+                                            />
+                                        ) : (
+                                            <ImageIcon className="h-7 w-7 text-slate-300" />
+                                        )}
+                                    </button>
+                                ) : (
+                                    <HoverCard
+                                        key={`not-owned-${item.itemName}`}
+                                        openDelay={50}
+                                        closeDelay={50}
+                                    >
+                                        <HoverCardTrigger asChild>
+                                            <div className="relative flex h-[75px] w-[75px] cursor-not-allowed items-center justify-center overflow-hidden rounded-xl border border-indigo-100 bg-white text-sm font-bold text-slate-600 transition-colors">
+                                                {item.imageUrl ? (
+                                                    <Image
+                                                        src={item.imageUrl}
+                                                        alt={item.itemName}
+                                                        fill
+                                                        sizes="75px"
+                                                        className="object-cover opacity-35 grayscale"
+                                                    />
+                                                ) : (
+                                                    <ImageIcon className="h-7 w-7 text-slate-300" />
+                                                )}
+                                                <div className="absolute inset-0 flex items-center justify-center bg-white/25">
+                                                    <LockKeyholeIcon className="h-7 w-7 text-slate-700/70" />
+                                                </div>
+                                            </div>
+                                        </HoverCardTrigger>
+                                        <HoverCardContent
+                                            side="left"
+                                            align="center"
+                                            sideOffset={8}
+                                        >
+                                            <div className="space-y-1">
+                                                <p className="text-sm font-bold text-slate-900">
+                                                    보유 중이지 않은 아이템
+                                                </p>
+                                                <p className="text-xs font-medium text-slate-500">
+                                                    상점에서 포인트로 구매할 수 있습니다.
+                                                </p>
+                                            </div>
+                                        </HoverCardContent>
+                                    </HoverCard>
+                                )
+                            ))
+                        )}
+                    </div>
+
+                    {page < totalPages && (
+                        <button
+                            type="button"
+                            disabled={isLoadingMore}
+                            onClick={handleLoadMore}
+                            className="w-full shrink-0 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-black text-slate-500 transition hover:bg-slate-100 disabled:cursor-wait disabled:opacity-60"
+                        >
+                            {isLoadingMore ? "불러오는 중" : "프로필 아이템 더보기"}
+                        </button>
                     )}
                 </div>
-
-                {page < totalPages && (
-                    <button
-                        type="button"
-                        disabled={isLoadingMore}
-                        onClick={handleLoadMore}
-                        className="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-black text-slate-500 transition hover:bg-slate-100 disabled:cursor-wait disabled:opacity-60"
-                    >
-                        {isLoadingMore ? "불러오는 중" : "프로필 아이템 더보기"}
-                    </button>
-                )}
             </div>
         </div>
     );

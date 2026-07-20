@@ -6,6 +6,7 @@ import {
 } from "@/app/services/lecture/service";
 import ListPagination from "@/components/common/ListPagination";
 import CreateReviewBtn from "@/features/lecture/components/buttons/CreateReviewBtn";
+import ReviewSummaryButton from "@/features/lecture/components/buttons/ReviewSummaryButton";
 import BuildGuideCard from "@/features/lecture/components/student/shared/BuildGuideCard";
 import CategoryPreviewCard from "@/features/lecture/components/student/shared/CategoryPreviewCard";
 import getCategoryMeta from "@/features/lecture/components/student/shared/category";
@@ -45,7 +46,15 @@ export default async function LectureDetailPage({
     const { lectureId } = await params;
     const { tab, page, position } = await searchParams;
 
-    const lecture = await getLectureById(lectureId);
+    const currentTab = tab === "reviews" ? "reviews" : "chapters";
+    const currentPage = Number(page) || 1;
+
+    const [lecture, reviewResponseData] = await Promise.all([
+        getLectureById(lectureId),
+        currentTab === "reviews"
+            ? getReviewsByLectureId(lectureId, currentPage)
+            : Promise.resolve(undefined),
+    ]);
 
     if (!lecture) {
         notFound();
@@ -59,13 +68,6 @@ export default async function LectureDetailPage({
     const category = lecture.category.toLowerCase();
 
     const chapters = lecture.chapters;
-
-    const currentTab = tab === "reviews" ? "reviews" : "chapters";
-    const currentPage = Number(page) || 1;
-
-    const reviewResponseData = currentTab === "reviews"
-        ? await getReviewsByLectureId(lectureId, currentPage)
-        : undefined;
 
     const createReviewPageHref = (pageNumber: number) => {
         const params = new URLSearchParams();
@@ -89,7 +91,7 @@ export default async function LectureDetailPage({
         : `/student/lectures/${lectureId}`;
 
     return (
-        <main className="mx-auto grid w-full max-w-360 grid-cols-[minmax(0,1fr)_320px] gap-8 px-12 py-12">
+        <main className="mx-auto grid w-full max-w-360 grid-cols-1 gap-8 px-4 py-8 md:grid-cols-[minmax(0,1fr)_320px] md:px-12 md:py-12">
             <section className="min-w-0">
                 <StudentPageHeader
                     backHref={lectureListHref}
@@ -131,14 +133,16 @@ export default async function LectureDetailPage({
                             isEnrolled={lecture.isEnrolled} />
                     ) : reviewResponseData && (
                         <>
-                            {lecture.isEnrolled && (
-                                <div className="flex justify-end border-b border-slate-100 px-5 py-4">
-                                    <CreateReviewBtn
-                                        lectureId={lecture.lectureId}
-                                        disabled={false} // TEMP: 수강 완료 체크 임시 해제, 테스트 끝나면 원복 필요
-                                    />
-                                </div>
-                            )}
+                            <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+                                <ReviewSummaryButton
+                                    lectureId={String(lecture.lectureId)}
+                                    reviewCount={lecture.reviewCount}
+                                />
+
+                                {lecture.isEnrolled && lecture.isCompleted && (
+                                    <CreateReviewBtn lectureId={lecture.lectureId} />
+                                )}
+                            </div>
 
                             <StudentReviewList reviews={reviewResponseData.content} />
 

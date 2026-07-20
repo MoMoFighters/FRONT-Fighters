@@ -70,6 +70,12 @@ export default function ChatBotTextarea({ onClose }: ChatBotTextareaProps) {
             </div>
 
             <div ref={scrollRef} className="flex flex-1 flex-col gap-3 overflow-y-auto overflow-x-hidden bg-slate-50 px-4 py-4">
+                <div className="flex justify-center">
+                    <span className="rounded-full bg-slate-100 px-3 py-1 text-center text-[11px] text-slate-400">
+                        이 대화는 서버에 저장되지 않습니다. 탭을 닫으면 대화 내용이 사라집니다.
+                    </span>
+                </div>
+
                 {messages.map((message) =>
                     message.role === "assistant" ? (
                         <ChatBotMessageBubble key={message.id} message={message} />
