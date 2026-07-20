@@ -32,5 +32,14 @@ export async function fetchWithAuth(endpoint: string, options: RequestInit = {})
         ...options
     });
 
+    // 300 이상 응답은 promtail이 수집할 수 있도록 콘솔에 기록
+    if (response.status >= 300) {
+        const body = await response.clone().text();
+        console.error(
+            `[fetchWithAuth] ${options.method ?? 'GET'} ${endpoint} -> ${response.status}`,
+            body
+        );
+    }
+    
     return response;
 }
