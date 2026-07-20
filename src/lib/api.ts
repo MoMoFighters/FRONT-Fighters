@@ -27,10 +27,19 @@ export async function fetchWithAuth(endpoint: string, options: RequestInit = {})
     }
 
     // api 통신
-    const response = await fetch(`${BASE_URL}${endpoint}`, {
-        headers: headers,
-        ...options
-    });
+    let response: Response;
+    try {
+        response = await fetch(`${BASE_URL}${endpoint}`, {
+            headers: headers,
+            ...options
+        });
+    } catch (err) {
+        console.error(
+            `[fetchWithAuth] ${options.method ?? 'GET'} ${endpoint} -> network error`,
+            err instanceof Error ? err.message : err
+        );
+        throw err;
+    }
 
     // 300 이상 응답은 promtail이 수집할 수 있도록 콘솔에 기록
     if (response.status >= 300) {
@@ -40,6 +49,6 @@ export async function fetchWithAuth(endpoint: string, options: RequestInit = {})
             body
         );
     }
-    
+
     return response;
 }
