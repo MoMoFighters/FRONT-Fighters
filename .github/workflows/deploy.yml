@@ -7,7 +7,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}/momocity-fe
+  IMAGE_NAME: momofighters/front-fighters/momocity-fe
 
 jobs:
   build-and-push:
