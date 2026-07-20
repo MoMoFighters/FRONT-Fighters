@@ -79,9 +79,14 @@ export default async function PaymentHistoryPage({
     const normalizedStatus =
         status === "SUCCESS" || status === "REFUND" ? status : undefined;
 
-    const [myInfoResponse, paymentListResponse] = await Promise.all([
+    // 구독 취소/갱신 카드는 탭 필터(전체/결제완료/환불)와 무관하게 항상 최신 SUCCESS 건을 기준으로 판단해야 하므로,
+    // 화면에 뿌릴 목록과는 별개로 SUCCESS 목록을 항상 따로 조회한다.
+    const [myInfoResponse, paymentListResponse, successPaymentListResponse] = await Promise.all([
         getMyInfo(),
         getUserPaymentListAction(normalizedStatus),
+        normalizedStatus === "SUCCESS"
+            ? Promise.resolve(null)
+            : getUserPaymentListAction("SUCCESS"),
     ]);
 
     const membership = myInfoResponse.data?.membership ?? "BASIC";
@@ -92,7 +97,8 @@ export default async function PaymentHistoryPage({
         paymentListResponse.data?.totalElements ?? payments.length;
     const hasError = paymentListResponse.status >= 400;
 
-    const latestSuccessPayment = payments.find(
+    const successPayments = successPaymentListResponse?.data?.payments ?? payments;
+    const latestSuccessPayment = successPayments.find(
         (payment) => payment.status === "SUCCESS"
     );
 
@@ -169,6 +175,7 @@ export default async function PaymentHistoryPage({
                                     <RenewMembershipButton
                                         plan={currentPlan}
                                         disabledReason={renewDisabledReason}
+                                        membershipStart={myInfoResponse.data?.membershipStart}
                                     />
                                 )}
                                 <CancelSubscriptionButton

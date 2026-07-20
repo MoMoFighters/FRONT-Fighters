@@ -15,7 +15,8 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { MembershipPlan } from "@/features/membership/type";
+import { MembershipPlan, MembershipTier } from "@/features/membership/type";
+import { MEMBERSHIP_PLANS } from "@/features/membership/membershipInfo";
 import { preparePaymentAction, verifyPaymentAction } from "@/features/payment/action";
 import {
     PORTONE_CHANNEL_KEY,
@@ -23,6 +24,7 @@ import {
     PORTONE_STORE_ID,
     PortOneEasyPayProvider,
 } from "@/features/payment/config";
+import { calculateDisplayPrice } from "@/features/payment/proration";
 import kakaoPayLogo from "@/app/assets/img/kakaoPay.png";
 import tossPayLogo from "@/app/assets/img/tossPay.png";
 
@@ -30,6 +32,8 @@ interface PaymentMethodDialogProps {
     plan: MembershipPlan | null;
     open: boolean;
     onOpenChange: (open: boolean) => void;
+    currentTier: MembershipTier;
+    membershipStart?: string | null;
 }
 
 const PAYMENT_METHODS: {
@@ -68,10 +72,23 @@ export default function PaymentMethodDialog({
     plan,
     open,
     onOpenChange,
+    currentTier,
+    membershipStart,
 }: PaymentMethodDialogProps) {
     const router = useRouter();
     const [isProcessing, setIsProcessing] = useState(false);
     const attemptIdRef = useRef(0);
+
+    const displayPrice = plan
+        ? calculateDisplayPrice({
+            currentTier,
+            currentPrice: MEMBERSHIP_PLANS.find((p) => p.tier === currentTier)?.price ?? 0,
+            targetTier: plan.tier,
+            targetPrice: plan.price,
+            membershipStart,
+        })
+        : 0;
+    const isProrated = plan !== null && displayPrice !== plan.price;
 
     const handleClose = (nextOpen: boolean) => {
         if (!nextOpen && isProcessing) {
@@ -205,9 +222,27 @@ export default function PaymentMethodDialog({
                         {plan ? `${plan.name} 플랜 결제` : "플랜 결제"}
                     </DialogTitle>
                     <DialogDescription>
-                        {plan
-                            ? `₩${plan.price.toLocaleString()}/월 · 결제 수단을 선택해주세요.`
-                            : "결제 수단을 선택해주세요."}
+                        {plan ? (
+                            <>
+                                {isProrated ? (
+                                    <>
+                                        <span className="text-slate-400 line-through">
+                                            ₩{plan.price.toLocaleString()}
+                                        </span>
+                                        {" "}
+                                        <span className="font-bold text-slate-700">
+                                            ₩{displayPrice.toLocaleString()}
+                                        </span>
+                                        {" (남은 이용 기간 일할 계산) · "}
+                                    </>
+                                ) : (
+                                    `₩${plan.price.toLocaleString()}/월 · `
+                                )}
+                                결제 수단을 선택해주세요.
+                            </>
+                        ) : (
+                            "결제 수단을 선택해주세요."
+                        )}
                     </DialogDescription>
                 </DialogHeader>
 

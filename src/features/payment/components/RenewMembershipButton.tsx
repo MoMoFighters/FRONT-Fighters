@@ -14,11 +14,13 @@ import PaymentMethodDialog from "@/features/payment/components/PaymentMethodDial
 interface RenewMembershipButtonProps {
     plan: MembershipPlan;
     disabledReason?: string | null;
+    membershipStart?: string | null;
 }
 
 export default function RenewMembershipButton({
     plan,
     disabledReason,
+    membershipStart,
 }: RenewMembershipButtonProps) {
     const [open, setOpen] = useState(false);
     const isDisabled = Boolean(disabledReason);
@@ -55,7 +57,13 @@ export default function RenewMembershipButton({
     return (
         <>
             {triggerButton}
-            <PaymentMethodDialog plan={plan} open={open} onOpenChange={setOpen} />
+            <PaymentMethodDialog
+                plan={plan}
+                open={open}
+                onOpenChange={setOpen}
+                currentTier={plan.tier}
+                membershipStart={membershipStart}
+            />
         </>
     );
 }

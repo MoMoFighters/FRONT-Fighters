@@ -43,6 +43,7 @@ export default async function Membership() {
                 <MembershipPlans
                     currentTier={currentTier}
                     membershipUntil={myInfoResponse.data?.membershipUntil}
+                    membershipStart={myInfoResponse.data?.membershipStart}
                 />
             </section>
         </main>

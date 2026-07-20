@@ -14,12 +14,14 @@ interface MembershipPlansProps {
     mode?: "student" | "guest";
     currentTier?: MembershipTier;
     membershipUntil?: string | null;
+    membershipStart?: string | null;
 }
 
 export default function MembershipPlans({
     mode = "student",
     currentTier = "BASIC",
     membershipUntil,
+    membershipStart,
 }: MembershipPlansProps) {
     const router = useRouter();
     const pathname = usePathname();
@@ -79,6 +81,7 @@ export default function MembershipPlans({
                         currentTier={currentTier}
                         isActive={mode === "student" && plan.tier === currentTier}
                         membershipUntil={mode === "student" && plan.tier === currentTier ? membershipUntil : undefined}
+                        membershipStart={membershipStart}
                         onSelect={handleSelect}
                     />
                 ))}
@@ -92,6 +95,8 @@ export default function MembershipPlans({
                         setSelectedPlan(null);
                     }
                 }}
+                currentTier={currentTier}
+                membershipStart={membershipStart}
             />
         </>
     );
