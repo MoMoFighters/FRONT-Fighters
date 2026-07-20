@@ -48,8 +48,6 @@ jobs:
     needs: build-and-push
     runs-on: ubuntu-latest
     steps:
-      - name: Debug - raw TCP check
-        run: nc -vz -w5 "${{ secrets.EC2_HOST }}" "${{ secrets.EC2_PORT }}"
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.0
         with:
