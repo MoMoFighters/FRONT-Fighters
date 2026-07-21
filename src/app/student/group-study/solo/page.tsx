@@ -27,7 +27,7 @@ export default async function SoloStudyPage() {
     ]);
 
     return (
-        <main className="min-h-[calc(100vh-137px)] bg-white px-8 py-8">
+        <main className="min-h-[calc(100vh-137px)] bg-white px-4 py-6 sm:px-8 sm:py-8">
             <div className="mx-auto w-full max-w-360">
                 <StudentPageHeader
                     backHref="/student/group-study"

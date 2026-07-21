@@ -5,8 +5,10 @@ import { getOnboardingLectures, getOnboardingUsers } from "../services/guest/ser
 
 export default async function Home() {
 
-  const userData = await getOnboardingUsers();
-  const lectureData = await getOnboardingLectures();
+  const [userData, lectureData] = await Promise.all([
+    getOnboardingUsers(),
+    getOnboardingLectures()
+  ])
   const users = userData.data || 0;
   const { lectureCount, averageRating }
     = lectureData.data || {

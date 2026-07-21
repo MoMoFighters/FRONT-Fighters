@@ -19,6 +19,7 @@ interface StudyUserInviteModalProps {
     roomId: number;
     open: boolean;
     onOpenChange: (open: boolean) => void;
+    alreadyInvitedUserIds?: number[];
     onInvited?: (friend: StudentFriendData, invitationId: number) => void;
 }
 
@@ -26,6 +27,7 @@ export default function StudyUserInviteModal({
     roomId,
     open,
     onOpenChange,
+    alreadyInvitedUserIds = [],
     onInvited,
 }: StudyUserInviteModalProps) {
     const [friends, setFriends] = useState<StudentFriendData[]>([]);
@@ -67,7 +69,7 @@ export default function StudyUserInviteModal({
     const handleInvite = async (friend: StudentFriendData) => {
         const response = await inviteStudyFriend(roomId, { inviteeId: friend.userId });
 
-        if (response.statusCode >= 400) {
+        if (response.status >= 400) {
             toast.error(response.message || "초대 발송에 실패했습니다.");
             return;
         }
@@ -97,7 +99,10 @@ export default function StudyUserInviteModal({
                             <StudyUserInviteItem
                                 key={friend.userId}
                                 friend={friend}
-                                isInvited={invitedUserIds.includes(friend.userId)}
+                                isInvited={
+                                    invitedUserIds.includes(friend.userId) ||
+                                    alreadyInvitedUserIds.includes(friend.userId)
+                                }
                                 onInvite={handleInvite}
                             />
                         ))

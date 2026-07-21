@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { toast } from "sonner";
@@ -10,6 +10,8 @@ import StudyUserItem from "@/components/study/StudyUserItem";
 import StudyTimer from "@/features/study/components/StudyTimer";
 import StudentPageHeader from "@/features/student/components/StudentPageHeader";
 import {
+    getGroupStudyDetail,
+    getTimerAvailability,
     leaveGroupStudy,
     pauseGroupStudyTimer,
     startGroupStudyTimer,
@@ -18,36 +20,90 @@ import {
 import { buildRoomSeats, formatStudyTime } from "@/features/study/utils";
 import type {
     GroupStudyDetail,
+    SentStudyInvitationItem,
     StudyRankingEntry,
+    StudyRoomMemberKickedData,
     StudyRoomSeatUser,
+    StudyRoomSocketEvent,
 } from "@/features/study/type";
+import { getStudyRoomSubscribeDestination } from "@/app/services/study/service";
+import { connectNoticeStomp } from "@/lib/stomp/stomp";
+
+type RoomSeatSlot =
+    | { kind: "member"; seat: StudyRoomSeatUser }
+    | { kind: "invite"; invite: SentStudyInvitationItem }
+    | { kind: "empty" };
 
 interface GroupStudyRoomViewProps {
     roomId: number;
+    accessToken: string;
     initialDetail: GroupStudyDetail;
     myNickname: string | null;
     dailyRanking: StudyRankingEntry[];
     monthlyRanking: StudyRankingEntry[];
+    initialSentInvites: SentStudyInvitationItem[];
 }
 
 export default function GroupStudyRoomView({
     roomId,
+    accessToken,
     initialDetail,
     myNickname,
     dailyRanking,
     monthlyRanking,
+    initialSentInvites,
 }: GroupStudyRoomViewProps) {
     const router = useRouter();
     const [detail, setDetail] = useState(initialDetail);
-    const [seconds, setSeconds] = useState(0);
+    const [seconds, setSeconds] = useState(
+        () => initialDetail.members.find((member) => member.nickname === myNickname)?.totalSeconds ?? 0
+    );
     const [isRunning, setIsRunning] = useState(false);
     const [isEnded, setIsEnded] = useState(false);
+    const [canStartTimer, setCanStartTimer] = useState(true);
+    const [pendingInvites, setPendingInvites] = useState(initialSentInvites);
+    const myUserIdRef = useRef<number | null>(null);
 
     const viewerIsHost = myNickname !== null && myNickname === detail.hostNickname;
     const seats = useMemo(
         () => buildRoomSeats(detail, myNickname),
         [detail, myNickname]
     );
+
+    const invitedUserIds = useMemo(
+        () => pendingInvites.map((invite) => invite.inviteeId),
+        [pendingInvites]
+    );
+
+    const seatSlots = useMemo<RoomSeatSlot[]>(() => {
+        const assignSlot = (index: number, inviteCursor: number): RoomSeatSlot[] => {
+            if (index >= seats.length) {
+                return [];
+            }
+
+            const seat = seats[index];
+
+            if (seat) {
+                return [{ kind: "member", seat }, ...assignSlot(index + 1, inviteCursor)];
+            }
+
+            if (inviteCursor < pendingInvites.length) {
+                return [
+                    { kind: "invite", invite: pendingInvites[inviteCursor] },
+                    ...assignSlot(index + 1, inviteCursor + 1),
+                ];
+            }
+
+            return [{ kind: "empty" }, ...assignSlot(index + 1, inviteCursor)];
+        };
+
+        return assignSlot(0, 0);
+    }, [seats, pendingInvites]);
+
+    useEffect(() => {
+        myUserIdRef.current =
+            detail.members.find((member) => member.nickname === myNickname)?.userId ?? null;
+    }, [detail.members, myNickname]);
 
     useEffect(() => {
         const me = detail.members.find((member) => member.nickname === myNickname);
@@ -70,23 +126,128 @@ export default function GroupStudyRoomView({
         };
     }, [isRunning]);
 
+    const refreshTimerAvailability = useCallback(async () => {
+        const response = await getTimerAvailability();
+
+        if (response.status === 200 && response.data) {
+            setCanStartTimer(response.data.canStartTimer);
+        }
+    }, []);
+
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        void refreshTimerAvailability();
+    }, [refreshTimerAvailability]);
+
+    const handleInviteSent = (invite: {
+        invitationId: number;
+        inviteeId: number;
+        inviteeNickname: string;
+    }) => {
+        setPendingInvites((prev) => [
+            ...prev,
+            {
+                invitationId: invite.invitationId,
+                roomId,
+                title: detail.title,
+                inviteeId: invite.inviteeId,
+                inviteeNickname: invite.inviteeNickname,
+                invitedAt: new Date().toISOString(),
+            },
+        ]);
+    };
+
+    const handleInviteCanceled = (invitationId: number) => {
+        setPendingInvites((prev) => prev.filter((invite) => invite.invitationId !== invitationId));
+    };
+
+    // 실시간 이벤트의 data는 대부분 id값만 담고 있어(닉네임 등 상세정보 없음),
+    // 멤버 입장/퇴장/방장위임/타이머 상태 변화는 방 상세를 다시 조회해서 갱신한다.
+    // 내 타이머(isRunning/seconds)는 그대로 버튼 조작 응답으로만 갱신한다.
+    const refetchDetail = useCallback(async () => {
+        const response = await getGroupStudyDetail(roomId);
+
+        if (response.status === 200 && response.data) {
+            setDetail(response.data);
+        }
+    }, [roomId]);
+
+    const handleRoomEvent = useCallback((event: StudyRoomSocketEvent) => {
+        switch (event.type) {
+            case "MEMBER_JOINED":
+            case "MEMBER_LEFT":
+            case "HOST_CHANGED":
+            case "TIMER_STATUS_CHANGED": {
+                void refetchDetail();
+                break;
+            }
+
+            case "MEMBER_KICKED": {
+                const { targetUserId } = event.data as StudyRoomMemberKickedData;
+                const wasMe = myUserIdRef.current === targetUserId;
+
+                if (wasMe) {
+                    toast.error("방장에 의해 스터디룸에서 강퇴되었습니다.");
+                    router.push("/student/group-study");
+                    router.refresh();
+                    return;
+                }
+
+                void refetchDetail();
+                break;
+            }
+
+            case "ROOM_ENDED": {
+                toast.info("스터디룸이 종료되었습니다.");
+                router.push("/student/group-study");
+                router.refresh();
+                break;
+            }
+        }
+    }, [refetchDetail, router]);
+
+    useEffect(() => {
+        let subscription:
+            | ReturnType<ReturnType<typeof connectNoticeStomp>["subscribe"]>
+            | undefined;
+
+        const client = connectNoticeStomp({
+            accessToken,
+            onConnect: (stompClient) => {
+                subscription = stompClient.subscribe(
+                    getStudyRoomSubscribeDestination(roomId),
+                    (body) => {
+                        const event = JSON.parse(body) as StudyRoomSocketEvent;
+                        handleRoomEvent(event);
+                    }
+                );
+            },
+        });
+
+        return () => {
+            subscription?.unsubscribe();
+            client.disconnect();
+        };
+    }, [roomId, accessToken, handleRoomEvent]);
+
     const handleTogglePause = async () => {
         if (isRunning) {
             const response = await pauseGroupStudyTimer(roomId);
 
-            if (response.statusCode >= 400) {
+            if (response.status >= 400) {
                 toast.error(response.message || "타이머 일시정지에 실패했습니다.");
                 return;
             }
 
             setSeconds(response.data.accumulatedSeconds);
             setIsRunning(false);
+            void refreshTimerAvailability();
             return;
         }
 
         const response = await startGroupStudyTimer(roomId);
 
-        if (response.statusCode >= 400) {
+        if (response.status >= 400) {
             toast.error(response.message || "타이머 시작에 실패했습니다.");
             return;
         }
@@ -98,7 +259,7 @@ export default function GroupStudyRoomView({
     const handleEnd = async () => {
         const response = await stopGroupStudyTimer(roomId);
 
-        if (response.statusCode >= 400) {
+        if (response.status >= 400) {
             toast.error(response.message || "타이머 종료에 실패했습니다.");
             return;
         }
@@ -106,12 +267,13 @@ export default function GroupStudyRoomView({
         setSeconds(response.data.totalSeconds);
         setIsRunning(false);
         setIsEnded(true);
+        void refreshTimerAvailability();
     };
 
     const handleLeaveRoom = async () => {
         const response = await leaveGroupStudy(roomId);
 
-        if (response.statusCode >= 400) {
+        if (response.status >= 400) {
             toast.error(response.message || "그룹방 나가기에 실패했습니다.");
             return;
         }
@@ -129,7 +291,7 @@ export default function GroupStudyRoomView({
     };
 
     return (
-        <main className="min-h-[calc(100vh-137px)] bg-white px-8 py-8">
+        <main className="min-h-[calc(100vh-137px)] bg-white px-4 py-6 sm:px-8 sm:py-8">
             <div className="mx-auto w-full max-w-360">
                 <StudentPageHeader
                     backHref="/student/group-study"
@@ -146,19 +308,19 @@ export default function GroupStudyRoomView({
                             label: "스터디룸",
                         },
                     ]}
-                    title="스터디룸"
+                    title={detail.title}
                 />
             </div>
 
-            <div className="mx-auto mt-8 flex w-full max-w-360 items-start justify-center gap-8">
+            <div className="mx-auto mt-8 flex w-full max-w-360 flex-col items-stretch gap-8 lg:flex-row lg:items-start lg:justify-center">
                 <StudyRank
                     dailyRanking={dailyRanking}
                     monthlyRanking={monthlyRanking}
                 />
 
-                <section className="flex w-full max-w-125 flex-col">
+                <section className="flex w-full flex-col lg:max-w-125">
                     <div className="relative rounded-2xl border border-slate-300 bg-white py-4 text-center shadow-sm">
-                        <h1 className="text-2xl font-black text-slate-900">
+                        <h1 className="text-xl font-black text-slate-900 sm:text-2xl">
                             내 공부시간{" "}
                             <span className="font-mono text-indigo-500">
                                 {formatStudyTime(seconds)}
@@ -171,23 +333,52 @@ export default function GroupStudyRoomView({
                         <button
                             type="button"
                             onClick={() => void handleLeaveRoom()}
-                            className="absolute right-4 top-1/2 flex -translate-y-1/2 cursor-pointer items-center gap-1 rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-black text-slate-500 transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-500"
+                            className="absolute right-2 top-1/2 flex -translate-y-1/2 cursor-pointer items-center gap-1 rounded-lg border border-slate-200 px-2 py-1.5 text-xs font-black text-slate-500 transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-500 sm:right-4 sm:px-2.5"
                         >
                             <LogOut className="h-3.5 w-3.5" />
-                            나가기
+                            <span className="hidden sm:inline">나가기</span>
                         </button>
                     </div>
 
-                    <div className="mt-8 grid grid-cols-2 gap-x-10 gap-y-12">
-                        {seats.map((seat, index) => (
-                            <StudyUserItem
-                                key={seat?.userId ?? `empty-${index}`}
-                                roomId={roomId}
-                                user={seat}
-                                canKick={viewerIsHost}
-                                onKick={handleKickMember}
-                            />
-                        ))}
+                    <div className="mt-8 grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 sm:gap-y-12 md:grid-cols-2">
+                        {seatSlots.map((slot, index) => {
+                            if (slot.kind === "member") {
+                                return (
+                                    <StudyUserItem
+                                        key={slot.seat.userId}
+                                        roomId={roomId}
+                                        user={slot.seat}
+                                        canKick={viewerIsHost}
+                                        onKick={handleKickMember}
+                                    />
+                                );
+                            }
+
+                            if (slot.kind === "invite") {
+                                return (
+                                    <StudyUserItem
+                                        key={`invite-${slot.invite.invitationId}`}
+                                        roomId={roomId}
+                                        pendingInvite={{
+                                            invitationId: slot.invite.invitationId,
+                                            inviteeId: slot.invite.inviteeId,
+                                            inviteeNickname: slot.invite.inviteeNickname,
+                                        }}
+                                        invitedUserIds={invitedUserIds}
+                                        onInviteCanceled={handleInviteCanceled}
+                                    />
+                                );
+                            }
+
+                            return (
+                                <StudyUserItem
+                                    key={`empty-${index}`}
+                                    roomId={roomId}
+                                    invitedUserIds={invitedUserIds}
+                                    onInvited={handleInviteSent}
+                                />
+                            );
+                        })}
                     </div>
                 </section>
 
@@ -196,6 +387,7 @@ export default function GroupStudyRoomView({
                     seconds={seconds}
                     isRunning={isRunning}
                     isEnded={isEnded}
+                    canStart={canStartTimer}
                     onTogglePause={() => void handleTogglePause()}
                     onEnd={() => void handleEnd()}
                 />
