@@ -79,7 +79,7 @@ export const cancelPaymentService = async (
     paymentId: string
 ): Promise<ApiResponse<null>> => {
     const response = await fetchWithAuth("/api/v3/payment/cancel", {
-        method: "POST",
+        method: "PATCH",
         body: JSON.stringify({ paymentId }),
     });
 
