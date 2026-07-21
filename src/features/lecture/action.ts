@@ -111,6 +111,18 @@ export const enrollLectureAction = async (lectureId: string, position?: string) 
     revalidatePath('/student/cook/lectures');
     revalidatePath('/student/beauty/lectures');
     revalidatePath('/student/art/lectures');
+
+    revalidatePath(`/student/lectures/${lectureId}`);
+    revalidatePath(`/student/study/lectures/${lectureId}`);
+    revalidatePath(`/student/fitness/lectures/${lectureId}`);
+    revalidatePath(`/student/cook/lectures/${lectureId}`);
+    revalidatePath(`/student/beauty/lectures/${lectureId}`);
+    revalidatePath(`/student/art/lectures/${lectureId}`);
+
+    revalidatePath('/student');
+
+    revalidatePath('/student/mypage/lectures');
+    revalidatePath(`/student/mypage/lectures/${lectureId}`);
 }
 
 // 수강평 등록 액션 함수

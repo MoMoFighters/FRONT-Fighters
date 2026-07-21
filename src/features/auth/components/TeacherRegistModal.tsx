@@ -6,6 +6,7 @@ import { createPortal } from "react-dom";
 import { toast } from "sonner";
 import { logoutAction, teacherSignupAction } from "@/features/auth/action";
 import { clearLectureUploadTasksStorage } from "@/features/lecture/components/teacher/LectureCreateUploadContext";
+import { clearChatBotMessagesStorage } from "@/features/chatbot/hooks/useChatBotMessages";
 
 import {
     Select,
@@ -102,6 +103,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
             setIsModal(false);
             await logoutAction();
             clearLectureUploadTasksStorage();
+            clearChatBotMessagesStorage();
             if (closeResultModal ?
                 closeResultModal(false) : ""
             )

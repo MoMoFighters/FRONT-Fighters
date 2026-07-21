@@ -11,4 +11,5 @@ export interface ChatUsageInfo {
     modelName: string;
     dailyLimit: number;
     dailyUsed: number;
+    usagePercentage: number;
 }

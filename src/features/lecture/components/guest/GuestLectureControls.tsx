@@ -127,9 +127,11 @@ export default function GuestLectureControls({
                     <button
                         type="submit"
                         disabled={isPending}
-                        className="h-10 rounded-lg bg-slate-900 px-4 text-xs font-bold text-white transition-colors hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+                        className="h-10 w-20 rounded-lg bg-slate-900 px-2 font-bold text-white transition-colors hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                        {isPending ? "검색 중..." : "검색"}
+                        <span className={isPending ? "text-[9px]" : "text-xs"}>
+                            {isPending ? "검색 중..." : "검색"}
+                        </span>
                     </button>
                 </form>
             </div>

@@ -2,6 +2,7 @@ import StudentHeader from "@/components/layout/StudentHeader";
 import StudentFooter from "@/components/layout/StudentFooter";
 import StudentLayoutShell from "@/components/layout/StudentLayoutShell";
 import OpenChatBotBtn from "@/features/chatbot/components/OpenChatBotBtn";
+import { getMyInfo } from "@/features/user/action";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
@@ -34,6 +35,10 @@ export default async function StudentLayout({
         redirect("/forbidden");
     }
 
+    // getMyInfo()는 StudentHeader에서도 호출되지만 unstable_cache(30초)로 공유되어 실제 네트워크 요청은 중복되지 않는다
+    const myInfo = await getMyInfo();
+    const membership = myInfo.data?.membership ?? "BASIC";
+
     return (
         <>
             <StudentLayoutShell
@@ -42,7 +47,7 @@ export default async function StudentLayout({
             >
                 {children}
             </StudentLayoutShell>
-            <OpenChatBotBtn />
+            <OpenChatBotBtn membership={membership} />
         </>
     );
 }

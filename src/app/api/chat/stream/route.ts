@@ -1,86 +1,73 @@
 import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
 
-// 테스트용 라우트. 실제 백엔드 챗봇 API가 준비되면 이 파일은 제거하고
-// useChatBotMessages 훅의 fetch 대상만 백엔드 엔드포인트로 교체하면 된다.
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 export async function POST(request: NextRequest) {
     try {
-        const { message } = await request.json();
+        const { message, lectureId } = await request.json();
 
         if (!message) {
             return NextResponse.json({ error: "메시지가 누락되었습니다." }, { status: 400 });
         }
 
-        const apiKey = process.env.GEMINI_API_KEY;
-        if (!apiKey) {
-            return NextResponse.json({ error: "GEMINI_API_KEY가 설정되어 있지 않습니다." }, { status: 500 });
+        const cookieStore = await cookies();
+        const accessToken = cookieStore.get("accessToken")?.value;
+
+        if (!accessToken) {
+            return NextResponse.json({ error: "로그인이 필요합니다." }, { status: 401 });
         }
 
-        const geminiResponse = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:streamGenerateContent?alt=sse&key=${apiKey}`,
-            {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    contents: [
-                        {
-                            parts: [
-                                { text: `당신은 모모시티의 학습 도우미입니다. 항상 한국어로 대답하세요.\n\n${message}` },
-                            ],
-                        },
-                    ],
-                }),
-            }
-        );
+        const params = new URLSearchParams({ token: accessToken, question: message });
+        if (lectureId) {
+            params.set("lectureId", String(lectureId));
+        }
 
-        if (!geminiResponse.ok) {
-            return NextResponse.json({ error: "Gemini API 오류" }, { status: geminiResponse.status });
+        const requestUrl = `${BASE_URL}/api/v1/chatbot/questions/stream?${params.toString()}`;
+
+        // 진단용 임시 로그 - 원인 파악 후 제거 예정
+        console.log("[chatbot-stream] 실제 백엔드 요청 URL:", {
+            url: requestUrl.replace(accessToken, `${accessToken.slice(0, 8)}...(총 ${accessToken.length}자)`),
+        });
+
+        const backendResponse = await fetch(requestUrl, {
+            headers: { Accept: "text/event-stream" },
+        });
+
+        if (!backendResponse.ok || !backendResponse.body) {
+            const errorBody = await backendResponse.json().catch(() => null);
+
+            // 진단용 임시 로그 - 원인 파악 후 제거 예정
+            console.error("[chatbot-stream] 백엔드 응답 실패:", {
+                status: backendResponse.status,
+                errorBody,
+            });
+
+            return NextResponse.json(
+                {
+                    error: errorBody?.message ?? "챗봇 서버 오류가 발생했습니다.",
+                    code: errorBody?.code,
+                },
+                { status: backendResponse.status }
+            );
         }
 
         const stream = new ReadableStream({
-            start: async (controller) => {
-                const reader = geminiResponse.body?.getReader();
-                const decoder = new TextDecoder();
-                const encoder = new TextEncoder();
-
-                if (!reader) {
-                    controller.close();
-                    return;
-                }
+            async start(controller) {
+                const reader = backendResponse.body!.getReader();
 
                 try {
                     while (true) {
                         const { done, value } = await reader.read();
-                        if (done) {
-                            controller.close();
-                            break;
-                        }
-
-                        const chunk = decoder.decode(value, { stream: true });
-                        const lines = chunk.split("\n");
-
-                        for (const line of lines) {
-                            if (!line.startsWith("data: ")) continue;
-
-                            const data = line.slice(6).trim();
-                            if (!data) continue;
-
-                            try {
-                                const json = JSON.parse(data);
-                                const content = json.candidates?.[0]?.content?.parts?.[0]?.text || "";
-
-                                if (content) {
-                                    const sseData = `data: ${JSON.stringify({ content })}\n\n`;
-                                    controller.enqueue(encoder.encode(sseData));
-                                }
-                            } catch {
-                                // JSON 파싱 실패(빈 줄 등)는 무시
-                            }
-                        }
+                        if (done) break;
+                        controller.enqueue(value);
                     }
-                } catch (error) {
-                    controller.error(error);
+                } catch {
+                    // 백엔드 연결이 스트리밍 도중 끊겼을 때, 브라우저에 raw 네트워크 에러 대신 정상 SSE 에러 이벤트로 전달
+                    const errorEvent = `data: ${JSON.stringify({ type: "error", content: "답변을 받아오는 중 연결이 끊겼어요. 다시 시도해주세요." })}\n\n`;
+                    controller.enqueue(new TextEncoder().encode(errorEvent));
                 } finally {
-                    reader.releaseLock();
+                    controller.close();
                 }
             },
         });

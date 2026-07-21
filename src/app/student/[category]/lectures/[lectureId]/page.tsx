@@ -20,6 +20,7 @@ import ResumeLectureCard from "@/features/lecture/components/student/shared/Resu
 import { generateLectureDetailMetadata } from "@/features/lecture/metadata";
 import { Category } from "@/features/lecture/type";
 import StudentPageHeader from "@/features/student/components/StudentPageHeader";
+import { getMyInfo } from "@/features/user/action";
 
 interface LectureByCategoryDetailProps {
     params: Promise<{
@@ -55,13 +56,14 @@ export default async function LectureByCategoryDetail({
     const currentTab = tab === "reviews" ? "reviews" : "chapters";
     const currentPage = Number(page) || 1;
 
-    const [lecture, progressInfo, latestChapterInfo, reviewResponseData] = await Promise.all([
+    const [lecture, progressInfo, latestChapterInfo, reviewResponseData, myInfo] = await Promise.all([
         getLectureById(lectureId),
         getProgressByCategory(categoryApiValue),
         getLatestChapterInfo(categoryApiValue),
         currentTab === "reviews"
             ? getReviewsByLectureId(lectureId, currentPage)
             : Promise.resolve(undefined),
+        getMyInfo(),
     ]);
 
     if (!lecture) {
@@ -105,6 +107,7 @@ export default async function LectureByCategoryDetail({
                     lecture={lecture}
                     category={category}
                     categoryLabel={categoryMeta.label}
+                    membership={myInfo.data?.membership ?? "BASIC"}
                 />
 
                 <section className="mt-8 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">

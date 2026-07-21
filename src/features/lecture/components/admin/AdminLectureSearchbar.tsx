@@ -101,7 +101,7 @@ export default function AdminLectureSearchbar({
                     </button>
                 )}
             </div>
-            <DropdownMenu>
+            <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
                     <Button
                         type="button"
@@ -128,9 +128,11 @@ export default function AdminLectureSearchbar({
             <Button
                 type="submit"
                 disabled={isPending}
-                className="h-11 rounded-md bg-indigo-500 px-4 text-sm font-bold text-white hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-60"
+                className="h-11 w-24 rounded-md bg-indigo-500 px-2 font-bold text-white hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-60"
             >
-                {isPending ? "검색 중..." : "검색"}
+                <span className={isPending ? "text-[10px]" : "text-sm"}>
+                    {isPending ? "검색 중..." : "검색"}
+                </span>
             </Button>
         </form>
     );
