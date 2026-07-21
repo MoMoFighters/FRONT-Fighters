@@ -74,10 +74,12 @@ export default function LectureSearchbar({ status, keyword, category, filter, po
                 variant="outline"
                 type="submit"
                 disabled={isPending}
-                className="h-12 cursor-pointer rounded-xl border-2 border-slate-300 px-4 text-[16px] font-bold text-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
+                className="h-12 w-24 cursor-pointer rounded-xl border-2 border-slate-300 px-2 font-bold text-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
-                <Search className="h-6 w-6" />
-                {isPending ? "검색 중..." : "검색"}
+                <Search className="h-6 w-6 shrink-0" />
+                <span className={isPending ? "text-[10px]" : "text-[16px]"}>
+                    {isPending ? "검색 중..." : "검색"}
+                </span>
             </Button>
         </form>
     );

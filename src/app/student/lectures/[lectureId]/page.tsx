@@ -16,6 +16,7 @@ import StudentLectureDetailTabs from "@/features/lecture/components/student/deta
 import StudentReviewList from "@/features/lecture/components/student/detail/StudentReviewList";
 import { generateLectureDetailMetadata } from "@/features/lecture/metadata";
 import StudentPageHeader from "@/features/student/components/StudentPageHeader";
+import { getMyInfo } from "@/features/user/action";
 
 interface LectureDetailPageProps {
     params: Promise<{
@@ -49,11 +50,12 @@ export default async function LectureDetailPage({
     const currentTab = tab === "reviews" ? "reviews" : "chapters";
     const currentPage = Number(page) || 1;
 
-    const [lecture, reviewResponseData] = await Promise.all([
+    const [lecture, reviewResponseData, myInfo] = await Promise.all([
         getLectureById(lectureId),
         currentTab === "reviews"
             ? getReviewsByLectureId(lectureId, currentPage)
             : Promise.resolve(undefined),
+        getMyInfo(),
     ]);
 
     if (!lecture) {
@@ -115,6 +117,7 @@ export default async function LectureDetailPage({
                     lecture={lecture}
                     category={category}
                     categoryLabel={categoryMeta.label}
+                    membership={myInfo.data?.membership ?? "BASIC"}
                     position={position ?? ""}
                 />
 
