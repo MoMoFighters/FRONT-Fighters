@@ -3,7 +3,7 @@ import {
     getCurrentSoloStudySessionService,
     getDailyStudyTimeService,
     getMonthlyStudyTimeService,
-    getYearlyStudyRecordService,
+    getYearlyStudyTimeService,
 } from "@/app/services/study/service";
 import {
     getThisYearMonthString,
@@ -18,7 +18,7 @@ export default async function SoloStudyPage() {
         getCurrentSoloStudySessionService(),
         getDailyStudyTimeService(getTodayDateString(today)),
         getMonthlyStudyTimeService(getThisYearMonthString(today)),
-        getYearlyStudyRecordService(),
+        getYearlyStudyTimeService(),
     ]);
 
     const recordSecondsByDate = new Map(
