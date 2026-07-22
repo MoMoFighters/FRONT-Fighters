@@ -150,7 +150,6 @@ export default function CommunityPostForm({ mode, data, role }: CommunityPostFor
         (hasImage && thumbnailId === null);
     const backHref = (() => {
         const getBaseUrl = () => {
-            // role이 TEACHER/ADMIN이면 해당 도메인으로, 없으면 학생 커뮤니티로 이동
             if (role === "TEACHER") return "/teacher/community";
             if (role === "ADMIN") return "/admin/community";
             return "/student/community";
@@ -484,7 +483,7 @@ export default function CommunityPostForm({ mode, data, role }: CommunityPostFor
                 <ArrowLeft className="h-5 w-5" />
             </Link>
 
-            <div className="grid shrink-0 grid-cols-[minmax(0,1fr)_180px] gap-3">
+            <div className="grid shrink-0 grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_180px]">
                 <input
                     name="title"
                     value={title}

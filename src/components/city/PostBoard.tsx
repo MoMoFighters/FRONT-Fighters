@@ -106,7 +106,6 @@ export default function PostBoard({ mode, ownerId, initialGuestbooks = [] }: Pos
     );
 
     const notices = noticeResponse.items;
-    console.log(notices)
 
     const shouldCompactGuestbookGrid = visibleGuestbooks.length <= 6;
 
@@ -261,7 +260,7 @@ export default function PostBoard({ mode, ownerId, initialGuestbooks = [] }: Pos
                     onClick={handleCloseModal}
                 >
                     <div
-                        className="relative flex h-140 w-[60vw] flex-col overflow-hidden rounded-3xl border border-white/80 bg-white/95 p-6 shadow-2xl shadow-slate-950/25"
+                        className="relative flex h-[80vh] w-[60vw] flex-col overflow-hidden rounded-3xl border border-white/80 bg-white/95 p-6 shadow-2xl shadow-slate-950/25"
                         onClick={(event) => event.stopPropagation()}
                     >
                         <button
@@ -352,7 +351,7 @@ export default function PostBoard({ mode, ownerId, initialGuestbooks = [] }: Pos
                                     currentPage={currentPage}
                                     onChangePage={setCurrentPage}
                                 >
-                                    <div className={`grid grid-cols-3 gap-2 px-1 pt-1 pb-3 ${shouldCompactGuestbookGrid
+                                    <div className={`grid grid-cols-1 gap-2 px-1 pt-1 pb-3 sm:grid-cols-3 ${shouldCompactGuestbookGrid
                                         ? "content-start"
                                         : "min-h-76 content-between"
                                         }`}

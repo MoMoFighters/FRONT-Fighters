@@ -18,7 +18,7 @@ export default function AdminAccessLogList({ logs }: AdminAccessLogListProps) {
 
     return (
         <section className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
-            <div className="grid min-w-[800px] grid-cols-[110px_150px_minmax(170px,1fr)_92px_140px_24px] gap-4 border-b border-slate-200 bg-slate-50 px-6 py-3 text-xs font-bold text-slate-500">
+            <div className="hidden gap-4 border-b border-slate-200 bg-slate-50 px-6 py-3 text-xs font-bold text-slate-500 md:grid md:min-w-[800px] md:grid-cols-[110px_150px_minmax(170px,1fr)_92px_140px_24px]">
                 <span>시도 방법</span>
                 <span>IP 주소</span>
                 <span>접근 시도 일시</span>

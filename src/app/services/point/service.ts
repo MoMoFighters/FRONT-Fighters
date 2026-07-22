@@ -87,7 +87,7 @@ export const getPointHistoryListService =
         const queryString = params.toString();
         const response = await fetchWithAuth(`/api/v1/order/list${queryString ? `?${queryString}` : ""}`, {
             method: "GET",
-            cache: "no-store",
+            next: { revalidate: 60 },
         });
 
         const result: PointHistoryListResponse = await response.json();

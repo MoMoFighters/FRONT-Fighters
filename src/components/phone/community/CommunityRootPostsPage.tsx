@@ -144,8 +144,8 @@ export default function CommunityRootPostsPage({
         selectedMode === "list"
             ? "grid grid-cols-1 gap-2"
             : selectedMode === "grid"
-                ? "grid grid-cols-5 gap-3"
-                : "grid grid-cols-2 gap-3";
+                ? "grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5"
+                : "grid grid-cols-1 gap-3 sm:grid-cols-2";
 
     return (
         <div className="flex h-full min-h-0 flex-col overflow-hidden bg-white/80 shadow-sm ring-1 ring-slate-200/80 backdrop-blur">

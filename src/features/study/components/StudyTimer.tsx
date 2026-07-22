@@ -79,7 +79,7 @@ export default function StudyTimer({
             </h2>
 
             <div
-                className={`relative flex h-64 w-64 flex-col items-center justify-center rounded-full transition-all duration-300 ${isEnded
+                className={`relative flex h-48 w-48 flex-col items-center justify-center rounded-full transition-all duration-300 sm:h-64 sm:w-64 ${isEnded
                     ? "bg-slate-100 shadow-lg"
                     : "bg-gradient-to-br from-indigo-50 via-white to-sky-50 shadow-[0_20px_60px_rgba(79,70,229,0.15)]"
                     }`}
@@ -110,12 +110,12 @@ export default function StudyTimer({
                 <div className="absolute inset-4 rounded-full border border-white/70 bg-white shadow-inner" />
 
                 <div className="relative z-10 flex flex-col items-center">
-                    <p className="font-mono text-5xl font-black tracking-tight text-slate-900">
+                    <p className="font-mono text-3xl font-black tracking-tight text-slate-900 sm:text-5xl">
                         {formatStudyTime(seconds)}
                     </p>
 
                     <span
-                        className={`mt-5 rounded-full px-4 py-1.5 text-xs font-bold ${isEnded
+                        className={`mt-3 rounded-full px-4 py-1.5 text-xs font-bold sm:mt-5 ${isEnded
                             ? "bg-slate-200 text-slate-500"
                             : isRunning
                                 ? "bg-emerald-100 text-emerald-700"

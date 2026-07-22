@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 export type GrassLevel = 0 | 1 | 2 | 3 | 4;
 
@@ -76,6 +76,54 @@ const buildWeeks = (
     return weeks;
 };
 
+interface GrassCellsProps {
+    weeks: GrassWeek[];
+    colorScale: Record<GrassLevel, string>;
+    onCellEnter: (event: React.MouseEvent<HTMLDivElement>, cell: GrassCell) => void;
+    onCellLeave: () => void;
+}
+
+// 부모의 툴팁 state가 바뀌어도, 이 그리드에 넘어오는 props(weeks/colorScale/콜백)가
+// 참조 그대로면 React.memo가 재렌더 자체를 건너뛴다.
+const GrassCells = memo(function GrassCells({
+    weeks,
+    colorScale,
+    onCellEnter,
+    onCellLeave,
+}: GrassCellsProps) {
+    return (
+        <>
+            <div className="flex gap-[3px]">
+                {weeks.map((week, weekIndex) => (
+                    <div key={weekIndex} className="relative h-[10px] w-[11px] shrink-0">
+                        {week.monthLabel && (
+                            <span className="absolute left-0 top-0 whitespace-nowrap text-[9px] font-bold leading-[10px] text-slate-400">
+                                {week.monthLabel}
+                            </span>
+                        )}
+                    </div>
+                ))}
+            </div>
+
+            <div className="flex gap-[3px]">
+                {weeks.map((week, weekIndex) => (
+                    <div key={weekIndex} className="flex flex-col gap-[3px]">
+                        {week.cells.map((cell, dayIndex) => (
+                            <div
+                                key={dayIndex}
+                                onMouseEnter={(event) => onCellEnter(event, cell)}
+                                onMouseLeave={onCellLeave}
+                                className={`h-[11px] w-[11px] shrink-0 rounded-[2px] transition-colors ${cell.date ? colorScale[cell.level] : "bg-transparent"
+                                    } ${cell.date && !cell.isFuture ? "cursor-pointer" : ""}`}
+                            />
+                        ))}
+                    </div>
+                ))}
+            </div>
+        </>
+    );
+});
+
 export default function GrassHeatmap({
     year,
     levelByDate,
@@ -93,19 +141,26 @@ export default function GrassHeatmap({
         if (el) el.scrollLeft = el.scrollWidth;
     }, []);
 
-    const handleHover = (event: React.MouseEvent<HTMLDivElement>, cell: GrassCell) => {
-        if (!cell.date || cell.isFuture) {
-            setTooltip(null);
-            return;
-        }
+    // onMouseMove 대신 onMouseEnter(칸에 처음 들어올 때 1번)에서만 state 갱신
+    const handleCellEnter = useCallback(
+        (event: React.MouseEvent<HTMLDivElement>, cell: GrassCell) => {
+            if (!cell.date || cell.isFuture) {
+                setTooltip(null);
+                return;
+            }
 
-        // fixed 포지션이라 뷰포트 좌표(clientX/Y)를 그대로 사용 -> 조상의 overflow-hidden에 잘리지 않음
-        setTooltip({
-            x: event.clientX,
-            y: event.clientY,
-            text: renderTooltip(cell.date, cell.level, cell.date === todayKey),
-        });
-    };
+            const rect = event.currentTarget.getBoundingClientRect();
+
+            setTooltip({
+                x: rect.left + rect.width / 2,
+                y: rect.top,
+                text: renderTooltip(cell.date, cell.level, cell.date === todayKey),
+            });
+        },
+        [renderTooltip, todayKey]
+    );
+
+    const handleCellLeave = useCallback(() => setTooltip(null), []);
 
     return (
         <div className="relative h-full w-full">
@@ -120,36 +175,14 @@ export default function GrassHeatmap({
 
                 <div
                     ref={scrollRef}
-                    className="scrollbar-none flex flex-1 flex-col justify-end gap-[3px] overflow-x-auto"
+                    className="flex min-w-0 flex-1 flex-col justify-end gap-[3px] overflow-x-auto [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-300 [&::-webkit-scrollbar-track]:bg-transparent"
                 >
-                    <div className="flex gap-[3px]">
-                        {weeks.map((week, weekIndex) => (
-                            <div key={weekIndex} className="relative h-[10px] w-[11px] shrink-0">
-                                {week.monthLabel && (
-                                    <span className="absolute left-0 top-0 whitespace-nowrap text-[9px] font-bold leading-[10px] text-slate-400">
-                                        {week.monthLabel}
-                                    </span>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="flex gap-[3px]">
-                        {weeks.map((week, weekIndex) => (
-                            <div key={weekIndex} className="flex flex-col gap-[3px]">
-                                {week.cells.map((cell, dayIndex) => (
-                                    <div
-                                        key={dayIndex}
-                                        onMouseEnter={(event) => handleHover(event, cell)}
-                                        onMouseMove={(event) => handleHover(event, cell)}
-                                        onMouseLeave={() => setTooltip(null)}
-                                        className={`h-[11px] w-[11px] shrink-0 rounded-[2px] transition-colors ${cell.date ? colorScale[cell.level] : "bg-transparent"
-                                            } ${cell.date && !cell.isFuture ? "cursor-pointer" : ""}`}
-                                    />
-                                ))}
-                            </div>
-                        ))}
-                    </div>
+                    <GrassCells
+                        weeks={weeks}
+                        colorScale={colorScale}
+                        onCellEnter={handleCellEnter}
+                        onCellLeave={handleCellLeave}
+                    />
                 </div>
             </div>
 

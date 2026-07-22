@@ -13,7 +13,7 @@ export default function AdminUsersList({ users, view }: AdminUsersListProps) {
 
     return (
         <section className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
-            <div className={`grid min-w-[900px] ${isDeletedView ? "grid-cols-[1.1fr_.8fr_1.8fr_.9fr_.8fr]" : "grid-cols-[1.05fr_.75fr_1.8fr_.85fr_.75fr_.7fr_.85fr_1.15fr]"} border-b border-slate-200 bg-slate-50 px-6 py-3 text-xs font-bold text-slate-500`}>
+            <div className={`hidden border-b border-slate-200 bg-slate-50 px-6 py-3 text-xs font-bold text-slate-500 md:grid md:min-w-[900px] ${isDeletedView ? "md:grid-cols-[1.1fr_.8fr_1.8fr_.9fr_.8fr]" : "md:grid-cols-[1.05fr_.75fr_1.8fr_.85fr_.75fr_.7fr_.85fr_1.15fr]"}`}>
                 <span>이름</span>
                 <span>사용자 유형</span>
                 <span>이메일</span>

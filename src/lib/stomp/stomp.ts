@@ -113,7 +113,6 @@ const createSharedStompClient = (accessToken: string) => {
         reconnectDelay: 5000,
         heartbeatIncoming: 10000,
         heartbeatOutgoing: 10000,
-        debug: (message) => console.log("[STOMP Debug]", message),
     });
 
     sharedStompClient.onConnect = () => {

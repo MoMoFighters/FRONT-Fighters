@@ -8,7 +8,7 @@ interface AdminReportListProps {
 export default function AdminReportList({ reports }: AdminReportListProps) {
     return (
         <section className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
-            <div className="grid min-w-[900px] grid-cols-[2.2fr_.85fr_.9fr_.75fr] border-b border-slate-200 bg-slate-50 px-6 py-3 text-xs font-bold text-slate-500">
+            <div className="hidden border-b border-slate-200 bg-slate-50 px-6 py-3 text-xs font-bold text-slate-500 md:grid md:min-w-[900px] md:grid-cols-[2.2fr_.85fr_.9fr_.75fr]">
                 <span>신고 사유</span>
                 <span>신고자</span>
                 <span>접수일</span>

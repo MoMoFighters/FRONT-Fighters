@@ -33,8 +33,6 @@ export default async function GroupStudyRoomPage({
         getSentStudyInviteListService(),
     ]);
 
-    console.log(detailResponse)
-
     const myNickname = myInfoResponse.data?.nickname ?? null;
 
     if (!detailResponse.data) {

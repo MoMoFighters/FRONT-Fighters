@@ -82,7 +82,6 @@ const getActionErrorMessage = (error: unknown) => {
     return "알 수 없는 오류가 발생했습니다.";
 };
 
-// 공지사항 등록 액션 함수
 export const createNoticeFormAction = async (
     prevState: NoticeActionState,
     formData: FormData,
@@ -122,7 +121,6 @@ export const createNoticeFormAction = async (
     };
 };
 
-// 공지사항 수정 액션 함수
 export const updateNoticeFormAction = async (
     id: string,
     prevState: NoticeActionState,
@@ -163,7 +161,6 @@ export const updateNoticeFormAction = async (
     };
 };
 
-// 공지사항 삭제 액션 함수
 export const deleteNoticeAction = async (ids: string[]): Promise<NoticeActionState> => {
     if (ids.length === 0) {
         return {
@@ -194,7 +191,6 @@ export const deleteNoticeAction = async (ids: string[]): Promise<NoticeActionSta
     };
 };
 
-// 공지사항 고정/고정 해제 액션 함수
 export const updateNoticePinAction = async (
     id: string,
     shouldPin: boolean,

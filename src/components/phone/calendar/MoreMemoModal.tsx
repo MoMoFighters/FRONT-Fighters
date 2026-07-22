@@ -17,11 +17,11 @@ export default function MoreMemoModal({
 }: MoreMemoModalProps) {
     return (
         <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4"
             onClick={onClose}
         >
             <section
-                className="w-82 overflow-hidden rounded-xl border border-slate-200 bg-white p-5 shadow-2xl"
+                className="w-full max-w-82 overflow-hidden rounded-xl border border-slate-200 bg-white p-5 shadow-2xl"
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="mb-3 flex items-center justify-between border-b border-slate-300 pb-2">

@@ -91,7 +91,7 @@ export default async function TeacherMainPage() {
     ];
 
     return (
-        <main className="mx-auto w-full max-w-360 px-12 py-10">
+        <main className="mx-auto w-full max-w-360 px-4 py-8 sm:px-8 lg:px-12 lg:py-10">
             <section className="relative overflow-hidden rounded-4xl border border-slate-200 bg-white p-8 text-slate-950 shadow-sm">
 
                 <div className="relative flex items-start justify-between gap-6">
@@ -112,7 +112,7 @@ export default async function TeacherMainPage() {
                 </div>
             </section>
 
-            <section className="mt-6 grid grid-cols-4 gap-4">
+            <section className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 {metrics.map((metric) => (
                     <div
                         key={metric.title}

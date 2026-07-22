@@ -50,7 +50,6 @@ export default function UpdateLectureStatusBtn({
 
             router.push('/admin/lectures');
         } catch (error) {
-            // error 메시지 잡아오기
             toast.error(
                 error instanceof Error
                     ? error.message

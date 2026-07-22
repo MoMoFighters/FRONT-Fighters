@@ -166,7 +166,7 @@ export default function LectureItem({
                 </div>
 
                 {role === "student" && lecture.isEnrolled && (
-                    <div className="absolute bottom-7 right-6 flex w-120 items-center gap-3 text-sm text-slate-400">
+                    <div className="absolute bottom-7 right-6 flex w-32 items-center gap-3 text-sm text-slate-400 md:w-120">
                         <Progress value={lecture.lectureProgress ?? 0} className="flex-1" />
                         {lecture.lectureProgress ?? 0}%
                     </div>
@@ -198,7 +198,7 @@ export default function LectureItem({
                 {role === "teacher" && (lectureStatus === "HOLD" || lectureStatus === "WAITING") && (
                     <div>
                         <Link href={`/teacher/lectures/${lecture.lectureId}/edit`}>
-                            <Button className="absolute bottom-6 right-36 cursor-pointer rounded-md! bg-blue-400 px-6 py-6 text-md font-bold text-white hover:bg-blue-500">
+                            <Button className="absolute bottom-6 right-4 md:right-36 cursor-pointer rounded-md! bg-blue-400 px-6 py-6 text-md font-bold text-white hover:bg-blue-500">
                                 수정하기
                             </Button>
                         </Link>
@@ -246,7 +246,7 @@ export default function LectureItem({
                             </p>
                         </div>
 
-                        <div className={`flex shrink-0 items-center gap-2 text-slate-600 ${role === "student" ? "pr-4" : "pr-40"}`}>
+                        <div className={`flex shrink-0 items-center gap-2 text-slate-600 ${role === "student" ? "pr-4" : "pr-4 md:pr-40"}`}>
                             <Star className="h-5 w-5 fill-amber-400 text-amber-400" />
                             <span className="font-bold">{averageRating}</span>
                             <span className="text-slate-400">/ 5.0</span>

@@ -75,7 +75,7 @@ export default function AdminDashboardMonthlyLineChart({
 
     return (
         <section className="mb-5 rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-            <div className="mb-5 flex items-start justify-between gap-6">
+            <div className="mb-5 flex flex-col items-start gap-6 sm:flex-row sm:justify-between">
                 <div>
                     <div className="flex items-center gap-2">
                         <select

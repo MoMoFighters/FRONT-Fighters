@@ -149,7 +149,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
                     }}
                 >
                     <div
-                        className="flex flex-col w-[60vw] h-[85vh] rounded-2xl border border-slate-200 bg-white px-6 pt-7 shadow-2xl"
+                        className="flex flex-col w-[95vw] h-[90vh] sm:w-[80vw] sm:h-[85vh] lg:w-[60vw] rounded-2xl border border-slate-200 bg-white px-6 pt-7 shadow-2xl"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="flex flex-row items-center">
@@ -180,7 +180,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
                                 name="currentNickname"
                                 value={nickName}
                             />
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                 <div className="flex flex-col justify-between gap-1">
                                     <label
                                         htmlFor="teacherName"

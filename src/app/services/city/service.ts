@@ -90,7 +90,6 @@ export const getMyYearlyStreak = async (): Promise<StreakResponse> => {
     });
     await handleErrorResponse(response);
     const result: ApiResponse<StreakResponse> = await response.json();
-    console.log(result);
     return assertApiData(result);
 }
 
