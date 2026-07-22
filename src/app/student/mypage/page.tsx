@@ -8,7 +8,6 @@ import {
     CreditCard,
     Leaf,
     Receipt,
-    Settings,
     ShieldCheck,
     Store,
 } from "lucide-react";
@@ -26,9 +25,9 @@ import {
 } from "@/features/point/type";
 import { getMyInfo } from "@/features/user/action";
 import MyPageProfileAvatar from "@/features/user/components/mypage/MyPageProfileAvatar";
+import NicknameEditableField from "@/features/user/components/mypage/NicknameEditableField";
 import PasswordChangeMenuItem from "@/features/user/components/mypage/PasswordChangeMenuItem";
 import TeacherRegistMenuItem from "@/features/auth/components/TeacherRegistMenuItem";
-import MembershipBadge from "@/components/common/MembershipBadge";
 import { getYearlyStudyTime } from "@/features/study/actions";
 import { buildStudyGrassMap } from "@/features/study/utils";
 import StudyGrassCard from "@/features/study/components/StudyGrassCard";
@@ -121,13 +120,10 @@ export default async function StudentMyPage() {
                             />
 
                             <div className="min-w-0 w-full flex flex-row gap-2 items-center">
-                                <p className="truncate text-md font-black text-slate-900">
-                                    {userData.nickname}
-                                </p>
-                                <MembershipBadge
+                                <NicknameEditableField
+                                    nickname={userData.nickname}
                                     membership={userData.membership}
                                     membershipUntil={userData.membershipUntil}
-                                    className="rounded-md px-1 py-0.5 text-[9px]"
                                 />
                             </div>
                         </div>
@@ -148,12 +144,6 @@ export default async function StudentMyPage() {
 
                     <nav className="p-1.5">
                         <ul className="flex flex-col text-xs font-bold text-slate-500">
-                            <Link href="/student/mypage/edit">
-                                <li className="cursor-pointer flex items-center gap-2 rounded-lg px-2.5 py-1.5 transition hover:bg-slate-50 hover:text-slate-900">
-                                    <Settings className="h-3 w-3" />
-                                    내 정보 수정
-                                </li>
-                            </Link>
                             <PasswordChangeMenuItem />
                             <Link href="/student/point-store">
                                 <li className="cursor-pointer flex items-center gap-2 rounded-lg px-2.5 py-1.5 transition hover:bg-slate-50 hover:text-slate-900">

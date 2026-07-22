@@ -16,12 +16,10 @@ import {
     leaveGroupStudyService,
     kickGroupStudyMemberService,
     getTimerAvailabilityService,
-    getYearlyStudyRecordService,
     startSoloStudyTimerService,
     pauseSoloStudyTimerService,
     stopSoloStudyTimerService,
     getSoloStudyLabListService,
-    getSoloStudyHistoryService,
     getYearlyStudyTimeService,
 } from "@/app/services/study/service";
 import type {
@@ -42,12 +40,10 @@ import type {
     GroupStudyTimerEndResult,
     GroupStudyMemberLapsResult,
     TimerAvailabilityResult,
-    YearlyStudyRecordResult,
     SoloStudyTimerStartResult,
     SoloStudyTimerPauseResult,
     SoloStudyTimerEndResult,
     SoloStudyLapsResult,
-    SoloStudyHistoryItem,
     DailyStudyTimeResult,
 } from "@/features/study/type";
 import { revalidatePath } from "next/cache";
@@ -306,15 +302,6 @@ export const getTimerAvailability = async (): Promise<StudyApiResponse<TimerAvai
         return await getTimerAvailabilityService();
     } catch (error) {
         return createStudyErrorResponse<TimerAvailabilityResult>(error, "타이머 시작 가능 여부 조회에 실패했습니다.");
-    }
-};
-
-// 연간 잔디 조회
-export const getYearlyStudyRecord = async (): Promise<StudyApiResponse<YearlyStudyRecordResult>> => {
-    try {
-        return await getYearlyStudyRecordService();
-    } catch (error) {
-        return createStudyErrorResponse<YearlyStudyRecordResult>(error, "연간 기록 조회에 실패했습니다.");
     }
 };
 
