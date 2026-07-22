@@ -38,12 +38,10 @@ export default function DeleteModal({
 
             <AlertDialogContent size="sm">
                 <AlertDialogHeader>
-                    {/* 이미지의 레드 테마를 반영한 아이콘 영역 */}
                     <AlertDialogMedia className="bg-red-100 text-red-500">
                         <Trash2Icon className="w-5 h-5" />
                     </AlertDialogMedia>
 
-                    {/* 줄바꿈 유지를 위한 whitespace-pre-line 적용 */}
                     <AlertDialogTitle className="whitespace-pre-line">
                         {title}
                     </AlertDialogTitle>
@@ -57,7 +55,6 @@ export default function DeleteModal({
                         취소
                     </AlertDialogCancel>
 
-                    {/* 첫 번째 예시의 스타일을 유지하며 삭제(Red) 테마 적용 */}
                     <AlertDialogAction
                         variant="ghost"
                         className="bg-red-500 text-white hover:text-white! hover:bg-red-600!"

@@ -23,7 +23,6 @@ export default function FriendSearchList() {
         e.preventDefault();
 
         const response = await searchUserAction(searchValue);
-        console.log(response, "?")
 
         if (response.status < 200 || response.status >= 300) {
             setUsers([]);

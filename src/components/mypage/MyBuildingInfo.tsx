@@ -67,7 +67,7 @@ export default function MyBuildingInfo({ data }: MyBuildingInfoProps) {
                     아직 보유한 건물이 없습니다.
                 </div>
             ) : (
-                <div className="grid grid-cols-5 gap-2">
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-5">
                     {data.map((building) => {
                         const meta = CATEGORY_META[building.category];
 

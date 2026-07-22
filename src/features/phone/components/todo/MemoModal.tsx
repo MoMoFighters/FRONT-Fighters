@@ -152,11 +152,11 @@ export default function AddMemoModal({ setIsMemoModalOpen, createMemo, onChanged
 
     return (
         <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
             onClick={() => setIsMemoModalOpen(false)}
         >
             <div
-                className="w-90 rounded-xl border border-slate-200 bg-white p-5 shadow-2xl"
+                className="w-full max-w-90 rounded-xl border border-slate-200 bg-white p-5 shadow-2xl"
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="flex flex-row justify-between items-center mb-2">

@@ -223,7 +223,7 @@ export default function NotificationList({
             onClick={onClose}
         >
             <div
-                className="fixed z-[999999] right-44 top-15 flex max-h-106 min-h-30 w-80 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl shadow-slate-900/10 backdrop-blur-md"
+                className="fixed z-[999999] right-4 top-15 flex max-h-106 min-h-30 w-[calc(100vw-2rem)] max-w-80 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl shadow-slate-900/10 backdrop-blur-md sm:right-44 sm:w-80"
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="rounded-t-xl border-b border-slate-100 px-5 py-3">

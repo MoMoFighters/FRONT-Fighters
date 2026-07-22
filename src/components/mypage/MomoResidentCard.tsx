@@ -88,7 +88,6 @@ export default function MomoResidentCard({ data }: ResidentCardProps) {
 
                 <div className="flex-1" />
 
-                {/* 푸터 */}
                 <div className="flex items-end justify-end gap-4 mt-2">
                     <div className="flex flex-col gap-[0.4cqw] text-slate-400 text-[2.8cqw]">
                         <p>{issueDate}</p>

@@ -118,8 +118,8 @@ export default function CommunityProfilePostsPage({
         selectedMode === "list"
             ? "grid grid-cols-1 gap-2"
             : selectedMode === "grid"
-                ? "grid grid-cols-5 gap-3"
-                : "grid grid-cols-2 gap-3";
+                ? "grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5"
+                : "grid grid-cols-1 gap-3 sm:grid-cols-2";
     const pageNumbers = getVisiblePageNumbers(currentPage, totalPages);
 
     return (
@@ -130,7 +130,7 @@ export default function CommunityProfilePostsPage({
 
             <section className="flex h-full min-h-0 min-w-0 flex-1 flex-col p-4">
                 <header className="shrink-0 rounded-3xl bg-white/90 p-4 shadow-sm ring-1 ring-slate-100">
-                    <div className="flex items-center justify-between gap-5">
+                    <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
                         <div className="flex min-w-0 items-center gap-3">
                             {/* {profile.profileImageUrl ? (
                                 <Image
@@ -153,7 +153,7 @@ export default function CommunityProfilePostsPage({
                             </div>
                         </div>
 
-                        <div className="grid flex-1 grid-cols-4 overflow-hidden rounded-3xl border border-slate-100 bg-slate-50/80">
+                        <div className="grid grid-cols-2 overflow-hidden rounded-3xl border border-slate-100 bg-slate-50/80 sm:flex-1 sm:grid-cols-4">
                             <DashboardStat
                                 label="Posts"
                                 value={dashboard.totalPostCount}

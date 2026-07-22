@@ -105,7 +105,7 @@ export default async function StudentChatPage({
 
             <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
                 {currentStatus === "friend" && (
-                    <div className="min-h-0 flex-1 grid grid-cols-[3fr_7fr] overflow-hidden">
+                    <div className="min-h-0 flex-1 grid grid-cols-1 overflow-hidden md:grid-cols-[3fr_7fr]">
 
                         <div className="flex min-h-0 flex-1 flex-col overflow-hidden border-r border-slate-200 bg-white">
                             <div className="flex items-center gap-3 border-b border-slate-200 bg-white px-4 py-3">
@@ -139,14 +139,14 @@ export default async function StudentChatPage({
                 )}
 
                 {currentStatus === "request" && (
-                    <div className="grid min-h-0 flex-1 grid-cols-2 overflow-hidden">
+                    <div className="grid min-h-0 flex-1 grid-cols-1 overflow-hidden md:grid-cols-2">
                         <RequestList received={received} sent={sent} />
                         <FriendSearchList />
                     </div>
                 )}
 
                 {currentStatus === "chat" && (
-                    <div className="grid h-full max-h-full min-h-0 flex-1 grid-cols-[3fr_7fr] overflow-hidden">
+                    <div className="grid h-full max-h-full min-h-0 flex-1 grid-cols-1 overflow-hidden md:grid-cols-[3fr_7fr]">
                         <div className="flex min-h-0 flex-col overflow-hidden border-r border-slate-200 bg-white">
                             <div className="hidden">
                                 <p className="font-bold text-slate-900">

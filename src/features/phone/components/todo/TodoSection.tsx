@@ -27,14 +27,12 @@ export default function TodoSection({
     return (
         <div className="p-4 flex flex-col gap-3 border-b border-slate-400 h-full">
 
-            {/* 날짜 */}
             <div>
                 <h2 className="text-xl text-slate-900 text-center font-bold">
                     할 일
                 </h2>
             </div>
 
-            {/* TODO LIST */}
             <div className="flex flex-col gap-2 h-full scrollbar-none overflow-auto w-full">
                 {isLoading ? (
                     <div className="text-center h-full items-center flex justify-center">
@@ -59,10 +57,6 @@ export default function TodoSection({
                     />
                 </div>
             </div>
-            {/* 추가 영역 */}
-
-
-
         </div>
     )
 }

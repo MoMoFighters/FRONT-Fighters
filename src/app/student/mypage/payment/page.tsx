@@ -127,7 +127,7 @@ export default async function PaymentHistoryPage({
     const currentPlan = MEMBERSHIP_PLANS.find((plan) => plan.tier === membership);
 
     return (
-        <main className="mx-auto w-full max-w-360 px-12 py-12">
+        <main className="mx-auto w-full max-w-360 px-4 py-8 sm:px-8 lg:px-12 lg:py-12">
             <StudentPageHeader
                 backHref="/student/mypage"
                 breadcrumbs={[
@@ -231,7 +231,7 @@ export default async function PaymentHistoryPage({
                             payments.map((payment, index) => (
                                 <div
                                     key={`${payment.createdAt}-${index}`}
-                                    className="grid grid-cols-[160px_minmax(0,1fr)_120px] items-center gap-4 px-5 py-3 transition-colors hover:bg-slate-50"
+                                    className="grid grid-cols-1 items-center gap-2 px-5 py-3 transition-colors hover:bg-slate-50 sm:grid-cols-[160px_minmax(0,1fr)_120px] sm:gap-4"
                                 >
                                     <p className="text-xs font-bold text-slate-500">
                                         {formatDateTime(payment.createdAt)}

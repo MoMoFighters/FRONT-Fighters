@@ -35,7 +35,6 @@ export default function FriendModal({ isOpen, onClose }: FriendModalProps) {
         return createChatRoomAction(userId);
     };
 
-    // Server Action 바인딩
     const [state, formAction, isPending] = useActionState(createChatRoomFormAction, {
         timestamp: "",
         status: 0,
@@ -46,9 +45,8 @@ export default function FriendModal({ isOpen, onClose }: FriendModalProps) {
     // 액션 수행 결과 감지 후 리다이렉트 처리
     useEffect(() => {
         if (state.status >= 200 && state.status < 300 && state.data?.roomId) {
-            onClose(); // 모달 닫기
+            onClose();
 
-            // 현재 주소가 강사 페이지인지 학생 페이지인지 판별하여 리다이렉트
             const isTeacherPage = window.location.pathname.startsWith('/teacher');
             if (isTeacherPage) {
                 router.push(`/teacher/ask?roomId=${state.data.roomId}`);
@@ -88,7 +86,6 @@ export default function FriendModal({ isOpen, onClose }: FriendModalProps) {
                                 </span>
                             </div>
 
-                            {/* Server Action 연동 Form */}
                             <form action={formAction}>
                                 <input type="hidden" name="userId" value={friend.userId} />
                                 <Button

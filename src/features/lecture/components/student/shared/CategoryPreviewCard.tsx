@@ -27,7 +27,7 @@ export default function CategoryPreviewCard({
                     필터를 클릭하여 카테고리를 선택하면 어떤 건물을 세울 수 있는지 미리 볼 수 있습니다.
                 </p>
 
-                <div className="mt-5 grid grid-cols-2 gap-3 text-sm font-bold text-slate-600">
+                <div className="mt-5 grid grid-cols-1 gap-3 text-sm font-bold text-slate-600 sm:grid-cols-2">
                     {CATEGORY_LABELS.map((label) => (
                         <span
                             key={label}

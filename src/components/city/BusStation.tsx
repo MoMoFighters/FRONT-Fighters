@@ -192,7 +192,7 @@ export default function BusStation({ mode, currentOwnerId }: BusStationProps) {
                                     검색 결과가 없습니다.
                                 </div>
                             ) : (
-                                <div className="grid grid-cols-3 gap-2">
+                                <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
                                     {filteredFriends.map((friend) => {
                                         const isCurrentCity = friend.userId === currentOwnerId;
 

@@ -45,7 +45,7 @@ export default async function PointStorePage() {
     const totalPages = Math.max(storeResponse.data?.totalPages ?? 1, 1);
 
     return (
-        <main className="mx-auto w-full max-w-360 px-12 py-12">
+        <main className="mx-auto w-full max-w-360 px-4 py-8 sm:px-8 lg:px-12 lg:py-12">
             <StudentPageHeader
                 backHref="/student"
                 breadcrumbs={[

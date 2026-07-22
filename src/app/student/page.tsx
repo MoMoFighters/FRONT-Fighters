@@ -21,7 +21,6 @@ export default async function StudentMainPage() {
         getMyStreak(),
         getGuestbooksAction(),
     ]);
-    console.log(myInfo)
     const dnd = myInfo.data?.doNotDisturb;
     const guestbooks = guestbookResponse.data ?? [];
 

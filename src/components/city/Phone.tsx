@@ -246,7 +246,7 @@ export default function Phone({
 
     return (
         <div
-            className="group fixed -bottom-[320px] right-[8%] z-30 h-[440px] w-[230px] transition-[bottom] duration-500 ease-out hover:bottom-2 focus-within:bottom-4"
+            className="group fixed -bottom-[320px] right-[8%] z-30 h-[320px] w-[168px] transition-[bottom] duration-500 ease-out hover:bottom-2 focus-within:bottom-4 sm:h-[440px] sm:w-[230px]"
             onMouseEnter={keepPhoneStable}
             onMouseLeave={releasePhoneStable}
             onFocusCapture={keepPhoneStable}
