@@ -2,10 +2,11 @@
 // 공통
 // ====================
 
-// 팀 스터디 API 공통 응답 형식 (statusCode 필드 사용)
+// 팀 스터디 API 공통 응답 형식
+// 백엔드 ApiResponse<T> 레코드 필드명 그대로 맞춤 (status, 과거 statusCode 아님)
 export interface StudyApiResponse<T> {
     timestamp: string;
-    statusCode: number;
+    status: number;
     code: string;
     message: string;
     data: T;
@@ -18,8 +19,15 @@ export interface StudyApiResponse<T> {
 // 그룹방 상태
 export type StudyRoomStatus = 'ACTIVE' | 'ENDED';
 
-// 그룹방 멤버 상태 / 멤버 타이머 상태
-export type StudyRoomMemberStatus = 'INVITED' | 'JOINED' | 'LEFT' | 'REJECTED';
+// 그룹방 멤버 상태 (GroupRoomMember.MemberStatus 전체 값)
+export type StudyRoomMemberStatus =
+    | 'INVITED'
+    | 'JOINED'
+    | 'LEFT'
+    | 'KICKED'
+    | 'REJECTED'
+    | 'CANCELED';
+// 멤버 타이머 상태
 export type StudyRoomMemberTimerStatus = 'STUDYING' | 'RESTING' | null;
 
 // 초대 상태
@@ -30,16 +38,35 @@ export interface GroupStudyInfo {
     roomId: number;
     hostUserId: number;
     hostNickname: string;
+    title: string;
     status: StudyRoomStatus;
     maxMember: number;
 }
 
+// 그룹방 생성 요청 body
+export interface CreateGroupStudyRequest {
+    title: string;
+}
+
+// 그룹방 제목 수정 요청 body
+export interface UpdateGroupStudyTitleRequest {
+    title: string;
+}
+
+// 그룹방 제목 수정 응답
+export interface GroupStudyTitleUpdateResult {
+    roomId: number;
+    title: string;
+}
+
 // 그룹방 멤버 정보 (그룹방 상세 조회에서 사용, API 원본)
+// GroupRoomDetailResponse.MemberItem 기준 - status=JOINED인 현재 참가자만 내려온다
 export interface GroupStudyRoomMember {
     userId: number;
     nickname: string;
     status: StudyRoomMemberStatus;
     timerStatus: StudyRoomMemberTimerStatus;
+    totalSeconds: number;
 }
 
 // 그룹방 상세 정보 (그룹방 상세 조회 응답에서 사용)
@@ -52,8 +79,15 @@ export interface MyGroupStudyRoomItem {
     roomId: number;
     hostUserId: number;
     hostNickname: string;
+    title: string;
     memberCount: number;
     status: StudyRoomStatus;
+    myTimerStatus: StudyRoomMemberTimerStatus;
+}
+
+// 내가 속한 그룹방 목록 조회 응답 (GroupRoomListResponse - rooms로 감싸서 내려옴, 배열 아님)
+export interface MyGroupStudyRoomListResult {
+    rooms: MyGroupStudyRoomItem[];
 }
 
 // 그룹방 나가기 응답
@@ -114,9 +148,30 @@ export interface StudyInvitationRejectResult {
 export interface MyStudyInvitationItem {
     invitationId: number;
     roomId: number;
+    title: string;
     hostUserId: number;
     hostNickname: string;
     invitedAt: string;
+}
+
+// 내가 받은 초대 목록 조회 응답 (InvitationListResponse - invitations로 감싸서 내려옴, 배열 아님)
+export interface MyStudyInvitationListResult {
+    invitations: MyStudyInvitationItem[];
+}
+
+// 내가 보낸 초대 목록 아이템 (GET /api/v3/study/members/invitations/sent - 기존 프론트에 없던 엔드포인트)
+export interface SentStudyInvitationItem {
+    invitationId: number;
+    roomId: number;
+    title: string;
+    inviteeId: number;
+    inviteeNickname: string;
+    invitedAt: string;
+}
+
+// 내가 보낸 초대 목록 조회 응답 (SentInvitationListResponse - invitations로 감싸서 내려옴, 배열 아님)
+export interface SentStudyInvitationListResult {
+    invitations: SentStudyInvitationItem[];
 }
 
 // ====================
@@ -167,6 +222,14 @@ export interface GroupStudyTimerEndResult {
 }
 
 // ====================
+// 타이머 시작 가능 여부 (GET /api/v3/study/timer-availability - 기존 프론트에 없던 엔드포인트)
+// ====================
+
+export interface TimerAvailabilityResult {
+    canStartTimer: boolean;
+}
+
+// ====================
 // Group Statistics
 // ====================
 
@@ -184,16 +247,10 @@ export interface StudyRankingEntry {
     totalSeconds: number;
 }
 
-// 그룹 멤버 일별 랭킹 조회 응답
-export interface GroupStudyDailyRankingResult {
-    type: 'daily';
-    date: string;
-    ranking: StudyRankingEntry[];
-}
-
-// 그룹 멤버 월별 랭킹 조회 응답
-export interface GroupStudyMonthlyRankingResult {
-    yearMonth: string;
+// 그룹 멤버 랭킹 조회 응답 (일별/월별 공용 - 백엔드가 RankingResponse 하나로 통일해서 내려줌)
+// period: daily 조회 시 "2026-07-13", monthly 조회 시 "2026-07"
+export interface StudyRankingResult {
+    period: string;
     ranking: StudyRankingEntry[];
 }
 
@@ -250,6 +307,8 @@ export interface SoloCurrentSessionResult {
 }
 
 // 솔로 세션 이력 아이템
+// ⚠️ 백엔드에 GET /api/v3/study/solo/history 컨트롤러 엔드포인트가 아직 없음
+// (SoloSessionRepository/SoloSessionJpaRepository에 "용도" 주석만 있고 실제 매핑 없음) - 호출 시 404 발생. 백엔드 확인 필요.
 export interface SoloStudyHistoryItem {
     sessionId: number;
     startTime: string;
@@ -269,6 +328,16 @@ export interface MonthlyStudyTimeResult {
     totalSeconds: number;
 }
 
+// 연간 잔디 조회 응답 (GET /api/v3/study/records/yearly - 기존 프론트에 없던 엔드포인트)
+export interface YearlyStudyRecordDay {
+    date: string;
+    totalSeconds: number;
+}
+
+export interface YearlyStudyRecordResult {
+    records: YearlyStudyRecordDay[];
+}
+
 // ====================
 // 화면 표시용 파생 타입
 // (API 원본 타입을 조합해서 화면에서 쓰기 좋은 형태로 가공한 것들)
@@ -278,4 +347,58 @@ export interface MonthlyStudyTimeResult {
 export interface StudyRoomSeatUser extends GroupStudyRoomMember {
     isHost: boolean;
     isMe: boolean;
+}
+
+// ====================
+// Group Study 실시간(STOMP) 이벤트
+// 구독 destination: /sub/study/room/{roomId}
+// 실제 페이로드는 StudyBroadcastEventHandler.java 기준으로 맞춤:
+// 모든 이벤트가 { type, roomId, data } 한 포맷으로 오고, data는 이벤트별로 필드가 다른 Map.
+// 대부분 필드가 id값뿐이라(닉네임 등 상세정보 없음), 수신 시 방 상세를 다시 조회해서 갱신하는 방식을 권장.
+// ====================
+
+export type StudyRoomSocketEventType =
+    | 'MEMBER_JOINED'
+    | 'MEMBER_LEFT'
+    | 'MEMBER_KICKED'
+    | 'HOST_CHANGED'
+    | 'ROOM_ENDED'
+    | 'TIMER_STATUS_CHANGED';
+
+export interface StudyRoomMemberJoinedData {
+    userId: number;
+}
+
+export interface StudyRoomMemberLeftData {
+    userId: number;
+}
+
+export interface StudyRoomMemberKickedData {
+    targetUserId: number;
+    hostUserId: number;
+}
+
+export interface StudyRoomHostChangedData {
+    newHostUserId: number;
+}
+
+// ROOM_ENDED는 data가 빈 객체({})로 온다.
+export type StudyRoomEndedData = Record<string, never>;
+
+export interface StudyRoomTimerStatusChangedData {
+    userId: number;
+    // 백엔드가 null 대신 문자열 "NONE"으로 내려준다 (Map.of가 null value를 허용 안 해서).
+    timerStatus: 'STUDYING' | 'RESTING' | 'NONE';
+}
+
+export interface StudyRoomSocketEvent {
+    type: StudyRoomSocketEventType;
+    roomId: number;
+    data:
+    | StudyRoomMemberJoinedData
+    | StudyRoomMemberLeftData
+    | StudyRoomMemberKickedData
+    | StudyRoomHostChangedData
+    | StudyRoomEndedData
+    | StudyRoomTimerStatusChangedData;
 }
