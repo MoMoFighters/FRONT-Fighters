@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Eye, Heart, MessageCircle } from "lucide-react";
 import type { PostRecommentItemProps } from "./PostDetailSide";
@@ -24,16 +25,21 @@ export default function PostRecommentItem({
                     ? `/teacher/community/${postId}?commentCount=${commentCount}`
                     : role === "ADMIN"
                         ? `/admin/community/${postId}?commentCount=${commentCount}`
-                        : `/student/community/${postId}?commentCount=${commentCount}`
+                        : role === "GUEST"
+                            ? `/community/${postId}?commentCount=${commentCount}`
+                            : `/student/community/${postId}?commentCount=${commentCount}`
             }
             className={`grid grid-cols-[72px_1fr] gap-3 rounded-2xl border p-2.5 transition hover:border-indigo-100 hover:bg-indigo-50/50 ${isActive
                 ? "border-indigo-200 bg-indigo-50"
                 : "border-slate-100 bg-white"
                 }`}
         >
-            <img
+            <Image
                 src={thumbnailUrl ?? DEFAULT_THUMBNAIL_URL}
                 alt=""
+                width={72}
+                height={72}
+                sizes="72px"
                 className="h-[72px] w-[72px] rounded-xl object-cover"
             />
 

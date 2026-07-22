@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Eye, Heart, ImageIcon, MessageCircle } from "lucide-react";
 
@@ -33,11 +34,15 @@ function Thumbnail({
     }
 
     return (
-        <img
-            src={thumbnailImageUrl}
-            alt={`${title} thumbnail`}
-            className={`${className} object-cover`}
-        />
+        <div className={`${className} relative overflow-hidden`}>
+            <Image
+                src={thumbnailImageUrl}
+                alt={`${title} thumbnail`}
+                fill
+                sizes="(max-width: 768px) 33vw, 200px"
+                className="object-cover"
+            />
+        </div>
     );
 }
 

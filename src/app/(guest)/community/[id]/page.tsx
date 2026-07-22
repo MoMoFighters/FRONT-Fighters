@@ -5,7 +5,6 @@ import { ChevronLeft, Eye } from "lucide-react";
 
 import PostDetailSide from "@/components/phone/community/PostDetailSide";
 import PostRecommandPanel from "@/components/phone/community/PostRecommandPanel";
-import CreateReportBtn from "@/features/report/components/buttons/CreateReportBtn";
 import PostLikeBtn from "@/features/post/PostLikeBtn";
 import { getCommunityPostDetailAction } from "@/features/community/action";
 import ExtendCommunityImage from "@/features/community/ExtendCommunityImage";
@@ -14,7 +13,7 @@ import type { CommunityAuthorRole } from "@/features/community/type";
 const DEFAULT_PROFILE_IMAGE_URL =
     "https://placehold.co/80x80/e0e7ff/4f46e5?text=M";
 
-interface CommunityPostDetailPageProps {
+interface GuestCommunityPostDetailPageProps {
     params: Promise<{
         id: string;
     }>;
@@ -35,10 +34,10 @@ const getRoleLabel = (role: CommunityAuthorRole) => {
     return "학생";
 };
 
-export default async function CommunityPostDetailPage({
+export default async function GuestCommunityPostDetailPage({
     params,
     searchParams,
-}: CommunityPostDetailPageProps) {
+}: GuestCommunityPostDetailPageProps) {
     const [{ id }, resolvedSearchParams] = await Promise.all([
         params,
         searchParams,
@@ -57,9 +56,6 @@ export default async function CommunityPostDetailPage({
     }
 
     const post = response.data;
-    const authorHref = post.isMine
-        ? "/teacher/community/mypage"
-        : `/teacher/community/user/${post.authorId}`;
     const authorProfileImageUrl =
         post.authorProfileImageUrl || DEFAULT_PROFILE_IMAGE_URL;
     const initialCommentCount = Number(
@@ -71,32 +67,17 @@ export default async function CommunityPostDetailPage({
             : 0;
 
     return (
-        <section className="grid min-h-[calc(100vh-137px)] grid-cols-[7fr_3fr] items-start gap-4 rounded-3xl bg-white/80 p-5 shadow-sm ring-1 ring-slate-200/80 backdrop-blur">
+        <section className="grid min-h-[calc(100vh-137px)] grid-cols-1 items-start gap-4 rounded-3xl bg-white/80 p-5 shadow-sm ring-1 ring-slate-200/80 backdrop-blur md:grid-cols-[7fr_3fr]">
             <article className="flex min-h-[calc(100vh-137px)] flex-col rounded-3xl bg-white/90 p-5 shadow-sm ring-1 ring-slate-100">
                 <header className="w-full border-b border-slate-100 pb-3">
                     <div className="flex items-center justify-between gap-3">
                         <Link
-                            href="/teacher/community"
+                            href="/community"
                             className="inline-flex items-center gap-1 text-xs font-black text-slate-400 transition hover:text-indigo-500"
                         >
                             <ChevronLeft className="h-4 w-4" />
                             목록 보기
                         </Link>
-
-                        {!post.isMine ? (
-                            <CreateReportBtn
-                                triggerClassName="cursor-pointer rounded-md border border-slate-200 px-2.5 py-1 text-xs font-bold text-slate-500 transition hover:bg-slate-100"
-                                targetType="POST"
-                                targetId={post.postId}
-                            />
-                        ) : (
-                            <Link
-                                className="cursor-pointer rounded-md border border-slate-200 px-2.5 py-1 text-xs font-bold text-slate-500 transition hover:bg-slate-100"
-                                href={`/teacher/community/${post.postId}/edit`}
-                            >
-                                수정
-                            </Link>
-                        )}
                     </div>
 
                     <div className="mt-2 flex min-w-0 items-center gap-2">
@@ -112,10 +93,7 @@ export default async function CommunityPostDetailPage({
                     </div>
 
                     <div className="mt-2 flex items-center gap-3">
-                        <Link
-                            href={authorHref}
-                            className="flex min-w-0 items-center gap-2"
-                        >
+                        <div className="flex min-w-0 items-center gap-2">
                             <Image
                                 src={authorProfileImageUrl}
                                 alt={`${post.authorName} profile`}
@@ -132,7 +110,7 @@ export default async function CommunityPostDetailPage({
                                     {getRoleLabel(post.authorRole)}
                                 </p>
                             </div>
-                        </Link>
+                        </div>
 
                         <div className="flex-1" />
 
@@ -177,13 +155,13 @@ export default async function CommunityPostDetailPage({
                 </div>
             </article>
 
-            <div className="sticky top-4 h-[calc(100vh-137px)] max-h-[calc(100vh-137px)] min-h-0">
+            <div className="top-4 h-[calc(100vh-137px)] max-h-[calc(100vh-137px)] min-h-0 md:sticky">
                 <PostDetailSide
                     postId={post.postId}
                     commentTotalCount={commentTotalCount}
-                    role="TEACHER"
+                    role="GUEST"
                     recommendedPanel={
-                        <PostRecommandPanel postId={post.postId} role="TEACHER" />
+                        <PostRecommandPanel postId={post.postId} role="GUEST" />
                     }
                 />
             </div>

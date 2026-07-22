@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ChevronLeft, Eye } from "lucide-react";
 
 import PostDetailSide from "@/components/phone/community/PostDetailSide";
+import PostRecommandPanel from "@/components/phone/community/PostRecommandPanel";
 import PostLikeBtn from "@/features/post/PostLikeBtn";
 import { getCommunityPostDetailAction } from "@/features/community/action";
 import ExtendCommunityImage from "@/features/community/ExtendCommunityImage";
@@ -180,6 +181,9 @@ export default async function CommunityPostDetailPage({
                     postId={post.postId}
                     commentTotalCount={commentTotalCount}
                     role="ADMIN"
+                    recommendedPanel={
+                        <PostRecommandPanel postId={post.postId} role="ADMIN" />
+                    }
                 />
             </div>
         </section>

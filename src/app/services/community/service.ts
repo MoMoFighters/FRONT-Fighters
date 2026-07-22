@@ -23,6 +23,23 @@ import {
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
+// 토큰을 넘기지 않는 fetch (게시글 목록/상세/검색/추천 조회 전용)
+const fetchWithoutAuth = async (
+    endpoint: string,
+    options: RequestInit = {}
+): Promise<Response> => {
+    const headers = {
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+        ...options.headers,
+    };
+
+    return fetch(`${BASE_URL}${endpoint}`, {
+        headers,
+        ...options,
+    });
+};
+
 const parseApiResponse = async <T>(
     response: Response,
     context: string
@@ -117,7 +134,7 @@ export const createCommunityPostContentsService = async (
 export const getCommunityPostDetailService = async (
     postId: number
 ): Promise<GetCommunityPostDetailResponse> => {
-    const response = await fetchWithAuth(`/api/v2/posts/${postId}`, {
+    const response = await fetchWithoutAuth(`/api/v2/posts/${postId}`, {
         method: "GET",
         cache: "no-store",
     });
@@ -129,7 +146,7 @@ export const getCommunityPostDetailService = async (
 export const getCommunityPostRecommendationsService = async (
     postId: number
 ): Promise<GetCommunityPostRecommendationsResponse> => {
-    const response = await fetchWithAuth(`/api/v2/posts/${postId}/recommendations`, {
+    const response = await fetchWithoutAuth(`/api/v2/posts/${postId}/recommendations`, {
         method: "GET",
         cache: "no-store",
     });
@@ -268,7 +285,7 @@ export const getCommunityPostListService = async ({
     params.set("size", String(size));
 
     const queryString = params.toString();
-    const response = await fetchWithAuth(
+    const response = await fetchWithoutAuth(
         `/api/v2/posts?${queryString}`,
         {
             method: "GET",
@@ -304,7 +321,7 @@ export const searchCommunityPostService = async ({
         params.set("cursor", String(cursor));
     }
 
-    const response = await fetchWithAuth(
+    const response = await fetchWithoutAuth(
         `/api/v2/posts/search?${params.toString()}`,
         {
             method: "GET",
