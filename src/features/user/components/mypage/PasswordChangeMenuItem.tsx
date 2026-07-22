@@ -94,8 +94,8 @@ export default function PasswordChangeMenuItem() {
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
-                <li className="cursor-pointer flex items-center gap-3 rounded-2xl px-4 py-3 transition hover:bg-slate-50 hover:text-slate-900">
-                    <LockKeyhole className="h-4 w-4" />
+                <li className="cursor-pointer flex items-center gap-2 rounded-lg px-2.5 py-1.5 transition hover:bg-slate-50 hover:text-slate-900">
+                    <LockKeyhole className="h-3 w-3" />
                     비밀번호 변경
                 </li>
             </DialogTrigger>

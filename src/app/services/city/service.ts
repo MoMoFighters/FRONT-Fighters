@@ -79,6 +79,22 @@ export const getMyStreak = async (): Promise<StreakResponse> => {
 }
 
 /**
+ * 내 도시의 연간 잔디 정보 조회 api (잔디 히트맵용)
+ * @returns StreakResponse
+ */
+export const getMyYearlyStreak = async (): Promise<StreakResponse> => {
+    const response = await fetchWithAuth("/api/v2/streak/yearly", {
+        next: {
+            revalidate: 300,
+        },
+    });
+    await handleErrorResponse(response);
+    const result: ApiResponse<StreakResponse> = await response.json();
+    console.log(result);
+    return assertApiData(result);
+}
+
+/**
  * 친구 도시의 친구 잔디 정보 조회 api
  * @param id 조회할 친구 id
  * @param payload 조회할 잔디 연/월

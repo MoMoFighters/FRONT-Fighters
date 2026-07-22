@@ -437,9 +437,11 @@ export const getMonthlyStudyTimeService = async (
 };
 
 
-// 연간 잔디 조회 (기존 프론트에 없던 엔드포인트)
-export const getYearlyStudyRecordService = async (): Promise<StudyApiResponse<YearlyStudyRecordResult>> => {
-    const response = await fetchWithAuth("/api/v3/study/records/yearly");
+// 연간 누적 공부시간 조회 (잔디 히트맵용)
+export const getYearlyStudyTimeService = async (): Promise<StudyApiResponse<DailyStudyTimeResult[]>> => {
+    const response = await fetchWithAuth("/api/v3/study/records/yearly", {
+        next: { revalidate: 300 },
+    });
 
     if (!response.ok) {
         const errorData = await response.json();

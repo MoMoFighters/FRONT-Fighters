@@ -49,13 +49,13 @@ export default function MyPageProfileAvatar({
     };
 
     return (
-        <div className="relative h-12 w-12 shrink-0">
+        <div className="relative h-10 w-10 shrink-0">
             <button
                 type="button"
                 onClick={() => setProfileChangeOpen((prev) => !prev)}
                 disabled={isSubmitting}
                 aria-label="프로필 이미지 변경"
-                className="relative flex h-12 w-12 cursor-pointer items-center justify-center overflow-hidden rounded-2xl bg-slate-100 text-slate-400 ring-1 ring-slate-200 transition hover:ring-indigo-300 disabled:cursor-not-allowed disabled:opacity-60"
+                className="relative flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-slate-100 text-slate-400 ring-1 ring-slate-200 transition hover:ring-indigo-300 disabled:cursor-not-allowed disabled:opacity-60"
             >
                 {profileImageUrl ? (
                     <Image
@@ -66,7 +66,7 @@ export default function MyPageProfileAvatar({
                         className="object-cover"
                     />
                 ) : (
-                    <UserRound className="h-8 w-8" />
+                    <UserRound className="h-6 w-6" />
                 )}
             </button>
 

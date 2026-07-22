@@ -24,14 +24,19 @@ export default function StudentReviewList({
     return (
         <div className="divide-y divide-slate-100">
             {reviews.map((review) => (
-                <article key={review.reviewId} className="relative p-5 pr-14">
-                    <CreateReportBtn
-                        triggerLabel="신고"
-                        triggerClassName="absolute right-5 top-5 cursor-pointer rounded-md px-2 py-1 text-xs font-bold text-slate-400 transition hover:bg-rose-50 hover:text-rose-500"
-                        targetType="REVIEW"
-                        targetId={review.reviewId}
-                        reportedUserId={review.userId}
-                    />
+                <article key={review.reviewId} className="relative p-5 pr-24">
+                    <div className="absolute right-5 top-5 flex flex-col items-end gap-3">
+                        <CreateReportBtn
+                            triggerLabel="신고"
+                            triggerClassName="cursor-pointer rounded-md px-2 py-1 text-xs font-bold text-slate-400 transition hover:bg-rose-50 hover:text-rose-500"
+                            targetType="REVIEW"
+                            targetId={review.reviewId}
+                            reportedUserId={review.userId}
+                        />
+                        <span className="px-2 text-xs font-medium text-slate-400">
+                            {review.createdAt.slice(0, 10)}
+                        </span>
+                    </div>
 
                     <div className="flex items-start gap-4">
                         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-sm font-black text-indigo-500">
@@ -39,15 +44,9 @@ export default function StudentReviewList({
                         </div>
 
                         <div className="min-w-0 flex-1">
-                            <div className="flex items-center justify-between gap-4">
-                                <p className="text-sm font-bold text-slate-950">
-                                    {review.nickname}
-                                </p>
-
-                                <span className="text-xs font-medium text-slate-400">
-                                    {review.createdAt.slice(0, 10)}
-                                </span>
-                            </div>
+                            <p className="text-sm font-bold text-slate-950">
+                                {review.nickname}
+                            </p>
 
                             <div className="mt-2 flex items-center gap-1">
                                 {Array.from({ length: 5 }, (_, index) => (
