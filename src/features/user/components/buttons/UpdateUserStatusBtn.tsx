@@ -116,7 +116,7 @@ export default function UpdateUserStatusBtn({ user }: { user: UserResponse }) {
                             py-1.5
                             font-bold
                             transition-colors
-                            text-[14px]
+                            text-sm
                             cursor-pointer
                           bg-green-100 text-green-700 hover:bg-green-200'
                         >
@@ -155,7 +155,7 @@ export default function UpdateUserStatusBtn({ user }: { user: UserResponse }) {
                                 py-1.5
                                 font-bold
                                 transition-colors
-                                text-[14px]
+                                text-sm
                                 cursor-pointer
                                 bg-amber-100 text-amber-700 hover:bg-amber-200
                             `}
@@ -199,7 +199,7 @@ export default function UpdateUserStatusBtn({ user }: { user: UserResponse }) {
                                 py-1.5
                                 font-bold
                                 transition-colors
-                                text-[14px]
+                                text-sm
                                 cursor-pointer
                                 bg-amber-100 text-amber-700 hover:bg-amber-200
                             `}
@@ -238,7 +238,7 @@ export default function UpdateUserStatusBtn({ user }: { user: UserResponse }) {
                         py-1.5
                         font-bold
                         transition-colors
-                        text-[14px]
+                        text-sm
                         cursor-pointer
                         bg-red-100 text-red-700 hover:bg-red-200"
                     onClick={() => {

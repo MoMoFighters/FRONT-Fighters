@@ -27,7 +27,7 @@ export default function AdminPaymentItem({ payment }: AdminPaymentItemProps) {
     const sign = payment.status === "SUCCESS" ? "+" : "-";
 
     return (
-        <div className="grid min-w-[900px] grid-cols-[1.2fr_.9fr_3fr] items-center gap-x-6 px-6 py-4 text-sm">
+        <div className="grid grid-cols-1 items-start gap-1 px-6 py-4 text-sm md:grid-cols-[1.2fr_.9fr_3fr] md:items-center md:gap-x-6 md:min-w-[900px]">
             <span className="font-medium text-slate-700">
                 {payment.userName}
             </span>

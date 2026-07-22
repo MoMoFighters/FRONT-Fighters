@@ -10,7 +10,7 @@ export default function AdminPageHeader({
     badge,
 }: AdminPageHeaderProps) {
     return (
-        <div className="mb-8 flex items-start justify-between gap-6">
+        <div className="mb-8 flex flex-col items-start gap-6 sm:flex-row sm:justify-between">
             <div>
                 <div className="flex items-center gap-3">
                     <div className="h-7 w-1.5 rounded-full bg-indigo-400" />

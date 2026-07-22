@@ -166,7 +166,7 @@ export default function AdminNoticeList({ notices: initialNotices }: AdminNotice
                 />
             </div>
 
-            <div className="grid grid-cols-[32px_minmax(0,1fr)_120px_72px] border-b border-slate-200 bg-slate-50 px-5 py-3 text-xs font-bold text-slate-500">
+            <div className="hidden border-b border-slate-200 bg-slate-50 px-5 py-3 text-xs font-bold text-slate-500 sm:grid sm:grid-cols-[32px_minmax(0,1fr)_120px_72px]">
                 <span aria-hidden />
                 <span>제목</span>
                 <span>등록일</span>
@@ -182,7 +182,7 @@ export default function AdminNoticeList({ notices: initialNotices }: AdminNotice
                     {notices.map((notice) => (
                         <article
                             key={notice.noticeId}
-                            className={`grid grid-cols-[32px_minmax(0,1fr)_120px_72px] items-center px-5 py-4 text-sm ${notice.isPinned ? "bg-indigo-50 hover:bg-indigo-100" : "hover:bg-slate-50"} cursor-pointer`}
+                            className={`grid grid-cols-[32px_minmax(0,1fr)] items-center gap-y-1 px-5 py-4 text-sm sm:grid-cols-[32px_minmax(0,1fr)_120px_72px] sm:gap-y-0 ${notice.isPinned ? "bg-indigo-50 hover:bg-indigo-100" : "hover:bg-slate-50"} cursor-pointer`}
                         >
                             <input
                                 type="checkbox"

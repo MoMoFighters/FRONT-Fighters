@@ -51,7 +51,6 @@ export default async function AdminUserDetailPage({ params, searchParams }: Admi
         const user = await getPendingTeacherById(userId);
         const categoryMeta = getCategoryMeta(user.category);
 
-        console.log(user);
         return (
             <div className="mx-auto w-full max-w-300 pb-10">
                 <Link href={backHref} className="inline-flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-slate-950"><ArrowLeft className="size-4" />회원 관리로 돌아가기</Link>
@@ -61,7 +60,7 @@ export default async function AdminUserDetailPage({ params, searchParams }: Admi
                         <div><h1 className="text-2xl font-bold text-slate-950">{user.name}</h1><p className="mt-1 text-sm font-medium text-slate-500">승인 대기 강사 상세 정보</p></div>
                     </div>
                 </div>
-                <section className="mt-7 grid grid-cols-2 gap-x-10 gap-y-6 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+                <section className="mt-7 grid grid-cols-1 gap-x-10 gap-y-6 rounded-lg border border-slate-200 bg-white p-6 shadow-sm sm:grid-cols-2">
                     <div><p className="text-xs font-bold text-slate-400">이메일</p><p className="mt-2 text-sm font-bold text-slate-800">{user.email}</p></div>
                     <div><p className="text-xs font-bold text-slate-400">사용자 유형</p><p className="mt-2 text-sm font-bold text-slate-800">{USER_ROLE_LABEL[user.role]}</p></div>
                     <div><p className="text-xs font-bold text-slate-400">가입일</p><p className="mt-2 text-sm font-bold text-slate-800">{formatAdminDateTime(user.createdAt)}</p></div>
@@ -111,7 +110,7 @@ export default async function AdminUserDetailPage({ params, searchParams }: Admi
                     </div>
                 </div>
             </div>
-            <section className="mt-7 grid grid-cols-2 gap-x-10 gap-y-6 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+            <section className="mt-7 grid grid-cols-1 gap-x-10 gap-y-6 rounded-lg border border-slate-200 bg-white p-6 shadow-sm sm:grid-cols-2">
                 <div><p className="text-xs font-bold text-slate-400">이메일</p><p className="mt-2 text-sm font-bold text-slate-800">{user.email}</p></div>
                 <div><p className="text-xs font-bold text-slate-400">사용자 유형</p><p className="mt-2 text-sm font-bold text-slate-800">{USER_ROLE_LABEL[user.role]}</p></div>
                 <div><p className="text-xs font-bold text-slate-400">가입일</p><p className="mt-2 text-sm font-bold text-slate-800">{formatAdminDateTime(user.createdAt)}</p></div>
