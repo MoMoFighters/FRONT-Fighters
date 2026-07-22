@@ -27,7 +27,6 @@ export default function LogoutBtn({
             clearLectureUploadTasksStorage();
             clearChatBotMessagesStorage();
             router.replace("/");
-            router.refresh();
         } else {
             alert(result.message);
         }

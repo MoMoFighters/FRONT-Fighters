@@ -17,6 +17,7 @@ import {
     stopSoloStudyTimerService,
     getSoloStudyLabListService,
     getSoloStudyHistoryService,
+    getYearlyStudyTimeService,
 } from "@/app/services/study/service";
 import type {
     StudyApiResponse,
@@ -37,6 +38,7 @@ import type {
     SoloStudyTimerEndResult,
     SoloStudyLapsResult,
     SoloStudyHistoryItem,
+    DailyStudyTimeResult,
 } from "@/features/study/type";
 
 const createStudyErrorResponse = <T>(
@@ -221,5 +223,14 @@ export const getSoloStudyHistory = async (): Promise<StudyApiResponse<SoloStudyH
         return await getSoloStudyHistoryService();
     } catch (error) {
         return createStudyErrorResponse<SoloStudyHistoryItem[]>(error, "세션 이력 조회에 실패했습니다.");
+    }
+};
+
+// 연간 누적 공부시간 조회 (잔디 히트맵용)
+export const getYearlyStudyTime = async (): Promise<StudyApiResponse<DailyStudyTimeResult[]>> => {
+    try {
+        return await getYearlyStudyTimeService();
+    } catch (error) {
+        return createStudyErrorResponse<DailyStudyTimeResult[]>(error, "연간 학습 기록을 불러오지 못했습니다.");
     }
 };
