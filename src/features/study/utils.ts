@@ -1,5 +1,3 @@
-import { jwtDecode } from "jwt-decode";
-
 import type { GroupStudyDetail, StudyRoomSeatUser, DailyStudyTimeResult } from "./type";
 import type { GrassLevel } from "@/components/mypage/GrassHeatmap";
 
@@ -15,24 +13,6 @@ export const formatStudyTime = (totalSeconds: number) => {
 // 진행 중인(endedAt이 null인) 랩은 seconds도 null로 내려오므로 별도 표기
 export const formatLapSeconds = (seconds: number | null) =>
     seconds === null ? "진행 중" : formatStudyTime(seconds);
-
-interface StudyAccessTokenPayload {
-    nickname?: string;
-}
-
-// 나인지 아닌지 구분: accessToken을 디코드해서 nickname 클레임을 꺼내온다.
-export const getNicknameFromAccessToken = (accessToken?: string | null): string | null => {
-    if (!accessToken) {
-        return null;
-    }
-
-    try {
-        const decoded = jwtDecode<StudyAccessTokenPayload>(accessToken);
-        return decoded.nickname ?? null;
-    } catch {
-        return null;
-    }
-};
 
 // 그룹방 상세 정보의 멤버 목록을, 좌석(방장 고정 좌상단) 형태로 가공한다.
 // 자리가 비어 있으면 undefined로 채워서 항상 maxMember 길이의 배열을 반환한다.

@@ -75,6 +75,7 @@ export default function MomoResidentCard({ data }: ResidentCardProps) {
                                     src={data.profileImageUrl}
                                     alt="프로필 사진"
                                     fill
+                                    sizes="160px"
                                     className="object-cover"
                                 />
                             ) : (
