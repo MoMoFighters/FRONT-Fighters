@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import {
     ArrowDownLeft,
@@ -65,31 +66,21 @@ const formatDateTime = (createdAt: string) => {
     }).format(date);
 };
 
-export default async function StudentMyPage() {
-    const [
-        myInfoResponse,
-        lectureResponse,
-        pointHistoryResponse,
-        studyYearlyResponse,
-        activityStreakResponse,
-    ] =
-        await Promise.all([
-            getMyInfo(),
-            getLecturesWithAuth({
-                enrolled: true,
-                page: 1,
-            }),
-            getPointHistoryListAction(1),
-            getYearlyStudyTime(),
-            getMyYearlyStreakAction(),
-        ]);
+const GrassSkeleton = () => (
+    <div className="h-full w-full animate-pulse rounded-lg bg-slate-100" />
+);
 
+const ListSkeleton = () => (
+    <div className="space-y-3 px-6 py-5">
+        {Array.from({ length: 3 }).map((_, index) => (
+            <div key={index} className="h-16 animate-pulse rounded-xl bg-slate-100" />
+        ))}
+    </div>
+);
+
+export default async function StudentMyPage() {
+    const myInfoResponse = await getMyInfo();
     const currentYear = new Date().getFullYear();
-    const { levelByDate: studyLevelByDate, secondsByDate: studySecondsByDate } =
-        buildStudyGrassMap(studyYearlyResponse.data?.records ?? []);
-    const activityLevelByDate = buildActivityGrassMap(
-        activityStreakResponse.data?.streaks ?? []
-    );
 
     const userInfo = myInfoResponse.data;
     const userData = {
@@ -102,12 +93,6 @@ export default async function StudentMyPage() {
         membership: userInfo?.membership,
         membershipUntil: userInfo?.membershipUntil,
     };
-    const lectures = (lectureResponse.content ?? []) as Lecture[];
-    const pointHistory = pointHistoryResponse.data?.list ?? [];
-    const totalPointHistory =
-        pointHistoryResponse.data?.totalElements ?? pointHistory.length;
-
-
 
     return (
         <main className="min-h-[calc(100vh-137px)] bg-white px-8 py-8">
@@ -172,8 +157,9 @@ export default async function StudentMyPage() {
                 </aside>
 
                 <section className="min-w-0 flex-1 space-y-6">
-                    <section className="grid grid-cols-[2fr_3fr] items-start gap-5">
-                        <div className="relative z-0 overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                    <section className="flex items-start gap-5">
+                        {/* [변경] 524px: p-4(좌우 32px)를 뺀 카드 실제 폭이 492px가 되도록(492+32=524) */}
+                        <div className="relative z-0 w-[524px] shrink-0 overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
                             <div className="mb-2.5 flex items-center gap-2">
                                 <CreditCard className="h-3.5 w-3.5 text-indigo-500" />
                                 <h2 className="text-sm font-black text-slate-900">
@@ -186,35 +172,33 @@ export default async function StudentMyPage() {
                             </div>
                         </div>
 
-                        <div className="grid grid-rows-2 gap-3">
-                            <div className="flex flex-col rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+                        {/* [변경] 높이 340px로 고정(잔디 그리드가 잘리지 않도록 여유분 포함), 폭은 min-w-0 flex-1로 남는 공간을 채우고 넘치면 내부 스크롤 */}
+                        <div className="grid h-[340px] min-w-0 flex-1 grid-rows-2 gap-3">
+                            <div className="flex min-w-0 flex-col rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
                                 <div className="flex items-center gap-1.5">
                                     <Leaf className="h-2.5 w-2.5 text-emerald-500" />
                                     <h2 className="text-[10px] font-black text-slate-900">
                                         학습 잔디
                                     </h2>
                                 </div>
-                                <div className="mt-1 flex-1 overflow-hidden">
-                                    <StudyGrassCard
-                                        year={currentYear}
-                                        levelByDate={studyLevelByDate}
-                                        secondsByDate={studySecondsByDate}
-                                    />
+                                <div className="mt-1 min-w-0 min-h-0 flex-1 overflow-hidden">
+                                    <Suspense fallback={<GrassSkeleton />}>
+                                        <StudyGrassSection year={currentYear} />
+                                    </Suspense>
                                 </div>
                             </div>
 
-                            <div className="flex flex-col rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+                            <div className="flex min-w-0 flex-col rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
                                 <div className="flex items-center gap-1.5">
                                     <Leaf className="h-2.5 w-2.5 text-indigo-500" />
                                     <h2 className="text-[10px] font-black text-slate-900">
                                         활동 잔디
                                     </h2>
                                 </div>
-                                <div className="mt-1 flex-1 overflow-hidden">
-                                    <ActivityGrassCard
-                                        year={currentYear}
-                                        levelByDate={activityLevelByDate}
-                                    />
+                                <div className="mt-1 min-w-0 min-h-0 flex-1 overflow-hidden">
+                                    <Suspense fallback={<GrassSkeleton />}>
+                                        <ActivityGrassSection year={currentYear} />
+                                    </Suspense>
                                 </div>
                             </div>
                         </div>
@@ -244,38 +228,19 @@ export default async function StudentMyPage() {
                         </div>
 
                         <div className="scrollbar-none h-110 overflow-y-auto">
-                            {lectures.length > 0 ? (
-                                lectures.map((lecture) => (
-                                    <StudentLectureItem
-                                        key={lecture.lectureId}
-                                        lecture={lecture}
-                                        href={`/student/mypage/lectures/${lecture.lectureId}`}
-                                        showLearningStatus
-                                    />
-                                ))
-                            ) : (
-                                <div className="flex h-full flex-col items-center justify-center text-slate-400">
-                                    <BookOpen className="h-10 w-10" />
-                                    <p className="mt-3 text-sm font-black">
-                                        아직 수강 중인 강의가 없습니다.
-                                    </p>
-                                </div>
-                            )}
+                            <Suspense fallback={<ListSkeleton />}>
+                                <LectureListSection />
+                            </Suspense>
                         </div>
                     </section>
 
                     <section className="rounded-3xl border border-slate-200 bg-white shadow-sm">
                         <div className="flex items-center justify-between border-b border-slate-100 px-6 py-5">
-                            <div>
-                                <div className="flex items-center gap-2">
-                                    <Coins className="h-5 w-5 text-indigo-500" />
-                                    <h2 className="text-lg font-black text-slate-900">
-                                        포인트 내역
-                                    </h2>
-                                </div>
-                                <p className="mt-1 text-xs font-bold text-slate-400">
-                                    총 {totalPointHistory.toLocaleString()}건의 포인트 내역
-                                </p>
+                            <div className="flex items-center gap-2">
+                                <Coins className="h-5 w-5 text-indigo-500" />
+                                <h2 className="text-lg font-black text-slate-900">
+                                    포인트 내역
+                                </h2>
                             </div>
 
                             <div className="flex items-center gap-4">
@@ -290,67 +255,142 @@ export default async function StudentMyPage() {
                             </div>
                         </div>
 
-                        <div className="scrollbar-none h-90 overflow-y-auto divide-y divide-slate-100">
-                            {pointHistory.length > 0 ? (
-                                pointHistory.map((item, index) => {
-                                    const isIncrease = item.type === "GAINED";
-
-                                    return (
-                                        <div
-                                            key={`${item.createdAt}-${item.reason}-${index}`}
-                                            className="grid grid-cols-[144px_minmax(0,1fr)_112px] items-center gap-3 px-5 py-2.5 transition-colors hover:bg-slate-50"
-                                        >
-                                            <p className="text-[11px] font-bold text-slate-400">
-                                                {formatDateTime(item.createdAt)}
-                                            </p>
-
-                                            <div className="flex min-w-0 items-center gap-2.5">
-                                                <div
-                                                    className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${isIncrease
-                                                        ? "bg-indigo-50 text-indigo-500"
-                                                        : "bg-slate-100 text-slate-500"
-                                                        }`}
-                                                >
-                                                    {isIncrease ? (
-                                                        <ArrowDownLeft className="h-3.5 w-3.5" />
-                                                    ) : (
-                                                        <ArrowUpRight className="h-3.5 w-3.5" />
-                                                    )}
-                                                </div>
-
-                                                <div className="min-w-0">
-                                                    <p className="truncate text-sm font-bold text-slate-900">
-                                                        {POINT_REASON_LABEL[item.reason] ??
-                                                            item.reason}
-                                                    </p>
-                                                    <p className="text-[10px] font-bold text-slate-400">
-                                                        {POINT_TYPE_LABEL[item.type] ??
-                                                            item.type}
-                                                    </p>
-                                                </div>
-                                            </div>
-
-                                            <p
-                                                className={`text-right text-sm font-black ${isIncrease
-                                                    ? "text-indigo-500"
-                                                    : "text-rose-500"
-                                                    }`}
-                                            >
-                                                {isIncrease ? "+" : "-"}
-                                                {Math.abs(item.amount).toLocaleString()} P
-                                            </p>
-                                        </div>
-                                    );
-                                })
-                            ) : (
-                                <div className="px-5 py-10 text-center text-sm font-bold text-slate-400">
-                                    포인트 사용 내역이 없습니다.
-                                </div>
-                            )}
-                        </div>
+                        <Suspense fallback={<ListSkeleton />}>
+                            <PointHistorySection />
+                        </Suspense>
                     </section>
                 </section>
             </div>
         </main>
+    );
+}
+
+async function StudyGrassSection({ year }: { year: number }) {
+    const studyYearlyResponse = await getYearlyStudyTime();
+    const { levelByDate, secondsByDate } = buildStudyGrassMap(
+        studyYearlyResponse.data?.records ?? []
+    );
+
+    return (
+        <StudyGrassCard
+            year={year}
+            levelByDate={levelByDate}
+            secondsByDate={secondsByDate}
+        />
+    );
+}
+
+async function ActivityGrassSection({ year }: { year: number }) {
+    const activityStreakResponse = await getMyYearlyStreakAction();
+    const levelByDate = buildActivityGrassMap(
+        activityStreakResponse.data?.streaks ?? []
+    );
+
+    return <ActivityGrassCard year={year} levelByDate={levelByDate} />;
+}
+
+async function LectureListSection() {
+    const lectureResponse = await getLecturesWithAuth({
+        enrolled: true,
+        page: 1,
+    });
+    const lectures = (lectureResponse.content ?? []) as Lecture[];
+
+    if (lectures.length === 0) {
+        return (
+            <div className="flex h-full flex-col items-center justify-center text-slate-400">
+                <BookOpen className="h-10 w-10" />
+                <p className="mt-3 text-sm font-black">
+                    아직 수강 중인 강의가 없습니다.
+                </p>
+            </div>
+        );
+    }
+
+    return (
+        <>
+            {lectures.map((lecture) => (
+                <StudentLectureItem
+                    key={lecture.lectureId}
+                    lecture={lecture}
+                    href={`/student/mypage/lectures/${lecture.lectureId}`}
+                    showLearningStatus
+                />
+            ))}
+        </>
+    );
+}
+
+async function PointHistorySection() {
+    const pointHistoryResponse = await getPointHistoryListAction(1);
+    const pointHistory = pointHistoryResponse.data?.list ?? [];
+    const totalPointHistory =
+        pointHistoryResponse.data?.totalElements ?? pointHistory.length;
+
+    return (
+        <>
+            <p className="px-6 pt-3 text-xs font-bold text-slate-400">
+                총 {totalPointHistory.toLocaleString()}건의 포인트 내역
+            </p>
+
+            <div className="scrollbar-none h-90 overflow-y-auto divide-y divide-slate-100">
+                {pointHistory.length > 0 ? (
+                    pointHistory.map((item, index) => {
+                        const isIncrease = item.type === "GAINED";
+
+                        return (
+                            <div
+                                key={`${item.createdAt}-${item.reason}-${index}`}
+                                className="grid grid-cols-[144px_minmax(0,1fr)_112px] items-center gap-3 px-5 py-2.5 transition-colors hover:bg-slate-50"
+                            >
+                                <p className="text-[11px] font-bold text-slate-400">
+                                    {formatDateTime(item.createdAt)}
+                                </p>
+
+                                <div className="flex min-w-0 items-center gap-2.5">
+                                    <div
+                                        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${isIncrease
+                                            ? "bg-indigo-50 text-indigo-500"
+                                            : "bg-slate-100 text-slate-500"
+                                            }`}
+                                    >
+                                        {isIncrease ? (
+                                            <ArrowDownLeft className="h-3.5 w-3.5" />
+                                        ) : (
+                                            <ArrowUpRight className="h-3.5 w-3.5" />
+                                        )}
+                                    </div>
+
+                                    <div className="min-w-0">
+                                        <p className="truncate text-sm font-bold text-slate-900">
+                                            {POINT_REASON_LABEL[item.reason] ??
+                                                item.reason}
+                                        </p>
+                                        <p className="text-[10px] font-bold text-slate-400">
+                                            {POINT_TYPE_LABEL[item.type] ??
+                                                item.type}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <p
+                                    className={`text-right text-sm font-black ${isIncrease
+                                        ? "text-indigo-500"
+                                        : "text-rose-500"
+                                        }`}
+                                >
+                                    {isIncrease ? "+" : "-"}
+                                    {Math.abs(item.amount).toLocaleString()} P
+                                </p>
+                            </div>
+                        );
+                    })
+                ) : (
+                    <div className="px-5 py-10 text-center text-sm font-bold text-slate-400">
+                        포인트 사용 내역이 없습니다.
+                    </div>
+                )}
+            </div>
+        </>
     );
 }

@@ -11,10 +11,25 @@ import {
     minusReportCount,
 } from "@/app/services/user/service";
 import { cookies } from "next/headers";
+import { jwtDecode } from "jwt-decode";
 import { ApiResponse } from "@/lib/api";
 import { Category } from "../lecture/type";
 import { redirect } from "next/navigation";
 import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
+
+interface AccessTokenPayload {
+    sub?: string;
+}
+
+// accessToken은 로그인/재발급마다 값이 바뀌므로, 유저당 캐시 엔트리가 하나로 고정되도록
+// 토큰 안의 안 바뀌는 유저 식별자(sub)를 캐시 키로 쓴다. 디코드 실패 시에만 토큰 원문으로 폴백.
+const getStableUserKey = (accessToken: string): string => {
+    try {
+        return jwtDecode<AccessTokenPayload>(accessToken).sub ?? accessToken;
+    } catch {
+        return accessToken;
+    }
+};
 
 /* 401 에러 페이지 및 회원탈퇴에서 사용할
    토큰 죽이고, 로그인페이지로 리다이렉트 시키는 함수 */
@@ -68,7 +83,7 @@ export const getMyInfo = async (): Promise<MomoUserInfoResponse> => {
 
         const result = await unstable_cache(
             () => getMyInfoService(accessToken),
-            ["my-info", accessToken],
+            ["my-info", getStableUserKey(accessToken)],
             { revalidate: 30, tags: ["my-info"] }
         )();
         const userDetail = result.data.userDetail;
