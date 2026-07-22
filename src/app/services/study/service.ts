@@ -438,7 +438,7 @@ export const getMonthlyStudyTimeService = async (
 
 
 // 연간 누적 공부시간 조회 (잔디 히트맵용)
-export const getYearlyStudyTimeService = async (): Promise<StudyApiResponse<DailyStudyTimeResult[]>> => {
+export const getYearlyStudyTimeService = async (): Promise<StudyApiResponse<YearlyStudyRecordResult>> => {
     const response = await fetchWithAuth("/api/v3/study/records/yearly", {
         next: { revalidate: 300 },
     });

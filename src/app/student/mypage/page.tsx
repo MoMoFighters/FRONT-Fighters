@@ -86,7 +86,7 @@ export default async function StudentMyPage() {
 
     const currentYear = new Date().getFullYear();
     const { levelByDate: studyLevelByDate, secondsByDate: studySecondsByDate } =
-        buildStudyGrassMap(studyYearlyResponse.data ?? []);
+        buildStudyGrassMap(studyYearlyResponse.data?.records ?? []);
     const activityLevelByDate = buildActivityGrassMap(
         activityStreakResponse.data?.streaks ?? []
     );
