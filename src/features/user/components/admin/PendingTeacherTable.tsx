@@ -79,7 +79,7 @@ export default function PendingTeacherTable({ users }: PendingTeacherTableProps)
                 </Button>
             </div>
 
-            <div className="grid min-w-[820px] grid-cols-[48px_1fr_1.6fr_.9fr_220px] items-center border-b border-slate-200 bg-white px-5 py-3 text-xs font-bold text-slate-500">
+            <div className="hidden items-center border-b border-slate-200 bg-white px-5 py-3 text-xs font-bold text-slate-500 md:grid md:min-w-[820px] md:grid-cols-[48px_1fr_1.6fr_.9fr_220px]">
                 <input
                     type="checkbox"
                     aria-label="전체 선택"
@@ -100,7 +100,7 @@ export default function PendingTeacherTable({ users }: PendingTeacherTableProps)
             ) : (
                 <div className="divide-y divide-slate-100">
                     {users.map((user) => (
-                        <div key={user.userId} className="grid min-w-[820px] grid-cols-[48px_1fr_1.6fr_.9fr_220px] items-center px-5 py-4 text-sm text-slate-600 hover:bg-slate-50">
+                        <div key={user.userId} className="grid grid-cols-1 gap-2 px-5 py-4 text-sm text-slate-600 hover:bg-slate-50 md:grid-cols-[48px_1fr_1.6fr_.9fr_220px] md:items-center md:gap-0 md:min-w-[820px]">
                             <input
                                 type="checkbox"
                                 aria-label={`${user.name} 선택`}

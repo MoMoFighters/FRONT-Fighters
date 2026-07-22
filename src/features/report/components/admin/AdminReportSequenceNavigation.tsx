@@ -25,7 +25,7 @@ function SequenceItem({ label, report, isCurrent = false, icon }: SequenceItemPr
         <Link
             href={`/admin/reports/${report.id}`}
             aria-current={isCurrent ? "page" : undefined}
-            className={`grid grid-cols-[5rem_minmax(0,1fr)_8rem] items-center gap-4 px-5 py-4 text-sm transition-colors ${
+            className={`grid grid-cols-1 items-start gap-2 px-5 py-4 text-sm transition-colors sm:grid-cols-[5rem_minmax(0,1fr)_8rem] sm:items-center sm:gap-4 ${
                 isCurrent
                     ? "bg-indigo-50/70"
                     : "hover:bg-slate-50"
@@ -42,7 +42,7 @@ function SequenceItem({ label, report, isCurrent = false, icon }: SequenceItemPr
                 <span className="mr-2 text-slate-400">{report.reason}</span>
                 {report.detail}
             </span>
-            <time className="text-right text-xs font-medium text-slate-400">
+            <time className="text-left text-xs font-medium text-slate-400 sm:text-right">
                 {formatAdminDateTime(report.createdAt)}
             </time>
         </Link>

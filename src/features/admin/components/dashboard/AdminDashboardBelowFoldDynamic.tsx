@@ -36,7 +36,7 @@ function AdminDashboardBelowFoldSkeleton() {
     return (
         <div className="space-y-5">
             <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-                <div className="mb-5 flex items-start justify-between gap-6">
+                <div className="mb-5 flex flex-col items-start gap-6 sm:flex-row sm:justify-between">
                     <div className="space-y-2">
                         <Skeleton className="h-6 w-48" />
                         <Skeleton className="h-4 w-72" />
@@ -47,7 +47,7 @@ function AdminDashboardBelowFoldSkeleton() {
             </section>
 
             <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-                <div className="mb-5 flex items-start justify-between gap-6">
+                <div className="mb-5 flex flex-col items-start gap-6 sm:flex-row sm:justify-between">
                     <div className="space-y-2">
                         <Skeleton className="h-6 w-56" />
                         <Skeleton className="h-4 w-80" />
@@ -57,7 +57,7 @@ function AdminDashboardBelowFoldSkeleton() {
                 <Skeleton className="h-80 w-full rounded-md" />
             </section>
 
-            <div className="grid grid-cols-[minmax(0,1.1fr)_minmax(440px,0.96fr)] gap-5">
+            <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1.1fr)_minmax(440px,0.96fr)]">
                 <Skeleton className="h-96 rounded-lg" />
                 <div className="space-y-5">
                     <Skeleton className="h-56 rounded-lg" />

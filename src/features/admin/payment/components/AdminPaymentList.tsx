@@ -8,7 +8,7 @@ interface AdminPaymentListProps {
 export default function AdminPaymentList({ payments }: AdminPaymentListProps) {
     return (
         <section className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
-            <div className="grid min-w-[900px] grid-cols-[1.2fr_.9fr_3fr] gap-x-6 border-b border-slate-200 bg-slate-50 px-6 py-3 text-xs font-bold text-slate-500">
+            <div className="hidden gap-x-6 border-b border-slate-200 bg-slate-50 px-6 py-3 text-xs font-bold text-slate-500 md:grid md:min-w-[900px] md:grid-cols-[1.2fr_.9fr_3fr]">
                 <span>이름</span>
                 <span>멤버십</span>
                 <div className="flex items-center justify-between">

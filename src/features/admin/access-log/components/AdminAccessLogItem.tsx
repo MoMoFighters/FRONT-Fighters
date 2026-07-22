@@ -35,7 +35,7 @@ export default function AdminAccessLogItem({
                 type="button"
                 onClick={onToggle}
                 aria-expanded={isExpanded}
-                className="grid w-full grid-cols-[110px_150px_minmax(170px,1fr)_92px_140px_24px] items-center gap-4 px-6 py-4 text-left text-sm transition-colors hover:bg-slate-50"
+                className="grid w-full grid-cols-1 items-start gap-1 px-6 py-4 text-left text-sm transition-colors hover:bg-slate-50 md:grid-cols-[110px_150px_minmax(170px,1fr)_92px_140px_24px] md:items-center md:gap-4 md:min-w-[800px]"
             >
                 <span className="font-medium text-slate-600">
                     {ACTION_LABEL[log.action]}

@@ -40,7 +40,7 @@ export default function AdminUserItem({ user, view }: AdminUserItemProps) {
     return (
         <Link
             href={href}
-            className={`group grid min-w-[900px] ${isDeletedView ? "grid-cols-[1.1fr_.8fr_1.8fr_.9fr_.8fr]" : "grid-cols-[1.05fr_.75fr_1.8fr_.85fr_.75fr_.7fr_.85fr_1.15fr]"} items-center px-6 py-4 text-sm text-slate-600 transition hover:bg-slate-50`}
+            className={`group grid grid-cols-1 gap-1 px-6 py-4 text-sm text-slate-600 transition hover:bg-slate-50 md:min-w-[900px] md:items-center md:gap-0 ${isDeletedView ? "md:grid-cols-[1.1fr_.8fr_1.8fr_.9fr_.8fr]" : "md:grid-cols-[1.05fr_.75fr_1.8fr_.85fr_.75fr_.7fr_.85fr_1.15fr]"}`}
         >
             <span className="w-fit font-bold text-slate-900 transition group-hover:text-indigo-600">
                 {user.name}

@@ -28,7 +28,7 @@ export default async function AdminNoticeDetailPage({
                 공지사항 목록으로
             </Link>
 
-            <div className="mt-6 grid grid-cols-[minmax(0,1fr)_17rem] gap-6">
+            <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_17rem]">
                 <article className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
                     <header className="border-b border-slate-200 px-7 py-6">
                         <span className="rounded-full bg-indigo-50 px-2.5 py-1 text-xs font-bold text-indigo-600">공지사항</span>
