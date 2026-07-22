@@ -15,11 +15,9 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export async function fetchWithAuth(endpoint: string, options: RequestInit = {}): Promise<Response> {
 
-    // 쿠키 accessToken 꺼내고
     const cookieStore = await cookies();
     const accessToken = cookieStore.get('accessToken')?.value;
 
-    // Header 설정
     const headers = {
         'Content-Type': 'application/json',
         'ngrok-skip-browser-warning': 'true',
@@ -27,7 +25,6 @@ export async function fetchWithAuth(endpoint: string, options: RequestInit = {})
         ...options.headers
     }
 
-    // api 통신
     let response: Response;
     try {
         response = await fetch(`${BASE_URL}${endpoint}`, {

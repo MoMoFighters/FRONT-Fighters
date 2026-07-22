@@ -29,7 +29,6 @@ export const getMonthlyCalendarAction = async ({
     : Promise<ScheduleItem[]> => {
     try {
 
-        // 쿠키 가져오기
         const cookieStore =
             await cookies();
 
@@ -39,7 +38,6 @@ export const getMonthlyCalendarAction = async ({
                 ?.value;
 
 
-        // 토큰 없음
         if (!accessToken) {
 
             throw new Error(
@@ -210,7 +208,6 @@ export const createTodoAction = async (
 
     try {
 
-        // 쿠키 가져오기
         const cookieStore =
             await cookies();
 
@@ -220,7 +217,6 @@ export const createTodoAction = async (
                 ?.value;
 
 
-        // 토큰 없음
         if (!accessToken) {
 
             return createCalendarActionErrorResponse(
@@ -231,7 +227,6 @@ export const createTodoAction = async (
         }
 
 
-        // todo 생성
         const result =
             await createTodoService({
                 title,
@@ -262,7 +257,6 @@ export const addDateMemoAction = async (
 
     try {
 
-        // 쿠키 가져오기
         const cookieStore =
             await cookies();
 
@@ -272,7 +266,6 @@ export const addDateMemoAction = async (
                 ?.value;
 
 
-        // 토큰 없음
         if (!accessToken) {
 
             return createCalendarActionErrorResponse(
@@ -283,7 +276,6 @@ export const addDateMemoAction = async (
         }
 
 
-        // 하루 메모 생성
         const result =
             await addDateMemoService({
                 title,
@@ -316,7 +308,6 @@ export const addDateRangeMemoAction = async (
 
     try {
 
-        // 쿠키 가져오기
         const cookieStore =
             await cookies();
 
@@ -326,7 +317,6 @@ export const addDateRangeMemoAction = async (
                 ?.value;
 
 
-        // 토큰 없음
         if (!accessToken) {
 
             return createCalendarActionErrorResponse(
@@ -337,7 +327,6 @@ export const addDateRangeMemoAction = async (
         }
 
 
-        // 기간 메모 생성
         const result =
             await addDateRangeMemoService({
                 title,
@@ -581,7 +570,6 @@ export const deleteTodoAction = async (
 
     try {
 
-        // 쿠키 가져오기
         const cookieStore =
             await cookies();
 
@@ -591,7 +579,6 @@ export const deleteTodoAction = async (
                 ?.value;
 
 
-        // 토큰 없음
         if (!accessToken) {
 
             return createCalendarActionErrorResponse<unknown>(
@@ -602,7 +589,6 @@ export const deleteTodoAction = async (
         }
 
 
-        // calendarId 검증
         if (!calendarId) {
 
             return createCalendarActionErrorResponse<unknown>(
@@ -621,7 +607,6 @@ export const deleteTodoAction = async (
             });
 
 
-        // 캐시 갱신
         revalidateCalendarPaths();
 
 
@@ -658,7 +643,6 @@ export const editTodoAction = async ({
 
     try {
 
-        // 쿠키 가져오기
         const cookieStore =
             await cookies();
 
@@ -668,7 +652,6 @@ export const editTodoAction = async ({
                 ?.value;
 
 
-        // 토큰 없음
         if (!accessToken) {
 
             return createCalendarActionErrorResponse(
@@ -679,7 +662,6 @@ export const editTodoAction = async ({
         }
 
 
-        // calendarId 검증
         if (!calendarId) {
 
             return createCalendarActionErrorResponse(
@@ -690,7 +672,6 @@ export const editTodoAction = async ({
         }
 
 
-        // 제목 검증
         if (!title.trim()) {
 
             return createCalendarActionErrorResponse(
@@ -701,7 +682,6 @@ export const editTodoAction = async ({
         }
 
 
-        // 서비스 호출
         const result =
             await editTodoService({
                 calendarId:
@@ -744,7 +724,6 @@ export const checkTodoAction = async ({
 
     try {
 
-        // 쿠키 가져오기
         const cookieStore =
             await cookies();
 
@@ -754,7 +733,6 @@ export const checkTodoAction = async ({
                 ?.value;
 
 
-        // 토큰 없음
         if (!accessToken) {
 
             return createCalendarActionErrorResponse(
@@ -765,7 +743,6 @@ export const checkTodoAction = async ({
         }
 
 
-        // calendarId 검증
         if (!calendarId) {
 
             return createCalendarActionErrorResponse(
@@ -776,7 +753,6 @@ export const checkTodoAction = async ({
         }
 
 
-        // 서비스 호출
         const result =
             await checkTodoService({
                 calendarId,
