@@ -72,10 +72,7 @@ export default function CreateReportBtn({
         reasonDetail: '',
     });
 
-    // 신고하기 버튼 클릭
     const handleOpenConfirmModal = () => {
-
-        // 간단 검증
         if (!formData.reason) {
             toast.error('신고 사유를 선택해주세요.', {
                 duration: 1000
@@ -93,7 +90,6 @@ export default function CreateReportBtn({
         setIsConfirmModal(true);
     };
 
-    // 실제 신고 처리
     const handleCreateReport = async () => {
 
         try {
@@ -134,13 +130,11 @@ export default function CreateReportBtn({
                 duration: 1000
             });
 
-            // 상태 초기화
             setFormData({
                 reason: '',
                 reasonDetail: '',
             });
 
-            // 모달 닫기
             setIsConfirmModal(false);
             setIsModal(false);
 

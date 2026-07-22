@@ -20,7 +20,7 @@ export default function LecturePreviewPlayer({
             <video
                 controls
                 className="
-                    w-160 h-90
+                    w-full max-w-[640px] aspect-video
                     rounded-tl-lg
                     rounded-tr-lg
                     bg-black

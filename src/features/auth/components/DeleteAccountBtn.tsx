@@ -57,7 +57,7 @@ export default function DeleteAccountBtn({ userName }: { userName: string }) {
                     onClick={() => setIsModal(false)}
                 >
                     <div
-                        className="mx-auto my-auto flex h-90 w-120 flex-col gap-2 rounded-xl bg-slate-50 p-4"
+                        className="mx-auto my-auto flex max-h-[90vh] w-[90%] max-w-120 flex-col gap-2 overflow-y-auto rounded-xl bg-slate-50 p-4"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="flex w-full justify-end">

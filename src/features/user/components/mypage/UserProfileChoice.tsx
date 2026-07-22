@@ -133,7 +133,7 @@ export default function UserProfileChoice({ profileChangeOpen, setProfileChangeO
                 <div className="mt-13 h-0 w-0 border-y-[8px] border-r-[12px] border-y-transparent border-r-white drop-shadow-sm" />
             </div>
 
-            <div className="flex w-90 flex-col gap-2 rounded-2xl border border-indigo-100 bg-white/95 p-3 shadow-xl shadow-indigo-100/60 backdrop-blur">
+            <div className="flex w-[90vw] max-w-90 flex-col gap-2 rounded-2xl border border-indigo-100 bg-white/95 p-3 shadow-xl shadow-indigo-100/60 backdrop-blur">
                 <div className="flex flex-row justify-between py-1">
                     <h3 className="text-md font-black text-slate-800">
                         프로필 변경
@@ -146,7 +146,7 @@ export default function UserProfileChoice({ profileChangeOpen, setProfileChangeO
                 </div>
 
                 <div className="scrollbar-none flex h-[200px] w-full flex-col gap-2 overflow-y-auto rounded-xl border border-slate-100 bg-slate-50/80 p-1">
-                    <div className="grid w-full grid-cols-4 content-start gap-2">
+                    <div className="grid w-full grid-cols-2 content-start gap-2 sm:grid-cols-4">
                         {isLoading ? (
                             <div className="col-span-4 flex h-24 items-center justify-center text-xs font-bold text-slate-400">
                                 불러오는 중...
@@ -170,7 +170,7 @@ export default function UserProfileChoice({ profileChangeOpen, setProfileChangeO
                                             }
                                         }}
                                         disabled={!item.imageUrl}
-                                        className="relative flex h-[75px] w-[75px] cursor-pointer items-center justify-center overflow-hidden rounded-xl border border-indigo-100 bg-white text-sm font-bold text-slate-600 transition-colors hover:bg-indigo-50"
+                                        className="relative flex aspect-square w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl border border-indigo-100 bg-white text-sm font-bold text-slate-600 transition-colors hover:bg-indigo-50"
                                     >
                                         {item.imageUrl ? (
                                             <Image
@@ -191,7 +191,7 @@ export default function UserProfileChoice({ profileChangeOpen, setProfileChangeO
                                         closeDelay={50}
                                     >
                                         <HoverCardTrigger asChild>
-                                            <div className="relative flex h-[75px] w-[75px] cursor-not-allowed items-center justify-center overflow-hidden rounded-xl border border-indigo-100 bg-white text-sm font-bold text-slate-600 transition-colors">
+                                            <div className="relative flex aspect-square w-full cursor-not-allowed items-center justify-center overflow-hidden rounded-xl border border-indigo-100 bg-white text-sm font-bold text-slate-600 transition-colors">
                                                 {item.imageUrl ? (
                                                     <Image
                                                         src={item.imageUrl}

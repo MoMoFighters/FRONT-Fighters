@@ -32,7 +32,8 @@ export default function CalendarSide({
 
     return (
         <div className="
-            w-[320px]
+            w-full
+            md:w-[320px]
             shrink-0
             grid
             grid-rows-[3fr_2fr]

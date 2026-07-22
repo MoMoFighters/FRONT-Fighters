@@ -71,7 +71,7 @@ export default function ChapterItem({
         <div
             onClick={handleMoveChapterClick}
             className={`
-                flex items-center gap-6 p-4 rounded-lg
+                flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-6 p-4 rounded-lg
                 border border-slate-200 mb-4
 
                 ${isLocked ||
@@ -95,7 +95,7 @@ export default function ChapterItem({
             </div>
 
             {chapter.chapterProgress !== undefined && (
-                <div className="w-60 flex gap-1">
+                <div className="w-full sm:w-60 flex gap-1">
                     <Progress
                         value={chapter.chapterProgress}
                         className="mt-2"
@@ -107,7 +107,7 @@ export default function ChapterItem({
                 </div>
             )}
 
-            <div className="text-slate-500 text-sm shrink-0 mr-4">
+            <div className="text-slate-500 text-sm shrink-0 sm:mr-4">
                 {`${String(
                     Math.floor(
                         chapter.durationSec / 60

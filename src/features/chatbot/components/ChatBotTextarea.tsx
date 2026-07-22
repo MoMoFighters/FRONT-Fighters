@@ -114,7 +114,7 @@ export default function ChatBotTextarea({
     };
 
     return (
-        <div className="fixed bottom-6 right-6 top-[72px] z-[100] flex w-[min(50vw,480px)] min-w-[360px] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
+        <div className="fixed inset-x-4 bottom-6 top-[72px] z-[100] flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl sm:inset-x-auto sm:right-6 sm:w-[min(50vw,480px)] sm:min-w-[360px]">
             <div className="flex items-center gap-2 border-b border-slate-200 bg-white px-4 py-3">
                 <span className="text-sm font-semibold text-slate-800">MoAi 5</span>
                 <button
