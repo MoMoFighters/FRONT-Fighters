@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Check, Plus, Users, X } from "lucide-react";
+import { Check, User, Users, X } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -103,7 +103,7 @@ export default function GroupStudyActionsPanel({
                         className="flex flex-col items-start gap-3 rounded-2xl border border-slate-200 bg-white p-5 transition hover:border-indigo-200 hover:bg-indigo-50/60"
                     >
                         <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-100 text-indigo-500">
-                            <Plus className="h-5 w-5" />
+                            <User className="h-5 w-5" />
                         </span>
                         <span className="text-sm font-black text-slate-800">
                             솔로 세션 시작

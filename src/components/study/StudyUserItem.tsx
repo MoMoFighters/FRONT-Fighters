@@ -98,7 +98,9 @@ export default function StudyUserItem({
             const response = await getGroupStudyLabList(roomId, user.userId);
 
             if (response.status >= 400) {
-                toast.error(response.message || "랩 목록을 불러오지 못했습니다.");
+                if (response.status !== 404) {
+                    toast.error(response.message || "랩 목록을 불러오지 못했습니다.");
+                }
                 setLaps([]);
                 return;
             }
@@ -241,11 +243,11 @@ export default function StudyUserItem({
 
                     <div className="h-72 space-y-1 overflow-y-auto scrollbar-none">
                         {isLapLoading ? (
-                            <div className="py-6 text-center text-xs font-bold text-slate-400">
+                            <div className="flex h-full items-center justify-center text-xs font-bold text-slate-400">
                                 불러오는 중...
                             </div>
                         ) : laps.length === 0 ? (
-                            <div className="py-6 text-center text-xs font-bold text-slate-400">
+                            <div className="flex h-full items-center justify-center text-xs font-bold text-slate-400">
                                 기록된 랩이 없습니다.
                             </div>
                         ) : (

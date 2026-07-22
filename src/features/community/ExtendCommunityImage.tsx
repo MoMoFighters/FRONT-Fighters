@@ -54,8 +54,8 @@ export default function ExtendCommunityImage({ imageUrl }: { imageUrl: string })
                 alt="이미지"
                 width={720}
                 height={448}
+                sizes="40vw"
                 className="h-auto w-[40%] cursor-zoom-in rounded-2xl object-cover shadow-sm ring-1 ring-slate-100"
-                unoptimized
             />
             {modal}
         </>

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { History } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -11,7 +10,9 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import StudyUserItem from "@/components/study/StudyUserItem";
+import StudyStreakBadge from "@/components/study/StudyStreakBadge";
+import StudyQuoteCard from "@/components/study/StudyQuoteCard";
+import StudyWeeklyChart from "@/components/study/StudyWeeklyChart";
 import StudyWebcamPreview from "@/components/study/StudyWebcamPreview";
 import StudyTimer from "@/features/study/components/StudyTimer";
 import {
@@ -24,22 +25,28 @@ import {
 import { formatStudyTime } from "@/features/study/utils";
 import type {
     SoloCurrentSessionResult,
-    StudyRoomSeatUser,
     StudyTimerLap,
 } from "@/features/study/type";
 
+interface WeeklyRecord {
+    date: string;
+    totalSeconds: number;
+}
+
 interface SoloStudyViewProps {
-    myNickname: string | null;
     initialSession: SoloCurrentSessionResult | null;
     dailyTotalSeconds: number;
     monthlyTotalSeconds: number;
+    streakDays: number;
+    weeklyRecords: WeeklyRecord[];
 }
 
 export default function SoloStudyView({
-    myNickname,
     initialSession,
     dailyTotalSeconds,
     monthlyTotalSeconds,
+    streakDays,
+    weeklyRecords,
 }: SoloStudyViewProps) {
     const [seconds, setSeconds] = useState(initialSession?.accumulatedSeconds ?? 0);
     const [isRunning, setIsRunning] = useState(initialSession?.status === "RUNNING");
@@ -47,16 +54,6 @@ export default function SoloStudyView({
     const [isLapsLoading, setIsLapsLoading] = useState(false);
     const [isLapModalOpen, setIsLapModalOpen] = useState(false);
     const [canStartTimer, setCanStartTimer] = useState(true);
-
-    const meSeat: StudyRoomSeatUser = {
-        userId: 0,
-        nickname: myNickname ?? "나",
-        status: "JOINED",
-        timerStatus: isRunning ? "STUDYING" : "RESTING",
-        totalSeconds: seconds,
-        isHost: false,
-        isMe: true,
-    };
 
     const refreshTimerAvailability = async () => {
         const response = await getTimerAvailability();
@@ -113,7 +110,10 @@ export default function SoloStudyView({
             const response = await getSoloStudyLabList();
 
             if (response.status >= 400) {
-                toast.error(response.message || "랩 목록을 불러오지 못했습니다.");
+                if (response.status !== 404) {
+                    toast.error(response.message || "랩 목록을 불러오지 못했습니다.");
+                }
+                setLaps([]);
                 return;
             }
 
@@ -168,8 +168,14 @@ export default function SoloStudyView({
     return (
         <>
             <div className="mx-auto mt-8 flex w-full max-w-360 flex-col items-stretch gap-8 lg:flex-row lg:items-start lg:justify-center">
-                <section className="flex w-full flex-col lg:max-w-100">
-                    <div className="relative rounded-2xl border border-slate-300 bg-white py-4 text-center shadow-sm">
+                <aside className="flex w-full flex-col items-center gap-4 lg:w-64 lg:shrink-0">
+                    <StudyStreakBadge streakDays={streakDays} />
+                    <StudyWeeklyChart records={weeklyRecords} />
+                    <StudyQuoteCard />
+                </aside>
+
+                <section className="flex w-full flex-col items-center lg:max-w-100">
+                    <div className="w-full rounded-2xl border border-slate-300 bg-white py-4 text-center shadow-sm">
                         <h1 className="text-xl font-black text-slate-900 sm:text-2xl">
                             내 공부시간{" "}
                             <span className="font-mono text-indigo-500">
@@ -180,22 +186,14 @@ export default function SoloStudyView({
                             오늘 누적 {formatStudyTime(dailyTotalSeconds)} · 이번 달 누적{" "}
                             {formatStudyTime(monthlyTotalSeconds)}
                         </p>
-
-                        <button
-                            type="button"
-                            disabled={isLapsLoading}
-                            onClick={() => void handleRefreshLapsClick()}
-                            className="absolute right-2 top-1/2 flex -translate-y-1/2 cursor-pointer items-center gap-1 rounded-lg border border-slate-200 px-2 py-1.5 text-xs font-black text-slate-500 transition hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-500 disabled:cursor-wait disabled:opacity-60 sm:right-4 sm:px-2.5"
-                        >
-                            <History className="h-3.5 w-3.5" />
-                            <span className="hidden sm:inline">
-                                {isLapsLoading ? "불러오는 중..." : "내 랩 목록 조회"}
-                            </span>
-                        </button>
                     </div>
 
-                    <div className="mx-auto mt-10 w-40">
-                        <StudyUserItem roomId={0} user={meSeat} showLapButton={false} />
+                    <div className="mt-10 w-full max-w-96">
+                        <StudyWebcamPreview
+                            isTimerRunning={isRunning}
+                            onAbsenceTimeout={() => void handleTogglePause()}
+                            onOpenLaps={() => void handleRefreshLapsClick()}
+                        />
                     </div>
                 </section>
 
@@ -209,10 +207,6 @@ export default function SoloStudyView({
                         onTogglePause={() => void handleTogglePause()}
                         onEnd={() => void handleEnd()}
                     />
-
-                    <div className="mt-8">
-                        <StudyWebcamPreview />
-                    </div>
                 </div>
             </div>
 
@@ -227,15 +221,19 @@ export default function SoloStudyView({
 
                     <div className="h-72 space-y-1 overflow-y-auto scrollbar-none">
                         {isLapsLoading ? (
-                            <p className="py-6 text-center text-xs font-bold text-slate-400">
-                                불러오는 중...
-                            </p>
+                            <div className="flex h-full items-center justify-center">
+                                <p className="text-center text-xs font-bold text-slate-400">
+                                    불러오는 중...
+                                </p>
+                            </div>
                         ) : laps.length === 0 ? (
-                            <p className="py-6 text-center text-xs font-bold text-slate-400">
-                                시작하고 종료하면 랩이 기록됩니다.
-                            </p>
+                            <div className="flex h-full items-center justify-center">
+                                <p className="text-center text-xs font-bold text-slate-400">
+                                    시작하고 종료하면 랩이 기록됩니다.
+                                </p>
+                            </div>
                         ) : (
-                            [...laps].reverse().map((lap) => (
+                            laps.map((lap) => (
                                 <div
                                     key={lap.lapNumber}
                                     className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2"
