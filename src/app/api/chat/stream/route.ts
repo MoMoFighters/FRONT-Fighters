@@ -25,11 +25,6 @@ export async function POST(request: NextRequest) {
 
         const requestUrl = `${BASE_URL}/api/v1/chatbot/questions/stream?${params.toString()}`;
 
-        // 진단용 임시 로그 - 원인 파악 후 제거 예정
-        console.log("[chatbot-stream] 실제 백엔드 요청 URL:", {
-            url: requestUrl.replace(accessToken, `${accessToken.slice(0, 8)}...(총 ${accessToken.length}자)`),
-        });
-
         const backendResponse = await fetch(requestUrl, {
             headers: { Accept: "text/event-stream" },
         });

@@ -156,7 +156,6 @@ export const getLectureById = async (id: string): Promise<LectureDetailResponse>
   }
   await handleErrorResponse(response);
   const result: ApiResponse<LectureDetailResponse> = await response.json();
-  console.log(result);
   return assertApiData(result);
 };
 
@@ -299,7 +298,6 @@ export const getLectureMeta = async (
   await handleErrorResponse(response);
 
   const result: ApiResponse<LectureMetaResponse> = await response.json();
-  console.log(result);
 
   return assertApiData(result);
 };

@@ -26,7 +26,6 @@ export const getAccessLogs = async (page: number): Promise<AccessLogResponse> =>
     }
 
     const result: ApiResponse<AccessLogResponse> = await response.json();
-    console.log(result)
 
     if (!result.data) {
         throw new Error(result.message);

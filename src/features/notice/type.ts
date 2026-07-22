@@ -1,5 +1,3 @@
-// 공지사항 타입 정의
-
 export interface Notice {
     noticeId: number;
     title: string;

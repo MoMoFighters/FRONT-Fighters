@@ -162,7 +162,6 @@ export const editMyInfo = async (
             payload.password = password.trim();
         }
 
-        // 서비스 영역 함수 호출
         const result = await editMyInfoService(payload);
 
         revalidateTag("my-info", { expire: 0 });
