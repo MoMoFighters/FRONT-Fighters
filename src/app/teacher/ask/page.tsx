@@ -21,7 +21,6 @@ export default async function TeacherAskPage({
             ? Number(params.roomId)
             : null;
 
-    // 토큰 조회
     const cookieStore =
         await cookies();
 
@@ -30,13 +29,11 @@ export default async function TeacherAskPage({
             .get("accessToken")
             ?.value;
 
-    // 미로그인
     if (!accessToken) {
 
         redirect("/auth/login");
     }
 
-    // 채팅방 목록 조회
     const roomResponse =
         await getChatRoomsService(
             accessToken
@@ -60,12 +57,11 @@ export default async function TeacherAskPage({
         <div className="flex flex-col h-160 max-w-6xl mx-auto my-3 w-full">
 
             <div
-                className="flex flex-row border border-slate-200 overflow-hidden flex-1 min-h-0 bg-white"
+                className="flex flex-col border border-slate-200 overflow-hidden flex-1 min-h-0 bg-white md:flex-row"
             >
 
-                {/* 채팅방 목록 */}
                 <div
-                    className="flex flex-col overflow-y-scroll min-h-0 w-80 shrink-0 scrollbar-none border-r border-slate-200"
+                    className="flex flex-col overflow-y-scroll min-h-0 w-full shrink-0 scrollbar-none border-r border-slate-200 md:w-80"
                 >
 
                     {chatRoomData?.length === 0 ? (
@@ -91,7 +87,6 @@ export default async function TeacherAskPage({
 
                 </div>
 
-                {/* 채팅창 */}
                 <div
                     className="flex-1 overflow-hidden"
                 >

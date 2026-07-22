@@ -119,7 +119,7 @@ export default function LoginResultModal({
                 onClick={closeResultModal}
             >
                 <div
-                    className="flex w-[420px] flex-col items-center gap-4 rounded-xl border border-slate-200 bg-white p-8 shadow-2xl"
+                    className="flex w-full max-w-[420px] flex-col items-center gap-4 rounded-xl border border-slate-200 bg-white p-8 shadow-2xl"
                     onClick={(event) => event.stopPropagation()}
                 >
                     {isRejectedTeacherApplication ? (

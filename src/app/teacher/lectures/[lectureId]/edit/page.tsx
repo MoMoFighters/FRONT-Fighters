@@ -8,7 +8,7 @@ export default async function LectureEditPage({ params }: { params: Promise<{ le
     const lecture = await getLectureById(lectureId);
 
     return (
-        <div className="p-12 relative">
+        <div className="p-4 sm:p-8 lg:p-12 relative">
             <MovePageBackBtn href={`/teacher/lectures/${lectureId}`} />
             <LectureForm
                 mode='edit'
