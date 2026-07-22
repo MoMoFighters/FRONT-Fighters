@@ -24,7 +24,7 @@ export default function StudyRank({ dailyRanking, monthlyRanking }: StudyRankPro
     const restRanking = ranking.filter((entry) => entry.rank > 3);
 
     return (
-        <aside className="w-56 shrink-0 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <aside className="w-full shrink-0 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm lg:w-56">
             <nav className="flex gap-1 rounded-full bg-slate-100 p-1">
                 <button
                     type="button"

@@ -2,16 +2,21 @@
 
 import {
     createGroupStudyService,
+    updateGroupStudyTitleService,
+    getGroupStudyDetailService,
     inviteStudyFriendService,
     cancelStudyInviteService,
     acceptStudyInviteService,
     denyStudyInviteService,
+    getSentStudyInviteListService,
     startGroupStudyTimerService,
     pauseGroupStudyTimerService,
     stopGroupStudyTimerService,
     getGroupStudyLabListService,
     leaveGroupStudyService,
     kickGroupStudyMemberService,
+    getTimerAvailabilityService,
+    getYearlyStudyRecordService,
     startSoloStudyTimerService,
     pauseSoloStudyTimerService,
     stopSoloStudyTimerService,
@@ -22,6 +27,8 @@ import {
 import type {
     StudyApiResponse,
     GroupStudyInfo,
+    GroupStudyDetail,
+    GroupStudyTitleUpdateResult,
     GroupStudyLeaveResult,
     GroupStudyKickResult,
     InviteStudyFriendRequest,
@@ -29,10 +36,13 @@ import type {
     StudyInvitationCancelResult,
     StudyInvitationAcceptResult,
     StudyInvitationRejectResult,
+    SentStudyInvitationListResult,
     GroupStudyTimerStartResult,
     GroupStudyTimerPauseResult,
     GroupStudyTimerEndResult,
     GroupStudyMemberLapsResult,
+    TimerAvailabilityResult,
+    YearlyStudyRecordResult,
     SoloStudyTimerStartResult,
     SoloStudyTimerPauseResult,
     SoloStudyTimerEndResult,
@@ -40,6 +50,7 @@ import type {
     SoloStudyHistoryItem,
     DailyStudyTimeResult,
 } from "@/features/study/type";
+import { revalidatePath } from "next/cache";
 
 const createStudyErrorResponse = <T>(
     error: unknown,
@@ -47,11 +58,11 @@ const createStudyErrorResponse = <T>(
 ): StudyApiResponse<T> => {
     const raw = error instanceof Error ? error.message : "";
     const [statusPart, messagePart] = raw.split("|");
-    const statusCode = Number(statusPart);
+    const status = Number(statusPart);
 
     return {
         timestamp: new Date().toISOString(),
-        statusCode: Number.isFinite(statusCode) ? statusCode : 500,
+        status: Number.isFinite(status) ? status : 500,
         code: "STUDY-ACTION-FAILED",
         message: messagePart || fallbackMessage,
         data: null as T,
@@ -59,11 +70,40 @@ const createStudyErrorResponse = <T>(
 };
 
 // 그룹방 생성
-export const createGroupStudy = async (): Promise<StudyApiResponse<GroupStudyInfo>> => {
+export const createGroupStudy = async (
+    title: string
+): Promise<StudyApiResponse<GroupStudyInfo>> => {
     try {
-        return await createGroupStudyService();
+        const response = await createGroupStudyService({ title });
+        revalidatePath("/student/group-study");
+        return response;
     } catch (error) {
         return createStudyErrorResponse<GroupStudyInfo>(error, "그룹방 생성에 실패했습니다.");
+    }
+};
+
+// 그룹방 제목 수정
+export const updateGroupStudyTitle = async (
+    roomId: number,
+    title: string
+): Promise<StudyApiResponse<GroupStudyTitleUpdateResult>> => {
+    try {
+        const response = await updateGroupStudyTitleService(roomId, { title });
+        revalidatePath(`/student/group-study/${roomId}`);
+        return response;
+    } catch (error) {
+        return createStudyErrorResponse<GroupStudyTitleUpdateResult>(error, "방 제목 수정에 실패했습니다.");
+    }
+};
+
+// 그룹방 상세 조회 (클라이언트 컴포넌트에서 실시간 이벤트 수신 후 재조회할 때 사용)
+export const getGroupStudyDetail = async (
+    roomId: number
+): Promise<StudyApiResponse<GroupStudyDetail>> => {
+    try {
+        return await getGroupStudyDetailService(roomId);
+    } catch (error) {
+        return createStudyErrorResponse<GroupStudyDetail>(error, "그룹방 정보를 불러오지 못했습니다.");
     }
 };
 
@@ -73,7 +113,9 @@ export const inviteStudyFriend = async (
     body: InviteStudyFriendRequest
 ): Promise<StudyApiResponse<StudyInvitationSentResult>> => {
     try {
-        return await inviteStudyFriendService(roomId, body);
+        const response = await inviteStudyFriendService(roomId, body);
+        revalidatePath(`/student/group-study/${roomId}`);
+        return response;
     } catch (error) {
         return createStudyErrorResponse<StudyInvitationSentResult>(error, "초대 발송에 실패했습니다.");
     }
@@ -85,7 +127,9 @@ export const cancelStudyInvite = async (
     invitationId: number
 ): Promise<StudyApiResponse<StudyInvitationCancelResult>> => {
     try {
-        return await cancelStudyInviteService(roomId, invitationId);
+        const response = await cancelStudyInviteService(roomId, invitationId);
+        revalidatePath(`/student/group-study/${roomId}`);
+        return response;
     } catch (error) {
         return createStudyErrorResponse<StudyInvitationCancelResult>(error, "초대 취소에 실패했습니다.");
     }
@@ -96,7 +140,10 @@ export const acceptStudyInvite = async (
     roomId: number
 ): Promise<StudyApiResponse<StudyInvitationAcceptResult>> => {
     try {
-        return await acceptStudyInviteService(roomId);
+        revalidatePath('/student/group-study')
+        const response = await acceptStudyInviteService(roomId);
+        revalidatePath(`/student/group-study/${roomId}`);
+        return response;
     } catch (error) {
         return createStudyErrorResponse<StudyInvitationAcceptResult>(error, "초대 수락에 실패했습니다.");
     }
@@ -107,9 +154,20 @@ export const denyStudyInvite = async (
     roomId: number
 ): Promise<StudyApiResponse<StudyInvitationRejectResult>> => {
     try {
-        return await denyStudyInviteService(roomId);
+        const response = await denyStudyInviteService(roomId);
+        revalidatePath("/student/group-study");
+        return response;
     } catch (error) {
         return createStudyErrorResponse<StudyInvitationRejectResult>(error, "초대 거절에 실패했습니다.");
+    }
+};
+
+// 내가 보낸 초대 목록 조회
+export const getSentStudyInviteList = async (): Promise<StudyApiResponse<SentStudyInvitationListResult>> => {
+    try {
+        return await getSentStudyInviteListService();
+    } catch (error) {
+        return createStudyErrorResponse<SentStudyInvitationListResult>(error, "보낸 초대 목록 조회에 실패했습니다.");
     }
 };
 
@@ -118,7 +176,10 @@ export const startGroupStudyTimer = async (
     roomId: number
 ): Promise<StudyApiResponse<GroupStudyTimerStartResult>> => {
     try {
-        return await startGroupStudyTimerService(roomId);
+        const response = await startGroupStudyTimerService(roomId);
+        revalidatePath(`/student/group-study/${roomId}`);
+        revalidatePath("/student/group-study");
+        return response;
     } catch (error) {
         return createStudyErrorResponse<GroupStudyTimerStartResult>(error, "타이머 시작에 실패했습니다.");
     }
@@ -129,7 +190,10 @@ export const pauseGroupStudyTimer = async (
     roomId: number
 ): Promise<StudyApiResponse<GroupStudyTimerPauseResult>> => {
     try {
-        return await pauseGroupStudyTimerService(roomId);
+        const response = await pauseGroupStudyTimerService(roomId);
+        revalidatePath(`/student/group-study/${roomId}`);
+        revalidatePath("/student/group-study");
+        return response;
     } catch (error) {
         return createStudyErrorResponse<GroupStudyTimerPauseResult>(error, "타이머 일시정지에 실패했습니다.");
     }
@@ -140,7 +204,10 @@ export const stopGroupStudyTimer = async (
     roomId: number
 ): Promise<StudyApiResponse<GroupStudyTimerEndResult>> => {
     try {
-        return await stopGroupStudyTimerService(roomId);
+        const response = await stopGroupStudyTimerService(roomId);
+        revalidatePath(`/student/group-study/${roomId}`);
+        revalidatePath("/student/group-study");
+        return response;
     } catch (error) {
         return createStudyErrorResponse<GroupStudyTimerEndResult>(error, "타이머 종료에 실패했습니다.");
     }
@@ -163,7 +230,10 @@ export const leaveGroupStudy = async (
     roomId: number
 ): Promise<StudyApiResponse<GroupStudyLeaveResult>> => {
     try {
-        return await leaveGroupStudyService(roomId);
+        const response = await leaveGroupStudyService(roomId);
+        revalidatePath(`/student/group-study/${roomId}`);
+        revalidatePath("/student/group-study");
+        return response;
     } catch (error) {
         return createStudyErrorResponse<GroupStudyLeaveResult>(error, "그룹방 나가기에 실패했습니다.");
     }
@@ -175,7 +245,9 @@ export const kickGroupStudyMember = async (
     targetUserId: number
 ): Promise<StudyApiResponse<GroupStudyKickResult>> => {
     try {
-        return await kickGroupStudyMemberService(roomId, targetUserId);
+        const response = await kickGroupStudyMemberService(roomId, targetUserId);
+        revalidatePath(`/student/group-study/${roomId}`);
+        return response;
     } catch (error) {
         return createStudyErrorResponse<GroupStudyKickResult>(error, "멤버 내보내기에 실패했습니다.");
     }
@@ -184,7 +256,10 @@ export const kickGroupStudyMember = async (
 // 개인 타이머 시작
 export const startSoloStudyTimer = async (): Promise<StudyApiResponse<SoloStudyTimerStartResult>> => {
     try {
-        return await startSoloStudyTimerService();
+        const response = await startSoloStudyTimerService();
+        revalidatePath("/student/group-study/solo");
+        revalidatePath("/student/group-study");
+        return response;
     } catch (error) {
         return createStudyErrorResponse<SoloStudyTimerStartResult>(error, "솔로 타이머 시작에 실패했습니다.");
     }
@@ -193,7 +268,10 @@ export const startSoloStudyTimer = async (): Promise<StudyApiResponse<SoloStudyT
 // 개인 타이머 일시정지
 export const pauseSoloStudyTimer = async (): Promise<StudyApiResponse<SoloStudyTimerPauseResult>> => {
     try {
-        return await pauseSoloStudyTimerService();
+        const response = await pauseSoloStudyTimerService();
+        revalidatePath("/student/group-study/solo");
+        revalidatePath("/student/group-study");
+        return response;
     } catch (error) {
         return createStudyErrorResponse<SoloStudyTimerPauseResult>(error, "솔로 타이머 일시정지에 실패했습니다.");
     }
@@ -202,7 +280,10 @@ export const pauseSoloStudyTimer = async (): Promise<StudyApiResponse<SoloStudyT
 // 개인 타이머 종료
 export const stopSoloStudyTimer = async (): Promise<StudyApiResponse<SoloStudyTimerEndResult>> => {
     try {
-        return await stopSoloStudyTimerService();
+        const response = await stopSoloStudyTimerService();
+        revalidatePath("/student/group-study/solo");
+        revalidatePath("/student/group-study");
+        return response;
     } catch (error) {
         return createStudyErrorResponse<SoloStudyTimerEndResult>(error, "솔로 타이머 종료에 실패했습니다.");
     }
@@ -217,12 +298,23 @@ export const getSoloStudyLabList = async (): Promise<StudyApiResponse<SoloStudyL
     }
 };
 
-// 솔로 세션 이력 조회
-export const getSoloStudyHistory = async (): Promise<StudyApiResponse<SoloStudyHistoryItem[]>> => {
+// 솔로 세션 이력 조회 - 제거함 (service.ts 주석 참고: 백엔드에 매핑된 엔드포인트가 없음)
+
+// 타이머 시작 가능 여부 조회
+export const getTimerAvailability = async (): Promise<StudyApiResponse<TimerAvailabilityResult>> => {
     try {
-        return await getSoloStudyHistoryService();
+        return await getTimerAvailabilityService();
     } catch (error) {
-        return createStudyErrorResponse<SoloStudyHistoryItem[]>(error, "세션 이력 조회에 실패했습니다.");
+        return createStudyErrorResponse<TimerAvailabilityResult>(error, "타이머 시작 가능 여부 조회에 실패했습니다.");
+    }
+};
+
+// 연간 잔디 조회
+export const getYearlyStudyRecord = async (): Promise<StudyApiResponse<YearlyStudyRecordResult>> => {
+    try {
+        return await getYearlyStudyRecordService();
+    } catch (error) {
+        return createStudyErrorResponse<YearlyStudyRecordResult>(error, "연간 기록 조회에 실패했습니다.");
     }
 };
 
