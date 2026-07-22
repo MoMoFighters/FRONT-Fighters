@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils/utils";
 import { LogOut } from "lucide-react";
 import { clearLectureUploadTasksStorage } from "@/features/lecture/components/teacher/LectureCreateUploadContext";
+import { clearChatBotMessagesStorage } from "@/features/chatbot/hooks/useChatBotMessages";
 import { useQueryClient } from "@tanstack/react-query";
 
 export default function LogoutBtn({
@@ -24,8 +25,8 @@ export default function LogoutBtn({
         if (result.status >= 200 && result.status < 300) {
             queryClient.clear();
             clearLectureUploadTasksStorage();
+            clearChatBotMessagesStorage();
             router.replace("/");
-            router.refresh();
         } else {
             alert(result.message);
         }

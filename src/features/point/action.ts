@@ -87,7 +87,6 @@ export const createPointOrderAction = async (
         const result = await createPointOrderService(payload);
 
         revalidatePath("/student/point-store");
-        revalidatePath("/student/mypage/edit");
         revalidatePath("/student/mypage");
 
         return result;

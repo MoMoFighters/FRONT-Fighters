@@ -1,11 +1,21 @@
+import { getCommunityPostRecommendationsAction } from "@/features/community/action";
+import type { CommunityAuthorRole } from "@/features/community/type";
 import PostRecommentItem from "./PostRecommentItem";
-import type { PostRecommandPanelProps } from "./PostDetailSide";
 
-export default function PostRecommandPanel({
-    currentPostId,
-    posts,
-    role
+interface PostRecommandPanelProps {
+    postId: number;
+    role: CommunityAuthorRole;
+}
+
+export default async function PostRecommandPanel({
+    postId,
+    role,
 }: PostRecommandPanelProps) {
+    const response = await getCommunityPostRecommendationsAction(postId);
+    const posts = response.data
+        ? [...response.data.topPosts, ...response.data.authorPosts]
+        : [];
+
     return (
         <>
             <div className="mb-3 flex shrink-0 items-center justify-between">
@@ -15,8 +25,6 @@ export default function PostRecommandPanel({
             </div>
 
             <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                {/* ==================== RECOMMENDED_POST_COMPONENT_START ==================== */}
-                {/* TODO: Extract recommended post item later. */}
                 {posts.map((item) => (
                     <PostRecommentItem
                         key={item.postId}
@@ -28,13 +36,11 @@ export default function PostRecommandPanel({
                         authorName={item.authorName}
                         viewCount={item.viewCount}
                         likeCount={item.likeCount}
-                        commentCount={item.commentCount}
-                        isActive={item.postId === currentPostId}
+                        commentCount={item.commentCount ?? 0}
+                        isActive={item.postId === postId}
                         role={role}
                     />
                 ))}
-                {/* TODO: Extract recommended post item later. */}
-                {/* ===================== RECOMMENDED_POST_COMPONENT_END ===================== */}
             </div>
         </>
     );

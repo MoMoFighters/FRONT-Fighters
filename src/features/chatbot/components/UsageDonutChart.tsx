@@ -10,10 +10,12 @@ interface UsageDonutChartProps {
 }
 
 export default function UsageDonutChart({ usage }: UsageDonutChartProps) {
-    const { modelName, dailyLimit, dailyUsed } = usage;
-    const percentage = Math.min(100, Math.round((dailyUsed / dailyLimit) * 100));
+    const { modelName, dailyLimit, dailyUsed, usagePercentage } = usage;
+    const remaining = Math.max(dailyLimit - dailyUsed, 0);
+    const percentage = Math.min(100, Math.max(0, Math.round(usagePercentage)));
+    const remainingPercentage = 100 - percentage;
 
-    const data = [{ value: dailyUsed }, { value: Math.max(dailyLimit - dailyUsed, 0) }];
+    const data = [{ value: dailyUsed }, { value: remaining }];
 
     return (
         <HoverCard openDelay={100}>
@@ -36,7 +38,7 @@ export default function UsageDonutChart({ usage }: UsageDonutChartProps) {
                     <div>
                         <p className="text-[10px] leading-tight text-slate-600">{modelName}</p>
                         <p className="text-[9px] leading-tight text-slate-400">
-                            오늘 {dailyUsed} / {dailyLimit}회 사용
+                            남은 세션 사용량 {remainingPercentage}%
                         </p>
                     </div>
                 </div>
@@ -44,7 +46,7 @@ export default function UsageDonutChart({ usage }: UsageDonutChartProps) {
 
             <HoverCardContent side="top" className="w-56 space-y-2">
                 <p className="text-sm font-medium">모델명 : {modelName}</p>
-                <p className="text-sm">일일 사용량 한도 : {dailyLimit}회</p>
+                <p className="text-sm">오늘 사용량 : {percentage}%</p>
                 <Progress value={percentage} />
             </HoverCardContent>
         </HoverCard>

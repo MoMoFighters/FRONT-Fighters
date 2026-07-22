@@ -1,10 +1,9 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, type ReactNode } from "react";
 import {
     useInfiniteQuery,
     useMutation,
-    useQuery,
     useQueryClient,
 } from "@tanstack/react-query";
 import { List, MessageCircle } from "lucide-react";
@@ -13,14 +12,12 @@ import {
     createCommunityPostCommentAction,
     createCommunityPostReplyAction,
     getCommunityPostCommentsAction,
-    getCommunityPostRecommendationsAction,
 } from "@/features/community/action";
 import type {
+    CommunityAuthorRole,
     CommunityPostCommentItem,
-    CommunityRecommendedPostItem,
 } from "@/features/community/type";
 import PostCommentsPanel from "./PostCommentsPanel";
-import PostRecommandPanel from "./PostRecommandPanel";
 
 export type SideMode = "posts" | "comment";
 
@@ -32,21 +29,7 @@ export type CommunityPostCategory =
     | "COOK"
     | "FREE";
 
-export type CommunityAuthorRole = "STUDENT" | "TEACHER" | "ADMIN";
-
-export interface RecommendedPost {
-    postId: number;
-    title: string;
-    category: CommunityPostCategory;
-    viewCount: number;
-    likeCount: number;
-    commentCount: number;
-    thumbnailUrl: string | null;
-    authorName: string;
-    authorProfileImageUrl: string;
-    authorRole: CommunityAuthorRole;
-    createdAt: string;
-}
+export type { CommunityAuthorRole };
 
 export interface CommunityComment {
     commentId: number;
@@ -75,13 +58,7 @@ export interface PostRecommentItemProps {
     likeCount: number;
     commentCount: number;
     isActive?: boolean;
-    role: "ADMIN" | "TEACHER" | "STUDENT"
-}
-
-export interface PostRecommandPanelProps {
-    currentPostId: number;
-    posts: RecommendedPost[];
-    role: "TEACHER" | "ADMIN" | "STUDENT"
+    role: CommunityAuthorRole;
 }
 
 export interface CommentInputBoxProps {
@@ -101,7 +78,7 @@ export interface CommentItemProps {
     isWriter: boolean;
     createdAt: string;
     parentId: number | null;
-    role?: "TEACHER" | "ADMIN" | "STUDENT";
+    role?: CommunityAuthorRole;
     onSubmitReply?: (
         commentId: number,
         content: string
@@ -120,35 +97,20 @@ export interface PostCommentsPanelProps {
         commentId: number,
         content: string
     ) => Promise<boolean>;
-    role?: "TEACHER" | "ADMIN" | "STUDENT";
+    role?: CommunityAuthorRole;
 }
 
 interface PostDetailSideProps {
     postId: number;
     commentTotalCount?: number;
-    role?: "TEACHER" | 'ADMIN' | 'STUDENT'
+    role?: CommunityAuthorRole;
+    recommendedPanel: ReactNode;
 }
 
 const COMMENT_PAGE_SIZE = 10;
 const COMMUNITY_DETAIL_STALE_TIME = 1000 * 60 * 5;
 const DEFAULT_PROFILE_IMAGE_URL =
     "https://placehold.co/80x80/e0e7ff/4f46e5?text=M";
-
-const mapRecommendedPost = (
-    post: CommunityRecommendedPostItem
-): RecommendedPost => ({
-    postId: post.postId,
-    title: post.title,
-    category: post.category,
-    viewCount: post.viewCount,
-    likeCount: post.likeCount,
-    commentCount: post.commentCount ?? 0,
-    thumbnailUrl: post.thumbnailUrl,
-    authorName: post.authorName,
-    authorProfileImageUrl: DEFAULT_PROFILE_IMAGE_URL,
-    authorRole: "STUDENT",
-    createdAt: post.createdAt,
-});
 
 const mapComment = (
     comment: CommunityPostCommentItem
@@ -184,28 +146,11 @@ const mapComment = (
 export default function PostDetailSide({
     postId,
     commentTotalCount,
-    role = "STUDENT"
+    role = "STUDENT",
+    recommendedPanel,
 }: PostDetailSideProps) {
     const queryClient = useQueryClient();
     const [mode, setMode] = useState<SideMode>("posts");
-
-    const recommendationsQuery = useQuery({
-        queryKey: ["community", "post", postId, "recommendations"],
-        queryFn: async () => {
-            const response =
-                await getCommunityPostRecommendationsAction(postId);
-
-            return response.data
-                ? [
-                    ...response.data.topPosts,
-                    ...response.data.authorPosts,
-                ].map(mapRecommendedPost)
-                : [];
-        },
-        enabled: mode === "posts",
-        staleTime: COMMUNITY_DETAIL_STALE_TIME,
-        refetchOnWindowFocus: false,
-    });
 
     const commentsQuery = useInfiniteQuery({
         queryKey: ["community", "post", postId, "comments"],
@@ -365,11 +310,7 @@ export default function PostDetailSide({
                     role={role}
                 />
             ) : (
-                <PostRecommandPanel
-                    currentPostId={postId}
-                    posts={recommendationsQuery.data ?? []}
-                    role={role}
-                />
+                recommendedPanel
             )}
         </aside>
     );

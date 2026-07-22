@@ -29,12 +29,27 @@ export default function StudentLayoutShell({
     const isImageBackgroundPage =
         IMAGE_BACKGROUND_PATHS.includes(pathname);
 
+    // 그룹 스터디룸 / 솔로 세션 페이지는 타이머 화면에 집중할 수 있도록 푸터를 없앤다.
+    const isStudySessionPage = pathname?.startsWith("/student/group-study/") ?? false;
+
     if (isImageBackgroundPage || params.userId) {
         return (
             <div className="flex h-screen flex-col overflow-hidden bg-white">
                 {header}
 
                 <main className="min-h-0 flex-1 overflow-hidden pt-14">
+                    {children}
+                </main>
+            </div>
+        );
+    }
+
+    if (isStudySessionPage) {
+        return (
+            <div className="flex min-h-screen flex-col bg-white">
+                {header}
+
+                <main className="flex-1 bg-white pt-14">
                     {children}
                 </main>
             </div>

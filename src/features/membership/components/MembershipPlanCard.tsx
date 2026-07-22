@@ -1,10 +1,17 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Check, Crown, Rocket, Sparkles } from "lucide-react";
+import { Check, Crown, Info, Rocket, Sparkles } from "lucide-react";
 
 import { formatMembershipUntil } from "@/components/common/MembershipBadge";
+import {
+    HoverCard,
+    HoverCardContent,
+    HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import { calculateDisplayPrice } from "@/features/payment/proration";
 import { MembershipPlan, MembershipTier } from "../type";
+import { MEMBERSHIP_PLANS } from "../membershipInfo";
 
 const TIER_ORDER: Record<MembershipTier, number> = {
     BASIC: 0,
@@ -24,6 +31,7 @@ interface MembershipPlanCardProps {
     currentTier?: MembershipTier;
     isActive?: boolean;
     membershipUntil?: string | null;
+    membershipStart?: string | null;
     onSelect?: (plan: MembershipPlan) => void;
 }
 
@@ -33,6 +41,7 @@ export default function MembershipPlanCard({
     currentTier = "BASIC",
     isActive,
     membershipUntil,
+    membershipStart,
     onSelect,
 }: MembershipPlanCardProps) {
     const router = useRouter();
@@ -46,6 +55,18 @@ export default function MembershipPlanCard({
     const discountPercent = plan.originalPrice
         ? Math.round((1 - plan.price / plan.originalPrice) * 100)
         : 0;
+
+    const displayPrice =
+        !isGuest && isUpgrade
+            ? calculateDisplayPrice({
+                currentTier,
+                currentPrice: MEMBERSHIP_PLANS.find((p) => p.tier === currentTier)?.price ?? 0,
+                targetTier: plan.tier,
+                targetPrice: plan.price,
+                membershipStart,
+            })
+            : plan.price;
+    const isProrated = !isGuest && isUpgrade && displayPrice !== plan.price;
 
     const handleClick = () => {
         if (isGuest) {
@@ -106,23 +127,48 @@ export default function MembershipPlanCard({
                 {plan.description}
             </p>
 
-            <button
-                type="button"
-                disabled={isCurrent}
-                onClick={handleClick}
-                className={`mt-6 flex h-11 w-full shrink-0 items-center justify-center rounded-xl text-sm font-bold transition-colors ${isCurrent
-                    ? "cursor-not-allowed bg-slate-100 text-slate-400"
-                    : "bg-indigo-500 text-white hover:bg-indigo-600 cursor-pointer"
-                    }`}
-            >
-                {isCurrent
-                    ? `현재 플랜 ${formattedMembershipUntil ? `(~${formattedMembershipUntil})` : ``}`
-                    : isGuest
-                        ? `${plan.name}로 시작하기`
-                        : isUpgrade
-                            ? `${plan.name}로 업그레이드`
-                            : `${plan.name}로 변경`}
-            </button>
+            {isProrated ? (
+                <HoverCard openDelay={100} closeDelay={0}>
+                    <HoverCardTrigger asChild>
+                        <button
+                            type="button"
+                            onClick={handleClick}
+                            className="mt-6 flex h-11 w-full shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-xl bg-indigo-500 text-sm font-bold text-white transition-colors hover:bg-indigo-600"
+                        >
+                            {`${plan.name}로 업그레이드`}
+                            <Info className="h-3.5 w-3.5 opacity-70" />
+                        </button>
+                    </HoverCardTrigger>
+                    <HoverCardContent
+                        side="top"
+                        className="w-auto px-3 py-1.5 text-sm font-medium text-slate-700"
+                    >
+                        지금 업그레이드하면 남은 이용 기간만큼만 계산되어{" "}
+                        <span className="font-bold text-indigo-500">
+                            약 ₩{displayPrice.toLocaleString()}
+                        </span>
+                        {"만 결제돼요."}
+                    </HoverCardContent>
+                </HoverCard>
+            ) : (
+                <button
+                    type="button"
+                    disabled={isCurrent}
+                    onClick={handleClick}
+                    className={`mt-6 flex h-11 w-full shrink-0 items-center justify-center rounded-xl text-sm font-bold transition-colors ${isCurrent
+                        ? "cursor-not-allowed bg-slate-100 text-slate-400"
+                        : "bg-indigo-500 text-white hover:bg-indigo-600 cursor-pointer"
+                        }`}
+                >
+                    {isCurrent
+                        ? `현재 플랜 ${formattedMembershipUntil ? `(~${formattedMembershipUntil})` : ``}`
+                        : isGuest
+                            ? `${plan.name}로 시작하기`
+                            : isUpgrade
+                                ? `${plan.name}로 업그레이드`
+                                : `${plan.name}로 변경`}
+                </button>
+            )}
 
             <ul className="mt-6 flex flex-1 flex-col gap-3">
                 {plan.features.map((feature) => (

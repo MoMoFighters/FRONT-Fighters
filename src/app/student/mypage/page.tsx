@@ -8,7 +8,6 @@ import {
     CreditCard,
     Leaf,
     Receipt,
-    Settings,
     ShieldCheck,
     Store,
 } from "lucide-react";
@@ -26,9 +25,15 @@ import {
 } from "@/features/point/type";
 import { getMyInfo } from "@/features/user/action";
 import MyPageProfileAvatar from "@/features/user/components/mypage/MyPageProfileAvatar";
+import NicknameEditableField from "@/features/user/components/mypage/NicknameEditableField";
 import PasswordChangeMenuItem from "@/features/user/components/mypage/PasswordChangeMenuItem";
 import TeacherRegistMenuItem from "@/features/auth/components/TeacherRegistMenuItem";
-import MembershipBadge from "@/components/common/MembershipBadge";
+import { getYearlyStudyTime } from "@/features/study/actions";
+import { buildStudyGrassMap } from "@/features/study/utils";
+import StudyGrassCard from "@/features/study/components/StudyGrassCard";
+import { getMyYearlyStreakAction } from "@/features/city/action";
+import { buildActivityGrassMap } from "@/features/city/utils";
+import ActivityGrassCard from "@/features/city/components/ActivityGrassCard";
 
 const POINT_REASON_LABEL: Record<PointHistoryReason, string> = {
     COMPLETE: "강의 완료 보상",
@@ -61,7 +66,13 @@ const formatDateTime = (createdAt: string) => {
 };
 
 export default async function StudentMyPage() {
-    const [myInfoResponse, lectureResponse, pointHistoryResponse] =
+    const [
+        myInfoResponse,
+        lectureResponse,
+        pointHistoryResponse,
+        studyYearlyResponse,
+        activityStreakResponse,
+    ] =
         await Promise.all([
             getMyInfo(),
             getLecturesWithAuth({
@@ -69,7 +80,16 @@ export default async function StudentMyPage() {
                 page: 1,
             }),
             getPointHistoryListAction(1),
+            getYearlyStudyTime(),
+            getMyYearlyStreakAction(),
         ]);
+
+    const currentYear = new Date().getFullYear();
+    const { levelByDate: studyLevelByDate, secondsByDate: studySecondsByDate } =
+        buildStudyGrassMap(studyYearlyResponse.data ?? []);
+    const activityLevelByDate = buildActivityGrassMap(
+        activityStreakResponse.data?.streaks ?? []
+    );
 
     const userInfo = myInfoResponse.data;
     const userData = {
@@ -92,32 +112,29 @@ export default async function StudentMyPage() {
     return (
         <main className="min-h-[calc(100vh-137px)] bg-white px-8 py-8">
             <div className="mx-auto flex w-full max-w-360 gap-6">
-                <aside className="sticky top-22 z-20 mb-auto w-68 shrink-0 rounded-3xl border border-slate-200 bg-white shadow-sm">
-                    <div className="rounded-t-3xl border-b border-slate-100 p-6">
-                        <div className="flex items-center gap-4">
+                <aside className="sticky top-22 z-20 mb-auto w-52 shrink-0 rounded-3xl border border-slate-200 bg-white shadow-sm">
+                    <div className="rounded-t-3xl border-b border-slate-100 p-3">
+                        <div className="flex items-center gap-2.5">
                             <MyPageProfileAvatar
                                 profileImageUrl={userData.profileImageUrl}
                             />
 
                             <div className="min-w-0 w-full flex flex-row gap-2 items-center">
-                                <p className="truncate text-lg font-black text-slate-900">
-                                    {userData.nickname}
-                                </p>
-                                <MembershipBadge
+                                <NicknameEditableField
+                                    nickname={userData.nickname}
                                     membership={userData.membership}
                                     membershipUntil={userData.membershipUntil}
-                                    className="rounded-lg px-2 py-1 text-xs"
                                 />
                             </div>
                         </div>
 
-                        <div className="mt-5 rounded-2xl bg-indigo-50 px-4 py-2 flex flex-row gap-2 items-center">
-                            <p className="text-xs font-black text-indigo-500">
+                        <div className="mt-3 rounded-lg bg-indigo-50 px-2.5 py-1 flex flex-row gap-2 items-center">
+                            <p className="text-[10px] font-black text-indigo-500">
                                 보유 포인트
                             </p>
-                            <p className="text-xl font-black text-slate-900 ml-auto">
+                            <p className="text-sm font-black text-slate-900 ml-auto">
                                 {userData.points.toLocaleString()}
-                                <span className="ml-1 text-sm text-indigo-500">
+                                <span className="ml-1 text-[11px] text-indigo-500">
                                     P
                                 </span>
                             </p>
@@ -125,30 +142,24 @@ export default async function StudentMyPage() {
                         </div>
                     </div>
 
-                    <nav className="p-3">
-                        <ul className="space-y-1 text-sm font-bold text-slate-500">
-                            <Link href="/student/mypage/edit">
-                                <li className="cursor-pointer flex items-center gap-3 rounded-2xl px-4 py-3 transition hover:bg-slate-50 hover:text-slate-900">
-                                    <Settings className="h-4 w-4" />
-                                    내 정보 수정
-                                </li>
-                            </Link>
+                    <nav className="p-1.5">
+                        <ul className="flex flex-col text-xs font-bold text-slate-500">
                             <PasswordChangeMenuItem />
                             <Link href="/student/point-store">
-                                <li className="cursor-pointer flex items-center gap-3 rounded-2xl px-4 py-3 transition hover:bg-slate-50 hover:text-slate-900">
-                                    <Store className="h-4 w-4" />
+                                <li className="cursor-pointer flex items-center gap-2 rounded-lg px-2.5 py-1.5 transition hover:bg-slate-50 hover:text-slate-900">
+                                    <Store className="h-3 w-3" />
                                     포인트 상점
                                 </li>
                             </Link>
                             <Link href="/student/mypage/membership">
-                                <li className="cursor-pointer flex items-center gap-3 rounded-2xl px-4 py-3 transition hover:bg-slate-50 hover:text-slate-900">
-                                    <ShieldCheck className="h-4 w-4" />
+                                <li className="cursor-pointer flex items-center gap-2 rounded-lg px-2.5 py-1.5 transition hover:bg-slate-50 hover:text-slate-900">
+                                    <ShieldCheck className="h-3 w-3" />
                                     멤버십 관리
                                 </li>
                             </Link>
                             <Link href="/student/mypage/payment">
-                                <li className="cursor-pointer flex items-center gap-3 rounded-2xl px-4 py-3 transition hover:bg-slate-50 hover:text-slate-900">
-                                    <Receipt className="h-4 w-4" />
+                                <li className="cursor-pointer flex items-center gap-2 rounded-lg px-2.5 py-1.5 transition hover:bg-slate-50 hover:text-slate-900">
+                                    <Receipt className="h-3 w-3" />
                                     결제 내역
                                 </li>
                             </Link>
@@ -161,11 +172,11 @@ export default async function StudentMyPage() {
                 </aside>
 
                 <section className="min-w-0 flex-1 space-y-6">
-                    <section className="grid grid-cols-2 gap-6">
-                        <div className="relative z-0 overflow-hidden rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-                            <div className="mb-4 flex items-center gap-2">
-                                <CreditCard className="h-5 w-5 text-indigo-500" />
-                                <h2 className="text-lg font-black text-slate-900">
+                    <section className="grid grid-cols-[2fr_3fr] items-start gap-5">
+                        <div className="relative z-0 overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                            <div className="mb-2.5 flex items-center gap-2">
+                                <CreditCard className="h-3.5 w-3.5 text-indigo-500" />
+                                <h2 className="text-sm font-black text-slate-900">
                                     모모민증
                                 </h2>
                             </div>
@@ -175,25 +186,36 @@ export default async function StudentMyPage() {
                             </div>
                         </div>
 
-                        <div className="grid grid-rows-2 gap-4">
-                            <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-                                <div className="flex items-center gap-2">
-                                    <Leaf className="h-5 w-5 text-emerald-500" />
-                                    <h2 className="text-lg font-black text-slate-900">
+                        <div className="grid grid-rows-2 gap-3">
+                            <div className="flex flex-col rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+                                <div className="flex items-center gap-1.5">
+                                    <Leaf className="h-2.5 w-2.5 text-emerald-500" />
+                                    <h2 className="text-[10px] font-black text-slate-900">
                                         학습 잔디
                                     </h2>
                                 </div>
-                                <div className="mt-5 h-[110px] rounded-2xl border border-dashed border-emerald-200 bg-emerald-50/50" />
+                                <div className="mt-1 flex-1 overflow-hidden">
+                                    <StudyGrassCard
+                                        year={currentYear}
+                                        levelByDate={studyLevelByDate}
+                                        secondsByDate={studySecondsByDate}
+                                    />
+                                </div>
                             </div>
 
-                            <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-                                <div className="flex items-center gap-2">
-                                    <Leaf className="h-5 w-5 text-indigo-500" />
-                                    <h2 className="text-lg font-black text-slate-900">
+                            <div className="flex flex-col rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+                                <div className="flex items-center gap-1.5">
+                                    <Leaf className="h-2.5 w-2.5 text-indigo-500" />
+                                    <h2 className="text-[10px] font-black text-slate-900">
                                         활동 잔디
                                     </h2>
                                 </div>
-                                <div className="mt-5 h-[110px] rounded-2xl border border-dashed border-indigo-200 bg-indigo-50/50" />
+                                <div className="mt-1 flex-1 overflow-hidden">
+                                    <ActivityGrassCard
+                                        year={currentYear}
+                                        levelByDate={activityLevelByDate}
+                                    />
+                                </div>
                             </div>
                         </div>
                     </section>
@@ -268,7 +290,7 @@ export default async function StudentMyPage() {
                             </div>
                         </div>
 
-                        <div className="scrollbar-none max-h-90 overflow-y-auto divide-y divide-slate-100">
+                        <div className="scrollbar-none h-90 overflow-y-auto divide-y divide-slate-100">
                             {pointHistory.length > 0 ? (
                                 pointHistory.map((item, index) => {
                                     const isIncrease = item.type === "GAINED";

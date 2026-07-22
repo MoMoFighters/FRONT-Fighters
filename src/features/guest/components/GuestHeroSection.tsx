@@ -24,7 +24,14 @@ const heroStats = [
   },
 ];
 
-export default function GuestHeroSection() {
+interface GuestHeroSectionProps {
+  users: number;
+  lectureCount: number;
+  averageRating: number;
+}
+
+export default function GuestHeroSection({ users, lectureCount, averageRating }: GuestHeroSectionProps) {
+  const heroData = [users, lectureCount, averageRating];
   return (
     <section className="relative overflow-hidden border-b border-slate-200 bg-white py-14 sm:py-16 lg:py-20">
       <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[50%] lg:block">
@@ -64,7 +71,7 @@ export default function GuestHeroSection() {
           </div>
 
           <div className="mt-10 grid max-w-xl grid-cols-1 gap-3 pt-7 sm:grid-cols-3">
-            {heroStats.map((stat) => {
+            {heroStats.map((stat, index) => {
               const Icon = stat.icon;
 
               return (
@@ -77,7 +84,8 @@ export default function GuestHeroSection() {
                   </div>
                   <div className="min-w-0">
                     <p className="text-lg font-bold tracking-tight text-slate-950">
-                      {stat.value}
+                      {heroData[index]}
+                      <span className="ml-0.5">{index === 2 ? "" : "+"}</span>
                     </p>
                     <p className="mt-0.5 truncate text-[11px] font-medium text-slate-500">
                       {stat.label}

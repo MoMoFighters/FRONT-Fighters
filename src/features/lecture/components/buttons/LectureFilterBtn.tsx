@@ -35,7 +35,7 @@ export default function LectureFilterBtn() {
     };
 
     return (
-        <DropdownMenu>
+        <DropdownMenu modal={false}>
 
             <DropdownMenuTrigger asChild>
 

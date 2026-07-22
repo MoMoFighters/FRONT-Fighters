@@ -11,7 +11,6 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import type { StudentFriendData } from "@/features/friend/type";
 import {
     cancelStudyInvite,
     getGroupStudyLabList,
@@ -21,17 +20,22 @@ import type { StudyRoomSeatUser, StudyTimerLap } from "@/features/study/type";
 import { formatLapSeconds } from "@/features/study/utils";
 import StudyUserInviteModal from "./StudyUserInviteModal";
 
+interface PendingInviteInfo {
+    invitationId: number;
+    inviteeId: number;
+    inviteeNickname: string;
+}
+
 interface StudyUserItemProps {
     roomId: number;
     user?: StudyRoomSeatUser;
     canKick?: boolean;
     onKick?: (user: StudyRoomSeatUser) => void;
     showLapButton?: boolean;
-}
-
-interface PendingInvite {
-    friend: StudentFriendData;
-    invitationId: number;
+    pendingInvite?: PendingInviteInfo | null;
+    invitedUserIds?: number[];
+    onInvited?: (invite: PendingInviteInfo) => void;
+    onInviteCanceled?: (invitationId: number) => void;
 }
 
 export default function StudyUserItem({
@@ -40,12 +44,15 @@ export default function StudyUserItem({
     canKick = false,
     onKick,
     showLapButton = true,
+    pendingInvite = null,
+    invitedUserIds = [],
+    onInvited,
+    onInviteCanceled,
 }: StudyUserItemProps) {
     const [isInviteOpen, setIsInviteOpen] = useState(false);
     const [isLapModalOpen, setIsLapModalOpen] = useState(false);
     const [isLapLoading, setIsLapLoading] = useState(false);
     const [laps, setLaps] = useState<StudyTimerLap[]>([]);
-    const [pendingInvite, setPendingInvite] = useState<PendingInvite | null>(null);
 
     const handleCancelInvite = async () => {
         if (!pendingInvite) {
@@ -54,13 +61,13 @@ export default function StudyUserItem({
 
         const response = await cancelStudyInvite(roomId, pendingInvite.invitationId);
 
-        if (response.statusCode >= 400) {
+        if (response.status >= 400) {
             toast.error(response.message || "초대 취소에 실패했습니다.");
             return;
         }
 
-        toast(response.message || `${pendingInvite.friend.nickname}님에게 보낸 초대를 취소했습니다.`);
-        setPendingInvite(null);
+        toast(response.message || `${pendingInvite.inviteeNickname}님에게 보낸 초대를 취소했습니다.`);
+        onInviteCanceled?.(pendingInvite.invitationId);
     };
 
     const handleKick = async () => {
@@ -70,7 +77,7 @@ export default function StudyUserItem({
 
         const response = await kickGroupStudyMember(roomId, user.userId);
 
-        if (response.statusCode >= 400) {
+        if (response.status >= 400) {
             toast.error(response.message || "멤버 내보내기에 실패했습니다.");
             return;
         }
@@ -90,8 +97,10 @@ export default function StudyUserItem({
         try {
             const response = await getGroupStudyLabList(roomId, user.userId);
 
-            if (response.statusCode >= 400) {
-                toast.error(response.message || "랩 목록을 불러오지 못했습니다.");
+            if (response.status >= 400) {
+                if (response.status !== 404) {
+                    toast.error(response.message || "랩 목록을 불러오지 못했습니다.");
+                }
                 setLaps([]);
                 return;
             }
@@ -106,9 +115,9 @@ export default function StudyUserItem({
         if (pendingInvite) {
             return (
                 <div className="relative pt-7">
-                    <div className="flex h-28 w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-indigo-200 bg-indigo-50/60 text-indigo-400">
+                    <div className="flex h-24 w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-indigo-200 bg-indigo-50/60 text-indigo-400 sm:h-28">
                         <span className="text-xs font-bold">
-                            {pendingInvite.friend.nickname}님에게 초대를 보냈어요
+                            {pendingInvite.inviteeNickname}님에게 초대를 보냈어요
                         </span>
                         <button
                             type="button"
@@ -132,7 +141,7 @@ export default function StudyUserItem({
                 <button
                     type="button"
                     onClick={() => setIsInviteOpen(true)}
-                    className="flex h-28 w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 text-slate-400 transition hover:border-indigo-200 hover:bg-indigo-50/60 hover:text-indigo-500"
+                    className="flex h-24 w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 text-slate-400 transition hover:border-indigo-200 hover:bg-indigo-50/60 hover:text-indigo-500 sm:h-28"
                 >
                     <Plus className="h-6 w-6" />
                     <span className="text-xs font-bold">초대하기</span>
@@ -146,8 +155,13 @@ export default function StudyUserItem({
                     roomId={roomId}
                     open={isInviteOpen}
                     onOpenChange={setIsInviteOpen}
+                    alreadyInvitedUserIds={invitedUserIds}
                     onInvited={(friend, invitationId) => {
-                        setPendingInvite({ friend, invitationId });
+                        onInvited?.({
+                            invitationId,
+                            inviteeId: friend.userId,
+                            inviteeNickname: friend.nickname,
+                        });
                         setIsInviteOpen(false);
                     }}
                 />
@@ -164,12 +178,12 @@ export default function StudyUserItem({
                 />
             )}
 
-            <div className="absolute left-1/2 top-1 z-3 flex h-14 w-14 -translate-x-1/2 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-slate-100 text-sm font-black text-slate-400 shadow-sm">
+            <div className="absolute left-1/2 top-1 z-3 flex h-12 w-12 -translate-x-1/2 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-slate-100 text-sm font-black text-slate-400 shadow-sm sm:h-14 sm:w-14">
                 {user.nickname.slice(0, 1)}
             </div>
 
             <div
-                className={`relative flex h-28 flex-col items-center justify-center gap-1 rounded-2xl border-2 bg-white px-2 shadow-sm ${user.isMe ? "border-orange-400" : "border-slate-200"
+                className={`relative flex h-24 flex-col items-center justify-center gap-1 rounded-2xl border-2 bg-white px-2 shadow-sm sm:h-28 ${user.isMe ? "border-orange-400" : "border-slate-200"
                     }`}
             >
                 {canKick && !user.isMe && (
@@ -215,7 +229,7 @@ export default function StudyUserItem({
                     : "border-slate-200 bg-slate-50 text-slate-600"
                     }`}
             >
-                {user.isMe ? "나" : user.nickname}
+                {user.isMe ? `${user.nickname}(나)` : user.nickname}
             </div>
 
             <Dialog open={isLapModalOpen} onOpenChange={setIsLapModalOpen}>
@@ -227,13 +241,13 @@ export default function StudyUserItem({
                         </DialogDescription>
                     </DialogHeader>
 
-                    <div className="space-y-1">
+                    <div className="h-72 space-y-1 overflow-y-auto scrollbar-none">
                         {isLapLoading ? (
-                            <div className="py-6 text-center text-xs font-bold text-slate-400">
+                            <div className="flex h-full items-center justify-center text-xs font-bold text-slate-400">
                                 불러오는 중...
                             </div>
                         ) : laps.length === 0 ? (
-                            <div className="py-6 text-center text-xs font-bold text-slate-400">
+                            <div className="flex h-full items-center justify-center text-xs font-bold text-slate-400">
                                 기록된 랩이 없습니다.
                             </div>
                         ) : (

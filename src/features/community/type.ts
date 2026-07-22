@@ -51,7 +51,8 @@ export type DeleteCommunityPostResponse =
 export type CommunityAuthorRole =
     | "STUDENT"
     | "TEACHER"
-    | "ADMIN";
+    | "ADMIN"
+    | "GUEST";
 
 export type CommunityPostDetailContent =
     | {

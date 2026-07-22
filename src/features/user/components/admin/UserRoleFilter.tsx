@@ -38,7 +38,7 @@ export default function UserRoleFilter() {
     };
 
     return (
-        <DropdownMenu>
+        <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
                 <Button
                     type="button"

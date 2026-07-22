@@ -2,8 +2,11 @@ import { fetchWithAuth } from "@/lib/api";
 import type {
     StudyApiResponse,
     GroupStudyInfo,
+    CreateGroupStudyRequest,
+    UpdateGroupStudyTitleRequest,
+    GroupStudyTitleUpdateResult,
     GroupStudyDetail,
-    MyGroupStudyRoomItem,
+    MyGroupStudyRoomListResult,
     GroupStudyLeaveResult,
     GroupStudyKickResult,
     InviteStudyFriendRequest,
@@ -11,31 +14,57 @@ import type {
     StudyInvitationCancelResult,
     StudyInvitationAcceptResult,
     StudyInvitationRejectResult,
-    MyStudyInvitationItem,
+    MyStudyInvitationListResult,
+    SentStudyInvitationListResult,
     GroupStudyTimerStartResult,
     GroupStudyTimerPauseResult,
     GroupStudyTimerEndResult,
     GroupStudyMemberLapsResult,
-    GroupStudyDailyRankingResult,
-    GroupStudyMonthlyRankingResult,
+    StudyRankingResult,
+    TimerAvailabilityResult,
     SoloStudyTimerStartResult,
     SoloStudyTimerPauseResult,
     SoloStudyTimerEndResult,
     SoloStudyLapsResult,
     SoloCurrentSessionResult,
-    SoloStudyHistoryItem,
     DailyStudyTimeResult,
     MonthlyStudyTimeResult,
+    YearlyStudyRecordResult,
 } from "@/features/study/type";
 
 // ====================
 // Group Study
 // ====================
 
-// 그룹방 생성
-export const createGroupStudyService = async (): Promise<StudyApiResponse<GroupStudyInfo>> => {
+// 그룹 스터디룸 실시간 구독 destination (STOMP)
+export const getStudyRoomSubscribeDestination = (roomId: number) =>
+    `/sub/study/room/${roomId}`;
+
+// 그룹방 생성 (title 필수 - CreateGroupRoomRequest.title @NotBlank)
+export const createGroupStudyService = async (
+    body: CreateGroupStudyRequest
+): Promise<StudyApiResponse<GroupStudyInfo>> => {
     const response = await fetchWithAuth("/api/v3/study/rooms", {
         method: "POST",
+        body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`${errorData.status}|${errorData.message}` || "500|알 수 없는 오류가 발생했습니다")
+    }
+    return response.json();
+};
+
+
+// 그룹방 제목 수정 (방장만 가능)
+export const updateGroupStudyTitleService = async (
+    roomId: number,
+    body: UpdateGroupStudyTitleRequest
+): Promise<StudyApiResponse<GroupStudyTitleUpdateResult>> => {
+    const response = await fetchWithAuth(`/api/v3/study/rooms/${roomId}`, {
+        method: "PATCH",
+        body: JSON.stringify(body),
     });
 
     if (!response.ok) {
@@ -61,7 +90,7 @@ export const getGroupStudyDetailService = async (
 
 
 // 내가 속한 그룹방 목록 조회
-export const getMyGroupStudyListService = async (): Promise<StudyApiResponse<MyGroupStudyRoomItem[]>> => {
+export const getMyGroupStudyListService = async (): Promise<StudyApiResponse<MyGroupStudyRoomListResult>> => {
     const response = await fetchWithAuth("/api/v3/study/rooms/my");
 
     if (!response.ok) {
@@ -177,8 +206,20 @@ export const denyStudyInviteService = async (
 
 
 // 내가 받은 초대 목록 조회
-export const getMyStudyInviteListService = async (): Promise<StudyApiResponse<MyStudyInvitationItem[]>> => {
+export const getMyStudyInviteListService = async (): Promise<StudyApiResponse<MyStudyInvitationListResult>> => {
     const response = await fetchWithAuth("/api/v3/study/members/invitations");
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`${errorData.status}|${errorData.message}` || "500|알 수 없는 오류가 발생했습니다")
+    }
+    return response.json();
+};
+
+
+// 내가 보낸 초대 목록 조회
+export const getSentStudyInviteListService = async (): Promise<StudyApiResponse<SentStudyInvitationListResult>> => {
+    const response = await fetchWithAuth("/api/v3/study/members/invitations/sent");
 
     if (!response.ok) {
         const errorData = await response.json();
@@ -249,7 +290,7 @@ export const getGroupStudyLabListService = async (
     roomId: number,
     targetUserId: number
 ): Promise<StudyApiResponse<GroupStudyMemberLapsResult>> => {
-    const response = await fetchWithAuth(`/api/v3/study/rooms/${roomId}/members/${targetUserId}/laps`);
+    const response = await fetchWithAuth(`/api/v3/study/rooms/${roomId}/members/timer/${targetUserId}/laps`);
 
     if (!response.ok) {
         const errorData = await response.json();
@@ -259,10 +300,10 @@ export const getGroupStudyLabListService = async (
 };
 
 
-// 그룹 멤버 일별 랭킹 조회
+// 그룹 멤버 일별 랭킹 조회 (일별/월별 공용 응답 형태 - RankingResponse)
 export const getGroupStudyDailyRankingService = async (
     roomId: number
-): Promise<StudyApiResponse<GroupStudyDailyRankingResult>> => {
+): Promise<StudyApiResponse<StudyRankingResult>> => {
     const response = await fetchWithAuth(`/api/v3/study/rooms/${roomId}/ranking/daily`);
 
     if (!response.ok) {
@@ -276,7 +317,7 @@ export const getGroupStudyDailyRankingService = async (
 // 그룹 멤버 월별 랭킹 조회
 export const getGroupStudyMonthlyRankingService = async (
     roomId: number
-): Promise<StudyApiResponse<GroupStudyMonthlyRankingResult>> => {
+): Promise<StudyApiResponse<StudyRankingResult>> => {
     const response = await fetchWithAuth(`/api/v3/study/rooms/${roomId}/ranking/monthly`);
 
     if (!response.ok) {
@@ -362,15 +403,10 @@ export const getCurrentSoloStudySessionService = async (): Promise<StudyApiRespo
 
 
 // 솔로 세션 이력 조회
-export const getSoloStudyHistoryService = async (): Promise<StudyApiResponse<SoloStudyHistoryItem[]>> => {
-    const response = await fetchWithAuth("/api/v3/study/solo/history");
-
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`${errorData.status}|${errorData.message}` || "500|알 수 없는 오류가 발생했습니다")
-    }
-    return response.json();
-};
+// ⚠️ 제거함: 백엔드에 진짜 이력 조회 엔드포인트가 없음 (SoloController에 매핑 없음, repository 주석에만 "용도" 언급).
+// 이전에 "/solo/laps"로 임시 연결했었지만 그건 getSoloStudyLabListService와 완전히 같은 엔드포인트라
+// {sessionId, laps} 객체가 내려오는데 타입은 배열(SoloStudyHistoryItem[])로 선언돼 있어 런타임에 깨짐.
+// 백엔드에 실제 "/api/v3/study/solo/history" 컨트롤러가 추가되면 그때 다시 구현.
 
 
 // 일별 누적 공부시간 조회
@@ -392,6 +428,36 @@ export const getMonthlyStudyTimeService = async (
     yearMonth: string
 ): Promise<StudyApiResponse<MonthlyStudyTimeResult>> => {
     const response = await fetchWithAuth(`/api/v3/study/records/monthly?yearMonth=${encodeURIComponent(yearMonth)}`);
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`${errorData.status}|${errorData.message}` || "500|알 수 없는 오류가 발생했습니다")
+    }
+    return response.json();
+};
+
+
+// 연간 누적 공부시간 조회 (잔디 히트맵용)
+export const getYearlyStudyTimeService = async (): Promise<StudyApiResponse<DailyStudyTimeResult[]>> => {
+    const response = await fetchWithAuth("/api/v3/study/records/yearly", {
+        next: { revalidate: 300 },
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`${errorData.status}|${errorData.message}` || "500|알 수 없는 오류가 발생했습니다")
+    }
+    return response.json();
+};
+
+
+// ====================
+// Timer Availability (기존 프론트에 없던 엔드포인트)
+// ====================
+
+// 타이머 시작 가능 여부 조회
+export const getTimerAvailabilityService = async (): Promise<StudyApiResponse<TimerAvailabilityResult>> => {
+    const response = await fetchWithAuth("/api/v3/study/timer-availability");
 
     if (!response.ok) {
         const errorData = await response.json();

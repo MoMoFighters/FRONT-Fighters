@@ -6,6 +6,7 @@ import { createPortal } from "react-dom";
 import { toast } from "sonner";
 import { logoutAction, teacherSignupAction } from "@/features/auth/action";
 import { clearLectureUploadTasksStorage } from "@/features/lecture/components/teacher/LectureCreateUploadContext";
+import { clearChatBotMessagesStorage } from "@/features/chatbot/hooks/useChatBotMessages";
 
 import {
     Select,
@@ -102,6 +103,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
             setIsModal(false);
             await logoutAction();
             clearLectureUploadTasksStorage();
+            clearChatBotMessagesStorage();
             if (closeResultModal ?
                 closeResultModal(false) : ""
             )
@@ -113,28 +115,28 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
 
     if (!isModal) return (
         <li
-            className="-mt-2 cursor-pointer flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold text-slate-500 transition hover:bg-slate-50 hover:text-slate-900"
+            className="cursor-pointer flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-bold text-slate-500 transition hover:bg-slate-50 hover:text-slate-900"
             onClick={() => {
                 if (!isSubmitting) {
                     setIsModal(true);
                 }
             }}
         >
-            <User className="h-4 w-4" />
+            <User className="h-3 w-3" />
             강사 전환
         </li>)
 
     return (
         <>
             <li
-                className="cursor-pointer flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold text-slate-500 transition hover:bg-slate-50 hover:text-slate-900"
+                className="cursor-pointer flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-bold text-slate-500 transition hover:bg-slate-50 hover:text-slate-900"
                 onClick={() => {
                     if (!isSubmitting) {
                         setIsModal(false);
                     }
                 }}
             >
-                <User className="h-4 w-4" />
+                <User className="h-3 w-3" />
                 강사 전환
             </li>
             {createPortal(

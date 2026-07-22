@@ -9,6 +9,25 @@ import { getMyInfo } from "@/features/user/action";
 import { getUserPaymentListAction } from "@/features/payment/action";
 import { UserPaymentStatus } from "@/features/payment/type";
 import CancelSubscriptionButton from "@/features/payment/components/CancelSubscriptionButton";
+import RenewMembershipButton from "@/features/payment/components/RenewMembershipButton";
+import { MEMBERSHIP_PLANS } from "@/features/membership/membershipInfo";
+
+const REFUND_WINDOW_MS = 72 * 60 * 60 * 1000;
+const RENEWAL_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
+
+const formatActivationTime = (date: Date) => {
+    const yyyy = date.getFullYear();
+    const MM = String(date.getMonth() + 1).padStart(2, "0");
+    const dd = String(date.getDate()).padStart(2, "0");
+    const hours24 = date.getHours();
+    const ampm = hours24 >= 12 ? "pm" : "am";
+    const hours12 = hours24 % 12 || 12;
+    const hh = String(hours12).padStart(2, "0");
+    const mm = String(date.getMinutes()).padStart(2, "0");
+    const ss = String(date.getSeconds()).padStart(2, "0");
+
+    return `${yyyy}-${MM}-${dd} ${hh}:${mm}:${ss}${ampm}`;
+};
 
 interface PaymentHistoryPageProps {
     searchParams: Promise<{
@@ -60,9 +79,14 @@ export default async function PaymentHistoryPage({
     const normalizedStatus =
         status === "SUCCESS" || status === "REFUND" ? status : undefined;
 
-    const [myInfoResponse, paymentListResponse] = await Promise.all([
+    // 구독 취소/갱신 카드는 탭 필터(전체/결제완료/환불)와 무관하게 항상 최신 SUCCESS 건을 기준으로 판단해야 하므로,
+    // 화면에 뿌릴 목록과는 별개로 SUCCESS 목록을 항상 따로 조회한다.
+    const [myInfoResponse, paymentListResponse, successPaymentListResponse] = await Promise.all([
         getMyInfo(),
         getUserPaymentListAction(normalizedStatus),
+        normalizedStatus === "SUCCESS"
+            ? Promise.resolve(null)
+            : getUserPaymentListAction("SUCCESS"),
     ]);
 
     const membership = myInfoResponse.data?.membership ?? "BASIC";
@@ -73,9 +97,34 @@ export default async function PaymentHistoryPage({
         paymentListResponse.data?.totalElements ?? payments.length;
     const hasError = paymentListResponse.status >= 400;
 
-    const latestActivePaymentId = payments.find(
+    const successPayments = successPaymentListResponse?.data?.payments ?? payments;
+    const latestSuccessPayment = successPayments.find(
         (payment) => payment.status === "SUCCESS"
-    )?.paymentId;
+    );
+
+    // 서버 컴포넌트라 요청마다 새로 렌더링되므로, 요청 시점의 서버 시각을 그대로 사용해도 안전하다.
+    // eslint-disable-next-line react-hooks/purity
+    const now = Date.now();
+
+    const cancelDisabledReason = !latestSuccessPayment
+        ? "결제 내역을 확인할 수 없습니다."
+        : now - new Date(latestSuccessPayment.createdAt).getTime() > REFUND_WINDOW_MS
+            ? "환불 가능 기간이 지났습니다."
+            : null;
+
+    const membershipUntilDate = membershipUntil ? new Date(membershipUntil) : null;
+    const canRenew =
+        membershipUntilDate !== null &&
+        membershipUntilDate.getTime() - now <= RENEWAL_WINDOW_MS;
+    const renewActivationDate = membershipUntilDate
+        ? new Date(membershipUntilDate.getTime() - RENEWAL_WINDOW_MS)
+        : null;
+    const renewDisabledReason = canRenew
+        ? null
+        : renewActivationDate
+            ? `${formatActivationTime(renewActivationDate)}부터 갱신이 가능합니다.`
+            : "구독 정보를 확인할 수 없습니다.";
+    const currentPlan = MEMBERSHIP_PLANS.find((plan) => plan.tier === membership);
 
     return (
         <main className="mx-auto w-full max-w-360 px-12 py-12">
@@ -121,9 +170,19 @@ export default async function PaymentHistoryPage({
                         </div>
 
                         {membership !== "BASIC" && (
-                            <CancelSubscriptionButton
-                                paymentId={latestActivePaymentId}
-                            />
+                            <div className="flex items-center gap-2">
+                                {currentPlan && (
+                                    <RenewMembershipButton
+                                        plan={currentPlan}
+                                        disabledReason={renewDisabledReason}
+                                        membershipStart={myInfoResponse.data?.membershipStart}
+                                    />
+                                )}
+                                <CancelSubscriptionButton
+                                    paymentId={latestSuccessPayment?.paymentId}
+                                    disabledReason={cancelDisabledReason}
+                                />
+                            </div>
                         )}
                     </div>
                 </div>

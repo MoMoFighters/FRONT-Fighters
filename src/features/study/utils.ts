@@ -1,6 +1,7 @@
 import { jwtDecode } from "jwt-decode";
 
-import type { GroupStudyDetail, StudyRoomSeatUser } from "./type";
+import type { GroupStudyDetail, StudyRoomSeatUser, DailyStudyTimeResult } from "./type";
+import type { GrassLevel } from "@/components/mypage/GrassHeatmap";
 
 export const formatStudyTime = (totalSeconds: number) => {
     const safeSeconds = Math.max(totalSeconds, 0);
@@ -69,4 +70,33 @@ export const getThisYearMonthString = (baseDate: Date) => {
     const month = String(baseDate.getMonth() + 1).padStart(2, "0");
 
     return `${year}-${month}`;
+};
+
+// 백엔드 StreakLevel.from(seconds)와 동일한 기준으로 레벨을 계산
+export const getStudyGrassLevel = (seconds: number): GrassLevel => {
+    if (seconds <= 0) return 0;
+    if (seconds <= 600) return 1;
+    if (seconds <= 1800) return 2;
+    if (seconds <= 3600) return 3;
+    return 4;
+};
+
+// 연간 학습 기록 배열을 날짜(YYYY-MM-DD)를 key로 하는 레벨/초 조회용 객체로 변환
+export const buildStudyGrassMap = (
+    records: DailyStudyTimeResult[] | null | undefined
+): { levelByDate: Record<string, GrassLevel>; secondsByDate: Record<string, number> } => {
+    const levelByDate: Record<string, GrassLevel> = {};
+    const secondsByDate: Record<string, number> = {};
+
+    if (!Array.isArray(records)) {
+        return { levelByDate, secondsByDate };
+    }
+
+    for (const record of records) {
+        const date = record.date.slice(0, 10);
+        levelByDate[date] = getStudyGrassLevel(record.totalSeconds);
+        secondsByDate[date] = record.totalSeconds;
+    }
+
+    return { levelByDate, secondsByDate };
 };

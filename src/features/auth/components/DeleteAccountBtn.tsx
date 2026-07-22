@@ -8,6 +8,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { logoutAction } from "../action";
 import { clearLectureUploadTasksStorage } from "@/features/lecture/components/teacher/LectureCreateUploadContext";
+import { clearChatBotMessagesStorage } from "@/features/chatbot/hooks/useChatBotMessages";
 
 export default function DeleteAccountBtn({ userName }: { userName: string }) {
     const [isConfirmModal, setIsConfirmModal] = useState(false);
@@ -25,6 +26,7 @@ export default function DeleteAccountBtn({ userName }: { userName: string }) {
         // 3. redirect 루트
         await logoutAction();
         clearLectureUploadTasksStorage();
+        clearChatBotMessagesStorage();
         router.push("/");
     };
 
