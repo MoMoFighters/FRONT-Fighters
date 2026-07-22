@@ -167,7 +167,6 @@ export const editMyInfo = async (
 
         revalidateTag("my-info", { expire: 0 });
         revalidatePath("/student/mypage");
-        revalidatePath("/student/mypage/edit");
 
         return result;
     } catch (error) {
