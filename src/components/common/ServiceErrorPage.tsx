@@ -33,7 +33,7 @@ export default function ServiceErrorPage({
     return (
         <main className="flex min-h-[calc(100vh-55px)] w-full items-center justify-center bg-white px-6 pt-6 pb-12">
             <section className="w-full max-w-5xl overflow-hidden bg-white">
-                <div className="grid min-h-[520px] grid-cols-[minmax(0,0.95fr)_minmax(360px,0.85fr)] gap-4">
+                <div className="grid min-h-[520px] grid-cols-1 gap-4 md:grid-cols-[minmax(0,0.95fr)_minmax(360px,0.85fr)]">
                     <div className="flex flex-col justify-center px-10 py-8">
                         <div className="mb-8 inline-flex w-fit items-center rounded-full border border-indigo-100 bg-indigo-50 px-3 py-1 text-xs font-bold text-indigo-500">
                             MoMoCITY

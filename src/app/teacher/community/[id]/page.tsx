@@ -71,7 +71,7 @@ export default async function CommunityPostDetailPage({
             : 0;
 
     return (
-        <section className="grid min-h-[calc(100vh-137px)] grid-cols-[7fr_3fr] items-start gap-4 rounded-3xl bg-white/80 p-5 shadow-sm ring-1 ring-slate-200/80 backdrop-blur">
+        <section className="grid min-h-[calc(100vh-137px)] grid-cols-1 items-start gap-4 rounded-3xl bg-white/80 p-5 shadow-sm ring-1 ring-slate-200/80 backdrop-blur lg:grid-cols-[7fr_3fr]">
             <article className="flex min-h-[calc(100vh-137px)] flex-col rounded-3xl bg-white/90 p-5 shadow-sm ring-1 ring-slate-100">
                 <header className="w-full border-b border-slate-100 pb-3">
                     <div className="flex items-center justify-between gap-3">

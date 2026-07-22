@@ -52,7 +52,7 @@ export default async function TeacherLectureDetailPage({
     }
 
     return (
-        <div className="relative w-full p-12">
+        <div className="relative w-full p-4 sm:p-8 lg:p-12">
             <MovePageBackBtn href="/teacher/lectures/" />
             <LectureItem lecture={lecture} role="teacher" mode="detail" />
 
