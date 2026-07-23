@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import { CloudDrizzle, CloudSun, Sparkles } from "lucide-react";
@@ -76,11 +76,12 @@ const TONE_THEME: Record<FortuneTone, {
 };
 
 export default function FortuneModal({ open, onOpenChange }: FortuneModalProps) {
-    const [phase, setPhase] = useState<"idle" | "throwing" | "result" | "error">("idle");
+    const [phase, setPhase] = useState<"idle" | "preparing" | "throwing" | "result" | "error">("idle");
     const [fortune, setFortune] = useState<Fortune | null>(null);
     const [confetti, setConfetti] = useState<ConfettiPiece[]>([]);
     const [errorMessage, setErrorMessage] = useState("");
 
+    // 분수 배경 이미지가 로드되기 전까지는 대기 상태만 노출 → onLoad 이후에 동전 연출을 시작함
     useEffect(() => {
         if (!open) {
             setPhase("idle");
@@ -90,8 +91,19 @@ export default function FortuneModal({ open, onOpenChange }: FortuneModalProps) 
             return;
         }
 
+        setPhase("preparing");
+    }, [open]);
+
+    const handleBackgroundLoaded = useCallback(() => {
+        setPhase((prev) => (prev === "preparing" ? "throwing" : prev));
+    }, []);
+
+    useEffect(() => {
+        if (phase !== "throwing") {
+            return;
+        }
+
         let isCancelled = false;
-        setPhase("throwing");
 
         const fortunePromise = getFortuneAction();
 
@@ -147,7 +159,7 @@ export default function FortuneModal({ open, onOpenChange }: FortuneModalProps) 
             isCancelled = true;
             clearTimeout(timer);
         };
-    }, [open]);
+    }, [phase]);
 
     if (!open) {
         return null;
@@ -161,8 +173,8 @@ export default function FortuneModal({ open, onOpenChange }: FortuneModalProps) 
     */
     const overlay = (
         <>
-            {/* 🍑 동전 던지는 연출(phase === "throwing") 동안에만 분수 배경 노출 🍑 */}
-            {phase === "throwing" && (
+            {/* 🍑 분수 배경은 preparing 단계부터 미리 노출되고, 로드가 끝나야 throwing으로 넘어가 동전이 던져짐 🍑 */}
+            {(phase === "preparing" || phase === "throwing") && (
                 <div className="fixed inset-0 z-[60] overflow-hidden">
                     <div className="p-20% h-full w-full">
                         <Image
@@ -170,6 +182,8 @@ export default function FortuneModal({ open, onOpenChange }: FortuneModalProps) 
                             alt="분수대 배경"
                             fill
                             priority
+                            sizes="100vw"
+                            onLoad={handleBackgroundLoaded}
                             className="object-cover filter blur-sm scale-105"
                         />
                     </div>

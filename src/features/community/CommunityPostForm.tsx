@@ -462,7 +462,7 @@ export default function CommunityPostForm({ mode, data, role }: CommunityPostFor
     return (
         <form
             onSubmit={handleSubmit}
-            className="flex min-h-full flex-col rounded-3xl bg-white/85 p-5 shadow-sm ring-1 ring-slate-200/80 backdrop-blur"
+            className="flex min-h-[640px] flex-col rounded-3xl bg-white/90 p-6 shadow-sm ring-1 ring-slate-100"
         >
             <input
                 type="hidden"
@@ -499,7 +499,7 @@ export default function CommunityPostForm({ mode, data, role }: CommunityPostFor
                     <SelectTrigger className="h-11! w-full rounded-2xl border-slate-200 bg-white px-4 text-sm font-bold text-slate-600">
                         <SelectValue placeholder="카테고리" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent position="popper" side="bottom">
                         {CATEGORY_OPTIONS.map((category) => (
                             <SelectItem
                                 className="h-11!"
@@ -513,8 +513,8 @@ export default function CommunityPostForm({ mode, data, role }: CommunityPostFor
                 </Select>
             </div>
 
-            <section className="mt-4 flex flex-col rounded-2xl border border-slate-200 bg-white">
-                <div className="flex shrink-0 items-start justify-between gap-3 border-b border-slate-100 bg-white/95 px-4 py-3 backdrop-blur">
+            <section className="mt-4 flex flex-1 flex-col rounded-2xl border border-slate-200 bg-white">
+                <div className="flex shrink-0 items-start justify-between gap-3 border-b border-slate-100 bg-white/95 px-4 py-3">
                     <div className="leading-none">
                         <p className="text-xs font-black text-slate-900">
                             본문 영역
@@ -527,7 +527,7 @@ export default function CommunityPostForm({ mode, data, role }: CommunityPostFor
                 </div>
 
                 {canAddImage && (
-                    <label className="sticky top-4 z-20 mr-4 mt-3 inline-flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center self-end rounded-full bg-indigo-500 text-white shadow-lg transition hover:bg-indigo-600">
+                    <label className="mr-4 mt-3 inline-flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center self-end rounded-full bg-indigo-500 text-white shadow-lg transition hover:bg-indigo-600">
                         <ImagePlus className="h-6 w-6" />
                         <input
                             type="file"
@@ -537,7 +537,7 @@ export default function CommunityPostForm({ mode, data, role }: CommunityPostFor
                         />
                     </label>
                 )}
-                <div className="flex flex-col px-4 py-3">
+                <div className="flex flex-1 flex-col px-4 py-3">
                     <div>
                         <AutoResizeTextarea
                             value={mainContent}
