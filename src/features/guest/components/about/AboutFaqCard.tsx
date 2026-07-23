@@ -66,7 +66,7 @@ const FaqContentBlock = ({ block, question }: { block: FaqBlock; question: strin
             {block.images.map((image, index) => (
                 <div
                     key={index}
-                    className="relative h-40 w-full overflow-hidden rounded-xl border border-slate-100 bg-slate-50"
+                    className="relative aspect-[16/10] w-full overflow-hidden rounded-xl border border-slate-100 bg-slate-50"
                 >
                     <Image
                         src={image.src}

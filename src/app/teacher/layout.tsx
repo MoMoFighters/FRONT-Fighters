@@ -1,4 +1,5 @@
 import TeacherHeader from "../../components/layout/TeacherHeader";
+import TeacherMobileNav from "@/components/layout/TeacherMobileNav";
 import TeacherSidebar from "@/components/layout/TeacherSidebar";
 import LectureCreateFloatingWidget from "@/features/lecture/components/teacher/LectureCreateFloatingWidget";
 import { LectureCreateUploadProvider } from "@/features/lecture/components/teacher/LectureCreateUploadContext";
@@ -34,6 +35,7 @@ export default async function TeacherLayout({
     return (
         <div className="flex h-screen flex-col overflow-hidden bg-slate-50">
             <TeacherHeader role="teacher" />
+            <TeacherMobileNav />
 
             <div className="flex min-h-0 flex-1">
                 <LectureCreateUploadProvider>

@@ -39,7 +39,7 @@ export default function AdminChapterList({
                             href={`/admin/lectures/${lectureId}/chapters/${chapter.chapterId}`}
                             className="flex min-w-0 flex-1 items-center gap-4"
                         >
-                            <div className={`relative flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-100 text-indigo-500 ${isCurrent ? "ring-2 ring-indigo-500" : ""}`}>
+                            <div className={`relative flex size-[clamp(2.5rem,11cqw,2.75rem)] shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-100 text-indigo-500 ${isCurrent ? "ring-2 ring-indigo-500" : ""}`}>
                                 {chapter.chapterThumbnailUrl ? (
                                     <Image
                                         src={chapter.chapterThumbnailUrl}
@@ -53,14 +53,14 @@ export default function AdminChapterList({
                                 )}
                             </div>
                             <div className="min-w-0 flex-1">
-                                <p className={`text-sm font-bold ${isCurrent ? "text-indigo-600" : "text-slate-950"}`}>
+                                <p className={`text-[clamp(0.75rem,3.2cqw,0.875rem)] font-bold ${isCurrent ? "text-indigo-600" : "text-slate-950"}`}>
                                     Chapter {chapter.orderNo}.
                                 </p>
-                                <p className="mt-1 truncate text-sm font-medium text-slate-500">
+                                <p className="mt-1 truncate text-[clamp(0.75rem,3.2cqw,0.875rem)] font-medium text-slate-500">
                                     {chapter.title}
                                 </p>
                             </div>
-                            <span className="text-sm font-bold text-slate-400">
+                            <span className="shrink-0 text-[clamp(0.75rem,3.2cqw,0.875rem)] font-bold text-slate-400">
                                 {formatDuration(chapter.durationSec)}
                             </span>
                         </Link>

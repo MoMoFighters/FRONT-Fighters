@@ -125,7 +125,7 @@ export default async function AdminReportDetailPage({
                 )}
             </div>
 
-            <div className="mt-7 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_17rem]">
+            <div className="mt-7 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(240px,1fr)]">
                 <div className="space-y-6">
                     <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
                         <div className="flex items-center gap-2">

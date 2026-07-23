@@ -196,7 +196,7 @@ export default function CommunityRootPostsPage({
 
                         <form
                             action={baseHref}
-                            className="mt-5 flex items-center gap-3"
+                            className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center"
                         >
                             {selectedMode !== "grid" && (
                                 <input
@@ -231,35 +231,37 @@ export default function CommunityRootPostsPage({
                                 )}
                             </div>
 
-                            <Select
-                                name="category"
-                                defaultValue={selectedCategory}
-                            >
-                                <SelectTrigger className="h-12! w-32 rounded-xl border-2 border-slate-300 bg-white text-sm font-medium text-slate-700">
-                                    <SelectValue placeholder="카테고리" />
-                                </SelectTrigger>
-                                <SelectContent position="popper" side="bottom">
-                                    {CATEGORY_OPTIONS.map((option) => (
-                                        <SelectItem
-                                            key={option.value}
-                                            value={option.value}
-                                        >
-                                            {option.label}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+                            <div className="flex items-center gap-3">
+                                <Select
+                                    name="category"
+                                    defaultValue={selectedCategory}
+                                >
+                                    <SelectTrigger className="h-12! w-full rounded-xl border-2 border-slate-300 bg-white text-sm font-medium text-slate-700 sm:w-32">
+                                        <SelectValue placeholder="카테고리" />
+                                    </SelectTrigger>
+                                    <SelectContent position="popper" side="bottom">
+                                        {CATEGORY_OPTIONS.map((option) => (
+                                            <SelectItem
+                                                key={option.value}
+                                                value={option.value}
+                                            >
+                                                {option.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
 
-                            <Button
-                                variant="outline"
-                                type="submit"
-                                className="h-12 w-24 cursor-pointer rounded-xl border-2 border-slate-300 px-2 font-bold text-slate-700"
-                            >
-                                <Search className="h-6 w-6 shrink-0" />
-                                <span className="text-[16px]">
-                                    조회
-                                </span>
-                            </Button>
+                                <Button
+                                    variant="outline"
+                                    type="submit"
+                                    className="h-12 w-24 shrink-0 cursor-pointer rounded-xl border-2 border-slate-300 px-2 font-bold text-slate-700"
+                                >
+                                    <Search className="h-6 w-6 shrink-0" />
+                                    <span className="text-[16px]">
+                                        조회
+                                    </span>
+                                </Button>
+                            </div>
                         </form>
                     </header>
 

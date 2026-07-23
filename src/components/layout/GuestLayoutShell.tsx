@@ -25,7 +25,7 @@ export default function GuestLayoutShell({
     return (
         <div className="flex min-h-screen flex-col">
             <GuestHeader />
-            <main className="h-full flex-1 bg-white pt-14">
+            <main className="h-full flex-1 bg-white pt-24 md:pt-14">
                 {children}
             </main>
             <Footer />

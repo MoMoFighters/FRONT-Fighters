@@ -31,7 +31,7 @@ export default async function AdminChapterDetailPage({
     if (!currentChapter) notFound();
 
     return (
-        <main className="mx-auto grid w-full max-w-360 grid-cols-1 gap-8 px-4 pb-10 md:grid-cols-[minmax(0,1fr)_360px] md:px-0">
+        <main className="mx-auto grid w-full max-w-360 grid-cols-1 gap-8 px-4 pb-10 md:grid-cols-[minmax(0,3fr)_minmax(220px,1fr)] md:px-0">
             <section className="min-w-0">
                 <StudentPageHeader
                     backHref={`/admin/lectures/${lectureId}`}
@@ -53,10 +53,10 @@ export default async function AdminChapterDetailPage({
                 />
             </section>
 
-            <aside className="sticky mt-4 top-5 self-start overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <aside className="sticky mt-4 top-5 self-start overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm [container-type:inline-size]">
                 <div className="border-b border-slate-200 px-5 py-4">
-                    <h2 className="text-base font-bold text-slate-950">강의 챕터</h2>
-                    <p className="mt-1 text-sm font-medium text-slate-500">전체 {metaData.totalChapterCount}개 챕터</p>
+                    <h2 className="text-[clamp(0.875rem,4cqw,1rem)] font-bold text-slate-950">강의 챕터</h2>
+                    <p className="mt-1 text-[clamp(0.75rem,3.2cqw,0.875rem)] font-medium text-slate-500">전체 {metaData.totalChapterCount}개 챕터</p>
                 </div>
                 <AdminChapterList
                     lectureId={lectureId}

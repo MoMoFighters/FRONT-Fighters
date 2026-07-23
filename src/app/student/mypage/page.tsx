@@ -219,14 +219,6 @@ export default async function StudentMyPage() {
                                     수강 중인 강의를 한 화면에서 확인합니다.
                                 </p>
                             </div>
-
-                            <Link
-                                href="/student/mypage/lectures"
-                                className="flex items-center gap-1 text-xs font-black text-indigo-500 transition hover:text-indigo-600"
-                            >
-                                전체보기
-                                <ArrowRight className="h-3.5 w-3.5" />
-                            </Link>
                         </div>
 
                         {/* 모바일은 이중 스크롤이 불편해서 min-height만 두고 페이지 자체 스크롤을 따라가게 하고, md 이상에서만 고정 높이+내부 스크롤 유지 */}

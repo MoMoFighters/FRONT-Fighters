@@ -28,22 +28,22 @@ export default function GuestInquiryCard() {
   return (
     <div
       ref={cardRef}
-      className="relative rounded-xl border border-slate-200 bg-white/70 p-5 shadow-sm"
+      className="relative rounded-xl border border-slate-200 bg-white/70 p-5 shadow-sm [container-type:inline-size]"
     >
-      <div className="mb-3 flex items-center gap-2 text-xs font-bold text-slate-500">
-        <CircleQuestionMark className="h-4 w-4 text-indigo-400" />
+      <div className="mb-3 flex items-center gap-2 text-[clamp(0.7rem,3cqw,0.75rem)] font-bold text-slate-500">
+        <CircleQuestionMark className="h-[clamp(0.875rem,4cqw,1rem)] w-[clamp(0.875rem,4cqw,1rem)] text-indigo-400" />
         1:1 문의
       </div>
 
       <div className="flex items-center justify-between gap-2">
-        <p className="text-xs leading-5 text-slate-600">
+        <p className="text-[clamp(0.7rem,3cqw,0.75rem)] leading-5 text-slate-600">
           그 외 기타 사항은 문의를 부탁드립니다.
         </p>
 
         <button
           type="button"
           onClick={() => setIsOpen((prev) => !prev)}
-          className="min-w-16 cursor-pointer rounded-lg border border-indigo-400 bg-white px-1.5 py-1.5 text-xs font-bold text-indigo-600 transition-colors hover:bg-indigo-50"
+          className="min-w-16 shrink-0 cursor-pointer rounded-lg border border-indigo-400 bg-white px-1.5 py-1.5 text-[clamp(0.7rem,3cqw,0.75rem)] font-bold text-indigo-600 transition-colors hover:bg-indigo-50"
         >
           문의하기
         </button>
