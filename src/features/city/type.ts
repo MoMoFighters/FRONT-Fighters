@@ -7,6 +7,11 @@ export interface Building {
     buildingUrl: string;
 }
 
+export interface FriendBuildingsResponse {
+    nickname: string;
+    buildings: Building[];
+}
+
 export interface Streak {
     streakDate: string;
     level: string;

@@ -220,40 +220,46 @@ export default function PostBoard({ mode, ownerId, initialGuestbooks = [] }: Pos
 
     return (
         <>
-            <HoverCard openDelay={50} closeDelay={50}>
-                <HoverCardTrigger asChild>
-                    <div
-                        className="absolute bottom-[11%] left-[44%] z-10 aspect-square w-[7%] cursor-pointer"
-                        style={{
-                            transform: "rotate(-17deg) skewX(-15deg) scaleY(0.92)",
-                            transformOrigin: "center",
-                        }}
-                        onClick={() => setIsModal(true)}
-                    >
-                        <div className="relative h-full w-full transition-transform duration-200 hover:scale-110">
-                            <Image
-                                src={postBoard}
-                                alt="게시판"
-                                fill
-                                quality={80}
-                                sizes="7vw"
-                            />
+            <div className="absolute bottom-[11%] left-[44%] z-10 aspect-square w-[7%]">
+                <HoverCard openDelay={50} closeDelay={50}>
+                    <HoverCardTrigger asChild>
+                        <div
+                            className="h-full w-full cursor-pointer"
+                            style={{
+                                transform: "rotate(-17deg) skewX(-15deg) scaleY(0.92)",
+                                transformOrigin: "center",
+                            }}
+                            onClick={() => setIsModal(true)}
+                        >
+                            <div className="relative h-full w-full transition-transform duration-200 hover:scale-110">
+                                <Image
+                                    src={postBoard}
+                                    alt="게시판"
+                                    fill
+                                    quality={80}
+                                    sizes="7vw"
+                                />
+                            </div>
                         </div>
-                    </div>
-                </HoverCardTrigger>
-                <HoverCardContent side="top" align="center" sideOffset={8}>
-                    <div className="space-y-1 -top-20">
-                        <p className="text-sm font-bold text-slate-900">
-                            게시판
-                        </p>
-                        <p className="text-xs font-medium text-slate-500">
-                            {mode === "MY"
-                                ? "방명록과 공지사항을 확인해보세요."
-                                : "친구에게 방명록을 남겨보세요."}
-                        </p>
-                    </div>
-                </HoverCardContent>
-            </HoverCard>
+                    </HoverCardTrigger>
+                    <HoverCardContent side="top" align="center" sideOffset={8}>
+                        <div className="space-y-1 -top-20">
+                            <p className="text-sm font-bold text-slate-900">
+                                게시판
+                            </p>
+                            <p className="text-xs font-medium text-slate-500">
+                                {mode === "MY"
+                                    ? "방명록과 공지사항을 확인해보세요."
+                                    : "친구에게 방명록을 남겨보세요."}
+                            </p>
+                        </div>
+                    </HoverCardContent>
+                </HoverCard>
+
+                <span className="pointer-events-none absolute bottom-0 left-1/2 z-10 -translate-x-1/2 translate-y-1/2 whitespace-nowrap rounded-[0.3cqw] bg-white px-[0.4cqw] py-[0.08cqw] text-[0.75cqw] font-bold text-slate-700 shadow-sm">
+                    게시판
+                </span>
+            </div>
 
             {isModal && (
                 <div

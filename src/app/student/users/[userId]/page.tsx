@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Phone from "@/components/city/Phone";
 import MonthlyStreakGarden from "@/components/city/MonthlyStreakGarden";
 import BusStation from "@/components/city/BusStation";
@@ -50,11 +51,8 @@ export default async function StudentMainPage({ params }: {
     const cookieStore = await cookies();
     const accessToken = cookieStore.get("accessToken")?.value;
 
-    const [monthlyStreak, buildings, guestbookResponse] = await Promise.all([
-        getFriendStreak(userId),
-        getFriendBuildings(userId),
-        getGuestbooksAction(Number(userId)),
-    ]);
+    // PostBoard가 FRIEND 모드에서는 모달 오픈 시 자체 재조회를 하지 않으므로 그대로 blocking 유지
+    const guestbookResponse = await getGuestbooksAction(Number(userId));
     const guestbooks = guestbookResponse.data ?? [];
 
     return (
@@ -66,11 +64,42 @@ export default async function StudentMainPage({ params }: {
                 initialGuestbooks={guestbooks}
             />
             <Phone accessToken={accessToken} />
-            <MonthlyStreakGarden
-                initialStreak={monthlyStreak}
-                userId={userId}
-            />
 
+            <Suspense fallback={null}>
+                <StreakSection userId={userId} />
+            </Suspense>
+
+            {/* 포인트 상점은 fetch와 무관해서 즉시 렌더링 */}
+            <div
+                className="absolute"
+                style={commonBuildingSlots.point}
+            >
+                <BuildingItem common="point" imageSizes="13vw" interactive={false} />
+            </div>
+
+            <Suspense fallback={null}>
+                <BuildingsSection userId={userId} />
+            </Suspense>
+        </CityCanvas>
+    );
+}
+
+async function StreakSection({ userId }: { userId: string }) {
+    const monthlyStreak = await getFriendStreak(userId);
+
+    return (
+        <MonthlyStreakGarden
+            initialStreak={monthlyStreak}
+            userId={userId}
+        />
+    );
+}
+
+async function BuildingsSection({ userId }: { userId: string }) {
+    const { nickname, buildings } = await getFriendBuildings(userId);
+
+    return (
+        <>
             {/* 친구 도시의 경우 각 아이템들은 그저 볼 수 있는 고정 이미지로 */}
             {buildingSlots.map((slot) => {
                 const building = buildings.find((building) => building.position === slot.position);
@@ -95,20 +124,18 @@ export default async function StudentMainPage({ params }: {
                 );
             })}
 
-            {/* 포인트 상점 고정 자리 */}
-            <div
-                className="absolute"
-                style={commonBuildingSlots.point}
-            >
-                <BuildingItem common="point" imageSizes="13vw" interactive={false} />
-            </div>
             {/* 집 고정 자리 (친구 도시에서는 그룹 스터디로만 이동) */}
             <div
                 className="absolute"
                 style={commonBuildingSlots.mypage}
             >
-                <BuildingItem common="mypage" imageSizes="14vw" mode="FRIEND" />
+                <BuildingItem
+                    common="mypage"
+                    imageSizes="14vw"
+                    mode="FRIEND"
+                    friendNickname={nickname}
+                />
             </div>
-        </CityCanvas>
+        </>
     );
 }
