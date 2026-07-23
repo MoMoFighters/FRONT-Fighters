@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import {
+    updateVideoProgressAction,
     updateVideoProgressByExitAction,
 } from "@/features/lecture/action";
 import {
@@ -221,7 +222,8 @@ export default function VideoPlayer({
     ]);
 
     const saveProgress = useCallback(async (
-        playbackSeconds?: number
+        playbackSeconds?: number,
+        { silent = false }: { silent?: boolean } = {}
     ): Promise<UpdateVideoProgressResponse | undefined> => {
         // 중복 저장 요청을 막고 진행 중인 저장 요청이 있으면 같은 Promise를 재사용한다.
         const normalizedPlaybackSeconds = Math.floor(
@@ -243,14 +245,22 @@ export default function VideoPlayer({
 
         const savePromise = (async () => {
             try {
-                const result = await updateVideoProgressByExitAction(
-                    lectureId,
-                    String(chapter.chapterId),
-                    {
-                        playbackSeconds: normalizedPlaybackSeconds,
-                        lastPositionSec: normalizedLastPositionSec,
-                    }
-                );
+                // 10초 주기 자동저장은 "나가기"가 아니라서 /exit이 아닌 /progress를 호출하고,
+                // 잔디/건물 데이터가 자주 바뀌지 않는 재생 중 시점에 /student 등을 매번 무효화하지 않는다.
+                const result = silent
+                    ? await updateVideoProgressAction(
+                        lectureId,
+                        String(chapter.chapterId),
+                        { playbackSeconds: normalizedPlaybackSeconds }
+                    )
+                    : await updateVideoProgressByExitAction(
+                        lectureId,
+                        String(chapter.chapterId),
+                        {
+                            playbackSeconds: normalizedPlaybackSeconds,
+                            lastPositionSec: normalizedLastPositionSec,
+                        }
+                    );
 
                 if (result.isCompleted) {
                     markChapterCompleted();
@@ -364,7 +374,7 @@ export default function VideoPlayer({
 
     useEffect(() => {
         const interval = setInterval(() => {
-            void saveProgress();
+            void saveProgress(undefined, { silent: true });
         }, 10000);
 
         return () => {
