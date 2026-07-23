@@ -173,8 +173,8 @@ export const startGroupStudyTimer = async (
 ): Promise<StudyApiResponse<GroupStudyTimerStartResult>> => {
     try {
         const response = await startGroupStudyTimerService(roomId);
+        // 목록 페이지엔 타이머 진행 상태를 안 보여줘서 굳이 revalidate할 필요 없음 (방 상세만 갱신)
         revalidatePath(`/student/group-study/${roomId}`);
-        revalidatePath("/student/group-study");
         return response;
     } catch (error) {
         return createStudyErrorResponse<GroupStudyTimerStartResult>(error, "타이머 시작에 실패했습니다.");
@@ -188,7 +188,6 @@ export const pauseGroupStudyTimer = async (
     try {
         const response = await pauseGroupStudyTimerService(roomId);
         revalidatePath(`/student/group-study/${roomId}`);
-        revalidatePath("/student/group-study");
         return response;
     } catch (error) {
         return createStudyErrorResponse<GroupStudyTimerPauseResult>(error, "타이머 일시정지에 실패했습니다.");
@@ -253,8 +252,8 @@ export const kickGroupStudyMember = async (
 export const startSoloStudyTimer = async (): Promise<StudyApiResponse<SoloStudyTimerStartResult>> => {
     try {
         const response = await startSoloStudyTimerService();
+        // 목록 페이지엔 타이머 진행 상태를 안 보여줘서 굳이 revalidate할 필요 없음 (솔로 페이지만 갱신)
         revalidatePath("/student/group-study/solo");
-        revalidatePath("/student/group-study");
         return response;
     } catch (error) {
         return createStudyErrorResponse<SoloStudyTimerStartResult>(error, "솔로 타이머 시작에 실패했습니다.");
@@ -266,7 +265,6 @@ export const pauseSoloStudyTimer = async (): Promise<StudyApiResponse<SoloStudyT
     try {
         const response = await pauseSoloStudyTimerService();
         revalidatePath("/student/group-study/solo");
-        revalidatePath("/student/group-study");
         return response;
     } catch (error) {
         return createStudyErrorResponse<SoloStudyTimerPauseResult>(error, "솔로 타이머 일시정지에 실패했습니다.");

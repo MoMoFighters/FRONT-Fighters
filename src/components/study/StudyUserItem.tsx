@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { memo, useState } from "react";
 import { BookOpen, Coffee, Crown, History, Plus, UserX, X } from "lucide-react";
 import { toast } from "sonner";
 
@@ -18,6 +18,7 @@ import {
 } from "@/features/study/actions";
 import type { StudyRoomSeatUser, StudyTimerLap } from "@/features/study/type";
 import { formatLapSeconds } from "@/features/study/utils";
+import TwoButtonModal from "@/features/modal/TwoButtonModal";
 import StudyUserInviteModal from "./StudyUserInviteModal";
 
 interface PendingInviteInfo {
@@ -38,7 +39,7 @@ interface StudyUserItemProps {
     onInviteCanceled?: (invitationId: number) => void;
 }
 
-export default function StudyUserItem({
+function StudyUserItem({
     roomId,
     user,
     canKick = false,
@@ -50,6 +51,7 @@ export default function StudyUserItem({
     onInviteCanceled,
 }: StudyUserItemProps) {
     const [isInviteOpen, setIsInviteOpen] = useState(false);
+    const [isKickModalOpen, setIsKickModalOpen] = useState(false);
     const [isLapModalOpen, setIsLapModalOpen] = useState(false);
     const [isLapLoading, setIsLapLoading] = useState(false);
     const [laps, setLaps] = useState<StudyTimerLap[]>([]);
@@ -83,6 +85,7 @@ export default function StudyUserItem({
         }
 
         toast(response.message || `${user.nickname}님을 내보냈습니다.`);
+        setIsKickModalOpen(false);
         onKick?.(user);
     };
 
@@ -189,7 +192,7 @@ export default function StudyUserItem({
                 {canKick && !user.isMe && (
                     <button
                         type="button"
-                        onClick={() => void handleKick()}
+                        onClick={() => setIsKickModalOpen(true)}
                         aria-label="내보내기"
                         className="absolute -left-2 -top-2 z-20 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-rose-500 text-white shadow-sm transition hover:bg-rose-600"
                     >
@@ -232,6 +235,14 @@ export default function StudyUserItem({
                 {user.isMe ? `${user.nickname}(나)` : user.nickname}
             </div>
 
+            <TwoButtonModal
+                open={isKickModalOpen}
+                onOpenChange={setIsKickModalOpen}
+                title="멤버를 내보낼까요?"
+                description={`${user.nickname}님을 스터디룸에서 내보냅니다.`}
+                onConfirm={() => void handleKick()}
+            />
+
             <Dialog open={isLapModalOpen} onOpenChange={setIsLapModalOpen}>
                 <DialogContent className="sm:max-w-sm">
                     <DialogHeader>
@@ -271,3 +282,5 @@ export default function StudyUserItem({
         </div>
     );
 }
+
+export default memo(StudyUserItem);
