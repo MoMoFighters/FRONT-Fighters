@@ -25,7 +25,7 @@ function SequenceItem({ label, report, isCurrent = false, icon }: SequenceItemPr
         <Link
             href={`/admin/reports/${report.id}`}
             aria-current={isCurrent ? "page" : undefined}
-            className={`grid grid-cols-1 items-start gap-2 px-5 py-4 text-sm transition-colors sm:grid-cols-[5rem_minmax(0,1fr)_8rem] sm:items-center sm:gap-4 ${
+            className={`grid grid-cols-1 items-start gap-2 px-5 py-4 text-sm transition-colors sm:grid-cols-[minmax(56px,0.5fr)_minmax(0,3fr)_minmax(72px,0.6fr)] sm:items-center sm:gap-4 ${
                 isCurrent
                     ? "bg-indigo-50/70"
                     : "hover:bg-slate-50"

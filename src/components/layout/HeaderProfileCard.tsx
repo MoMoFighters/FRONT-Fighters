@@ -91,35 +91,36 @@ export default function HeaderProfileCard({
                 <button
                     type="button"
                     className="
-                        flex items-center gap-2 rounded-full
+                        flex items-center gap-1 rounded-full
                         border border-transparent
-                        px-2 py-1
+                        px-1 py-1
                         transition-colors
                         hover:border-slate-200
                         hover:bg-slate-50
+                        sm:gap-2 sm:px-2
                     "
                 >
-                    <div className="relative h-8 w-8 overflow-hidden rounded-full bg-indigo-100">
+                    <div className="relative h-6 w-6 overflow-hidden rounded-full bg-indigo-100 sm:h-8 sm:w-8">
                         {profileImageUrl ? (
                             <Image
                                 src={profileImageUrl}
                                 alt="프로필 이미지"
                                 fill
-                                sizes="32px"
+                                sizes="(min-width: 640px) 32px, 24px"
                                 className="object-cover"
                             />
                         ) : (
-                            <div className="flex h-full w-full items-center justify-center text-sm font-bold text-indigo-500">
+                            <div className="flex h-full w-full items-center justify-center text-xs font-bold text-indigo-500 sm:text-sm">
                                 {defaultProfile}
                             </div>
                         )}
                     </div>
 
-                    <span className="max-w-24 truncate text-sm font-bold text-slate-800">
+                    <span className="hidden max-w-24 truncate text-sm font-bold text-slate-800 sm:inline">
                         {nickname}
                     </span>
 
-                    <ChevronDown className="h-4 w-4 text-slate-500" />
+                    <ChevronDown className="h-3 w-3 text-slate-500 sm:h-4 sm:w-4" />
                 </button>
             </HoverCardTrigger>
 

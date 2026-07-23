@@ -186,24 +186,25 @@ export default function PostCommentsPanel({
 }: PostCommentsPanelProps) {
     return (
         <>
-            <div className="mb-3 shrink-0 border-b border-slate-100 pb-3">
+            <div className="mb-4 shrink-0 border-b border-slate-100 pb-4">
                 <h2 className="text-sm font-black text-slate-900">
                     댓글 {commentTotalCount}
                 </h2>
 
-                <div className="mt-2">
+                <div className="mt-3">
                     <CommentInputBox
                         postId={postId}
+                        role={role}
                         onSubmitComment={onCreateComment}
                     />
                 </div>
             </div>
 
-            <div className="min-h-0 flex-1 overflow-y-auto pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div className="max-h-[591px] overflow-y-auto pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 {comments.map((parentComment) => (
                     <div
                         key={parentComment.commentId}
-                        className="space-y-2"
+                        className="space-y-2 mb-2"
                     >
                         <CommentItem
                             postId={postId}

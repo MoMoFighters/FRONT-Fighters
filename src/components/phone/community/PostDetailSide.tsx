@@ -64,6 +64,7 @@ export interface PostRecommentItemProps {
 export interface CommentInputBoxProps {
     postId: number;
     parentId?: number;
+    role?: CommunityAuthorRole;
     onSubmitComment?: (content: string) => Promise<boolean> | boolean;
 }
 
@@ -268,30 +269,30 @@ export default function PostDetailSide({
     }, []);
 
     return (
-        <aside className="flex h-full min-h-0 flex-col overflow-hidden rounded-3xl bg-white/90 p-4 shadow-sm ring-1 ring-slate-100">
-            <div className="mb-4 shrink-0 rounded-2xl bg-slate-50 p-1">
+        <aside className="flex min-h-[742.5px] flex-1 flex-col rounded-3xl bg-white/90 p-6 shadow-sm ring-1 ring-slate-100 [container-type:inline-size]">
+            <div className="mb-5 shrink-0 rounded-2xl bg-slate-50 p-1">
                 <div className="grid grid-cols-2 gap-1">
                     <button
                         type="button"
                         onClick={handlePostsMode}
-                        className={`flex h-9 items-center justify-center gap-1.5 rounded-xl text-xs font-black transition ${mode === "posts"
+                        className={`flex h-[clamp(2rem,9cqw,2.25rem)] items-center justify-center gap-1.5 rounded-xl text-[clamp(0.7rem,3cqw,0.75rem)] font-black transition ${mode === "posts"
                             ? "bg-white text-indigo-500 shadow-sm"
                             : "text-slate-400 hover:bg-white/70 hover:text-slate-700"
                             }`}
                     >
-                        <List className="h-3.5 w-3.5" />
+                        <List className="h-[clamp(0.75rem,3.2cqw,0.875rem)] w-[clamp(0.75rem,3.2cqw,0.875rem)]" />
                         추천 게시물
                     </button>
 
                     <button
                         type="button"
                         onClick={handleCommentMode}
-                        className={`flex h-9 items-center justify-center gap-1.5 rounded-xl text-xs font-black transition ${mode === "comment"
+                        className={`flex h-[clamp(2rem,9cqw,2.25rem)] items-center justify-center gap-1.5 rounded-xl text-[clamp(0.7rem,3cqw,0.75rem)] font-black transition ${mode === "comment"
                             ? "bg-white text-indigo-500 shadow-sm"
                             : "text-slate-400 hover:bg-white/70 hover:text-slate-700"
                             }`}
                     >
-                        <MessageCircle className="h-3.5 w-3.5" />
+                        <MessageCircle className="h-[clamp(0.75rem,3.2cqw,0.875rem)] w-[clamp(0.75rem,3.2cqw,0.875rem)]" />
                         댓글 {displayCommentTotalCount}
                     </button>
                 </div>

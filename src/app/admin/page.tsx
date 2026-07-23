@@ -228,7 +228,7 @@ export default async function AdminDashboardPage({
                 </div>
             </div>
 
-            <div className="mb-5 grid grid-cols-5 gap-4">
+            <div className="mb-5 grid grid-cols-2 gap-4 lg:grid-cols-5">
                 <AdminDashboardMetricCard
                     title="총 회원 수"
                     value={`${dashboardSummary.cards.totalUsers.toLocaleString()}명`}

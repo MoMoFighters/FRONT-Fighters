@@ -18,13 +18,13 @@ export default async function PostRecommandPanel({
 
     return (
         <>
-            <div className="mb-3 flex shrink-0 items-center justify-between">
+            <div className="mb-4 flex shrink-0 items-center justify-between">
                 <h2 className="text-base font-black text-slate-900">
                     추천 게시물
                 </h2>
             </div>
 
-            <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div className="max-h-[591px] space-y-3 overflow-y-auto pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 {posts.map((item) => (
                     <PostRecommentItem
                         key={item.postId}

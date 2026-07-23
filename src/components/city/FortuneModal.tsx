@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import { CloudDrizzle, CloudSun, Sparkles } from "lucide-react";
@@ -71,7 +71,7 @@ const TONE_THEME: Record<FortuneTone, {
 };
 
 export default function FortuneModal({ open, onOpenChange }: FortuneModalProps) {
-    const [phase, setPhase] = useState<"idle" | "throwing" | "result" | "error">("idle");
+    const [phase, setPhase] = useState<"idle" | "preparing" | "throwing" | "result" | "error">("idle");
     const [fortune, setFortune] = useState<Fortune | null>(null);
     const [confetti, setConfetti] = useState<ConfettiPiece[]>([]);
     const [errorMessage, setErrorMessage] = useState("");
@@ -85,8 +85,19 @@ export default function FortuneModal({ open, onOpenChange }: FortuneModalProps) 
             return;
         }
 
+        setPhase("preparing");
+    }, [open]);
+
+    const handleBackgroundLoaded = useCallback(() => {
+        setPhase((prev) => (prev === "preparing" ? "throwing" : prev));
+    }, []);
+
+    useEffect(() => {
+        if (phase !== "throwing") {
+            return;
+        }
+
         let isCancelled = false;
-        setPhase("throwing");
 
         const fortunePromise = getFortuneAction();
 
@@ -129,7 +140,6 @@ export default function FortuneModal({ open, onOpenChange }: FortuneModalProps) 
                 setConfetti(pieces);
             }
 
-            // 다음 프레임에서 result 전환 → 동전 DOM이 먼저 완전히 제거됨
             requestAnimationFrame(() => {
                 if (!isCancelled) {
                     setPhase("result");
@@ -141,7 +151,7 @@ export default function FortuneModal({ open, onOpenChange }: FortuneModalProps) 
             isCancelled = true;
             clearTimeout(timer);
         };
-    }, [open]);
+    }, [phase]);
 
     if (!open) {
         return null;
@@ -149,7 +159,7 @@ export default function FortuneModal({ open, onOpenChange }: FortuneModalProps) 
 
     const overlay = (
         <>
-            {phase === "throwing" && (
+            {(phase === "preparing" || phase === "throwing") && (
                 <div className="fixed inset-0 z-[60] overflow-hidden">
                     <div className="p-20% h-full w-full">
                         <Image
@@ -157,6 +167,8 @@ export default function FortuneModal({ open, onOpenChange }: FortuneModalProps) 
                             alt="분수대 배경"
                             fill
                             priority
+                            sizes="100vw"
+                            onLoad={handleBackgroundLoaded}
                             className="object-cover filter blur-sm scale-105"
                         />
                     </div>
@@ -167,9 +179,12 @@ export default function FortuneModal({ open, onOpenChange }: FortuneModalProps) 
             {phase === "throwing" && (
                 <div className="fixed inset-0 z-[70] flex items-center justify-center">
                     <div className="relative flex items-center justify-center">
+                        {/* 동전 그림자 이펙트 (포물선과 분리되어 바닥에 고정) */}
                         <div className="absolute top-12 h-4 w-12 rounded-[100%] bg-black/30 blur-md animate-coin-shadow" />
 
+                        {/* 포물선(위치/크기/투명도) 담당 래퍼. perspective를 줘야 rotateX가 실제로 앞으로 텀블링하는 것처럼 입체적으로 보임 */}
                         <div className="animate-coin-arc [perspective:500px]">
+                            {/* 회전(텀블링)만 담당 → 포물선과 다른 timing-function을 써도 서로 간섭하지 않음 */}
                             <Image
                                 height={80}
                                 width={80}

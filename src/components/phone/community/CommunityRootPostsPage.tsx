@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { Grid2X2, LayoutList, PanelsTopLeft, Search } from "lucide-react";
+import { Grid2X2, LayoutList, PanelsTopLeft, Search, X } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import {
     Pagination,
     PaginationContent,
@@ -16,6 +17,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import CommunityPageHeader from "@/components/phone/community/CommunityPageHeader";
 import CommunitySideBar from "@/components/phone/community/CommunitySideBar";
 import CommunityMypagePostItem, {
     type CommunityMypagePostViewMode,
@@ -142,197 +144,216 @@ export default function CommunityRootPostsPage({
     const pageNumbers = getVisiblePageNumbers(currentPage, totalPages);
     const listClassName =
         selectedMode === "list"
-            ? "grid grid-cols-1 gap-2"
+            ? "grid grid-cols-1 gap-3"
             : selectedMode === "grid"
-                ? "grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5"
-                : "grid grid-cols-1 gap-3 sm:grid-cols-2";
-
+                ? "grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5"
+                : "grid grid-cols-1 gap-4 sm:grid-cols-2";
     return (
-        <div className="flex h-full min-h-0 flex-col overflow-hidden bg-white/80 shadow-sm ring-1 ring-slate-200/80 backdrop-blur">
-            <div className="shrink-0 px-3 pt-3">
-                {role !== 'ADMIN' && role !== 'GUEST' &&
-                    <CommunitySideBar role={role === "STUDENT" ? undefined : role} />
-                }
-            </div>
+        <div className="flex h-full min-h-0 flex-col overflow-hidden bg-white">
+            <div className="mx-auto flex h-full min-h-0 w-full max-w-360 flex-col overflow-hidden px-4 py-8 md:px-12 md:py-12">
+                <CommunityPageHeader role={role} />
 
-            <section className="flex h-full min-h-0 min-w-0 flex-1 flex-col px-4 py-3">
-                <header className="shrink-0">
-                    <div className="flex items-end justify-between gap-4">
-                        <div>
-                            <h1 className="mt-1 text-2xl font-black tracking-tight text-slate-900">
-                                커뮤니티
-                            </h1>
-                            <p className="mt-0.5 text-xs font-bold text-slate-400">
-                                모모시티 친구들과 이야기를 나눠보세요. 게시글 {totalCount.toLocaleString()}개
+                {role !== 'ADMIN' && role !== 'GUEST' && (
+                    <div className="shrink-0">
+                        <CommunitySideBar role={role === "STUDENT" ? undefined : role} />
+                    </div>
+                )}
+
+                <section className="flex h-full min-h-0 min-w-0 flex-1 flex-col">
+                    <header className="shrink-0">
+                        <div className="flex items-center justify-between gap-4">
+                            <p className="text-xs font-bold text-slate-400">
+                                총 {totalCount.toLocaleString()}개의 게시글
                             </p>
+
+                            <div className="flex shrink-0 rounded-2xl bg-slate-100 p-1">
+                                {VIEW_MODE_OPTIONS.map((option) => {
+                                    const Icon = option.icon;
+                                    const isActive = selectedMode === option.mode;
+
+                                    return (
+                                        <Link
+                                            key={option.mode}
+                                            href={createHref({
+                                                baseHref,
+                                                page: 1,
+                                                category: selectedCategory,
+                                                keyword: searchKeyword,
+                                                mode: option.mode,
+                                            })}
+                                            className={`flex h-8 items-center gap-1.5 rounded-xl px-2.5 text-[11px] font-black transition ${isActive
+                                                ? "bg-white text-indigo-500 shadow-sm"
+                                                : "text-slate-400 hover:bg-white/70 hover:text-slate-700"
+                                                }`}
+                                        >
+                                            <Icon className="h-3.5 w-3.5" />
+                                            {option.label}
+                                        </Link>
+                                    );
+                                })}
+                            </div>
                         </div>
 
-                        <div className="flex rounded-2xl bg-slate-100 p-1">
-                            {VIEW_MODE_OPTIONS.map((option) => {
-                                const Icon = option.icon;
-                                const isActive = selectedMode === option.mode;
+                        <form
+                            action={baseHref}
+                            className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center"
+                        >
+                            {selectedMode !== "grid" && (
+                                <input
+                                    type="hidden"
+                                    name="mode"
+                                    value={selectedMode}
+                                />
+                            )}
 
-                                return (
+                            <div className="relative min-w-0 flex-1">
+                                <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                                <input
+                                    name="keyword"
+                                    placeholder="게시글 제목 또는 내용으로 검색..."
+                                    defaultValue={searchKeyword}
+                                    className="h-12 w-full rounded-xl border-2 border-slate-300 bg-white pl-12 pr-10 text-sm font-medium text-slate-700 transition-colors placeholder:text-slate-400 focus:border-slate-400 focus:outline-none"
+                                />
+                                {searchKeyword && (
                                     <Link
-                                        key={option.mode}
                                         href={createHref({
                                             baseHref,
                                             page: 1,
                                             category: selectedCategory,
-                                            keyword: searchKeyword,
-                                            mode: option.mode,
+                                            keyword: undefined,
+                                            mode: selectedMode,
                                         })}
-                                        className={`flex h-8 items-center gap-1.5 rounded-xl px-2.5 text-[11px] font-black transition ${isActive
-                                            ? "bg-white text-indigo-500 shadow-sm"
-                                            : "text-slate-400 hover:bg-white/70 hover:text-slate-700"
-                                            }`}
+                                        aria-label="검색어 초기화"
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 transition-colors hover:text-slate-600"
                                     >
-                                        <Icon className="h-3.5 w-3.5" />
-                                        {option.label}
+                                        <X className="h-4 w-4" />
                                     </Link>
-                                );
-                            })}
-                        </div>
+                                )}
+                            </div>
+
+                            <div className="flex items-center gap-3">
+                                <Select
+                                    name="category"
+                                    defaultValue={selectedCategory}
+                                >
+                                    <SelectTrigger className="h-12! w-full rounded-xl border-2 border-slate-300 bg-white text-sm font-medium text-slate-700 sm:w-32">
+                                        <SelectValue placeholder="카테고리" />
+                                    </SelectTrigger>
+                                    <SelectContent position="popper" side="bottom">
+                                        {CATEGORY_OPTIONS.map((option) => (
+                                            <SelectItem
+                                                key={option.value}
+                                                value={option.value}
+                                            >
+                                                {option.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+
+                                <Button
+                                    variant="outline"
+                                    type="submit"
+                                    className="h-12 w-24 shrink-0 cursor-pointer rounded-xl border-2 border-slate-300 px-2 font-bold text-slate-700"
+                                >
+                                    <Search className="h-6 w-6 shrink-0" />
+                                    <span className="text-[16px]">
+                                        조회
+                                    </span>
+                                </Button>
+                            </div>
+                        </form>
+                    </header>
+
+                    <div className="mt-6 min-h-0 flex-1 overflow-y-auto pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                        {posts.length > 0 ? (
+                            <div className={listClassName}>
+                                {posts.map((post) => (
+                                    <CommunityMypagePostItem
+                                        key={post.postId}
+                                        mode={selectedMode}
+                                        postId={post.postId}
+                                        detailHrefBase={detailHrefBase}
+                                        thumbnailImageUrl={post.thumbnailUrl}
+                                        title={post.title}
+                                        viewCount={post.viewCount}
+                                        likeCount={post.likeCount}
+                                        commentCount={post.commentCount}
+                                        createdAt={post.createdAt}
+                                    />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="flex h-full min-h-56 flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-slate-50 text-center">
+                                <Search className="h-9 w-9 text-slate-300" />
+                                <p className="mt-3 text-sm font-black text-slate-600">
+                                    게시글이 없습니다.
+                                </p>
+                            </div>
+                        )}
                     </div>
 
-                    <form
-                        action={baseHref}
-                        className="mt-3 flex items-center gap-2"
-                    >
-                        {selectedMode !== "grid" && (
-                            <input
-                                type="hidden"
-                                name="mode"
-                                value={selectedMode}
-                            />
-                        )}
+                    {totalPages > 1 && (
+                        <Pagination className="mt-4 shrink-0">
+                            <PaginationContent>
+                                {currentPage > 1 && (
+                                    <PaginationItem>
+                                        <PaginationPrevious
+                                            href={createHref({
+                                                baseHref,
+                                                page: currentPage - 1,
+                                                category: selectedCategory,
+                                                keyword: searchKeyword,
+                                                mode: selectedMode,
+                                            })}
+                                            text=""
+                                            className="h-8 w-8 border border-slate-200 bg-white p-0 text-slate-500 hover:text-slate-900"
+                                        />
+                                    </PaginationItem>
+                                )}
 
-                        <div className="relative min-w-0 flex-1">
-                            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                            <input
-                                name="keyword"
-                                placeholder="검색어를 입력하세요"
-                                defaultValue={searchKeyword}
-                                className="h-9 w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-3 text-sm font-bold text-slate-500 outline-none"
-                            />
-                        </div>
-
-                        <Select
-                            name="category"
-                            defaultValue={selectedCategory}
-                        >
-                            <SelectTrigger className="h-9 w-28 rounded-xl border-slate-200 bg-white text-sm font-bold text-slate-600">
-                                <SelectValue placeholder="카테고리" />
-                            </SelectTrigger>
-                            <SelectContent position="popper" side="bottom">
-                                {CATEGORY_OPTIONS.map((option) => (
-                                    <SelectItem
-                                        key={option.value}
-                                        value={option.value}
-                                    >
-                                        {option.label}
-                                    </SelectItem>
+                                {pageNumbers.map((pageNumber) => (
+                                    <PaginationItem key={pageNumber}>
+                                        <PaginationLink
+                                            href={createHref({
+                                                baseHref,
+                                                page: pageNumber,
+                                                category: selectedCategory,
+                                                keyword: searchKeyword,
+                                                mode: selectedMode,
+                                            })}
+                                            isActive={pageNumber === currentPage}
+                                            className={
+                                                pageNumber === currentPage
+                                                    ? "h-8 w-8 border-indigo-300 bg-indigo-50 p-0 text-xs font-black text-indigo-500 hover:bg-indigo-50"
+                                                    : "h-8 w-8 border border-slate-200 p-0 text-xs font-black text-slate-500 hover:bg-white hover:text-slate-900"
+                                            }
+                                        >
+                                            {pageNumber}
+                                        </PaginationLink>
+                                    </PaginationItem>
                                 ))}
-                            </SelectContent>
-                        </Select>
 
-                        <button
-                            type="submit"
-                            className="h-9 cursor-pointer rounded-xl bg-indigo-400 px-3 py-2 text-sm font-black text-white transition hover:bg-indigo-500"
-                        >
-                            조회
-                        </button>
-                    </form>
-                </header>
-
-                <div className="mt-4 min-h-0 flex-1 overflow-y-auto border-b border-slate-300 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                    {posts.length > 0 ? (
-                        <div className={listClassName}>
-                            {posts.map((post) => (
-                                <CommunityMypagePostItem
-                                    key={post.postId}
-                                    mode={selectedMode}
-                                    postId={post.postId}
-                                    detailHrefBase={detailHrefBase}
-                                    thumbnailImageUrl={post.thumbnailUrl}
-                                    title={post.title}
-                                    viewCount={post.viewCount}
-                                    likeCount={post.likeCount}
-                                    commentCount={post.commentCount}
-                                    createdAt={post.createdAt}
-                                />
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="flex h-full min-h-56 flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-slate-50 text-center">
-                            <Search className="h-9 w-9 text-slate-300" />
-                            <p className="mt-3 text-sm font-black text-slate-600">
-                                게시글이 없습니다.
-                            </p>
-                        </div>
+                                {currentPage < totalPages && (
+                                    <PaginationItem>
+                                        <PaginationNext
+                                            href={createHref({
+                                                baseHref,
+                                                page: currentPage + 1,
+                                                category: selectedCategory,
+                                                keyword: searchKeyword,
+                                                mode: selectedMode,
+                                            })}
+                                            text=""
+                                            className="h-8 w-8 border border-slate-200 bg-white p-0 text-slate-500 hover:text-slate-900"
+                                        />
+                                    </PaginationItem>
+                                )}
+                            </PaginationContent>
+                        </Pagination>
                     )}
-                </div>
-
-                {totalPages > 1 && (
-                    <Pagination className="mt-3 shrink-0">
-                        <PaginationContent>
-                            {currentPage > 1 && (
-                                <PaginationItem>
-                                    <PaginationPrevious
-                                        href={createHref({
-                                            baseHref,
-                                            page: currentPage - 1,
-                                            category: selectedCategory,
-                                            keyword: searchKeyword,
-                                            mode: selectedMode,
-                                        })}
-                                        text=""
-                                        className="h-8 w-8 border border-slate-200 bg-white p-0 text-slate-500 hover:text-slate-900"
-                                    />
-                                </PaginationItem>
-                            )}
-
-                            {pageNumbers.map((pageNumber) => (
-                                <PaginationItem key={pageNumber}>
-                                    <PaginationLink
-                                        href={createHref({
-                                            baseHref,
-                                            page: pageNumber,
-                                            category: selectedCategory,
-                                            keyword: searchKeyword,
-                                            mode: selectedMode,
-                                        })}
-                                        isActive={pageNumber === currentPage}
-                                        className={
-                                            pageNumber === currentPage
-                                                ? "h-8 w-8 border-indigo-300 bg-indigo-50 p-0 text-xs font-black text-indigo-500 hover:bg-indigo-50"
-                                                : "h-8 w-8 border border-slate-200 p-0 text-xs font-black text-slate-500 hover:bg-white hover:text-slate-900"
-                                        }
-                                    >
-                                        {pageNumber}
-                                    </PaginationLink>
-                                </PaginationItem>
-                            ))}
-
-                            {currentPage < totalPages && (
-                                <PaginationItem>
-                                    <PaginationNext
-                                        href={createHref({
-                                            baseHref,
-                                            page: currentPage + 1,
-                                            category: selectedCategory,
-                                            keyword: searchKeyword,
-                                            mode: selectedMode,
-                                        })}
-                                        text=""
-                                        className="h-8 w-8 border border-slate-200 bg-white p-0 text-slate-500 hover:text-slate-900"
-                                    />
-                                </PaginationItem>
-                            )}
-                        </PaginationContent>
-                    </Pagination>
-                )}
-            </section>
+                </section>
+            </div>
         </div>
     );
 }

@@ -61,7 +61,7 @@ export default async function TeacherAskPage({
             >
 
                 <div
-                    className="flex flex-col overflow-y-scroll min-h-0 w-full shrink-0 scrollbar-none border-r border-slate-200 md:w-80"
+                    className="flex flex-col overflow-y-scroll min-h-0 w-full shrink-0 scrollbar-none border-r border-slate-200 md:w-64 lg:w-80"
                 >
 
                     {chatRoomData?.length === 0 ? (

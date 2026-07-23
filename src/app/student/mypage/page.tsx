@@ -159,8 +159,9 @@ export default async function StudentMyPage() {
 
                 <section className="min-w-0 flex-1 space-y-6">
                     <section className="flex flex-col gap-5 md:flex-row md:items-start">
-                        {/* [변경] 모바일은 w-full로 폭에 맞춰 비율 그대로 축소, md 이상에서만 524px 고정(잔디 높이 340px와 맞춘 값) */}
-                        <div className="relative z-0 w-full overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:w-[524px] md:shrink-0">
+                        {/* 모바일은 w-full로 폭에 맞춰 비율 그대로 축소. md 이상에서는 잔디 컬럼과 1.4:1 비율로 계속 같이 줄어들되,
+                            524px(잔디 높이 340px와 맞춰 계산해둔 값)를 최대치로 그 이상은 안 커지게 상한만 둔다 */}
+                        <div className="relative z-0 w-full min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:max-w-[524px] md:basis-0 md:flex-[1.4]">
                             <div className="mb-2.5 flex items-center gap-2">
                                 <CreditCard className="h-3.5 w-3.5 text-indigo-500" />
                                 <h2 className="text-sm font-black text-slate-900">
@@ -218,17 +219,10 @@ export default async function StudentMyPage() {
                                     수강 중인 강의를 한 화면에서 확인합니다.
                                 </p>
                             </div>
-
-                            <Link
-                                href="/student/mypage/lectures"
-                                className="flex items-center gap-1 text-xs font-black text-indigo-500 transition hover:text-indigo-600"
-                            >
-                                전체보기
-                                <ArrowRight className="h-3.5 w-3.5" />
-                            </Link>
                         </div>
 
-                        <div className="scrollbar-none h-110 overflow-y-auto">
+                        {/* 모바일은 이중 스크롤이 불편해서 min-height만 두고 페이지 자체 스크롤을 따라가게 하고, md 이상에서만 고정 높이+내부 스크롤 유지 */}
+                        <div className="scrollbar-none min-h-110 overflow-visible md:h-110 md:overflow-y-auto">
                             <Suspense fallback={<ListSkeleton />}>
                                 <LectureListSection />
                             </Suspense>
@@ -334,7 +328,8 @@ async function PointHistorySection() {
                 총 {totalPointHistory.toLocaleString()}건의 포인트 내역
             </p>
 
-            <div className="scrollbar-none h-90 overflow-y-auto divide-y divide-slate-100">
+            {/* 모바일은 이중 스크롤이 불편해서 min-height만 두고 페이지 자체 스크롤을 따라가게 하고, md 이상에서만 고정 높이+내부 스크롤 유지 */}
+            <div className="scrollbar-none min-h-90 overflow-visible divide-y divide-slate-100 md:h-90 md:overflow-y-auto">
                 {pointHistory.length > 0 ? (
                     pointHistory.map((item, index) => {
                         const isIncrease = item.type === "GAINED";
@@ -342,7 +337,7 @@ async function PointHistorySection() {
                         return (
                             <div
                                 key={`${item.createdAt}-${item.reason}-${index}`}
-                                className="grid grid-cols-1 items-start gap-1 px-4 py-3 transition-colors hover:bg-slate-50 md:grid-cols-[144px_minmax(0,1fr)_112px] md:items-center md:gap-3 md:px-5 md:py-2.5"
+                                className="grid grid-cols-1 items-start gap-1 px-4 py-3 transition-colors hover:bg-slate-50 sm:grid-cols-[minmax(60px,1fr)_minmax(0,3fr)_minmax(60px,1fr)] sm:items-center sm:gap-3 sm:px-5 sm:py-2.5"
                             >
                                 <p className="text-[11px] font-bold text-slate-400">
                                     {formatDateTime(item.createdAt)}
@@ -367,8 +362,8 @@ async function PointHistorySection() {
                                             {POINT_REASON_LABEL[item.reason] ??
                                                 item.reason}
                                         </p>
-                                        {/* [변경] 모바일에서는 생략(색상+부호로 이미 증가/감소가 구분됨), md 이상에서만 표시 */}
-                                        <p className="hidden text-[10px] font-bold text-slate-400 md:block">
+                                        {/* [변경] 모바일에서는 생략(색상+부호로 이미 증가/감소가 구분됨), sm 이상에서만 표시 */}
+                                        <p className="hidden text-[10px] font-bold text-slate-400 sm:block">
                                             {POINT_TYPE_LABEL[item.type] ??
                                                 item.type}
                                         </p>
@@ -376,7 +371,7 @@ async function PointHistorySection() {
                                 </div>
 
                                 <p
-                                    className={`text-left text-sm font-black md:text-right ${isIncrease
+                                    className={`text-left text-sm font-black sm:text-right ${isIncrease
                                         ? "text-indigo-500"
                                         : "text-rose-500"
                                         }`}

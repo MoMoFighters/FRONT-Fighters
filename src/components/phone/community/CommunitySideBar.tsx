@@ -45,7 +45,7 @@ export default function CommunitySideBar({ role }: { role?: "TEACHER" | "ADMIN" 
                             className={`border-b-2 px-1 pb-4 text-sm font-bold transition ${isActive
                                 ? "border-indigo-400 text-indigo-500"
                                 : "border-transparent text-slate-500 hover:text-slate-900"
-                            }`}
+                                }`}
                         >
                             {item.label}
                         </Link>

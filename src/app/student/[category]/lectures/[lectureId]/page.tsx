@@ -83,7 +83,7 @@ export default async function LectureByCategoryDetail({
     };
 
     return (
-        <main className="mx-auto grid w-full max-w-360 grid-cols-1 gap-8 px-4 py-8 md:grid-cols-[minmax(0,1fr)_320px] md:px-12 md:py-12">
+        <main className="mx-auto grid w-full max-w-360 grid-cols-1 gap-8 px-4 py-8 md:grid-cols-[minmax(0,3fr)_minmax(220px,1fr)] md:px-12 md:py-12">
             <section className="min-w-0">
                 <StudentPageHeader
                     backHref={`/student/${category}/lectures`}
@@ -108,6 +108,7 @@ export default async function LectureByCategoryDetail({
                     category={category}
                     categoryLabel={categoryMeta.label}
                     membership={myInfo.data?.membership ?? "BASIC"}
+                    backHref={`/student/${category}/lectures`}
                 />
 
                 <section className="mt-8 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">

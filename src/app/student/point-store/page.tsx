@@ -61,7 +61,7 @@ export default async function PointStorePage() {
             />
 
             <section className="rounded-[2rem] border border-indigo-100 bg-gradient-to-br from-indigo-50/80 via-white to-slate-50 p-4 shadow-sm">
-                <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_28rem]">
+                <div className="grid gap-4 xl:grid-cols-[minmax(0,1.6fr)_minmax(320px,1fr)]">
                     <PointStorePurchaseSection
                         points={points}
                         initialItems={storeItems}
