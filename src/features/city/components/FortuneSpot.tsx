@@ -47,7 +47,7 @@ export default function FortuneSpot({ variant = "desktop" }: FortuneSpotProps) {
                         <HoverCardContent side="top" align="center" sideOffset={8}>
                             <div className="space-y-1">
                                 <p className="text-sm font-bold text-slate-900">
-                                    운세
+                                    오늘의 운세
                                 </p>
                                 <p className="text-xs font-medium text-slate-500">
                                     5포인트를 사용하여 운세를 봅니다.
@@ -57,7 +57,7 @@ export default function FortuneSpot({ variant = "desktop" }: FortuneSpotProps) {
                     </HoverCard>
 
                     <span className="pointer-events-none absolute bottom-0 left-1/2 z-10 -translate-x-1/2 translate-y-1/2 whitespace-nowrap rounded-[0.3cqw] bg-white px-[0.4cqw] py-[0.08cqw] text-[0.75cqw] font-bold text-slate-700 shadow-sm">
-                        운세
+                        오늘의 운세
                     </span>
                 </div>
             )}

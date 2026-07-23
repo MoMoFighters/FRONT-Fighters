@@ -104,6 +104,7 @@ export default function StudentLectureDetailItem({
                                 <div className="flex justify-end">
                                     <EnrollLectureBtn
                                         lectureId={lecture.lectureId}
+                                        membership={membership}
                                         position={position}
                                         className="h-11 rounded-xl bg-indigo-500 px-5 text-sm font-bold text-white transition hover:bg-indigo-600"
                                     />
