@@ -27,6 +27,7 @@ export async function POST(request: NextRequest) {
 
         const backendResponse = await fetch(requestUrl, {
             headers: { Accept: "text/event-stream" },
+            cache: "no-store"
         });
 
         if (!backendResponse.ok || !backendResponse.body) {

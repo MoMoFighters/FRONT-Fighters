@@ -47,7 +47,7 @@ export default function LectureItem({
 
     if (mode === "teacherList" && href) {
         return (
-            <div className="relative cursor-pointer rounded-xl border border-slate-200 bg-white p-4 transition-all hover:bg-slate-50 hover:shadow-md">
+            <div className="relative cursor-pointer rounded-xl border border-slate-200 bg-white p-4 transition-all hover:bg-slate-50 hover:shadow-md [container-type:inline-size]">
                 <Link href={href}>
                     <div className={`flex items-center gap-3 ${lectureStatus === "HOLD" || lectureStatus === "WAITING"
                             ? "pr-16"
@@ -55,7 +55,7 @@ export default function LectureItem({
                                 ? "pr-8"
                                 : ""
                         }`}>
-                        <div className="relative h-12 w-16 shrink-0 overflow-hidden rounded-lg border border-slate-50 bg-slate-100">
+                        <div className="relative h-[clamp(2.5rem,11cqw,3rem)] w-[clamp(3.25rem,15cqw,4rem)] shrink-0 overflow-hidden rounded-lg border border-slate-50 bg-slate-100">
                             {lecture.thumbnailUrl && (
                                 <Image
                                     src={lecture.thumbnailUrl}
@@ -68,12 +68,12 @@ export default function LectureItem({
                         </div>
 
                         <div className="min-w-0 flex-1">
-                            <h4 className="mb-1 truncate text-[12px] font-bold text-slate-900">
+                            <h4 className="mb-1 truncate text-[clamp(0.6875rem,3cqw,0.75rem)] font-bold text-slate-900">
                                 {lecture.title}
                             </h4>
 
                             {lectureStatus === "ACTIVE" && (
-                                <div className="flex items-center gap-3 text-[10px] text-slate-500">
+                                <div className="flex items-center gap-3 text-[clamp(0.5625rem,2.5cqw,0.625rem)] text-slate-500">
                                     <span className="flex items-center gap-1">
                                         <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
                                         {averageRating} / 5
@@ -82,13 +82,13 @@ export default function LectureItem({
                             )}
 
                             {lectureStatus === "WAITING" && (
-                                <p className="text-xs font-medium text-amber-600">
+                                <p className="text-[clamp(0.625rem,2.8cqw,0.75rem)] font-medium text-amber-600">
                                     관리자 승인 대기중입니다.
                                 </p>
                             )}
 
                             {lectureStatus === "HOLD" && (
-                                <p className="text-xs font-medium text-red-600">
+                                <p className="text-[clamp(0.625rem,2.8cqw,0.75rem)] font-medium text-red-600">
                                     승인 거절됨
                                 </p>
                             )}
@@ -124,15 +124,15 @@ export default function LectureItem({
 
     if (mode === "detail") {
         return (
-            <div className="relative rounded-lg border border-slate-200 bg-white p-6">
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-[400px_1fr] md:gap-8">
-                    <div className="relative h-56.25 max-w-100 overflow-hidden rounded-2xl border border-slate-50 bg-slate-100">
+            <div className="relative rounded-lg border border-slate-200 bg-white p-6 [container-type:inline-size]">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] md:gap-8">
+                    <div className="relative aspect-[16/9] overflow-hidden rounded-2xl border border-slate-50 bg-slate-100">
                         {lecture.thumbnailUrl && (
                             <Image
                                 src={lecture.thumbnailUrl}
                                 alt={lecture.title}
                                 fill
-                                sizes="400px"
+                                sizes="(max-width: 768px) 100vw, 400px"
                                 priority
                                 className="object-cover"
                             />
@@ -141,21 +141,21 @@ export default function LectureItem({
 
                     <div className="space-y-2">
                         <div className="flex items-center">
-                            <span className={`${categoryColor} rounded-full px-3 py-1 text-xs font-bold text-slate-600`}>
+                            <span className={`${categoryColor} rounded-full px-3 py-1 text-[clamp(0.7rem,2.2cqw,0.75rem)] font-bold text-slate-600`}>
                                 {categoryLabel}
                             </span>
                         </div>
 
-                        <h1 className="text-xl font-bold text-slate-900 md:text-2xl">
+                        <h1 className="text-[clamp(1.25rem,5cqw,1.5rem)] font-bold text-slate-900">
                             {lecture.title}
                         </h1>
 
-                        <p className="mb-25 text-md leading-relaxed text-slate-500">
+                        <p className="mb-25 text-[clamp(0.875rem,2.6cqw,1rem)] leading-relaxed text-slate-500">
                             {lecture.description}
                         </p>
 
                         {lectureStatus === "ACTIVE" && (
-                            <div className="flex items-center gap-2 text-sm text-slate-600">
+                            <div className="flex items-center gap-2 text-[clamp(0.8rem,2.4cqw,0.875rem)] text-slate-600">
                                 <span className="font-bold">평점 :</span>
                                 <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
                                 <span className="font-bold">{averageRating}</span>
@@ -215,10 +215,10 @@ export default function LectureItem({
 
     if (mode === "list" && href) {
         return (
-            <div className="relative mb-2.5 rounded-xl border border-slate-200 bg-white transition-all hover:-translate-y-0.5 hover:shadow-md">
+            <div className="relative mb-2.5 rounded-xl border border-slate-200 bg-white transition-all hover:-translate-y-0.5 hover:shadow-md [container-type:inline-size]">
                 <Link href={href} className="block p-4">
                     <div className="flex min-w-0 items-center gap-4">
-                        <div className="relative h-16 w-24 shrink-0 overflow-hidden rounded-lg border border-slate-50 bg-slate-100">
+                        <div className="relative h-[clamp(3.5rem,15cqw,4rem)] w-[clamp(5rem,22cqw,6rem)] shrink-0 overflow-hidden rounded-lg border border-slate-50 bg-slate-100">
                             {lecture.thumbnailUrl && (
                                 <Image
                                     src={lecture.thumbnailUrl}
@@ -232,16 +232,16 @@ export default function LectureItem({
 
                         <div className="min-w-0 flex-1">
                             <div className="mb-1 flex min-w-0 items-center gap-3">
-                                <span className={`${categoryColor} shrink-0 rounded-full px-3 py-1 text-xs font-bold text-slate-600`}>
+                                <span className={`${categoryColor} shrink-0 rounded-full px-3 py-1 text-[clamp(0.625rem,2.8cqw,0.75rem)] font-bold text-slate-600`}>
                                     {categoryLabel}
                                 </span>
 
-                                <h3 className="max-w-60 truncate text-lg font-bold text-slate-900">
+                                <h3 className="max-w-60 truncate text-[clamp(0.95rem,4cqw,1.125rem)] font-bold text-slate-900">
                                     {lecture.title}
                                 </h3>
                             </div>
 
-                            <p className="max-w-120 truncate text-sm text-slate-500">
+                            <p className="max-w-120 truncate text-[clamp(0.75rem,3.2cqw,0.875rem)] text-slate-500">
                                 {lecture.description}
                             </p>
                         </div>

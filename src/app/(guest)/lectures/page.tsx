@@ -32,7 +32,7 @@ export default function GuestLectureListPage({
         <div className="bg-white">
             <GuestLecturePageHeader />
 
-            <div className="grid grid-cols-1 gap-8 px-4 py-6 md:grid-cols-[minmax(0,1fr)_300px] md:px-16">
+            <div className="grid grid-cols-1 gap-8 px-4 py-6 md:grid-cols-[minmax(0,3fr)_minmax(220px,1fr)] md:px-16">
                 <section className="min-w-0">
                     <Suspense fallback={<GuestLectureListSkeleton />}>
                         <GuestLectureContent searchParams={searchParams} />

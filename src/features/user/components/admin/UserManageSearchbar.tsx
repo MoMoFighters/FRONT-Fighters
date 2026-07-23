@@ -22,7 +22,7 @@ export default function UserManageSearchbar({
     const clearHref = params.size ? `?${params.toString()}` : "?";
 
     return (
-        <form method="GET" className="mb-5 flex items-center gap-2">
+        <form method="GET" className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center">
             {role && <input type="hidden" name="role" value={role} />}
             {status && <input type="hidden" name="status" value={status} />}
             <div className="relative min-w-0 flex-1">
@@ -40,10 +40,12 @@ export default function UserManageSearchbar({
                     </a>
                 )}
             </div>
-            {status !== "pending" && <UserRoleFilter />}
-            <Button type="submit" className="h-11 rounded-md bg-indigo-500 px-4 text-sm font-bold text-white hover:bg-indigo-600">
-                검색
-            </Button>
+            <div className="flex items-center gap-2">
+                {status !== "pending" && <UserRoleFilter />}
+                <Button type="submit" className="h-11 shrink-0 rounded-md bg-indigo-500 px-4 text-sm font-bold text-white hover:bg-indigo-600">
+                    검색
+                </Button>
+            </div>
         </form>
     );
 }

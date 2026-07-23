@@ -19,16 +19,16 @@ export default function StudentPageHeader({
 }: StudentPageHeaderProps) {
     return (
         <>
-            <div className="mb-6 flex items-center gap-2 text-sm text-slate-500">
+            <div className="scrollbar-hidden mb-6 flex items-center gap-2 overflow-x-auto text-sm text-slate-500">
                 <Link
                     href={backHref}
-                    className="flex h-9 w-9 items-center justify-center rounded-lg hover:text-slate-900 hover:-translate-y-0.5"
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg hover:text-slate-900 hover:-translate-y-0.5"
                 >
                     <ArrowLeft className="h-5 w-5" />
                 </Link>
 
                 {breadcrumbs.map((breadcrumb, index) => (
-                    <div key={`${breadcrumb.label}-${index}`} className="flex items-center gap-2">
+                    <div key={`${breadcrumb.label}-${index}`} className="flex shrink-0 items-center gap-2 whitespace-nowrap">
                         {index > 0 && <span>/</span>}
 
                         {breadcrumb.href ? (
@@ -44,9 +44,9 @@ export default function StudentPageHeader({
                 ))}
             </div>
 
-            <div className="mb-7 flex justify-between">
+            <div className="mb-7 flex justify-between [container-type:inline-size]">
                 <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-slate-950 md:text-3xl">
+                    <h1 className="text-[clamp(1.25rem,4cqw,1.875rem)] font-bold tracking-tight text-slate-950">
                         {title}
                     </h1>
                 </div>

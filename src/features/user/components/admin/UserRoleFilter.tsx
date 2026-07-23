@@ -43,10 +43,10 @@ export default function UserRoleFilter() {
                 <Button
                     type="button"
                     variant="outline"
-                    className="h-11 shrink-0 gap-2 rounded-md border-slate-200 bg-white px-3 text-sm font-bold text-slate-700 hover:bg-slate-50"
+                    className="h-11 flex-1 gap-2 rounded-md border-slate-200 bg-white px-3 text-sm font-bold text-slate-700 hover:bg-slate-50 sm:flex-none sm:shrink-0"
                 >
-                    <Filter className="size-4 text-slate-500" />
-                    {activeLabel}
+                    <Filter className="size-4 shrink-0 text-slate-500" />
+                    <span className="truncate">{activeLabel}</span>
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="min-w-32">

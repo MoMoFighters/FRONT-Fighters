@@ -57,7 +57,7 @@ export default async function AdminLectureDetailPage({
                 reviewCount={lecture.reviewCount}
             />
 
-            <section className="mt-8 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <section className="mt-8 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm [container-type:inline-size]">
                 <StudentLectureDetailTabs
                     href={`/admin/lectures/${lectureId}`}
                     currentTab={currentTab}

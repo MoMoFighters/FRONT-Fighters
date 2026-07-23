@@ -13,7 +13,6 @@ import StudentChapterList from "@/features/lecture/components/student/detail/Stu
 import StudentLectureDetailItem from "@/features/lecture/components/student/detail/StudentLectureDetailItem";
 import StudentLectureDetailTabs from "@/features/lecture/components/student/detail/StudentLectureDetailTabs";
 import StudentReviewList from "@/features/lecture/components/student/detail/StudentReviewList";
-import MyLectureBuildingsOverviewCard from "@/features/lecture/components/student/list/MyLectureBuildingsOverviewCard";
 import getCategoryMeta from "@/features/lecture/components/student/shared/category";
 import LearningProgressCard from "@/features/lecture/components/student/shared/LearningProgressCard";
 import ResumeLectureCard from "@/features/lecture/components/student/shared/ResumeLectureCard";
@@ -66,14 +65,13 @@ export default async function MyLectureDetailPage({
     };
 
     return (
-        <main className="mx-auto grid w-full max-w-360 grid-cols-1 gap-8 px-4 py-8 md:grid-cols-[minmax(0,1fr)_320px] md:px-12 md:py-12">
+        <main className="mx-auto grid w-full max-w-360 grid-cols-1 gap-8 px-4 py-8 md:grid-cols-[minmax(0,3fr)_minmax(220px,1fr)] md:px-12 md:py-12">
             <section className="min-w-0">
                 <StudentPageHeader
-                    backHref="/student/mypage/lectures"
+                    backHref="/student/mypage"
                     breadcrumbs={[
                         { label: "홈", href: "/student" },
                         { label: "마이페이지", href: "/student/mypage" },
-                        { label: "내 강의", href: "/student/mypage/lectures" },
                         { label: lecture.title },
                     ]}
                     title={lecture.title}
@@ -84,6 +82,7 @@ export default async function MyLectureDetailPage({
                     category={category}
                     categoryLabel={categoryMeta.label}
                     membership={myInfo.data?.membership ?? "BASIC"}
+                    backHref="/student/mypage"
                 />
 
                 <section className="mt-8 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
@@ -129,8 +128,6 @@ export default async function MyLectureDetailPage({
             </section>
 
             <aside className="sticky top-10 self-start space-y-5">
-                <MyLectureBuildingsOverviewCard />
-
                 <LearningProgressCard
                     categoryLabel="전체 강의"
                     progress={progressInfo.myTotalProgress ?? 0}

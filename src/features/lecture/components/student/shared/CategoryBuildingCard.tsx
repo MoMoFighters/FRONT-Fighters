@@ -21,12 +21,12 @@ export default function CategoryBuildingCard({
     maxExp,
 }: CategoryBuildingCardProps) {
     return (
-        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h2 className="text-base font-bold text-slate-950">
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm [container-type:inline-size]">
+            <h2 className="text-[clamp(0.875rem,4cqw,1rem)] font-bold text-slate-950">
                 나의 MoMoCITY
             </h2>
 
-            <div className="relative mx-auto mt-4 flex h-40 w-40 items-center justify-center rounded-2xl bg-slate-50 text-sm font-bold text-slate-400">
+            <div className="relative mx-auto mt-4 flex h-[clamp(6rem,45cqw,10rem)] w-[clamp(6rem,45cqw,10rem)] items-center justify-center rounded-2xl bg-slate-50 text-[clamp(0.75rem,3cqw,0.875rem)] font-bold text-slate-400">
                 {buildingImage ? (
                     <Image
                         src={buildingImage}
@@ -41,16 +41,16 @@ export default function CategoryBuildingCard({
             </div>
 
             <div className="mt-5">
-                <p className="text-sm font-bold text-slate-950">
+                <p className="text-[clamp(0.75rem,3.5cqw,0.875rem)] font-bold text-slate-950">
                     {buildingName} 성장 현황
                 </p>
 
                 <div className="mt-4 flex items-center justify-between">
-                    <span className="text-sm font-bold text-indigo-500">
+                    <span className="text-[clamp(0.75rem,3.5cqw,0.875rem)] font-bold text-indigo-500">
                         Lv. {level}
                     </span>
 
-                    <span className="text-xs font-medium text-slate-500">
+                    <span className="text-[clamp(0.625rem,3cqw,0.75rem)] font-medium text-slate-500">
                         {currentExp} / {maxExp} XP
                     </span>
                 </div>
@@ -60,7 +60,7 @@ export default function CategoryBuildingCard({
 
             <Link
                 href={'/student/'}
-                className="mt-6 flex h-12 items-center justify-center rounded-xl border border-indigo-300 text-sm font-bold text-indigo-500 transition hover:bg-indigo-50"
+                className="mt-6 flex h-[clamp(2.25rem,10cqw,3rem)] items-center justify-center rounded-xl border border-indigo-300 text-[clamp(0.75rem,3.5cqw,0.875rem)] font-bold text-indigo-500 transition hover:bg-indigo-50"
             >
                 도시로 돌아가기
             </Link>

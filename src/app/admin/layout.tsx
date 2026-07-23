@@ -1,4 +1,5 @@
 import AdminHeader from "@/components/layout/AdminHeader";
+import AdminMobileNav from "@/components/layout/AdminMobileNav";
 import AdminSidebar from "../../components/layout/AdminSidebar";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -29,13 +30,12 @@ export default async function AdminLayout({
     }
 
     return (
-        <div className="h-screen overflow-hidden bg-white">
+        <div className="flex h-screen flex-col overflow-hidden bg-white">
             <AdminHeader />
-            <div className="flex-1">
-                <div className="fixed left-0 top-14 bottom-0">
-                    <AdminSidebar />
-                </div>
-                <main className="ml-60 h-[calc(100vh-56px)] flex-1 overflow-y-auto px-8 py-7">
+            <AdminMobileNav />
+            <div className="flex min-h-0 flex-1">
+                <AdminSidebar />
+                <main className="min-w-0 flex-1 overflow-y-auto px-4 py-6 md:px-8 md:py-7">
                     {children}
                 </main>
             </div>

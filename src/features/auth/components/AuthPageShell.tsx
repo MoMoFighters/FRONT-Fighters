@@ -15,7 +15,7 @@ export default function AuthPageShell({
 }: AuthPageShellProps) {
     return (
         <div className="grid min-h-screen bg-white lg:grid-cols-2">
-            <section className="relative min-h-screen overflow-hidden">
+            <section className="relative hidden min-h-screen overflow-hidden lg:block">
                 <Image
                     src={auth}
                     alt="MoMoCITY 아이콘"
