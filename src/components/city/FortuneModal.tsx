@@ -182,6 +182,7 @@ export default function FortuneModal({ open, onOpenChange }: FortuneModalProps) 
                             alt="분수대 배경"
                             fill
                             priority
+                            sizes="100vw"
                             onLoad={handleBackgroundLoaded}
                             className="object-cover filter blur-sm scale-105"
                         />
