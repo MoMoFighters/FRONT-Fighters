@@ -57,13 +57,13 @@ export default function AuthRefreshArea({
         <>
             <Tooltip>
                 <TooltipTrigger asChild>
-                    <div className="flex gap-1 items-center mt-1 cursor-pointer">
-                        <Clock className="text-slate-500 w-3 h-3" />
-                        <span className="text-slate-500 text-xs mr-2">{timerCount}</span>
+                    <div className="flex gap-1 items-center mt-1 mr-1 cursor-pointer sm:mr-4">
+                        <Clock className="text-slate-500 w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                        <span className="text-slate-500 text-[10px] mr-1 sm:mr-2 sm:text-xs">{timerCount}</span>
                         <Button
                             onClick={handleRefreshClick}
                             variant="outline"
-                            className="rounded-none text-slate-500 text-[10px] h-5 mr-4 cursor-pointer">연장</Button>
+                            className="rounded-none text-slate-500 text-[9px] h-4 px-2 cursor-pointer sm:text-[10px] sm:h-5 sm:px-3">연장</Button>
                     </div>
                 </TooltipTrigger>
                 <TooltipContent>

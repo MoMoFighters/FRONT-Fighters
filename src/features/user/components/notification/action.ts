@@ -1,11 +1,13 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
+import { jwtDecode } from "jwt-decode";
+import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 import {
     deleteNoticeService,
     getNoticeAppCountsService,
     getNoticeNotificationListService,
-    getNoticeTotalCountsService,
+    getNoticeTotalCountsServiceByToken,
     readNoticeService,
     toggleNotification,
     type NoticeMutationResponse,
@@ -17,10 +19,37 @@ import {
     ToggleNotificationApiResponse,
 } from "./type";
 
+interface AccessTokenPayload {
+    sub?: string;
+}
+
+// accessToken은 로그인/재발급마다 값이 바뀌므로, 유저당 캐시 엔트리가 하나로 고정되도록
+// 토큰 안의 안 바뀌는 유저 식별자(sub)를 캐시 키로 쓴다. 디코드 실패 시에만 토큰 원문으로 폴백.
+const getStableUserKey = (accessToken: string): string => {
+    try {
+        return jwtDecode<AccessTokenPayload>(accessToken).sub ?? accessToken;
+    } catch {
+        return accessToken;
+    }
+};
+
 export const getNoticeTotalCountsAction =
     async (): Promise<NoticeTotalCountsResponse> => {
         try {
-            return await getNoticeTotalCountsService();
+            const cookieStore = await cookies();
+            const accessToken = cookieStore.get("accessToken")?.value;
+
+            if (!accessToken) {
+                throw new Error("로그인 세션이 만료되었습니다.");
+            }
+
+            // 헤더의 알림 배지는 네비게이션마다 새로 안 쳐도 되는 값이라
+            // getMyInfo와 동일하게 짧은 TTL의 unstable_cache로 백엔드 호출을 줄인다.
+            return await unstable_cache(
+                () => getNoticeTotalCountsServiceByToken(accessToken),
+                ["notice-total-counts", getStableUserKey(accessToken)],
+                { revalidate: 15, tags: ["notice-total-counts"] }
+            )();
         } catch (error) {
             return {
                 timestamp: new Date().toISOString(),
@@ -86,6 +115,7 @@ export const readNoticeAction =
     async (targetId: number[]): Promise<NoticeMutationResponse> => {
         try {
             const result = await readNoticeService(targetId);
+            revalidateTag("notice-total-counts", { expire: 0 });
             revalidatePath("/student");
             revalidatePath("/teacher");
             return result;
@@ -101,6 +131,7 @@ export const deleteNoticeAction =
     async (targetId: number[]): Promise<NoticeMutationResponse> => {
         try {
             const result = await deleteNoticeService(targetId);
+            revalidateTag("notice-total-counts", { expire: 0 });
             revalidatePath("/student");
             revalidatePath("/teacher");
             return result;

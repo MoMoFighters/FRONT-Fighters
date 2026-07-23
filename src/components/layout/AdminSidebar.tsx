@@ -10,11 +10,11 @@ import {
     ShieldAlert,
     ShieldCheck,
     Users,
-    BadgeDollarSign
+    BadgeDollarSign,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 
-const ADMIN_NAV_ITEMS = [
+export const ADMIN_NAV_ITEMS = [
     {
         label: "대시보드",
         href: "/admin",
@@ -62,7 +62,7 @@ export default function AdminSidebar() {
     const pathname = usePathname();
 
     return (
-        <aside className="flex h-full w-60 flex-col border-r border-slate-100 bg-white px-3">
+        <aside className="hidden w-60 shrink-0 flex-col border-r border-slate-100 bg-white px-3 md:sticky md:top-0 md:flex md:h-full">
             <div className="mt-6 flex items-center gap-3 px-3 text-lg font-black text-slate-700">
                 <ShieldCheck className="h-5 w-5" />
                 <p>Admin Mode</p>

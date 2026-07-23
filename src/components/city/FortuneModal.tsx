@@ -19,7 +19,6 @@ import OneButtonModal from "@/features/modal/OneButtonModal";
 import { getFortuneAction } from "@/features/city/action";
 import { Fortune, FortuneTone } from "@/features/city/type";
 
-// 🍑 CSS의 coin-arc/coin-spin/coin-shadow 애니메이션 길이(1.1초)와 반드시 맞춰야 함 — 어긋나면 동전이 다 던져지기 전에 잘림 🍑
 const THROW_DURATION_MS = 1100;
 
 interface FortuneModalProps {
@@ -27,10 +26,6 @@ interface FortuneModalProps {
     onOpenChange: (open: boolean) => void;
 }
 
-/* 🍑컨페티(Confetti) 효과 구현 안내:
-외부 라이브러리 없이 경량화된 연출을 위해 조각(div)을 dynamic style로 생성합니다.
-결과(result) 단계가 되면 각 조각에 무작위 X/Y 이동 거리, 회전 각도, 색상, 애니메이션 지연 시간을 부여하여
-중앙 분수대로부터 퍼져나가는 듯한 입체적인 축하 효과를 연출합니다. BAD 운세일 때는 축하 연출이 어색하므로 생략합니다.🍑 */
 interface ConfettiPiece {
     id: number;
     x: number;
@@ -81,7 +76,6 @@ export default function FortuneModal({ open, onOpenChange }: FortuneModalProps) 
     const [confetti, setConfetti] = useState<ConfettiPiece[]>([]);
     const [errorMessage, setErrorMessage] = useState("");
 
-    // 분수 배경 이미지가 로드되기 전까지는 대기 상태만 노출 → onLoad 이후에 동전 연출을 시작함
     useEffect(() => {
         if (!open) {
             setPhase("idle");
@@ -122,7 +116,6 @@ export default function FortuneModal({ open, onOpenChange }: FortuneModalProps) 
 
             setFortune(result.data);
 
-            // 결과 단계로 넘어가기 전에 컨페티 데이터 먼저 생성 (BAD 운세는 생략)
             if (result.data.tone !== "BAD") {
                 const colors = [
                     "#f59e0b", "#fbbf24", "#3b82f6", "#60a5fa",
@@ -147,7 +140,6 @@ export default function FortuneModal({ open, onOpenChange }: FortuneModalProps) 
                 setConfetti(pieces);
             }
 
-            // 다음 프레임에서 result 전환 → 동전 DOM이 먼저 완전히 제거됨
             requestAnimationFrame(() => {
                 if (!isCancelled) {
                     setPhase("result");
@@ -165,15 +157,8 @@ export default function FortuneModal({ open, onOpenChange }: FortuneModalProps) 
         return null;
     }
 
-    /*
-      🍑 핵심 수정: 컨페티가 Dialog 뒤에 묻히는 문제 해결
-      CityCanvas가 container-type(containment)을 사용해 자체 스태킹 컨텍스트를 만들기 때문에,
-      그 안에서 아무리 z-index를 높여도 document.body에 직접 포탈되는 Radix Dialog보다 위로 올라올 수 없음.
-      → 동일하게 document.body로 포탈해서 같은 스태킹 컨텍스트에서 z-index가 비교되도록 함.
-    */
     const overlay = (
         <>
-            {/* 🍑 분수 배경은 preparing 단계부터 미리 노출되고, 로드가 끝나야 throwing으로 넘어가 동전이 던져짐 🍑 */}
             {(phase === "preparing" || phase === "throwing") && (
                 <div className="fixed inset-0 z-[60] overflow-hidden">
                     <div className="p-20% h-full w-full">

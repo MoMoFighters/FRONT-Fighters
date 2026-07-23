@@ -133,9 +133,9 @@ export default function AdminReportActionPanel({
     };
 
     return (
-        <aside className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-            <h2 className="text-sm font-bold text-slate-950">처리 작업</h2>
-            <p className="mt-1 text-xs leading-5 text-slate-500">
+        <aside className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm [container-type:inline-size]">
+            <h2 className="text-[clamp(0.8rem,3.5cqw,0.875rem)] font-bold text-slate-950">처리 작업</h2>
+            <p className="mt-1 text-[clamp(0.7rem,3cqw,0.75rem)] leading-5 text-slate-500">
                 작업을 완료하면 신고 상태가 처리 완료로 변경됩니다.
             </p>
 
@@ -146,7 +146,7 @@ export default function AdminReportActionPanel({
                             <Button
                                 type="button"
                                 onClick={() => setPendingAction("OPEN_ADMIN")}
-                                className="h-9 w-full rounded-md bg-indigo-600 px-3 text-sm font-bold text-white hover:bg-indigo-700"
+                                className="h-9 w-full rounded-md bg-indigo-600 px-3 text-[clamp(0.75rem,3.2cqw,0.875rem)] font-bold text-white hover:bg-indigo-700"
                             >
                                 <ExternalLink className="size-4" />
                                 관리자 화면 열기
@@ -159,7 +159,7 @@ export default function AdminReportActionPanel({
                             <Button
                                 type="button"
                                 onClick={() => setPendingAction("SANCTION")}
-                                className="h-9 w-full rounded-md bg-indigo-600 px-3 text-sm font-bold text-white hover:bg-indigo-700"
+                                className="h-9 w-full rounded-md bg-indigo-600 px-3 text-[clamp(0.75rem,3.2cqw,0.875rem)] font-bold text-white hover:bg-indigo-700"
                             >
                                 <ShieldCheck className="size-4" />
                                 신고 처리 승인
@@ -169,7 +169,7 @@ export default function AdminReportActionPanel({
                             type="button"
                             variant="outline"
                             onClick={() => setPendingAction("DISMISS")}
-                            className="h-9 w-full rounded-md border-slate-200 px-3 text-sm font-bold text-slate-700 hover:bg-slate-50"
+                            className="h-9 w-full rounded-md border-slate-200 px-3 text-[clamp(0.75rem,3.2cqw,0.875rem)] font-bold text-slate-700 hover:bg-slate-50"
                         >
                             <XCircle className="size-4" />
                             신고 처리 기각
@@ -179,7 +179,7 @@ export default function AdminReportActionPanel({
                                 type="button"
                                 variant="outline"
                                 onClick={() => setPendingAction("DELETE")}
-                                className="h-9 w-full rounded-md border-rose-200 px-3 text-sm font-bold text-rose-600 hover:bg-rose-50 hover:text-rose-700"
+                                className="h-9 w-full rounded-md border-rose-200 px-3 text-[clamp(0.75rem,3.2cqw,0.875rem)] font-bold text-rose-600 hover:bg-rose-50 hover:text-rose-700"
                             >
                                 <Trash2 className="size-4" />
                                 콘텐츠 삭제

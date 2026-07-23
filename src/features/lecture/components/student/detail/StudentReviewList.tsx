@@ -24,7 +24,7 @@ export default function StudentReviewList({
     return (
         <div className="divide-y divide-slate-100">
             {reviews.map((review) => (
-                <article key={review.reviewId} className="relative p-5 pr-24">
+                <article key={review.reviewId} className="relative p-4 pr-16 sm:p-5 sm:pr-24">
                     <div className="absolute right-5 top-5 flex flex-col items-end gap-3">
                         <CreateReportBtn
                             triggerLabel="신고"

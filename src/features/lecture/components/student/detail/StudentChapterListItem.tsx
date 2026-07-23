@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { BookOpen, LockKeyhole } from "lucide-react";
 
 import { Progress } from "@/components/ui/progress";
 import { Chapter } from "@/features/lecture/type";
@@ -13,10 +14,13 @@ interface StudentChapterListItemProps {
 }
 
 const formatDuration = (durationSec: number) => {
-    const minutes = Math.floor(durationSec / 60);
-    const seconds = durationSec % 60;
+    if (!durationSec) {
+        return "시간 준비 중";
+    }
 
-    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+    const minutes = Math.ceil(durationSec / 60);
+
+    return `${minutes}분`;
 };
 
 export default function StudentChapterListItem({
@@ -26,72 +30,72 @@ export default function StudentChapterListItem({
     isEnrolled,
     href,
 }: StudentChapterListItemProps) {
-    const isLocked =
-        isEnrolled !== true ||
-        chapter.isAccessible !== true;
+    const isLocked = isEnrolled !== true || chapter.isAccessible !== true;
     const progress = chapter.chapterProgress ?? 0;
     const chapterHref = href ?? `/student/${category}/lectures/${lectureId}/chapters/${chapter.chapterId}`;
 
     const content = (
-        <>
-            <div className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-100 text-[10px] font-bold text-slate-400">
+        <article className="grid grid-cols-1 items-center gap-3 px-4 py-4 sm:grid-cols-[112px_minmax(0,1fr)_120px] sm:gap-4 sm:px-5">
+            <div className="relative h-14 overflow-hidden rounded-lg bg-slate-100 sm:h-16">
                 {chapter.chapterThumbnailUrl ? (
                     <Image
                         src={chapter.chapterThumbnailUrl}
-                        alt={`${chapter.title} 썸네일`}
+                        alt={chapter.title}
                         fill
-                        sizes="48px"
-                        className="object-cover"
+                        sizes="112px"
+                        quality={70}
+                        className={`object-cover ${isLocked ? "opacity-75" : ""}`}
                     />
                 ) : (
-                    "이미지 없음"
+                    <div className="flex h-full w-full items-center justify-center text-slate-300">
+                        <BookOpen className="h-6 w-6 sm:h-7 sm:w-7" />
+                    </div>
+                )}
+
+                {isLocked && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-slate-950/20">
+                        <LockKeyhole className="h-4 w-4 text-white sm:h-5 sm:w-5" />
+                    </div>
                 )}
             </div>
 
-            <div className="min-w-0 flex-1">
+            <div className="min-w-0">
                 <div className="flex items-center gap-2">
-                    <span className="text-sm font-black text-slate-950">
-                        Chapter {chapter.orderNo}.
-                    </span>
+                    <p className="text-[11px] font-bold text-indigo-400">
+                        Chapter {chapter.orderNo}
+                    </p>
 
                     {chapter.isCompleted && (
-                        <span className="rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-bold text-indigo-500">
+                        <span className="rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-bold text-indigo-500">
                             완료
                         </span>
                     )}
                 </div>
-
-                <p className="mt-1 truncate text-sm font-medium text-slate-500">
+                <h3 className="mt-1 truncate text-sm font-bold text-slate-900">
                     {chapter.title}
+                </h3>
+                <p className="mt-1 text-xs font-medium text-slate-400">
+                    {formatDuration(chapter.durationSec)}
                 </p>
             </div>
 
-            <div className="flex w-56 items-center gap-3">
-                <Progress value={progress} />
-                <span className="w-9 text-right text-xs font-bold text-slate-400">
-                    {progress}%
-                </span>
-            </div>
-
-            <span className="w-14 text-right text-sm font-bold text-slate-400">
-                {formatDuration(chapter.durationSec)}
-            </span>
-        </>
+            {!isLocked && (
+                <div className="flex items-center gap-2">
+                    <Progress value={progress} className="w-full sm:w-16" />
+                    <span className="w-9 shrink-0 text-right text-xs font-bold text-slate-400">
+                        {progress}%
+                    </span>
+                </div>
+            )}
+        </article>
     );
 
     if (isLocked) {
-        return (
-            <div className="flex items-center gap-4 bg-slate-50/70 p-5 text-slate-400">
-                {content}
-            </div>
-        );
+        return <div className="bg-slate-50/70 text-slate-400">{content}</div>;
     }
 
     return (
-        <Link
-            href={chapterHref}
-            className="flex items-center gap-4 p-5 transition hover:bg-slate-50"
-        >
+        <Link href={chapterHref} className="block transition hover:bg-slate-50">
             {content}
         </Link>
     );

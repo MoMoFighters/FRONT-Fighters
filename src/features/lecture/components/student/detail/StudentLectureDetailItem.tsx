@@ -1,5 +1,6 @@
 import Image from "next/image";
-import { Star } from "lucide-react";
+import Link from "next/link";
+import { BookOpen, ChevronLeft, Clock3, Star } from "lucide-react";
 
 import { Progress } from "@/components/ui/progress";
 import EnrollLectureBtn from "@/features/lecture/components/buttons/EnrollLectureBtn";
@@ -13,103 +14,136 @@ interface StudentLectureDetailItemProps {
     category: string;
     categoryLabel: string;
     membership: Membership;
+    backHref: string;
     position?: string;
     resumeChapterId?: number;
     chapterBaseHref?: string;
 }
 
+const formatTotalDuration = (durationSec: number) => {
+    if (durationSec <= 0) {
+        return "시간 정보 준비 중";
+    }
+
+    const totalMinutes = Math.ceil(durationSec / 60);
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+
+    if (hours === 0) {
+        return `${minutes}분`;
+    }
+
+    return minutes === 0 ? `${hours}시간` : `${hours}시간 ${minutes}분`;
+};
+
 export default function StudentLectureDetailItem({
     lecture,
     categoryLabel,
     membership,
+    backHref,
     position,
 }: StudentLectureDetailItemProps) {
     const progress = lecture.lectureProgress ?? 0;
     const chapterCount = lecture.chapters.length;
+    const totalDurationSec = lecture.chapters.reduce(
+        (sum, chapter) => sum + (chapter.durationSec ?? 0),
+        0,
+    );
 
     return (
         <div className="relative">
-            <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-[320px_minmax(0,1fr)] md:gap-8">
-                    <div className="relative h-56 overflow-hidden rounded-xl bg-slate-100">
-                        {lecture.thumbnailUrl && (
-                            <Image
-                                src={lecture.thumbnailUrl}
-                                alt={lecture.title}
-                                fill
-                                sizes="320px"
-                                priority
-                                className="object-cover"
-                            />
-                        )}
-                    </div>
-
-                    <div className="flex min-w-0 flex-col">
-                        <div className="flex items-center justify-between gap-3">
-                            <span className="w-fit rounded-full bg-indigo-50 px-3 py-1 text-sm font-bold text-indigo-500">
-                                {categoryLabel} 강의
-                            </span>
-
-                            <CreateReportBtn
-                                triggerLabel="강의 신고"
-                                triggerClassName="cursor-pointer rounded-md border border-slate-200 px-2.5 py-1 text-xs font-bold text-slate-500 transition hover:bg-slate-100"
-                                targetType="LECTURE"
-                                targetId={lecture.lectureId}
-                            />
+            <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm [container-type:inline-size]">
+                <div className="relative aspect-[4/3] bg-slate-100 sm:aspect-[16/9] md:aspect-[2.8/1]">
+                    {lecture.thumbnailUrl ? (
+                        <Image
+                            src={lecture.thumbnailUrl}
+                            alt={lecture.title}
+                            fill
+                            sizes="(max-width: 1024px) 100vw, 900px"
+                            quality={78}
+                            priority
+                            className="object-cover"
+                        />
+                    ) : (
+                        <div className="flex h-full w-full items-center justify-center text-slate-300">
+                            <BookOpen className="h-16 w-16" />
                         </div>
+                    )}
 
-                        <h2 className="mt-4 text-2xl font-bold tracking-tight text-slate-950 md:text-3xl">
+                    <div className="absolute inset-0 bg-linear-to-t from-slate-950/75 via-slate-950/20 to-transparent" />
+
+                    <Link
+                        href={backHref}
+                        className="absolute left-[3cqw] top-[3cqw] inline-flex h-[clamp(1.75rem,6cqw,2.5rem)] items-center gap-[clamp(0.25rem,1cqw,0.375rem)] rounded-full bg-white/90 px-[clamp(0.5rem,2.5cqw,1rem)] text-[clamp(0.625rem,1.6cqw,0.75rem)] font-bold text-slate-700 shadow-sm backdrop-blur transition-colors hover:bg-white"
+                    >
+                        <ChevronLeft className="h-[clamp(0.75rem,2.5cqw,1rem)] w-[clamp(0.75rem,2.5cqw,1rem)]" />
+                        강의 목록
+                    </Link>
+
+                    <CreateReportBtn
+                        triggerLabel="강의 신고"
+                        triggerClassName="absolute right-[3cqw] top-[3cqw] rounded-full bg-white/90 px-[clamp(0.5rem,2.5cqw,1rem)] py-[clamp(0.3rem,1.2cqw,0.375rem)] text-[clamp(0.625rem,1.6cqw,0.75rem)] font-bold text-slate-700 shadow-sm backdrop-blur transition-colors hover:bg-white"
+                        targetType="LECTURE"
+                        targetId={lecture.lectureId}
+                    />
+
+                    <div className="absolute inset-x-0 bottom-0 p-[4cqw] text-white">
+                        <span className="rounded-full bg-white/15 px-[clamp(0.5rem,2cqw,0.75rem)] py-[clamp(0.2rem,0.8cqw,0.25rem)] text-[clamp(0.625rem,1.4cqw,0.75rem)] font-bold backdrop-blur">
+                            {categoryLabel} 강의
+                        </span>
+                        <h1 className="mt-[1.5cqw] max-w-3xl text-[clamp(1.125rem,4cqw,2.25rem)] font-bold tracking-tight">
                             {lecture.title}
-                        </h2>
-
-                        <p className="mt-3 line-clamp-2 text-sm font-medium leading-6 text-slate-500">
+                        </h1>
+                        <p className="mt-[1cqw] line-clamp-2 max-w-2xl text-[clamp(0.7rem,1.6cqw,0.875rem)] font-medium leading-6 text-white/80">
                             {lecture.description}
                         </p>
+                    </div>
+                </div>
 
-                        <div className="mt-6 flex flex-wrap items-center gap-4 text-sm font-bold text-slate-500">
-                            <span className="flex items-center gap-1.5 text-slate-700">
-                                <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
-                                {lecture.averageRating ?? 0}
-                                <span className="font-medium text-slate-400">
-                                    / 5.0
-                                </span>
-                            </span>
+                <div className="grid grid-cols-2 divide-x divide-y divide-slate-100 p-[4cqw] sm:grid-cols-4 sm:divide-y-0">
+                    <div className="pb-[1.5cqw] pr-[1.5cqw] sm:pb-0 sm:pr-0">
+                        <p className="hidden text-[clamp(0.625rem,1.4cqw,0.75rem)] font-bold text-slate-400 md:block">평점</p>
+                        <p className="mt-[0.6cqw] flex items-center gap-[0.6cqw] text-[clamp(0.7rem,1.6cqw,0.875rem)] font-bold text-slate-900">
+                            <Star className="h-[clamp(0.75rem,2cqw,1rem)] w-[clamp(0.75rem,2cqw,1rem)] fill-amber-400 text-amber-400" />
+                            {lecture.averageRating ?? 0}
+                            <span className="hidden font-medium text-slate-400 md:inline">/ 5.0</span>
+                        </p>
+                    </div>
 
-                            <span>총 {chapterCount}개 챕터</span>
+                    <div className="pb-[1.5cqw] pl-[1.5cqw] sm:px-[2.5cqw] sm:pb-0">
+                        <p className="hidden text-[clamp(0.625rem,1.4cqw,0.75rem)] font-bold text-slate-400 md:block">커리큘럼</p>
+                        <p className="mt-[0.6cqw] text-[clamp(0.7rem,1.6cqw,0.875rem)] font-bold text-slate-900">
+                            <span className="md:hidden">{chapterCount}개</span>
+                            <span className="hidden md:inline">총 {chapterCount}개 챕터</span>
+                        </p>
+                    </div>
 
-                            <span>
-                                {lecture.isEnrolled
-                                    ? lecture.isCompleted
-                                        ? "학습 완료"
-                                        : "학습 중"
-                                    : "수강 전"}
-                            </span>
-                        </div>
+                    <div className="pt-[1.5cqw] pr-[1.5cqw] sm:px-[2.5cqw] sm:pt-0">
+                        <p className="hidden text-[clamp(0.625rem,1.4cqw,0.75rem)] font-bold text-slate-400 md:block">예상 학습 시간</p>
+                        <p className="mt-[0.6cqw] flex items-center gap-[0.6cqw] text-[clamp(0.7rem,1.6cqw,0.875rem)] font-bold text-slate-900">
+                            <Clock3 className="h-[clamp(0.75rem,2cqw,1rem)] w-[clamp(0.75rem,2cqw,1rem)] text-indigo-400" />
+                            {formatTotalDuration(totalDurationSec)}
+                        </p>
+                    </div>
 
-                        <div className="mt-auto border-t border-slate-100 pt-5">
-                            {lecture.isEnrolled ? (
-                                <div className="flex flex-wrap items-center gap-3 md:gap-5">
-                                    <span className="text-sm font-bold text-indigo-500">
-                                        {lecture.isCompleted ? "학습 완료" : "학습 중"}
-                                    </span>
+                    <div className="pt-[1.5cqw] pl-[1.5cqw] sm:px-[2.5cqw] sm:pt-0">
+                        <p className="hidden text-[clamp(0.625rem,1.4cqw,0.75rem)] font-bold text-slate-400 md:block">수강 상태</p>
 
-                                    <Progress value={progress} className="w-full max-w-48 md:w-auto" />
-
-                                    <span className="text-sm font-bold text-slate-500">
-                                        진도율 {progress}%
-                                    </span>
-
-                                </div>
-                            ) : (
-                                <div className="flex justify-end">
-                                    <EnrollLectureBtn
-                                        lectureId={lecture.lectureId}
-                                        position={position}
-                                        className="h-11 rounded-xl bg-indigo-500 px-5 text-sm font-bold text-white transition hover:bg-indigo-600"
-                                    />
-                                </div>
-                            )}
-                        </div>
+                        {lecture.isEnrolled ? (
+                            <div className="mt-[0.6cqw] flex items-center gap-[0.8cqw]">
+                                <Progress value={progress} className="hidden md:block md:w-16" />
+                                <span className="text-[clamp(0.7rem,1.6cqw,0.875rem)] font-bold text-slate-900">{progress}%</span>
+                            </div>
+                        ) : (
+                            <div className="mt-[0.6cqw]">
+                                <EnrollLectureBtn
+                                    lectureId={lecture.lectureId}
+                                    membership={membership}
+                                    position={position}
+                                    className="h-[clamp(1.5rem,6cqw,2rem)] rounded-lg bg-indigo-500 px-[clamp(0.5rem,2.5cqw,0.75rem)] text-[clamp(0.625rem,1.6cqw,0.75rem)] font-bold text-white transition hover:bg-indigo-600"
+                                />
+                            </div>
+                        )}
                     </div>
                 </div>
             </section>

@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import { toast } from "sonner";
 
 import {
@@ -13,7 +14,6 @@ import {
 import StudyStreakBadge from "@/components/study/StudyStreakBadge";
 import StudyQuoteCard from "@/components/study/StudyQuoteCard";
 import StudyWeeklyChart from "@/components/study/StudyWeeklyChart";
-import StudyWebcamPreview from "@/components/study/StudyWebcamPreview";
 import StudyTimer from "@/features/study/components/StudyTimer";
 import {
     getSoloStudyLabList,
@@ -27,6 +27,27 @@ import type {
     SoloCurrentSessionResult,
     StudyTimerLap,
 } from "@/features/study/type";
+
+// @tensorflow/tfjs + @tensorflow-models/coco-ssd는 무거워서, 웹캠을 아직 켜지 않은
+// 사용자도 초기 번들에 함께 받지 않도록 실제로 화면에 그려질 때만 지연 로드한다.
+const StudyWebcamPreview = dynamic(
+    () => import("@/components/study/StudyWebcamPreview"),
+    {
+        ssr: false,
+        loading: () => (
+            <div className="w-full max-w-96">
+                <div className="flex items-center justify-end gap-2 px-1">
+                    <div className="h-7 w-7 animate-pulse rounded-lg bg-slate-100" />
+                    <div className="h-7 w-7 animate-pulse rounded-lg bg-slate-100" />
+                </div>
+
+                <div className="mt-2 flex aspect-video animate-pulse items-center justify-center rounded-2xl border-2 border-slate-200 bg-slate-100 text-xs font-bold text-slate-400">
+                    웹캠 준비 중...
+                </div>
+            </div>
+        ),
+    }
+);
 
 interface WeeklyRecord {
     date: string;
@@ -55,13 +76,15 @@ export default function SoloStudyView({
     const [isLapModalOpen, setIsLapModalOpen] = useState(false);
     const [canStartTimer, setCanStartTimer] = useState(true);
 
-    const refreshTimerAvailability = async () => {
+    // 아래 핸들러들은 StudyWebcamPreview/StudyTimer(모두 memo)에 그대로 내려가므로,
+    // useCallback으로 묶어야 타이머 tick(초당 리렌더)마다 무거운 웹캠 컴포넌트까지 같이 리렌더되는 걸 막는다.
+    const refreshTimerAvailability = useCallback(async () => {
         const response = await getTimerAvailability();
 
         if (response.status === 200 && response.data) {
             setCanStartTimer(response.data.canStartTimer);
         }
-    };
+    }, []);
 
     useEffect(() => {
         if (!initialSession) {
@@ -76,7 +99,7 @@ export default function SoloStudyView({
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         void refreshTimerAvailability();
-    }, []);
+    }, [refreshTimerAvailability]);
 
     useEffect(() => {
         if (!isRunning) {
@@ -92,7 +115,7 @@ export default function SoloStudyView({
         };
     }, [isRunning]);
 
-    const refreshLaps = async () => {
+    const refreshLaps = useCallback(async () => {
         const response = await getSoloStudyLabList();
 
         if (response.status >= 400) {
@@ -100,9 +123,9 @@ export default function SoloStudyView({
         }
 
         setLaps(response.data.laps);
-    };
+    }, []);
 
-    const handleRefreshLapsClick = async () => {
+    const handleRefreshLapsClick = useCallback(async () => {
         setIsLapModalOpen(true);
         setIsLapsLoading(true);
 
@@ -121,9 +144,9 @@ export default function SoloStudyView({
         } finally {
             setIsLapsLoading(false);
         }
-    };
+    }, []);
 
-    const handleTogglePause = async () => {
+    const handleTogglePause = useCallback(async () => {
         if (isRunning) {
             const response = await pauseSoloStudyTimer();
 
@@ -149,9 +172,9 @@ export default function SoloStudyView({
         setSeconds(response.data.accumulatedSeconds);
         setIsRunning(true);
         void refreshLaps();
-    };
+    }, [isRunning, refreshLaps, refreshTimerAvailability]);
 
-    const handleEnd = async () => {
+    const handleEnd = useCallback(async () => {
         const response = await stopSoloStudyTimer();
 
         if (response.status >= 400) {
@@ -163,7 +186,7 @@ export default function SoloStudyView({
         setIsRunning(false);
         void refreshLaps();
         void refreshTimerAvailability();
-    };
+    }, [refreshLaps, refreshTimerAvailability]);
 
     return (
         <>
@@ -191,8 +214,8 @@ export default function SoloStudyView({
                     <div className="mt-10 w-full max-w-96">
                         <StudyWebcamPreview
                             isTimerRunning={isRunning}
-                            onAbsenceTimeout={() => void handleTogglePause()}
-                            onOpenLaps={() => void handleRefreshLapsClick()}
+                            onAbsenceTimeout={handleTogglePause}
+                            onOpenLaps={handleRefreshLapsClick}
                         />
                     </div>
                 </section>
@@ -204,8 +227,8 @@ export default function SoloStudyView({
                         isRunning={isRunning}
                         endLabel="랩 종료"
                         canStart={canStartTimer}
-                        onTogglePause={() => void handleTogglePause()}
-                        onEnd={() => void handleEnd()}
+                        onTogglePause={handleTogglePause}
+                        onEnd={handleEnd}
                     />
                 </div>
             </div>

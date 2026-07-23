@@ -102,8 +102,8 @@ export default function MonthlyGrassPanel({
     const handleCellLeave = useCallback(() => setTooltip(null), []);
 
     return (
-        <div className="relative w-fit">
-            <div className="flex flex-col gap-[3px]">
+        <div className="relative">
+            <div className="mx-auto flex w-fit flex-col gap-[3px]">
                 <div className="flex gap-[3px]">
                     {WEEKDAY_LABELS.map((label) => (
                         <span

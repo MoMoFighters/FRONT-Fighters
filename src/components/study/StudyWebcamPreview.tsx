@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import "@tensorflow/tfjs";
 import * as cocoSsd from "@tensorflow-models/coco-ssd";
 import { BookOpen, Coffee, History, Video, VideoOff } from "lucide-react";
@@ -33,7 +33,7 @@ interface StudyWebcamPreviewProps {
     onOpenLaps: () => void;
 }
 
-export default function StudyWebcamPreview({
+function StudyWebcamPreview({
     isTimerRunning,
     onAbsenceTimeout,
     onOpenLaps,
@@ -324,3 +324,5 @@ export default function StudyWebcamPreview({
         </div>
     );
 }
+
+export default memo(StudyWebcamPreview);

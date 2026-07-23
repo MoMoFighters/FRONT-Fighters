@@ -25,6 +25,31 @@ export const getNoticeTotalCountsService =
         return result;
     };
 
+// unstable_cache 안에서는 cookies()를 호출할 수 없어서(fetchWithAuth가 내부적으로 사용),
+// getMyInfoService와 동일하게 accessToken을 인자로 받는 순수 fetch 버전을 따로 둔다.
+export const getNoticeTotalCountsServiceByToken = async (
+    accessToken: string
+): Promise<NoticeTotalCountsResponse> => {
+    const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v2/notice/total-counts`,
+        {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${accessToken}`,
+            },
+        }
+    );
+
+    const result: NoticeTotalCountsResponse = await response.json();
+
+    if (!response.ok) {
+        throw new Error(result.message || "알림 개수를 불러오지 못했습니다.");
+    }
+
+    return result;
+};
+
 export const getNoticeNotificationListService =
     async (): Promise<NoticeNotificationListResponse> => {
         const response = await fetchWithAuth("/api/v2/notice/notificationlist", {

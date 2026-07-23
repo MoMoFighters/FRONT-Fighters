@@ -4,7 +4,7 @@ import Link from "next/link";
 import { BookOpen, CircleHelp, Home, MessageSquareText } from "lucide-react";
 import { usePathname } from "next/navigation";
 
-const TEACHER_NAV_ITEMS = [
+export const TEACHER_NAV_ITEMS = [
     {
         label: "홈",
         href: "/teacher",
@@ -32,7 +32,7 @@ export default function TeacherSidebar() {
     const pathname = usePathname();
 
     return (
-        <aside className="h-full min-h-0 w-50 shrink-0 border-r border-slate-200 bg-white">
+        <aside className="hidden w-50 shrink-0 border-r border-slate-200 bg-white md:sticky md:top-0 md:block md:h-full">
             <nav className="flex flex-col gap-1 p-3">
                 {TEACHER_NAV_ITEMS.map((item) => {
                     const Icon = item.icon;

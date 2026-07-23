@@ -80,7 +80,7 @@ export default function AdminLectureSearchbar({
     };
 
     return (
-        <form onSubmit={handleSubmit} className="mb-5 flex items-center gap-2">
+        <form onSubmit={handleSubmit} className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center">
             <div className="relative min-w-0 flex-1">
                 <Search className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
                 <input
@@ -101,39 +101,41 @@ export default function AdminLectureSearchbar({
                     </button>
                 )}
             </div>
-            <DropdownMenu modal={false}>
-                <DropdownMenuTrigger asChild>
-                    <Button
-                        type="button"
-                        variant="outline"
-                        disabled={isPending}
-                        className="h-11 shrink-0 gap-2 rounded-md border-slate-200 bg-white px-3 text-sm font-bold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
-                    >
-                        <Filter className="size-4 text-slate-500" />
-                        {activeCategoryLabel}
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="min-w-32">
-                    {CATEGORY_FILTERS.map((filter) => (
-                        <DropdownMenuItem
-                            key={filter.label}
-                            onSelect={() => selectCategory(filter.value)}
-                            className={category === filter.value ? "bg-indigo-50 font-bold text-indigo-600" : "font-medium text-slate-700"}
+            <div className="flex items-center gap-2">
+                <DropdownMenu modal={false}>
+                    <DropdownMenuTrigger asChild>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            disabled={isPending}
+                            className="h-11 flex-1 gap-2 rounded-md border-slate-200 bg-white px-3 text-sm font-bold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 sm:flex-none sm:shrink-0"
                         >
-                            {filter.label}
-                        </DropdownMenuItem>
-                    ))}
-                </DropdownMenuContent>
-            </DropdownMenu>
-            <Button
-                type="submit"
-                disabled={isPending}
-                className="h-11 w-24 rounded-md bg-indigo-500 px-2 font-bold text-white hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-                <span className={isPending ? "text-[10px]" : "text-sm"}>
-                    {isPending ? "검색 중..." : "검색"}
-                </span>
-            </Button>
+                            <Filter className="size-4 shrink-0 text-slate-500" />
+                            <span className="truncate">{activeCategoryLabel}</span>
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="min-w-32">
+                        {CATEGORY_FILTERS.map((filter) => (
+                            <DropdownMenuItem
+                                key={filter.label}
+                                onSelect={() => selectCategory(filter.value)}
+                                className={category === filter.value ? "bg-indigo-50 font-bold text-indigo-600" : "font-medium text-slate-700"}
+                            >
+                                {filter.label}
+                            </DropdownMenuItem>
+                        ))}
+                    </DropdownMenuContent>
+                </DropdownMenu>
+                <Button
+                    type="submit"
+                    disabled={isPending}
+                    className="h-11 w-24 shrink-0 rounded-md bg-indigo-500 px-2 font-bold text-white hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                    <span className={isPending ? "text-[10px]" : "text-sm"}>
+                        {isPending ? "검색 중..." : "검색"}
+                    </span>
+                </Button>
+            </div>
         </form>
     );
 }

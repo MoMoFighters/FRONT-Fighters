@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { Pause, Play, Square } from "lucide-react";
 
 import {
@@ -21,7 +22,7 @@ interface StudyTimerProps {
     onEnd: () => void;
 }
 
-export default function StudyTimer({
+function StudyTimer({
     title,
     seconds,
     isRunning,
@@ -145,7 +146,7 @@ export default function StudyTimer({
                     type="button"
                     onClick={onEnd}
                     disabled={isEnded}
-                    className="flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-gradient-to-br from-rose-500 to-red-600 text-white shadow-lg transition-all duration-200 hover:scale-105 hover:shadow-xl active:scale-95 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none"
+                    className="flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-gradient-to-br from-rose-300 to-rose-400 text-white shadow-md transition-all duration-200 hover:scale-105 hover:shadow-lg active:scale-95 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none"
                     aria-label={endLabel}
                 >
                     <Square className="h-5 w-5" fill="currentColor" />
@@ -154,3 +155,5 @@ export default function StudyTimer({
         </div>
     );
 }
+
+export default memo(StudyTimer);

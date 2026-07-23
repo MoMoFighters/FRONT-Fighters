@@ -39,13 +39,13 @@ export default function LectureFilterBtn() {
 
             <DropdownMenuTrigger asChild>
 
-                <div>
+                <div className="w-full sm:w-auto">
                     <Button
                         variant="outline"
                         disabled={isPending}
-                        className="h-12 px-4 text-slate-700 border-2 rounded-xl border-slate-300 font-bold text-[16px] cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
+                        className="h-12 w-full px-4 text-slate-700 border-2 rounded-xl border-slate-300 font-bold text-[16px] cursor-pointer disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                     >
-                        <Filter className="w-5 h-5" />
+                        <Filter className="w-5 h-5 shrink-0" />
                         필터
                     </Button>
                 </div>

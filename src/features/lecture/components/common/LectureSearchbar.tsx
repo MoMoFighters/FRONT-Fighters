@@ -49,8 +49,8 @@ export default function LectureSearchbar({ status, keyword, category, filter, po
     };
 
     return (
-        <form onSubmit={handleSubmit} className="flex flex-1 items-center gap-3">
-            <div className="relative flex-1">
+        <form onSubmit={handleSubmit} className="flex w-full flex-1 items-center gap-3">
+            <div className="relative min-w-0 flex-1">
                 <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                 <input
                     type="text"
@@ -74,7 +74,7 @@ export default function LectureSearchbar({ status, keyword, category, filter, po
                 variant="outline"
                 type="submit"
                 disabled={isPending}
-                className="h-12 w-24 cursor-pointer rounded-xl border-2 border-slate-300 px-2 font-bold text-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
+                className="h-12 w-24 shrink-0 cursor-pointer rounded-xl border-2 border-slate-300 px-2 font-bold text-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
                 <Search className="h-6 w-6 shrink-0" />
                 <span className={isPending ? "text-[10px]" : "text-[16px]"}>
