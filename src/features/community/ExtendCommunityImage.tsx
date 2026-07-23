@@ -35,12 +35,16 @@ export default function ExtendCommunityImage({ imageUrl }: { imageUrl: string })
                     className="fixed inset-0 z-[999999] flex h-dvh w-dvw items-center justify-center bg-slate-950/70 p-6 backdrop-blur-sm"
                     onClick={() => setIsModal(false)}
                 >
-                    <img
-                        src={imageUrl}
-                        alt="확대 이미지"
-                        className="max-h-[calc(100dvh-48px)] max-w-[calc(100dvw-48px)] rounded-2xl object-contain shadow-2xl ring-1 ring-white/20"
-                        onClick={(event) => event.stopPropagation()}
-                    />
+                    <div className="relative h-[80vh] w-[80vw] max-h-[calc(100dvh-48px)] max-w-[calc(100dvw-48px)] rounded-2xl shadow-2xl ring-1 ring-white/20">
+                        <Image
+                            src={imageUrl}
+                            alt="확대 이미지"
+                            fill
+                            sizes="80vw"
+                            className="rounded-2xl object-contain"
+                            onClick={(event) => event.stopPropagation()}
+                        />
+                    </div>
                 </div>,
                 document.body
             )
