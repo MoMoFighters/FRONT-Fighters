@@ -60,7 +60,7 @@ export default function OneButtonModal({
                         {description}
                     </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogFooter className="grid-cols-1">
+                <AlertDialogFooter className="group-data-[size=sm]/alert-dialog-content:grid-cols-1">
                     <AlertDialogAction
                         variant="ghost"
                         className="w-full cursor-pointer bg-indigo-500 text-white hover:bg-indigo-600! hover:text-white!"

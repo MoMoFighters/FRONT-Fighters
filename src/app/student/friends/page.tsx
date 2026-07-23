@@ -18,6 +18,7 @@ import {
 
 import { getMyInfo, MomoUserInfoResponse } from "@/features/user/action";
 import { getNoticeNotificationListAction } from "@/features/user/components/notification/action";
+import type { ApiResponse } from "@/lib/api";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Image from "next/image";
@@ -51,6 +52,20 @@ export default async function StudentChatPage({
         redirect("/auth/login");
     }
 
+    // 실제로 렌더링되는 건 활성 탭 하나뿐이라, 다른 탭이 쓸 데이터까지 매번 다 받아올 필요는 없음.
+    // chatRoomData는 "친구" 탭의 내 프로필 드롭다운(myChatRoom)에서도 쓰이므로 friend/chat 둘 다 필요.
+    const needsFriendTabData = currentStatus === "friend";
+    const needsRequestTabData = currentStatus === "request";
+    const needsChatRoomData = currentStatus === "friend" || currentStatus === "chat";
+
+    const emptyListResponse = <T,>(): ApiResponse<T[]> => ({
+        timestamp: new Date().toISOString(),
+        status: 204,
+        code: "SKIPPED",
+        message: "",
+        data: [],
+    });
+
     const [
         myInfo,
         roomResponse,
@@ -66,11 +81,19 @@ export default async function StudentChatPage({
             Awaited<ReturnType<typeof getSentFriendRequestsService>>,
             Awaited<ReturnType<typeof getNoticeNotificationListAction>>,
         ] = await Promise.all([
-            getMyInfo(),
-            getChatRoomsService(accessToken),
-            getFriendsService(accessToken),
-            getReceivedFriendRequestsService(accessToken),
-            getSentFriendRequestsService(accessToken),
+            needsFriendTabData ? getMyInfo() : Promise.resolve({ timestamp: new Date().toISOString(), status: 204, code: "SKIPPED", message: "" } as MomoUserInfoResponse),
+            needsChatRoomData
+                ? getChatRoomsService(accessToken)
+                : Promise.resolve(emptyListResponse() as Awaited<ReturnType<typeof getChatRoomsService>>),
+            needsFriendTabData
+                ? getFriendsService(accessToken)
+                : Promise.resolve(emptyListResponse() as Awaited<ReturnType<typeof getFriendsService>>),
+            needsRequestTabData
+                ? getReceivedFriendRequestsService(accessToken)
+                : Promise.resolve(emptyListResponse() as Awaited<ReturnType<typeof getReceivedFriendRequestsService>>),
+            needsRequestTabData
+                ? getSentFriendRequestsService(accessToken)
+                : Promise.resolve(emptyListResponse() as Awaited<ReturnType<typeof getSentFriendRequestsService>>),
             getNoticeNotificationListAction(),
         ]);
 

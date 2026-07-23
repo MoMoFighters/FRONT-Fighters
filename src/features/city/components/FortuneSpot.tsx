@@ -30,7 +30,7 @@ export default function FortuneSpot() {
                                 운세
                             </p>
                             <p className="text-xs font-medium text-slate-500">
-                                5포인트를 사용하여 운세를 봅니다.
+                                5포인트를 사용해 오늘의 운세를 확인합니다. 포인트는 하루에 한 번만 차감됩니다.
                             </p>
                         </div>
                     </HoverCardContent>

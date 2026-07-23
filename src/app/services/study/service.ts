@@ -47,6 +47,7 @@ export const createGroupStudyService = async (
     const response = await fetchWithAuth("/api/v3/study/rooms", {
         method: "POST",
         body: JSON.stringify(body),
+        cache: "no-store",
     });
 
     if (!response.ok) {
@@ -65,6 +66,7 @@ export const updateGroupStudyTitleService = async (
     const response = await fetchWithAuth(`/api/v3/study/rooms/${roomId}`, {
         method: "PATCH",
         body: JSON.stringify(body),
+        cache: "no-store",
     });
 
     if (!response.ok) {
@@ -79,7 +81,9 @@ export const updateGroupStudyTitleService = async (
 export const getGroupStudyDetailService = async (
     roomId: number
 ): Promise<StudyApiResponse<GroupStudyDetail>> => {
-    const response = await fetchWithAuth(`/api/v3/study/rooms/${roomId}`);
+    const response = await fetchWithAuth(`/api/v3/study/rooms/${roomId}`, {
+        next: { revalidate: 60 },
+    });
 
     if (!response.ok) {
         const errorData = await response.json();
@@ -91,7 +95,9 @@ export const getGroupStudyDetailService = async (
 
 // 내가 속한 그룹방 목록 조회
 export const getMyGroupStudyListService = async (): Promise<StudyApiResponse<MyGroupStudyRoomListResult>> => {
-    const response = await fetchWithAuth("/api/v3/study/rooms/my");
+    const response = await fetchWithAuth("/api/v3/study/rooms/my", {
+        next: { revalidate: 60 },
+    });
 
     if (!response.ok) {
         const errorData = await response.json();
@@ -107,6 +113,7 @@ export const leaveGroupStudyService = async (
 ): Promise<StudyApiResponse<GroupStudyLeaveResult>> => {
     const response = await fetchWithAuth(`/api/v3/study/rooms/${roomId}/members/leave`, {
         method: "POST",
+        cache: "no-store",
     });
 
     if (!response.ok) {
@@ -124,6 +131,7 @@ export const kickGroupStudyMemberService = async (
 ): Promise<StudyApiResponse<GroupStudyKickResult>> => {
     const response = await fetchWithAuth(`/api/v3/study/rooms/${roomId}/members/${targetUserId}/kick`, {
         method: "POST",
+        cache: "no-store",
     });
 
     if (!response.ok) {
@@ -146,6 +154,7 @@ export const inviteStudyFriendService = async (
     const response = await fetchWithAuth(`/api/v3/study/rooms/${roomId}/members/invitations`, {
         method: "POST",
         body: JSON.stringify(body),
+        cache: "no-store",
     });
 
     if (!response.ok) {
@@ -163,6 +172,7 @@ export const cancelStudyInviteService = async (
 ): Promise<StudyApiResponse<StudyInvitationCancelResult>> => {
     const response = await fetchWithAuth(`/api/v3/study/rooms/${roomId}/members/invitations/${invitationId}`, {
         method: "DELETE",
+        cache: "no-store",
     });
 
     if (!response.ok) {
@@ -179,6 +189,7 @@ export const acceptStudyInviteService = async (
 ): Promise<StudyApiResponse<StudyInvitationAcceptResult>> => {
     const response = await fetchWithAuth(`/api/v3/study/rooms/${roomId}/members/invitations/accept`, {
         method: "POST",
+        cache: "no-store",
     });
 
     if (!response.ok) {
@@ -195,6 +206,7 @@ export const denyStudyInviteService = async (
 ): Promise<StudyApiResponse<StudyInvitationRejectResult>> => {
     const response = await fetchWithAuth(`/api/v3/study/rooms/${roomId}/members/invitations/reject`, {
         method: "POST",
+        cache: "no-store",
     });
 
     if (!response.ok) {
@@ -207,7 +219,9 @@ export const denyStudyInviteService = async (
 
 // 내가 받은 초대 목록 조회
 export const getMyStudyInviteListService = async (): Promise<StudyApiResponse<MyStudyInvitationListResult>> => {
-    const response = await fetchWithAuth("/api/v3/study/members/invitations");
+    const response = await fetchWithAuth("/api/v3/study/members/invitations", {
+        next: { revalidate: 60 },
+    });
 
     if (!response.ok) {
         const errorData = await response.json();
@@ -219,7 +233,9 @@ export const getMyStudyInviteListService = async (): Promise<StudyApiResponse<My
 
 // 내가 보낸 초대 목록 조회
 export const getSentStudyInviteListService = async (): Promise<StudyApiResponse<SentStudyInvitationListResult>> => {
-    const response = await fetchWithAuth("/api/v3/study/members/invitations/sent");
+    const response = await fetchWithAuth("/api/v3/study/members/invitations/sent", {
+        next: { revalidate: 60 },
+    });
 
     if (!response.ok) {
         const errorData = await response.json();
@@ -239,6 +255,7 @@ export const startGroupStudyTimerService = async (
 ): Promise<StudyApiResponse<GroupStudyTimerStartResult>> => {
     const response = await fetchWithAuth(`/api/v3/study/rooms/${roomId}/members/timer/start`, {
         method: "POST",
+        cache: "no-store",
     });
 
     if (!response.ok) {
@@ -255,6 +272,7 @@ export const pauseGroupStudyTimerService = async (
 ): Promise<StudyApiResponse<GroupStudyTimerPauseResult>> => {
     const response = await fetchWithAuth(`/api/v3/study/rooms/${roomId}/members/timer/pause`, {
         method: "POST",
+        cache: "no-store",
     });
 
     if (!response.ok) {
@@ -271,6 +289,7 @@ export const stopGroupStudyTimerService = async (
 ): Promise<StudyApiResponse<GroupStudyTimerEndResult>> => {
     const response = await fetchWithAuth(`/api/v3/study/rooms/${roomId}/members/timer/end`, {
         method: "POST",
+        cache: "no-store",
     });
 
     if (!response.ok) {
@@ -290,7 +309,9 @@ export const getGroupStudyLabListService = async (
     roomId: number,
     targetUserId: number
 ): Promise<StudyApiResponse<GroupStudyMemberLapsResult>> => {
-    const response = await fetchWithAuth(`/api/v3/study/rooms/${roomId}/members/timer/${targetUserId}/laps`);
+    const response = await fetchWithAuth(`/api/v3/study/rooms/${roomId}/members/timer/${targetUserId}/laps`, {
+        cache: "no-store",
+    });
 
     if (!response.ok) {
         const errorData = await response.json();
@@ -304,7 +325,9 @@ export const getGroupStudyLabListService = async (
 export const getGroupStudyDailyRankingService = async (
     roomId: number
 ): Promise<StudyApiResponse<StudyRankingResult>> => {
-    const response = await fetchWithAuth(`/api/v3/study/rooms/${roomId}/ranking/daily`);
+    const response = await fetchWithAuth(`/api/v3/study/rooms/${roomId}/ranking/daily`, {
+        next: { revalidate: 60 },
+    });
 
     if (!response.ok) {
         const errorData = await response.json();
@@ -318,7 +341,9 @@ export const getGroupStudyDailyRankingService = async (
 export const getGroupStudyMonthlyRankingService = async (
     roomId: number
 ): Promise<StudyApiResponse<StudyRankingResult>> => {
-    const response = await fetchWithAuth(`/api/v3/study/rooms/${roomId}/ranking/monthly`);
+    const response = await fetchWithAuth(`/api/v3/study/rooms/${roomId}/ranking/monthly`, {
+        next: { revalidate: 60 },
+    });
 
     if (!response.ok) {
         const errorData = await response.json();
@@ -336,6 +361,7 @@ export const getGroupStudyMonthlyRankingService = async (
 export const startSoloStudyTimerService = async (): Promise<StudyApiResponse<SoloStudyTimerStartResult>> => {
     const response = await fetchWithAuth("/api/v3/study/solo/start", {
         method: "POST",
+        cache: "no-store",
     });
 
     if (!response.ok) {
@@ -350,6 +376,7 @@ export const startSoloStudyTimerService = async (): Promise<StudyApiResponse<Sol
 export const pauseSoloStudyTimerService = async (): Promise<StudyApiResponse<SoloStudyTimerPauseResult>> => {
     const response = await fetchWithAuth("/api/v3/study/solo/pause", {
         method: "POST",
+        cache: "no-store",
     });
 
     if (!response.ok) {
@@ -364,6 +391,7 @@ export const pauseSoloStudyTimerService = async (): Promise<StudyApiResponse<Sol
 export const stopSoloStudyTimerService = async (): Promise<StudyApiResponse<SoloStudyTimerEndResult>> => {
     const response = await fetchWithAuth("/api/v3/study/solo/end", {
         method: "POST",
+        cache: "no-store",
     });
 
     if (!response.ok) {
@@ -380,7 +408,9 @@ export const stopSoloStudyTimerService = async (): Promise<StudyApiResponse<Solo
 
 // 개인 랩 목록 조회
 export const getSoloStudyLabListService = async (): Promise<StudyApiResponse<SoloStudyLapsResult>> => {
-    const response = await fetchWithAuth("/api/v3/study/solo/laps");
+    const response = await fetchWithAuth("/api/v3/study/solo/laps", {
+        cache: "no-store",
+    });
 
     if (!response.ok) {
         const errorData = await response.json();
@@ -392,7 +422,9 @@ export const getSoloStudyLabListService = async (): Promise<StudyApiResponse<Sol
 
 // 현재 진행 중인 솔로 세션 조회
 export const getCurrentSoloStudySessionService = async (): Promise<StudyApiResponse<SoloCurrentSessionResult | null>> => {
-    const response = await fetchWithAuth("/api/v3/study/solo/current");
+    const response = await fetchWithAuth("/api/v3/study/solo/current", {
+        cache: "no-store",
+    });
 
     if (!response.ok) {
         const errorData = await response.json();
@@ -413,7 +445,9 @@ export const getCurrentSoloStudySessionService = async (): Promise<StudyApiRespo
 export const getDailyStudyTimeService = async (
     date: string
 ): Promise<StudyApiResponse<DailyStudyTimeResult>> => {
-    const response = await fetchWithAuth(`/api/v3/study/records/daily?date=${encodeURIComponent(date)}`);
+    const response = await fetchWithAuth(`/api/v3/study/records/daily?date=${encodeURIComponent(date)}`, {
+        next: { revalidate: 300 },
+    });
 
     if (!response.ok) {
         const errorData = await response.json();
@@ -427,7 +461,9 @@ export const getDailyStudyTimeService = async (
 export const getMonthlyStudyTimeService = async (
     yearMonth: string
 ): Promise<StudyApiResponse<MonthlyStudyTimeResult>> => {
-    const response = await fetchWithAuth(`/api/v3/study/records/monthly?yearMonth=${encodeURIComponent(yearMonth)}`);
+    const response = await fetchWithAuth(`/api/v3/study/records/monthly?yearMonth=${encodeURIComponent(yearMonth)}`, {
+        next: { revalidate: 300 },
+    });
 
     if (!response.ok) {
         const errorData = await response.json();
@@ -457,7 +493,9 @@ export const getYearlyStudyTimeService = async (): Promise<StudyApiResponse<Year
 
 // 타이머 시작 가능 여부 조회
 export const getTimerAvailabilityService = async (): Promise<StudyApiResponse<TimerAvailabilityResult>> => {
-    const response = await fetchWithAuth("/api/v3/study/timer-availability");
+    const response = await fetchWithAuth("/api/v3/study/timer-availability", {
+        cache: "no-store",
+    });
 
     if (!response.ok) {
         const errorData = await response.json();

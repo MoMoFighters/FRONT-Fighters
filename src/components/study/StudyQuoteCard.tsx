@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { Quote } from "lucide-react";
 
 import { STUDY_PHRASES } from "@/features/study/phraseData";
@@ -22,7 +22,7 @@ const pickRandomPhrase = (exclude?: string): string => {
     return next;
 };
 
-export default function StudyQuoteCard() {
+function StudyQuoteCard() {
     // 서버/클라이언트 첫 렌더가 일치하도록 초기값은 고정하고, 마운트 이후에만 랜덤으로 교체한다.
     const [phrase, setPhrase] = useState(STUDY_PHRASES[0] ?? "");
     const [isVisible, setIsVisible] = useState(true);
@@ -67,3 +67,5 @@ export default function StudyQuoteCard() {
         </div>
     );
 }
+
+export default memo(StudyQuoteCard);

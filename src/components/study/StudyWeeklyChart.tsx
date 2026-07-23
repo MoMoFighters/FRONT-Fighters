@@ -1,3 +1,5 @@
+import { memo } from "react";
+
 import {
     HoverCard,
     HoverCardContent,
@@ -24,7 +26,7 @@ const parseLocalDate = (dateStr: string) => {
 
 const formatDateLabel = (date: Date) => `${date.getMonth() + 1}월 ${date.getDate()}일`;
 
-export default function StudyWeeklyChart({ records }: StudyWeeklyChartProps) {
+function StudyWeeklyChart({ records }: StudyWeeklyChartProps) {
     const maxSeconds = Math.max(...records.map((record) => record.totalSeconds), 1);
     const todayIndex = records.length - 1;
 
@@ -84,3 +86,5 @@ export default function StudyWeeklyChart({ records }: StudyWeeklyChartProps) {
         </div>
     );
 }
+
+export default memo(StudyWeeklyChart);

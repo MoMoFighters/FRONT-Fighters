@@ -1,8 +1,10 @@
+import { memo } from "react";
+
 interface StudyStreakBadgeProps {
     streakDays: number;
 }
 
-export default function StudyStreakBadge({ streakDays }: StudyStreakBadgeProps) {
+function StudyStreakBadge({ streakDays }: StudyStreakBadgeProps) {
     const hasStreak = streakDays > 0;
 
     return (
@@ -21,3 +23,5 @@ export default function StudyStreakBadge({ streakDays }: StudyStreakBadgeProps) 
         </div>
     );
 }
+
+export default memo(StudyStreakBadge);

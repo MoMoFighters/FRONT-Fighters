@@ -1,12 +1,13 @@
+import { Suspense } from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import {
-    getGroupStudyDailyRankingService,
     getGroupStudyDetailService,
-    getGroupStudyMonthlyRankingService,
     getSentStudyInviteListService,
 } from "@/app/services/study/service";
+import GroupStudyRankingPanel from "@/components/study/GroupStudyRankingPanel";
+import GroupStudyRankingSkeleton from "@/components/study/GroupStudyRankingSkeleton";
 import GroupStudyRoomView from "@/components/study/GroupStudyRoomView";
 import { getMyInfo } from "@/features/user/action";
 
@@ -25,11 +26,11 @@ export default async function GroupStudyRoomPage({
         redirect("/auth/login");
     }
 
-    const [myInfoResponse, detailResponse, dailyRankingResponse, monthlyRankingResponse, sentInvitesResponse] = await Promise.all([
+    // 랭킹은 좌석/타이머 같은 핵심 화면과 무관한 보조 패널이라
+    // 여기서 막아둘 필요 없이 Suspense로 따로 스트리밍한다 (아래 rankingPanel).
+    const [myInfoResponse, detailResponse, sentInvitesResponse] = await Promise.all([
         getMyInfo(),
         getGroupStudyDetailService(numericRoomId),
-        getGroupStudyDailyRankingService(numericRoomId),
-        getGroupStudyMonthlyRankingService(numericRoomId),
         getSentStudyInviteListService(),
     ]);
 
@@ -40,8 +41,6 @@ export default async function GroupStudyRoomPage({
     }
 
     const detail = detailResponse.data;
-    const dailyRanking = dailyRankingResponse.data?.ranking ?? [];
-    const monthlyRanking = monthlyRankingResponse.data?.ranking ?? [];
     const sentInvites = (sentInvitesResponse.data?.invitations ?? []).filter(
         (invite) => invite.roomId === numericRoomId
     );
@@ -52,8 +51,11 @@ export default async function GroupStudyRoomPage({
             accessToken={accessToken}
             initialDetail={detail}
             myNickname={myNickname}
-            dailyRanking={dailyRanking}
-            monthlyRanking={monthlyRanking}
+            rankingPanel={
+                <Suspense fallback={<GroupStudyRankingSkeleton />}>
+                    <GroupStudyRankingPanel roomId={numericRoomId} />
+                </Suspense>
+            }
             initialSentInvites={sentInvites}
         />
     );

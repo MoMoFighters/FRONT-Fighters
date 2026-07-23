@@ -1,11 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { toast } from "sonner";
 
-import StudyRank from "@/components/study/StudyRank";
 import StudyUserItem from "@/components/study/StudyUserItem";
 import StudyTimer from "@/features/study/components/StudyTimer";
 import StudentPageHeader from "@/features/student/components/StudentPageHeader";
@@ -21,7 +20,6 @@ import { buildRoomSeats, formatStudyTime } from "@/features/study/utils";
 import type {
     GroupStudyDetail,
     SentStudyInvitationItem,
-    StudyRankingEntry,
     StudyRoomMemberKickedData,
     StudyRoomSeatUser,
     StudyRoomSocketEvent,
@@ -39,8 +37,7 @@ interface GroupStudyRoomViewProps {
     accessToken: string;
     initialDetail: GroupStudyDetail;
     myNickname: string | null;
-    dailyRanking: StudyRankingEntry[];
-    monthlyRanking: StudyRankingEntry[];
+    rankingPanel: ReactNode;
     initialSentInvites: SentStudyInvitationItem[];
 }
 
@@ -49,8 +46,7 @@ export default function GroupStudyRoomView({
     accessToken,
     initialDetail,
     myNickname,
-    dailyRanking,
-    monthlyRanking,
+    rankingPanel,
     initialSentInvites,
 }: GroupStudyRoomViewProps) {
     const router = useRouter();
@@ -139,7 +135,9 @@ export default function GroupStudyRoomView({
         void refreshTimerAvailability();
     }, [refreshTimerAvailability]);
 
-    const handleInviteSent = (invite: {
+    // 좌석 그리드에 내려주는 콜백들은 useCallback으로 묶어야 StudyUserItem(memo)이
+    // 타이머 tick(초당 리렌더)마다 새 함수 아이덴티티 때문에 같이 리렌더되는 걸 막을 수 있다.
+    const handleInviteSent = useCallback((invite: {
         invitationId: number;
         inviteeId: number;
         inviteeNickname: string;
@@ -155,11 +153,11 @@ export default function GroupStudyRoomView({
                 invitedAt: new Date().toISOString(),
             },
         ]);
-    };
+    }, [roomId, detail.title]);
 
-    const handleInviteCanceled = (invitationId: number) => {
+    const handleInviteCanceled = useCallback((invitationId: number) => {
         setPendingInvites((prev) => prev.filter((invite) => invite.invitationId !== invitationId));
-    };
+    }, []);
 
     // 실시간 이벤트의 data는 대부분 id값만 담고 있어(닉네임 등 상세정보 없음),
     // 멤버 입장/퇴장/방장위임/타이머 상태 변화는 방 상세를 다시 조회해서 갱신한다.
@@ -230,7 +228,7 @@ export default function GroupStudyRoomView({
         };
     }, [roomId, accessToken, handleRoomEvent]);
 
-    const handleTogglePause = async () => {
+    const handleTogglePause = useCallback(async () => {
         if (isRunning) {
             const response = await pauseGroupStudyTimer(roomId);
 
@@ -254,9 +252,9 @@ export default function GroupStudyRoomView({
 
         setSeconds(response.data.accumulatedSeconds);
         setIsRunning(true);
-    };
+    }, [isRunning, roomId, refreshTimerAvailability]);
 
-    const handleEnd = async () => {
+    const handleEnd = useCallback(async () => {
         const response = await stopGroupStudyTimer(roomId);
 
         if (response.status >= 400) {
@@ -268,7 +266,7 @@ export default function GroupStudyRoomView({
         setIsRunning(false);
         setIsEnded(true);
         void refreshTimerAvailability();
-    };
+    }, [roomId, refreshTimerAvailability]);
 
     const handleLeaveRoom = async () => {
         const response = await leaveGroupStudy(roomId);
@@ -283,12 +281,12 @@ export default function GroupStudyRoomView({
         router.refresh();
     };
 
-    const handleKickMember = (kickedUser: StudyRoomSeatUser) => {
+    const handleKickMember = useCallback((kickedUser: StudyRoomSeatUser) => {
         setDetail((prev) => ({
             ...prev,
             members: prev.members.filter((member) => member.userId !== kickedUser.userId),
         }));
-    };
+    }, []);
 
     return (
         <main className="min-h-[calc(100vh-137px)] bg-white px-4 py-6 sm:px-8 sm:py-8">
@@ -313,10 +311,7 @@ export default function GroupStudyRoomView({
             </div>
 
             <div className="mx-auto mt-8 flex w-full max-w-360 flex-col items-stretch gap-8 lg:flex-row lg:items-start lg:justify-center">
-                <StudyRank
-                    dailyRanking={dailyRanking}
-                    monthlyRanking={monthlyRanking}
-                />
+                {rankingPanel}
 
                 <section className="flex w-full flex-col lg:max-w-125">
                     <div className="relative rounded-2xl border border-slate-300 bg-white py-4 text-center shadow-sm">
@@ -388,8 +383,8 @@ export default function GroupStudyRoomView({
                     isRunning={isRunning}
                     isEnded={isEnded}
                     canStart={canStartTimer}
-                    onTogglePause={() => void handleTogglePause()}
-                    onEnd={() => void handleEnd()}
+                    onTogglePause={handleTogglePause}
+                    onEnd={handleEnd}
                 />
             </div>
         </main>
