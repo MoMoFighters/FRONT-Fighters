@@ -5,8 +5,9 @@ import {
     getMyBuildings,
     getMyStreak,
     getMyYearlyStreak,
+    getFortune,
 } from "@/app/services/city/service";
-import { Building, StreakResponse } from "./type";
+import { Building, Fortune, StreakResponse } from "./type";
 
 export type StreakActionResult = {
     success: boolean;
@@ -89,6 +90,28 @@ export const getFriendStreakAction = async (
 ): Promise<StreakActionResult> => {
     try {
         const data = await getFriendStreak(userId);
+
+        return {
+            success: true,
+            data,
+        };
+    } catch (error) {
+        return {
+            success: false,
+            message: getCityActionErrorMessage(error),
+        };
+    }
+};
+
+export type FortuneActionResult = {
+    success: boolean;
+    message?: string;
+    data?: Fortune;
+};
+
+export const getFortuneAction = async (): Promise<FortuneActionResult> => {
+    try {
+        const data = await getFortune();
 
         return {
             success: true,

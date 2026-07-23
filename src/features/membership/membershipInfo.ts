@@ -7,9 +7,9 @@ export const MEMBERSHIP_PLANS: MembershipPlan[] = [
         price: 0,
         description: "모모시티를 가볍게 둘러보기",
         features: [
-            "커뮤니티 게시글 조회",
-            "친구와 1:1 채팅",
-            "단체 채팅",
+            "커뮤니티 조회 및 글 작성",
+            "개인 캘린더 활용",
+            "친구와의 채팅",
         ],
     },
     {
@@ -19,10 +19,11 @@ export const MEMBERSHIP_PLANS: MembershipPlan[] = [
         originalPrice: 34900,
         description: "강의와 커뮤니티를 폭넓게 이용",
         features: [
-            "BASIC 혜택 모두 포함",
+            "베이직 혜택 모두 포함",
+            "도시 성장 기능",
             "강의 수강",
-            "커뮤니티 게시글 및 댓글 작성",
-            "챗봇 기능 이용",
+            "강의평 작성",
+            "잔디 기능",
         ],
     },
     {
@@ -33,7 +34,8 @@ export const MEMBERSHIP_PLANS: MembershipPlan[] = [
         description: "챗봇을 마음껏, 제한 없이",
         features: [
             "PLUS 혜택 모두 포함",
-            "챗봇 무제한 이용",
+            "AI 챗봇 MoAi 이용",
+            "AI 강의 요약 및 설명 기능",
         ],
     },
 ];

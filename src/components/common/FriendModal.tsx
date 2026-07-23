@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createChatRoomAction } from "@/features/chat/action";
+import { toast } from "sonner";
 
 // 임시 가상 친구 데이터 (원래는 백엔드에서 받아와야 합니다)
 interface FriendInfo {
@@ -55,7 +56,7 @@ export default function FriendModal({ isOpen, onClose }: FriendModalProps) {
             }
         } else if (state.status >= 400 && state.message) {
             // 명세서에 명시된 에러 메시지(예: "자기 자신과는 대화창을 개설할 수 없습니다.") 노출
-            alert(state.message);
+            toast.error(state.message);
         }
     }, [state, router, onClose]);
 

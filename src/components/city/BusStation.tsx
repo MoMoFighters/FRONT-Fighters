@@ -15,6 +15,7 @@ import { UserRole } from '@/features/user/type';
 interface BusStationProps {
     mode: 'MY' | "FRIEND";
     currentOwnerId?: number;
+    variant?: 'desktop' | 'mobile';
 }
 
 interface CityFriend {
@@ -24,7 +25,7 @@ interface CityFriend {
     profileImageUrl?: string;
 }
 
-export default function BusStation({ mode, currentOwnerId }: BusStationProps) {
+export default function BusStation({ mode, currentOwnerId, variant = 'desktop' }: BusStationProps) {
 
     const [isModal, setIsModal] = useState(false);
     const [searchedValue, setSearchedValue] = useState("");
@@ -34,6 +35,10 @@ export default function BusStation({ mode, currentOwnerId }: BusStationProps) {
     const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
+        if (!isModal) {
+            return;
+        }
+
         let ignore = false;
 
         const fetchFriends = async () => {
@@ -61,7 +66,7 @@ export default function BusStation({ mode, currentOwnerId }: BusStationProps) {
         return () => {
             ignore = true;
         };
-    }, []);
+    }, [isModal]);
 
     const filteredFriends = useMemo(() => {
         const keyword = submittedKeyword.trim().toLowerCase();
@@ -82,40 +87,65 @@ export default function BusStation({ mode, currentOwnerId }: BusStationProps) {
 
     return (
         <>
-            <HoverCard
-                openDelay={50}
-                closeDelay={50}
-            >
-                <HoverCardTrigger asChild>
-                    <button
-                        type="button"
-                        onClick={() => setIsModal(true)}
-                        className="absolute left-[22.5%] top-[18.5%] z-10 aspect-square w-[9.375%] cursor-pointer border-0 bg-transparent p-0"
-                        style={{
-                            transform: "rotate(-8deg) skewX(-5deg) scaleY(0.92)",
-                            transformOrigin: "center",
-                        }}
-                    >
-                        <BusStationVisual />
-                    </button>
-                </HoverCardTrigger>
-                <HoverCardContent
-                    side="bottom"
-                    align="center"
-                    sideOffset={8}
+            {variant === 'mobile' ? (
+                <button
+                    type="button"
+                    onClick={() => setIsModal(true)}
+                    className="block w-full cursor-pointer border-0 bg-transparent p-0 text-left"
                 >
-                    <div className="space-y-1 -top-20 z-40">
-                        <p className="text-sm font-bold text-slate-900">
-                            버스정류장
+                    <div className="rounded-2xl border border-slate-200 bg-white p-4">
+                        <p className="font-black text-slate-900">
+                            친구 도시로 이동하기
                         </p>
-                        <p className="text-xs font-medium text-slate-500">
+                        <p className="mt-1 text-xs font-medium text-slate-500">
                             {mode === 'MY'
                                 ? "친구의 도시로 이동해보세요"
                                 : "다른 친구의 도시로 이동하거나 내 도시로 돌아가보세요"}
                         </p>
                     </div>
-                </HoverCardContent>
-            </HoverCard>
+                </button>
+            ) : (
+                <div className="absolute left-[22.5%] top-[18.5%] z-10 aspect-square w-[9.375%]">
+                    <HoverCard
+                        openDelay={50}
+                        closeDelay={50}
+                    >
+                        <HoverCardTrigger asChild>
+                            <button
+                                type="button"
+                                onClick={() => setIsModal(true)}
+                                className="relative block h-full w-full cursor-pointer border-0 bg-transparent p-0"
+                                style={{
+                                    transform: "rotate(-8deg) skewX(-5deg) scaleY(0.92)",
+                                    transformOrigin: "center",
+                                }}
+                            >
+                                <BusStationVisual />
+                            </button>
+                        </HoverCardTrigger>
+                        <HoverCardContent
+                            side="bottom"
+                            align="center"
+                            sideOffset={8}
+                        >
+                            <div className="space-y-1 -top-20 z-40">
+                                <p className="text-sm font-bold text-slate-900">
+                                    버스정류장
+                                </p>
+                                <p className="text-xs font-medium text-slate-500">
+                                    {mode === 'MY'
+                                        ? "친구의 도시로 이동해보세요"
+                                        : "다른 친구의 도시로 이동하거나 내 도시로 돌아가보세요"}
+                                </p>
+                            </div>
+                        </HoverCardContent>
+                    </HoverCard>
+
+                    <span className="pointer-events-none absolute bottom-[15%] left-1/2 z-10 -translate-x-1/2 translate-y-1/2 whitespace-nowrap rounded-[0.3cqw] bg-white px-[0.4cqw] py-[0.08cqw] text-[0.75cqw] font-bold text-slate-700 shadow-sm">
+                        버스정류장
+                    </span>
+                </div>
+            )}
 
 
             {isModal && (
@@ -124,7 +154,7 @@ export default function BusStation({ mode, currentOwnerId }: BusStationProps) {
                     onClick={() => setIsModal(false)}
                 >
                     <div
-                        className="relative flex max-h-[78vh] w-[60vw] flex-col overflow-hidden rounded-3xl border border-white/80 bg-white/95 p-6 shadow-2xl shadow-slate-950/25"
+                        className="relative flex max-h-[78vh] w-[92vw] flex-col overflow-hidden rounded-3xl border border-white/80 bg-white/95 p-6 shadow-2xl shadow-slate-950/25 md:w-[60vw]"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <button

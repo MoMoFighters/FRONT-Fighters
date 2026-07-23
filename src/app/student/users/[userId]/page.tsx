@@ -1,12 +1,28 @@
+import { Suspense } from "react";
 import Phone from "@/components/city/Phone";
 import MonthlyStreakGarden from "@/components/city/MonthlyStreakGarden";
 import BusStation from "@/components/city/BusStation";
 import PostBoard from "@/components/city/PostBoard";
 import CityCanvas from "@/components/city/CityCanvas";
 import BuildingItem from "@/components/city/BuildingItem";
+import MobileBuildingItem from "@/components/city/MobileBuildingItem";
+import FloatingGrassButton from "@/components/city/FloatingGrassButton";
 import { cookies } from "next/headers";
 import { getFriendBuildings, getFriendStreak } from "@/app/services/city/service";
 import { getGuestbooksAction } from "@/features/guestbook/action";
+import { buildActivityGrassMap } from "@/features/city/utils";
+import type { Building } from "@/features/city/type";
+import type { GrassLevel } from "@/components/mypage/GrassHeatmap";
+
+const MOBILE_GRASS_COLOR_SCALE: Record<GrassLevel, string> = {
+    0: "bg-slate-100",
+    1: "bg-indigo-200",
+    2: "bg-indigo-400",
+    3: "bg-indigo-600",
+    4: "bg-indigo-800",
+};
+
+const BUILDING_POSITIONS = [1, 2, 3, 4, 5] as const;
 
 const buildingSlots = [
     {
@@ -50,27 +66,87 @@ export default async function StudentMainPage({ params }: {
     const cookieStore = await cookies();
     const accessToken = cookieStore.get("accessToken")?.value;
 
-    const [monthlyStreak, buildings, guestbookResponse] = await Promise.all([
-        getFriendStreak(userId),
-        getFriendBuildings(userId),
-        getGuestbooksAction(Number(userId)),
-    ]);
+    // PostBoard가 FRIEND 모드에서는 모달 오픈 시 자체 재조회를 하지 않으므로 그대로 blocking 유지
+    const guestbookResponse = await getGuestbooksAction(Number(userId));
     const guestbooks = guestbookResponse.data ?? [];
 
     return (
-        <CityCanvas>
-            <BusStation mode='FRIEND' currentOwnerId={Number(userId)} />
-            <PostBoard
-                mode="FRIEND"
-                ownerId={Number(userId)}
-                initialGuestbooks={guestbooks}
-            />
-            <Phone accessToken={accessToken} />
-            <MonthlyStreakGarden
-                initialStreak={monthlyStreak}
-                userId={userId}
-            />
+        <>
+            {/* 태블릿+데스크탑(md 이상): 기존 도시 배경 그대로 */}
+            <div className="hidden h-full md:block">
+                <CityCanvas>
+                    <BusStation mode='FRIEND' currentOwnerId={Number(userId)} />
+                    <PostBoard
+                        mode="FRIEND"
+                        ownerId={Number(userId)}
+                        initialGuestbooks={guestbooks}
+                    />
+                    <Phone accessToken={accessToken} />
 
+                    <Suspense fallback={null}>
+                        <StreakSection userId={userId} />
+                    </Suspense>
+
+                    {/* 포인트 상점은 fetch와 무관해서 즉시 렌더링 */}
+                    <div
+                        className="absolute"
+                        style={commonBuildingSlots.point}
+                    >
+                        <BuildingItem common="point" imageSizes="13vw" interactive={false} />
+                    </div>
+
+                    <Suspense fallback={null}>
+                        <BuildingsSection userId={userId} />
+                    </Suspense>
+                </CityCanvas>
+            </div>
+
+            {/* 모바일(md 미만): 도시 배경 대신 리스트형 레이아웃 */}
+            <div className="block md:hidden">
+                <div className="min-h-screen bg-white px-4 py-6 pb-24">
+                    <Suspense fallback={null}>
+                        <MobileFriendTitleSection userId={userId} />
+                    </Suspense>
+
+                    <Suspense fallback={null}>
+                        <MobileBuildingsSection userId={userId} />
+                    </Suspense>
+
+                    <div className="mt-4 space-y-3">
+                        <BusStation mode="FRIEND" currentOwnerId={Number(userId)} variant="mobile" />
+                        <PostBoard
+                            mode="FRIEND"
+                            ownerId={Number(userId)}
+                            initialGuestbooks={guestbooks}
+                            variant="mobile"
+                        />
+                    </div>
+                </div>
+
+                <Suspense fallback={null}>
+                    <MobileGrassButtonSection userId={userId} />
+                </Suspense>
+            </div>
+        </>
+    );
+}
+
+async function StreakSection({ userId }: { userId: string }) {
+    const monthlyStreak = await getFriendStreak(userId);
+
+    return (
+        <MonthlyStreakGarden
+            initialStreak={monthlyStreak}
+            userId={userId}
+        />
+    );
+}
+
+async function BuildingsSection({ userId }: { userId: string }) {
+    const { nickname, buildings } = await getFriendBuildings(userId);
+
+    return (
+        <>
             {/* 친구 도시의 경우 각 아이템들은 그저 볼 수 있는 고정 이미지로 */}
             {buildingSlots.map((slot) => {
                 const building = buildings.find((building) => building.position === slot.position);
@@ -95,20 +171,72 @@ export default async function StudentMainPage({ params }: {
                 );
             })}
 
-            {/* 포인트 상점 고정 자리 */}
-            <div
-                className="absolute"
-                style={commonBuildingSlots.point}
-            >
-                <BuildingItem common="point" imageSizes="13vw" interactive={false} />
-            </div>
             {/* 집 고정 자리 (친구 도시에서는 그룹 스터디로만 이동) */}
             <div
                 className="absolute"
                 style={commonBuildingSlots.mypage}
             >
-                <BuildingItem common="mypage" imageSizes="14vw" mode="FRIEND" />
+                <BuildingItem
+                    common="mypage"
+                    imageSizes="14vw"
+                    mode="FRIEND"
+                    friendNickname={nickname}
+                />
             </div>
-        </CityCanvas>
+        </>
+    );
+}
+
+async function MobileFriendTitleSection({ userId }: { userId: string }) {
+    const { nickname } = await getFriendBuildings(userId);
+
+    return (
+        <p className="mb-4 text-sm font-black text-slate-700">
+            {nickname}님이 보유한 건물
+        </p>
+    );
+}
+
+async function MobileBuildingsSection({ userId }: { userId: string }) {
+    const { buildings } = await getFriendBuildings(userId);
+
+    const ownedBuildings = BUILDING_POSITIONS
+        .map((position) => buildings.find((building) => building.position === position))
+        .filter((building): building is Building => Boolean(building));
+
+    if (ownedBuildings.length === 0) {
+        return (
+            <p className="rounded-2xl border border-dashed border-slate-200 bg-white p-6 text-center text-sm font-medium text-slate-400">
+                아직 지어진 건물이 없어요.
+            </p>
+        );
+    }
+
+    return (
+        <div className="grid grid-cols-1 gap-3">
+            {ownedBuildings.map((building) => (
+                <MobileBuildingItem
+                    key={building.position}
+                    category={building.category}
+                    level={building.level}
+                    buildingUrl={building.buildingUrl}
+                    interactive={false}
+                />
+            ))}
+        </div>
+    );
+}
+
+async function MobileGrassButtonSection({ userId }: { userId: string }) {
+    const monthlyStreak = await getFriendStreak(userId);
+    const levelByDate = buildActivityGrassMap(monthlyStreak.streaks);
+
+    return (
+        <FloatingGrassButton
+            title="이 친구의 이번 달 잔디"
+            levelByDate={levelByDate}
+            colorScale={MOBILE_GRASS_COLOR_SCALE}
+            tooltipLabel="활동 레벨"
+        />
     );
 }

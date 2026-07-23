@@ -7,6 +7,11 @@ export interface Building {
     buildingUrl: string;
 }
 
+export interface FriendBuildingsResponse {
+    nickname: string;
+    buildings: Building[];
+}
+
 export interface Streak {
     streakDate: string;
     level: string;
@@ -14,4 +19,13 @@ export interface Streak {
 
 export interface StreakResponse {
     streaks: Streak[];
+}
+
+export type FortuneTone = "GOOD" | "NEUTRAL" | "BAD";
+
+export interface Fortune {
+    fortuneId: number;
+    content: string;
+    tone: FortuneTone;
+    drawnDate: string;
 }

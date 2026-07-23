@@ -5,9 +5,11 @@ import type { CommentInputBoxProps } from "./PostDetailSide";
 
 export default function CommentInputBox({
     parentId,
+    role,
     onSubmitComment,
 }: CommentInputBoxProps) {
     const [content, setContent] = useState("");
+    const isGuest = role === "GUEST";
 
     const submitComment = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -32,15 +34,22 @@ export default function CommentInputBox({
         >
             <textarea
                 style={{ resize: "none" }}
-                className="min-h-9 flex-1 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-slate-300 focus:bg-white"
-                placeholder={parentId ? "답글을 입력하세요." : "댓글을 입력하세요."}
+                disabled={isGuest}
+                className="min-h-9 flex-1 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-slate-300 focus:bg-white disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
+                placeholder={
+                    isGuest
+                        ? "로그인 후 이용해주세요"
+                        : parentId
+                            ? "답글을 입력하세요."
+                            : "댓글을 입력하세요."
+                }
                 value={content}
                 onChange={(event) => setContent(event.target.value)}
             />
             <button
                 type="submit"
-                disabled={content.trim() === ""}
-                className={`rounded-md px-3 text-xs font-black text-white transition ${content.trim()
+                disabled={isGuest || content.trim() === ""}
+                className={`rounded-md px-3 text-xs font-black text-white transition ${!isGuest && content.trim()
                     ? "cursor-pointer bg-slate-700 hover:bg-slate-800"
                     : "cursor-not-allowed bg-slate-300"
                     }`}

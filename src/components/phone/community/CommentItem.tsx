@@ -106,6 +106,16 @@ function CommentItem({
                                     >
                                         <Trash2 className="h-3.5 w-3.5" />
                                     </button>
+                                ) : role === "GUEST" ? (
+                                    <button
+                                        type="button"
+                                        disabled
+                                        className="flex h-7 w-8 cursor-not-allowed items-center justify-center text-slate-200"
+                                        aria-label="로그인 후 이용해주세요"
+                                        title="로그인 후 이용해주세요"
+                                    >
+                                        ⋮
+                                    </button>
                                 ) : !isMine ? (
                                     <CreateReportBtn
                                         triggerLabel="⋮"
@@ -149,6 +159,7 @@ function CommentItem({
                                 <CommentInputBox
                                     postId={postId}
                                     parentId={commentId}
+                                    role={role}
                                     onSubmitComment={
                                         onSubmitReply
                                             ? (replyContent) => onSubmitReply(commentId, replyContent)

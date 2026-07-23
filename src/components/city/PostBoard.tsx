@@ -17,11 +17,13 @@ import {
     CreateGuestbookResponse,
     GuestbookListItem,
 } from "@/features/guestbook/type";
+import { toast } from "sonner";
 
 interface PostBoardProps {
     mode: "MY" | "FRIEND";
     ownerId?: number;
     initialGuestbooks?: GuestbookListItem[];
+    variant?: "desktop" | "mobile";
 }
 
 type PostBoardMode = "guestbook" | "notice";
@@ -80,7 +82,7 @@ const toCreatedGuestbookDetail = (
     createdAt: guestbook.createdAt,
 });
 
-export default function PostBoard({ mode, ownerId, initialGuestbooks = [] }: PostBoardProps) {
+export default function PostBoard({ mode, ownerId, initialGuestbooks = [], variant = "desktop" }: PostBoardProps) {
     const [isModal, setIsModal] = useState(false);
     const [nav, setNav] = useState<PostBoardMode>("guestbook");
     const [panelView, setPanelView] = useState<PanelView>("list");
@@ -122,7 +124,7 @@ export default function PostBoard({ mode, ownerId, initialGuestbooks = [] }: Pos
             const response = await getGuestbooksAction();
 
             if (response.status >= 400) {
-                alert(response.message);
+                toast.error(response.message);
                 setGuestbooks([]);
                 return;
             }
@@ -219,40 +221,65 @@ export default function PostBoard({ mode, ownerId, initialGuestbooks = [] }: Pos
 
     return (
         <>
-            <HoverCard openDelay={50} closeDelay={50}>
-                <HoverCardTrigger asChild>
-                    <div
-                        className="absolute bottom-[11%] left-[44%] z-10 aspect-square w-[7%] cursor-pointer"
-                        style={{
-                            transform: "rotate(-17deg) skewX(-15deg) scaleY(0.92)",
-                            transformOrigin: "center",
-                        }}
-                        onClick={() => setIsModal(true)}
-                    >
-                        <div className="relative h-full w-full transition-transform duration-200 hover:scale-110">
-                            <Image
-                                src={postBoard}
-                                alt="게시판"
-                                fill
-                                quality={80}
-                                sizes="7vw"
-                            />
-                        </div>
-                    </div>
-                </HoverCardTrigger>
-                <HoverCardContent side="top" align="center" sideOffset={8}>
-                    <div className="space-y-1 -top-20">
-                        <p className="text-sm font-bold text-slate-900">
-                            게시판
+            {variant === "mobile" ? (
+                <button
+                    type="button"
+                    onClick={() => setIsModal(true)}
+                    className="block w-full cursor-pointer border-0 bg-transparent p-0 text-left"
+                >
+                    <div className="rounded-2xl border border-slate-200 bg-white p-4">
+                        <p className="font-black text-slate-900">
+                            {mode === "MY" ? "방명록/공지사항" : "방명록"}
                         </p>
-                        <p className="text-xs font-medium text-slate-500">
+                        <p className="mt-1 text-xs font-medium text-slate-500">
                             {mode === "MY"
                                 ? "방명록과 공지사항을 확인해보세요."
                                 : "친구에게 방명록을 남겨보세요."}
                         </p>
                     </div>
-                </HoverCardContent>
-            </HoverCard>
+                </button>
+            ) : (
+                <div className="absolute bottom-[11%] left-[44%] z-10 aspect-square w-[7%]">
+                    <HoverCard openDelay={50} closeDelay={50}>
+                        <HoverCardTrigger asChild>
+                            <div
+                                className="h-full w-full cursor-pointer"
+                                style={{
+                                    transform: "rotate(-17deg) skewX(-15deg) scaleY(0.92)",
+                                    transformOrigin: "center",
+                                }}
+                                onClick={() => setIsModal(true)}
+                            >
+                                <div className="relative h-full w-full transition-transform duration-200 hover:scale-110">
+                                    <Image
+                                        src={postBoard}
+                                        alt="게시판"
+                                        fill
+                                        quality={80}
+                                        sizes="7vw"
+                                    />
+                                </div>
+                            </div>
+                        </HoverCardTrigger>
+                        <HoverCardContent side="top" align="center" sideOffset={8}>
+                            <div className="space-y-1 -top-20">
+                                <p className="text-sm font-bold text-slate-900">
+                                    게시판
+                                </p>
+                                <p className="text-xs font-medium text-slate-500">
+                                    {mode === "MY"
+                                        ? "방명록과 공지사항을 확인해보세요."
+                                        : "친구에게 방명록을 남겨보세요."}
+                                </p>
+                            </div>
+                        </HoverCardContent>
+                    </HoverCard>
+
+                    <span className="pointer-events-none absolute bottom-0 left-1/2 z-10 -translate-x-1/2 translate-y-1/2 whitespace-nowrap rounded-[0.3cqw] bg-white px-[0.4cqw] py-[0.08cqw] text-[0.75cqw] font-bold text-slate-700 shadow-sm">
+                        게시판
+                    </span>
+                </div>
+            )}
 
             {isModal && (
                 <div
@@ -260,7 +287,7 @@ export default function PostBoard({ mode, ownerId, initialGuestbooks = [] }: Pos
                     onClick={handleCloseModal}
                 >
                     <div
-                        className="relative flex h-[80vh] w-[60vw] flex-col overflow-hidden rounded-3xl border border-white/80 bg-white/95 p-6 shadow-2xl shadow-slate-950/25"
+                        className="relative flex h-[80vh] w-[92vw] flex-col overflow-hidden rounded-3xl border border-white/80 bg-white/95 p-6 shadow-2xl shadow-slate-950/25 md:w-[60vw]"
                         onClick={(event) => event.stopPropagation()}
                     >
                         <button
@@ -274,11 +301,13 @@ export default function PostBoard({ mode, ownerId, initialGuestbooks = [] }: Pos
 
                         <div className="mb-1 pr-10">
                             <h2 className="text-2xl font-black text-slate-900">
-                                게시판
+                                {mode === "MY" ? "게시판" : "방명록"}
                             </h2>
 
                             <p className="mt-1 text-sm font-medium text-slate-400">
-                                친구가 남긴 방명록과 서비스 공지사항을 확인해보세요.
+                                {mode === "MY"
+                                    ? "친구가 남긴 방명록과 서비스 공지사항을 확인해보세요."
+                                    : "친구에게 방명록을 남겨보세요."}
                             </p>
                         </div>
 

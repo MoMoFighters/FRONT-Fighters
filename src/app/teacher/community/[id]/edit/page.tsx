@@ -26,12 +26,14 @@ export default async function CommunityPostEditPage({
     }
 
     return (
-        <div>
-            <CommunityPostForm
-                mode="EDIT"
-                data={response.data}
-                role="TEACHER"
-            />
+        <div className="flex min-h-[calc(100vh-137px)] flex-col bg-white">
+            <div className="mx-auto flex w-full max-w-360 flex-col px-4 py-8 md:px-12 md:py-12">
+                <CommunityPostForm
+                    mode="EDIT"
+                    data={response.data}
+                    role="TEACHER"
+                />
+            </div>
         </div>
     );
 }

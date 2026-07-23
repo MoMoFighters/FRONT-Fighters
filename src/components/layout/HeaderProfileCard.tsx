@@ -126,7 +126,7 @@ export default function HeaderProfileCard({
             <HoverCardContent
                 align="end"
                 sideOffset={10}
-                className="w-72 rounded-2xl border border-slate-200 bg-white p-0 shadow-xl"
+                className="w-[260px] rounded-2xl border border-slate-200 bg-white p-0 shadow-xl"
             >
                 <div className="flex items-center gap-3 px-5 py-4">
                     <div className="relative h-12 w-12 overflow-hidden rounded-full bg-indigo-100">

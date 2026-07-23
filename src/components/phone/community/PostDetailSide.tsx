@@ -64,6 +64,7 @@ export interface PostRecommentItemProps {
 export interface CommentInputBoxProps {
     postId: number;
     parentId?: number;
+    role?: CommunityAuthorRole;
     onSubmitComment?: (content: string) => Promise<boolean> | boolean;
 }
 
@@ -268,8 +269,8 @@ export default function PostDetailSide({
     }, []);
 
     return (
-        <aside className="flex h-full min-h-0 flex-col overflow-hidden rounded-3xl bg-white/90 p-4 shadow-sm ring-1 ring-slate-100">
-            <div className="mb-4 shrink-0 rounded-2xl bg-slate-50 p-1">
+        <aside className="flex min-h-[742.5px] flex-1 flex-col rounded-3xl bg-white/90 p-6 shadow-sm ring-1 ring-slate-100">
+            <div className="mb-5 shrink-0 rounded-2xl bg-slate-50 p-1">
                 <div className="grid grid-cols-2 gap-1">
                     <button
                         type="button"

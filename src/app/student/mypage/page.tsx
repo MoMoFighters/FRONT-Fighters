@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 
 import { getLecturesWithAuth } from "@/app/services/lecture/service";
+import MobileSidebarToggle from "@/components/common/MobileSidebarToggle";
 import MomoResidentCard from "@/components/mypage/MomoResidentCard";
 import PointStoreLink from "@/components/mypage/PointStoreLink";
 import StudentLectureItem from "@/features/lecture/components/student/list/StudentLectureItem";
@@ -95,9 +96,9 @@ export default async function StudentMyPage() {
     };
 
     return (
-        <main className="min-h-[calc(100vh-137px)] bg-white px-8 py-8">
-            <div className="mx-auto flex w-full max-w-360 gap-6">
-                <aside className="sticky top-22 z-20 mb-auto w-52 shrink-0 rounded-3xl border border-slate-200 bg-white shadow-sm">
+        <main className="min-h-[calc(100vh-137px)] bg-white px-4 py-6 md:px-8 md:py-8">
+            <div className="mx-auto flex w-full max-w-360 flex-col gap-6 md:flex-row">
+                <MobileSidebarToggle>
                     <div className="rounded-t-3xl border-b border-slate-100 p-3">
                         <div className="flex items-center gap-2.5">
                             <MyPageProfileAvatar
@@ -154,12 +155,13 @@ export default async function StudentMyPage() {
 
                         </ul>
                     </nav>
-                </aside>
+                </MobileSidebarToggle>
 
                 <section className="min-w-0 flex-1 space-y-6">
-                    <section className="flex items-start gap-5">
-                        {/* [변경] 524px: p-4(좌우 32px)를 뺀 카드 실제 폭이 492px가 되도록(492+32=524) */}
-                        <div className="relative z-0 w-[524px] shrink-0 overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                    <section className="flex flex-col gap-5 md:flex-row md:items-start">
+                        {/* 모바일은 w-full로 폭에 맞춰 비율 그대로 축소. md 이상에서는 잔디 컬럼과 1.4:1 비율로 계속 같이 줄어들되,
+                            524px(잔디 높이 340px와 맞춰 계산해둔 값)를 최대치로 그 이상은 안 커지게 상한만 둔다 */}
+                        <div className="relative z-0 w-full min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:max-w-[524px] md:basis-0 md:flex-[1.4]">
                             <div className="mb-2.5 flex items-center gap-2">
                                 <CreditCard className="h-3.5 w-3.5 text-indigo-500" />
                                 <h2 className="text-sm font-black text-slate-900">
@@ -172,8 +174,8 @@ export default async function StudentMyPage() {
                             </div>
                         </div>
 
-                        {/* [변경] 높이 340px로 고정(잔디 그리드가 잘리지 않도록 여유분 포함), 폭은 min-w-0 flex-1로 남는 공간을 채우고 넘치면 내부 스크롤 */}
-                        <div className="grid h-[340px] min-w-0 flex-1 grid-rows-2 gap-3">
+                        {/* [변경] 높이는 폭과 무관하게 항상 340px(잔디는 7줄 고정이라 안 줄어듦), md 이상에서만 flex-1로 남는 폭을 채움 */}
+                        <div className="grid h-[340px] min-w-0 grid-rows-2 gap-3 md:flex-1">
                             <div className="flex min-w-0 flex-col rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
                                 <div className="flex items-center gap-1.5">
                                     <Leaf className="h-2.5 w-2.5 text-emerald-500" />
@@ -205,7 +207,7 @@ export default async function StudentMyPage() {
                     </section>
 
                     <section className="rounded-3xl border border-slate-200 bg-white shadow-sm">
-                        <div className="flex items-center justify-between border-b border-slate-100 px-6 py-5">
+                        <div className="flex flex-col gap-3 border-b border-slate-100 px-4 py-4 sm:flex-row sm:items-center sm:justify-between md:px-6 md:py-5">
                             <div>
                                 <div className="flex items-center gap-2">
                                     <BookOpen className="h-5 w-5 text-indigo-500" />
@@ -227,7 +229,8 @@ export default async function StudentMyPage() {
                             </Link>
                         </div>
 
-                        <div className="scrollbar-none h-110 overflow-y-auto">
+                        {/* 모바일은 이중 스크롤이 불편해서 min-height만 두고 페이지 자체 스크롤을 따라가게 하고, md 이상에서만 고정 높이+내부 스크롤 유지 */}
+                        <div className="scrollbar-none min-h-110 overflow-visible md:h-110 md:overflow-y-auto">
                             <Suspense fallback={<ListSkeleton />}>
                                 <LectureListSection />
                             </Suspense>
@@ -235,7 +238,7 @@ export default async function StudentMyPage() {
                     </section>
 
                     <section className="rounded-3xl border border-slate-200 bg-white shadow-sm">
-                        <div className="flex items-center justify-between border-b border-slate-100 px-6 py-5">
+                        <div className="flex flex-col gap-3 border-b border-slate-100 px-4 py-4 sm:flex-row sm:items-center sm:justify-between md:px-6 md:py-5">
                             <div className="flex items-center gap-2">
                                 <Coins className="h-5 w-5 text-indigo-500" />
                                 <h2 className="text-lg font-black text-slate-900">
@@ -333,7 +336,8 @@ async function PointHistorySection() {
                 총 {totalPointHistory.toLocaleString()}건의 포인트 내역
             </p>
 
-            <div className="scrollbar-none h-90 overflow-y-auto divide-y divide-slate-100">
+            {/* 모바일은 이중 스크롤이 불편해서 min-height만 두고 페이지 자체 스크롤을 따라가게 하고, md 이상에서만 고정 높이+내부 스크롤 유지 */}
+            <div className="scrollbar-none min-h-90 overflow-visible divide-y divide-slate-100 md:h-90 md:overflow-y-auto">
                 {pointHistory.length > 0 ? (
                     pointHistory.map((item, index) => {
                         const isIncrease = item.type === "GAINED";
@@ -341,7 +345,7 @@ async function PointHistorySection() {
                         return (
                             <div
                                 key={`${item.createdAt}-${item.reason}-${index}`}
-                                className="grid grid-cols-[144px_minmax(0,1fr)_112px] items-center gap-3 px-5 py-2.5 transition-colors hover:bg-slate-50"
+                                className="grid grid-cols-1 items-start gap-1 px-4 py-3 transition-colors hover:bg-slate-50 sm:grid-cols-[minmax(60px,1fr)_minmax(0,3fr)_minmax(60px,1fr)] sm:items-center sm:gap-3 sm:px-5 sm:py-2.5"
                             >
                                 <p className="text-[11px] font-bold text-slate-400">
                                     {formatDateTime(item.createdAt)}
@@ -366,7 +370,8 @@ async function PointHistorySection() {
                                             {POINT_REASON_LABEL[item.reason] ??
                                                 item.reason}
                                         </p>
-                                        <p className="text-[10px] font-bold text-slate-400">
+                                        {/* [변경] 모바일에서는 생략(색상+부호로 이미 증가/감소가 구분됨), sm 이상에서만 표시 */}
+                                        <p className="hidden text-[10px] font-bold text-slate-400 sm:block">
                                             {POINT_TYPE_LABEL[item.type] ??
                                                 item.type}
                                         </p>
@@ -374,7 +379,7 @@ async function PointHistorySection() {
                                 </div>
 
                                 <p
-                                    className={`text-right text-sm font-black ${isIncrease
+                                    className={`text-left text-sm font-black sm:text-right ${isIncrease
                                         ? "text-indigo-500"
                                         : "text-rose-500"
                                         }`}

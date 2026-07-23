@@ -1,4 +1,4 @@
-import { Building, StreakResponse } from "@/features/city/type";
+import { Building, Fortune, FriendBuildingsResponse, StreakResponse } from "@/features/city/type";
 import { ApiResponse, fetchWithAuth } from "@/lib/api";
 import { notFound } from "next/navigation";
 
@@ -54,12 +54,12 @@ export const getMyBuildings = async () => {
  * 친구 도시의 내 건물 정보 조회 api
  * @returns Building[]
  */
-export const getFriendBuildings = async (id: string) => {
+export const getFriendBuildings = async (id: string): Promise<FriendBuildingsResponse> => {
     const response = await fetchWithAuth(`/api/v1/user/${id}/buildings`, {
         next: { revalidate: 60 },
     });
     await handleErrorResponse(response);
-    const result: ApiResponse<Building[]> = await response.json();
+    const result: ApiResponse<FriendBuildingsResponse> = await response.json();
     return assertApiData(result);
 }
 
@@ -107,5 +107,18 @@ export const getFriendStreak = async (id: string): Promise<StreakResponse> => {
     });
     await handleErrorResponse(response);
     const result: ApiResponse<StreakResponse> = await response.json();
+    return assertApiData(result);
+}
+
+/**
+ * 오늘의 운세 뽑기 api (포인트 차감)
+ * @returns Fortune
+ */
+export const getFortune = async (): Promise<Fortune> => {
+    const response = await fetchWithAuth("/api/v1/city/fortune", {
+        method: "POST",
+    });
+    await handleErrorResponse(response);
+    const result: ApiResponse<Fortune> = await response.json();
     return assertApiData(result);
 }
