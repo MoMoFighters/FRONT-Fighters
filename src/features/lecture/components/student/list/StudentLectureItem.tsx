@@ -34,10 +34,11 @@ export default function StudentLectureItem({
                 p-4 transition
                 last:border-b-0
                 hover:bg-slate-50
-                md:grid-cols-[184px_minmax(0,1fr)_160px] md:gap-6
+                sm:grid-cols-[minmax(72px,1.4fr)_minmax(0,3fr)_minmax(72px,1fr)] sm:gap-3
+                md:gap-6
             "
         >
-            <div className="relative h-28 overflow-hidden rounded-xl bg-slate-100">
+            <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-slate-100">
                 {lecture.thumbnailUrl && (
                     <Image
                         src={lecture.thumbnailUrl}
@@ -57,7 +58,7 @@ export default function StudentLectureItem({
                     </span>
                 </div>
 
-                <h2 className="truncate text-lg font-bold text-slate-700">
+                <h2 className="line-clamp-2 text-lg font-bold text-slate-700">
                     {lecture.title}
                 </h2>
 
