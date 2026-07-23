@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogPortal } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogPortal, DialogTitle } from "@/components/ui/dialog";
 
 interface MembershipRequiredModalProps {
     open: boolean;
@@ -33,6 +33,8 @@ export default function MembershipRequiredModal({
             </DialogPortal>
 
             <DialogContent showCloseButton={false} className="w-fit p-6 text-center">
+                <DialogTitle className="sr-only">멤버십 업그레이드 안내</DialogTitle>
+
                 <DialogDescription className="whitespace-pre-line text-sm text-slate-600">
                     {"멤버십 플랜 업그레이드 후\n이용이 가능합니다."}
                 </DialogDescription>
