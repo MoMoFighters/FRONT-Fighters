@@ -176,7 +176,7 @@ export default async function MypagePointPage({
                                 return (
                                     <div
                                         key={`${item.createdAt}-${item.reason}-${index}`}
-                                        className="grid grid-cols-1 items-center gap-2 px-5 py-3 transition-colors hover:bg-slate-50 sm:grid-cols-[160px_minmax(0,1fr)_120px] sm:gap-4"
+                                        className="grid grid-cols-1 items-center gap-2 px-5 py-3 transition-colors hover:bg-slate-50 sm:grid-cols-[minmax(70px,1fr)_minmax(0,3fr)_minmax(70px,1fr)] sm:gap-4"
                                     >
                                         <p className="text-xs font-bold text-slate-500">
                                             {formatDateTime(item.createdAt)}
