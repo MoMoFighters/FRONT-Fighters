@@ -20,7 +20,7 @@ import {
     teacherGiveupService,
 } from "@/app/services/auth/service";
 import { UserRole, UserStatus } from "../user/type";
-import { killTokenAction } from "../user/action";
+import { redirect } from "next/navigation";
 
 
 const createErrorResponse = <T>(
@@ -366,9 +366,9 @@ export const authRefreshAction = async (): Promise<
 
 type LogoutData = null;
 
-export const logoutAction = async (): Promise<
-    ApiResponse<LogoutData>
-> => {
+export const logoutAction = async (
+    redirectTo?: string
+): Promise<ApiResponse<LogoutData>> => {
     try {
         const cookieStore = await cookies();
 
@@ -378,26 +378,39 @@ export const logoutAction = async (): Promise<
         const refreshToken =
             cookieStore.get("refreshToken")?.value;
 
-        if (!accessToken || !refreshToken) {
-            return createUnauthorizedResponse<LogoutData>();
+        if (accessToken && refreshToken) {
+            const forwardedFor = await getForwardedForHeader();
+
+            try {
+                await logoutService(accessToken, refreshToken, forwardedFor);
+            } catch (error) {
+                console.error("[logoutAction] 로그아웃 API 호출 실패", error);
+            }
         }
 
-        const forwardedFor = await getForwardedForHeader();
-        const result = await logoutService(
-            accessToken,
-            refreshToken,
-            forwardedFor
-        );
-
-        killTokenAction()
-
-        return result;
+        cookieStore.delete("accessToken");
+        cookieStore.delete("refreshToken");
     } catch (error) {
         return createErrorResponse<LogoutData>(
             error,
             "알 수 없는 문제가 발생했습니다."
         );
     }
+
+    // redirect()는 던져서 이동을 처리하므로 try/catch 밖에서 호출해야 함
+    // (여기서 서버가 바로 이동시켜야, 로그아웃 직후 Next.js가 "현재 페이지"를
+    //  자동 재조회하면서 이미 지워진 토큰으로 401을 내는 현상을 막을 수 있음)
+    if (redirectTo) {
+        redirect(redirectTo);
+    }
+
+    return {
+        timestamp: new Date().toISOString(),
+        status: 200,
+        code: "OK",
+        message: "로그아웃 되었습니다.",
+        data: null,
+    };
 };
 
 

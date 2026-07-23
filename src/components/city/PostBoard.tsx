@@ -17,6 +17,7 @@ import {
     CreateGuestbookResponse,
     GuestbookListItem,
 } from "@/features/guestbook/type";
+import { toast } from "sonner";
 
 interface PostBoardProps {
     mode: "MY" | "FRIEND";
@@ -122,7 +123,7 @@ export default function PostBoard({ mode, ownerId, initialGuestbooks = [] }: Pos
             const response = await getGuestbooksAction();
 
             if (response.status >= 400) {
-                alert(response.message);
+                toast.error(response.message);
                 setGuestbooks([]);
                 return;
             }
