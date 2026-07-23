@@ -224,7 +224,7 @@ export default function CommunityRootPostsPage({
                             <SelectTrigger className="h-9 w-28 rounded-xl border-slate-200 bg-white text-sm font-bold text-slate-600">
                                 <SelectValue placeholder="카테고리" />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent position="popper" side="bottom">
                                 {CATEGORY_OPTIONS.map((option) => (
                                     <SelectItem
                                         key={option.value}

@@ -218,7 +218,7 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
                                             <SelectValue placeholder="카테고리" />
                                         </SelectTrigger>
 
-                                        <SelectContent>
+                                        <SelectContent position="popper" side="bottom">
                                             <SelectItem value="FITNESS" className="!h-10">피트니스</SelectItem>
                                             <SelectItem value="ART" className="!h-10">예술</SelectItem>
                                             <SelectItem value="COOK" className="!h-10">요리</SelectItem>

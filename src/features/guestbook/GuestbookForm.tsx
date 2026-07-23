@@ -4,6 +4,7 @@ import { FormEvent, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { createGuestbookAction } from "./action";
 import { CreateGuestbookResponse } from "./type";
+import { toast } from "sonner";
 
 interface GuestbookFormProps {
     ownerId?: number;
@@ -37,7 +38,7 @@ export default function GuestbookForm({
             });
 
             if (response.status >= 400) {
-                alert(response.message);
+                toast.error(response.message);
                 return;
             }
 
