@@ -27,6 +27,7 @@ import {
 import { calculateDisplayPrice } from "@/features/payment/proration";
 import kakaoPayLogo from "@/app/assets/img/kakaoPay.png";
 import tossPayLogo from "@/app/assets/img/tossPay.png";
+import { formatMembershipUntil } from "@/components/common/MembershipBadge";
 
 interface PaymentMethodDialogProps {
     plan: MembershipPlan | null;
@@ -194,7 +195,7 @@ export default function PaymentMethodDialog({
                 return;
             }
 
-            toast.success(verifyResult.message || "결제가 완료되었습니다.");
+            toast.success(`결제가 완료되었습니다.\n${formatMembershipUntil(verifyResult.data?.membershipUntil)}까지 적용됩니다.`, { className: "whitespace-pre-line" });
             onOpenChange(false);
             router.refresh();
         } catch (error) {

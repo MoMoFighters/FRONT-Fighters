@@ -49,6 +49,11 @@ export default function MembershipPlanCard({
     const isGuest = mode === "guest";
     const isCurrent = !isGuest && plan.tier === currentTier;
     const isUpgrade = TIER_ORDER[plan.tier] > TIER_ORDER[currentTier];
+    // 다운그레이드는 백엔드에서 아예 지원하지 않아 결제 시도해도 항상 실패하므로, 버튼 자체를 막고 안내만 노출
+    const isDowngrade = !isGuest && !isCurrent && TIER_ORDER[plan.tier] < TIER_ORDER[currentTier];
+    // BASIC은 무료 플랜이라 별도 결제 없이 해지로만 전환되므로 문구를 다르게 안내
+    const isDowngradeToBasic = isDowngrade && plan.tier === "BASIC";
+    const isDowngradeToPaid = isDowngrade && !isDowngradeToBasic;
     const formattedMembershipUntil = formatMembershipUntil(membershipUntil);
 
     const isHighlighted = isActive;
@@ -103,7 +108,7 @@ export default function MembershipPlanCard({
                 {plan.name}
             </h3>
 
-            {plan.originalPrice && discountPercent > 0 && (
+            {plan.originalPrice ? discountPercent > 0 && (
                 <div className="mt-4 flex items-center gap-2">
                     <span className="text-sm font-bold text-slate-300 line-through">
                         ₩{plan.originalPrice.toLocaleString()}
@@ -112,9 +117,9 @@ export default function MembershipPlanCard({
                         {discountPercent}% 할인
                     </span>
                 </div>
-            )}
+            ) : (<div className="h-5 mt-4"></div>)}
 
-            <div className={`flex items-end gap-1 ${discountPercent > 0 ? "mt-1" : "mt-4"}`}>
+            <div className={`flex items-end gap-1 mt-1`}>
                 <span className="text-3xl font-black tracking-tight text-slate-900">
                     ₩{plan.price.toLocaleString()}
                 </span>
@@ -150,23 +155,48 @@ export default function MembershipPlanCard({
                         {"만 결제돼요."}
                     </HoverCardContent>
                 </HoverCard>
+            ) : isDowngradeToPaid ? (
+                <HoverCard openDelay={100} closeDelay={0}>
+                    <HoverCardTrigger asChild>
+                        <button
+                            type="button"
+                            aria-disabled="true"
+                            className="mt-6 flex h-11 w-full shrink-0 cursor-not-allowed items-center justify-center gap-1.5 rounded-xl bg-slate-100 text-sm font-bold text-slate-400"
+                        >
+                            다운그레이드 불가
+                            <Info className="h-3.5 w-3.5 opacity-70" />
+                        </button>
+                    </HoverCardTrigger>
+                    <HoverCardContent
+                        side="top"
+                        className="w-auto max-w-64 px-3 py-1.5 text-sm font-medium text-slate-700"
+                    >
+                        플랜 다운그레이드는 지원하지 않아요.{" "}
+                        <span className="font-bold text-slate-900">
+                            구독을 취소하면 BASIC 플랜으로 전환
+                        </span>
+                        돼요.
+                    </HoverCardContent>
+                </HoverCard>
             ) : (
                 <button
                     type="button"
-                    disabled={isCurrent}
+                    disabled={isCurrent || isDowngradeToBasic}
                     onClick={handleClick}
-                    className={`mt-6 flex h-11 w-full shrink-0 items-center justify-center rounded-xl text-sm font-bold transition-colors ${isCurrent
+                    className={`mt-6 flex h-11 w-full shrink-0 items-center justify-center rounded-xl text-sm font-bold transition-colors ${isCurrent || isDowngradeToBasic
                         ? "cursor-not-allowed bg-slate-100 text-slate-400"
                         : "bg-indigo-500 text-white hover:bg-indigo-600 cursor-pointer"
                         }`}
                 >
                     {isCurrent
                         ? `현재 플랜 ${formattedMembershipUntil ? `(~${formattedMembershipUntil})` : ``}`
-                        : isGuest
-                            ? `${plan.name}로 시작하기`
-                            : isUpgrade
-                                ? `${plan.name}로 업그레이드`
-                                : `${plan.name}로 변경`}
+                        : isDowngradeToBasic
+                            ? "현재 상위 요금제를 사용중입니다."
+                            : isGuest
+                                ? `${plan.name}로 시작하기`
+                                : isUpgrade
+                                    ? `${plan.name}로 업그레이드`
+                                    : `${plan.name}로 변경`}
                 </button>
             )}
 
