@@ -130,36 +130,50 @@ export function useChatBotMessages() {
                 let fullText = "";
                 let streamError: string | null = null;
                 let isStreamFinished = false; // done/error 수신 시 즉시 종료 처리용 플래그
+                // SSE 이벤트 하나가 여러 번의 read() 결과에 걸쳐 나뉘어 올 수 있어서,
+                // 아직 개행으로 안 끝난 마지막 조각을 다음 read() 결과와 이어붙이기 위한 버퍼
+                let buffer = "";
+
+                const processLine = (line: string) => {
+                    if (!line.startsWith("data:")) return;
+                    const data = line.slice(5).trim();
+                    if (!data) return;
+
+                    try {
+                        const json = JSON.parse(data) as { type?: string; content?: string };
+
+                        if (json.type === "chunk" && json.content) {
+                            fullText += json.content;
+                            setStreamingText(fullText); // 임시 스트리밍 상태, localStorage엔 저장하지 않음
+                        } else if (json.type === "error") {
+                            streamError = json.content || "답변을 가져오는 중 오류가 발생했어요.";
+                            isStreamFinished = true;
+                        } else if (json.type === "done") {
+                            isStreamFinished = true; // 서버가 done 이후에도 연결을 유지할 수 있어 직접 끊는다
+                        }
+                    } catch {
+                        // 청크 경계에서 잘려 아직 완성되지 않은 조각일 수 있어, 버퍼링 없이는 여기서 유실됐었다.
+                        console.error("[chatbot] SSE 이벤트 파싱 실패:", data);
+                    }
+                };
 
                 while (!isStreamFinished) {
                     const { done, value } = await reader.read();
-                    if (done) break;
 
-                    const chunk = decoder.decode(value, { stream: true });
-                    const lines = chunk.split("\n");
+                    if (done) {
+                        // 마지막 read() 이후 개행 없이 남아있는 조각이 있으면 마저 처리
+                        if (buffer.trim()) processLine(buffer);
+                        break;
+                    }
+
+                    buffer += decoder.decode(value, { stream: true });
+                    const lines = buffer.split("\n");
+                    // 마지막 요소는 아직 끝나지 않았을 수 있으니 버퍼에 남겨두고, 완성된 줄만 처리
+                    buffer = lines.pop() ?? "";
 
                     for (const line of lines) {
-                        if (!line.startsWith("data:")) continue;
-                        const data = line.slice(5).trim();
-                        if (!data) continue;
-
-                        try {
-                            const json = JSON.parse(data) as { type?: string; content?: string };
-
-                            if (json.type === "chunk" && json.content) {
-                                fullText += json.content;
-                                setStreamingText(fullText); // 임시 스트리밍 상태, localStorage엔 저장하지 않음
-                            } else if (json.type === "error") {
-                                streamError = json.content || "답변을 가져오는 중 오류가 발생했어요.";
-                                isStreamFinished = true;
-                                break;
-                            } else if (json.type === "done") {
-                                isStreamFinished = true; // 서버가 done 이후에도 연결을 유지할 수 있어 직접 끊는다
-                                break;
-                            }
-                        } catch {
-                            // 빈 줄 등 파싱 실패는 무시
-                        }
+                        processLine(line);
+                        if (isStreamFinished) break;
                     }
                 }
 
