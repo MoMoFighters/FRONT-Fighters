@@ -47,9 +47,7 @@ export default function MembershipPlans({
         void (async () => {
             const result = await verifyPaymentAction(pendingPaymentId);
 
-            if (result.status === 200 || result.status === 201) {
-                toast.success(result.message || "결제가 완료되었습니다.");
-            } else {
+            if (result.status !== 200 && result.status !== 201) {
                 toast.error(result.message || "결제 검증에 실패했습니다.");
             }
 
