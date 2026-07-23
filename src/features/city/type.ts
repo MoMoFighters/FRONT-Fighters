@@ -15,3 +15,12 @@ export interface Streak {
 export interface StreakResponse {
     streaks: Streak[];
 }
+
+export type FortuneTone = "GOOD" | "NEUTRAL" | "BAD";
+
+export interface Fortune {
+    fortuneId: number;
+    content: string;
+    tone: FortuneTone;
+    drawnDate: string;
+}
