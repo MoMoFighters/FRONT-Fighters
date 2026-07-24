@@ -9,11 +9,11 @@ export default function ChapterStudyInfoCard() {
                 </div>
 
                 <div className="min-w-0">
-                    <h2 className="text-[clamp(0.875rem,4cqw,1rem)] font-bold text-slate-950">
+                    <h2 className="text-[clamp(0.9375rem,4cqw,1rem)] font-bold text-slate-950">
                         학습 기록은 자동 저장됩니다
                     </h2>
 
-                    <p className="mt-1 text-[clamp(0.75rem,3.2cqw,0.875rem)] font-medium text-slate-500">
+                    <p className="mt-1 text-[clamp(0.8125rem,3.2cqw,0.875rem)] font-medium text-slate-500">
                         잠시 나가더라도 이어서 학습할 수 있어요.
                     </p>
                 </div>

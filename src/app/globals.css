@@ -132,8 +132,17 @@
   }
 }
 
-/* 
-  fullcalendar 
+/*
+  IBM Plex Sans KR엔 900(Black) 굵기 자체가 없어서(최대 700=Bold),
+  font-black(font-weight:900)이 쓰인 곳 전부가 브라우저의 가짜 볼드(synthetic bold)로
+  렌더링되고 있었음 — 이게 한글이 찌글찌글/뭉개져 보이던 원인. 실제 로드된 최고 굵기(700)로 고정.
+*/
+.font-black {
+  font-weight: 700;
+}
+
+/*
+  fullcalendar
 */
 
 /* 선택된 날짜 */

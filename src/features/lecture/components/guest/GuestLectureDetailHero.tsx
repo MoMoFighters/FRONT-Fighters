@@ -60,20 +60,20 @@ export default function GuestLectureDetailHero({
 
                 <Link
                     href="/lectures"
-                    className="absolute left-[3cqw] top-[3cqw] inline-flex h-[clamp(1.75rem,6cqw,2.5rem)] items-center gap-[clamp(0.25rem,1cqw,0.375rem)] rounded-full bg-white/90 px-[clamp(0.5rem,2.5cqw,1rem)] text-[clamp(0.625rem,1.6cqw,0.75rem)] font-bold text-slate-700 shadow-sm backdrop-blur transition-colors hover:bg-white"
+                    className="absolute left-[3cqw] top-[3cqw] inline-flex h-[clamp(1.75rem,6cqw,2.5rem)] items-center gap-[clamp(0.25rem,1cqw,0.375rem)] rounded-full bg-white/90 px-[clamp(0.5rem,2.5cqw,1rem)] text-[clamp(0.75rem,1.6cqw,0.75rem)] font-bold text-slate-700 shadow-sm backdrop-blur transition-colors hover:bg-white"
                 >
                     <ChevronLeft className="h-[clamp(0.75rem,2.5cqw,1rem)] w-[clamp(0.75rem,2.5cqw,1rem)]" />
                     강의 목록
                 </Link>
 
                 <div className="absolute inset-x-0 bottom-0 p-[4cqw] text-white">
-                    <span className="rounded-full bg-white/15 px-[clamp(0.5rem,2cqw,0.75rem)] py-[clamp(0.2rem,0.8cqw,0.25rem)] text-[clamp(0.625rem,1.4cqw,0.75rem)] font-bold backdrop-blur">
+                    <span className="rounded-full bg-white/15 px-[clamp(0.5rem,2cqw,0.75rem)] py-[clamp(0.2rem,0.8cqw,0.25rem)] text-[clamp(0.75rem,1.4cqw,0.75rem)] font-bold backdrop-blur">
                         {categoryMeta.label} 강의
                     </span>
                     <h1 className="mt-[1.5cqw] max-w-3xl text-[clamp(1.125rem,4cqw,2.25rem)] font-bold tracking-tight">
                         {lecture.title}
                     </h1>
-                    <p className="mt-[1cqw] max-w-2xl text-[clamp(0.7rem,1.6cqw,0.875rem)] font-medium leading-6 text-white/80">
+                    <p className="mt-[1cqw] max-w-2xl text-[clamp(0.8125rem,1.6cqw,0.875rem)] font-medium leading-6 text-white/80">
                         {lecture.description}
                     </p>
                 </div>
@@ -81,10 +81,10 @@ export default function GuestLectureDetailHero({
 
             <div className="grid grid-cols-3 divide-x divide-slate-100 p-[4cqw]">
                 <div>
-                    <p className="text-[clamp(0.625rem,1.4cqw,0.75rem)] font-bold text-slate-400">
+                    <p className="text-[clamp(0.75rem,1.4cqw,0.75rem)] font-bold text-slate-400">
                         평점
                     </p>
-                    <p className="mt-[0.6cqw] flex items-center gap-[0.6cqw] text-[clamp(0.7rem,1.6cqw,0.875rem)] font-bold text-slate-900">
+                    <p className="mt-[0.6cqw] flex items-center gap-[0.6cqw] text-[clamp(0.8125rem,1.6cqw,0.875rem)] font-bold text-slate-900">
                         <Star className="h-[clamp(0.75rem,2cqw,1rem)] w-[clamp(0.75rem,2cqw,1rem)] fill-amber-400 text-amber-400" />
                         {lecture.averageRating ?? 0}
                         <span className="font-medium text-slate-400">/ 5.0</span>
@@ -92,19 +92,19 @@ export default function GuestLectureDetailHero({
                 </div>
 
                 <div className="px-[2.5cqw]">
-                    <p className="text-[clamp(0.625rem,1.4cqw,0.75rem)] font-bold text-slate-400">
+                    <p className="text-[clamp(0.75rem,1.4cqw,0.75rem)] font-bold text-slate-400">
                         커리큘럼
                     </p>
-                    <p className="mt-[0.6cqw] text-[clamp(0.7rem,1.6cqw,0.875rem)] font-bold text-slate-900">
+                    <p className="mt-[0.6cqw] text-[clamp(0.8125rem,1.6cqw,0.875rem)] font-bold text-slate-900">
                         총 {chapterCount}개 챕터
                     </p>
                 </div>
 
                 <div className="px-[2.5cqw]">
-                    <p className="text-[clamp(0.625rem,1.4cqw,0.75rem)] font-bold text-slate-400">
+                    <p className="text-[clamp(0.75rem,1.4cqw,0.75rem)] font-bold text-slate-400">
                         예상 학습 시간
                     </p>
-                    <p className="mt-[0.6cqw] flex items-center gap-[0.6cqw] text-[clamp(0.7rem,1.6cqw,0.875rem)] font-bold text-slate-900">
+                    <p className="mt-[0.6cqw] flex items-center gap-[0.6cqw] text-[clamp(0.8125rem,1.6cqw,0.875rem)] font-bold text-slate-900">
                         <Clock3 className="h-[clamp(0.75rem,2cqw,1rem)] w-[clamp(0.75rem,2cqw,1rem)] text-indigo-400" />
                         {formatTotalDuration(totalDurationSec)}
                     </p>

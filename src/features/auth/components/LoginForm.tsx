@@ -35,6 +35,7 @@ export default function LoginForm({
     const [showPassword, setShowPassword] = useState(false);
     const [isPending, setIsPending] = useState(false);
     const [isModal, setIsModal] = useState(false);
+    const [inlineError, setInlineError] = useState("");
     const [loginResult, setLoginResult] = useState<ApiResponse<LoginData>>({
         timestamp: "",
         status: 0,
@@ -64,6 +65,7 @@ export default function LoginForm({
         }
 
         setIsPending(true);
+        setInlineError("");
         (document.activeElement as HTMLElement | null)?.blur();
 
         try {
@@ -71,8 +73,12 @@ export default function LoginForm({
             const password = formData.get("password") as string;
             const result = await loginAction(email, password);
 
-            setLoginResult(result);
-            setIsModal(true);
+            if (result.data) {
+                setLoginResult(result);
+                setIsModal(true);
+            } else {
+                setInlineError(result.message || "이메일 또는 비밀번호를 다시 확인해주세요.");
+            }
         } finally {
             setIsPending(false);
         }
@@ -97,6 +103,7 @@ export default function LoginForm({
                             type="email"
                             name="email"
                             placeholder="이메일을 입력해 주세요"
+                            onChange={() => setInlineError("")}
                             className="h-[50px] w-full rounded-md border border-slate-200 bg-white pl-11 pr-4 text-sm font-medium text-slate-700 outline-none transition-colors placeholder:text-slate-400 focus:border-indigo-300 focus:ring-3 focus:ring-indigo-50"
                         />
                     </div>
@@ -107,6 +114,7 @@ export default function LoginForm({
                             type={showPassword ? "text" : "password"}
                             name="password"
                             placeholder="비밀번호를 입력해 주세요"
+                            onChange={() => setInlineError("")}
                             className="h-[50px] w-full rounded-md border border-slate-200 bg-white pl-11 pr-12 text-sm font-medium text-slate-700 outline-none transition-colors placeholder:text-slate-400 focus:border-indigo-300 focus:ring-3 focus:ring-indigo-50"
                         />
 
@@ -119,6 +127,10 @@ export default function LoginForm({
                             {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                         </button>
                     </div>
+
+                    <p className="-mt-2 min-h-4 text-xs font-medium text-red-500">
+                        {inlineError}
+                    </p>
 
                     <Button
                         type="submit"

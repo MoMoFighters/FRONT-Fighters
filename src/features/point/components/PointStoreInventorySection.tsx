@@ -27,13 +27,13 @@ export default function PointStoreInventorySection({
     return (
         <aside className="flex min-h-150 w-full max-w-120 flex-col rounded-3xl border border-slate-200 bg-white shadow-sm [container-type:inline-size]">
             <div className="border-b border-slate-100 p-5">
-                <p className="text-[clamp(0.7rem,3cqw,0.75rem)] font-black uppercase tracking-[0.18em] text-indigo-400">
+                <p className="text-[clamp(0.75rem,3cqw,0.75rem)] font-black uppercase tracking-[0.18em] text-indigo-400">
                     Inventory
                 </p>
                 <h2 className="mt-1 text-[clamp(1.25rem,7cqw,1.5rem)] font-black text-slate-950">
                     보유 아이템
                 </h2>
-                <p className="mt-1 text-[clamp(0.75rem,3.2cqw,0.875rem)] font-medium text-slate-400">
+                <p className="mt-1 text-[clamp(0.8125rem,3.2cqw,0.875rem)] font-medium text-slate-400">
                     구매한 프로필 아이템을 확인합니다.
                 </p>
 
@@ -43,7 +43,7 @@ export default function PointStoreInventorySection({
                             key={category.value}
                             type="button"
                             onClick={() => setActiveTab(category.value)}
-                            className={`cursor-pointer rounded-full px-3.5 py-2 text-[clamp(0.75rem,3.2cqw,0.875rem)] font-black transition ${
+                            className={`cursor-pointer rounded-full px-3.5 py-2 text-[clamp(0.8125rem,3.2cqw,0.875rem)] font-black transition ${
                                 activeTab === category.value
                                     ? "bg-slate-900 text-white"
                                     : "bg-slate-100 text-slate-500 hover:bg-indigo-50 hover:text-indigo-500"

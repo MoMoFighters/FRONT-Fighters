@@ -13,6 +13,30 @@ const createForwardedForHeaders = (
     };
 };
 
+// 백엔드가 JSON이 아닌 응답(프록시/게이트웨이의 502·504 HTML 에러 페이지 등)을 줄 때
+// response.json()이 SyntaxError를 던져서 사용자에게 알아볼 수 없는 원문 에러가 노출되는 걸 방지.
+// 배포 환경에서 재현 시 이 메시지가 뜨면 "백엔드 응답이 JSON이 아니었다"는 뜻으로 바로 식별 가능하도록
+// 고정 코드/문구를 남김.
+const parseAuthResponse = async <T>(
+    response: Response
+): Promise<ApiResponse<T>> => {
+    try {
+        return await response.json();
+    } catch (error) {
+        console.error(
+            `[auth/service] JSON 파싱 실패 (status: ${response.status})`,
+            error
+        );
+
+        return {
+            timestamp: new Date().toISOString(),
+            status: response.status,
+            code: "AUTH_JSON_PARSE_ERROR",
+            message: "서버 응답을 처리하지 못했습니다. [AUTH_JSON_PARSE_ERROR]",
+        };
+    }
+};
+
 
 /*
   1-1. 학생 회원가입
@@ -60,7 +84,7 @@ export const studentSignupService = async (
     );
 
     const result: ApiResponse<StudentSignupData> =
-        await response.json();
+        await parseAuthResponse<StudentSignupData>(response);
 
     if (!response.ok) {
         throw new Error(
@@ -93,7 +117,7 @@ export const teacherSignupService = async (
     })
 
     if (!response.ok) {
-        const result = await response.json()
+        const result = await parseAuthResponse<TeacherSignupData>(response)
         throw new Error(
             result.message ||
             "강사 전환에 실패하였습니다."
@@ -101,9 +125,7 @@ export const teacherSignupService = async (
     }
 
     const result: ApiResponse<TeacherSignupData> =
-        await response.json();
-
-
+        await parseAuthResponse<TeacherSignupData>(response);
 
     return result;
 };
@@ -118,13 +140,13 @@ export const teacherGiveupService = async (): Promise<ApiResponse<null>> => {
         method: 'POST'
     });
     if (!response.ok) {
-        const errorData = await response.json()
+        const errorData = await parseAuthResponse<null>(response)
         throw new Error(
             errorData.message ||
             "알 수 없는 문제가 발생했습니다."
         );
     }
-    return response.json();
+    return parseAuthResponse<null>(response);
 }
 
 
@@ -156,7 +178,7 @@ export const sendEmailCodeService = async (
     );
 
     const result: ApiResponse<SendEmailCodeData> =
-        await response.json();
+        await parseAuthResponse<SendEmailCodeData>(response);
 
     if (!response.ok) {
         throw new Error(
@@ -194,7 +216,7 @@ export const emailVerifyService = async (
     );
 
     const result: ApiResponse<EmailVerifyData> =
-        await response.json();
+        await parseAuthResponse<EmailVerifyData>(response);
 
     if (!response.ok) {
         throw new Error(
@@ -242,14 +264,7 @@ export const loginService = async (
     );
 
     const result: ApiResponse<LoginData> =
-        await response.json();
-
-    if (!response.ok) {
-        throw new Error(
-            result.message ||
-            "로그인에 실패하였습니다."
-        );
-    }
+        await parseAuthResponse<LoginData>(response);
 
     return result;
 };
@@ -293,7 +308,7 @@ export const changePasswordService = async (
     );
 
     const result: ApiResponse<ChangePasswordData> =
-        await response.json();
+        await parseAuthResponse<ChangePasswordData>(response);
 
     if (!response.ok) {
         throw new Error(
@@ -330,7 +345,7 @@ export const tempPwService = async (
     );
 
     const result: ApiResponse<TempPasswordData> =
-        await response.json();
+        await parseAuthResponse<TempPasswordData>(response);
 
     if (!response.ok) {
         throw new Error(
@@ -371,7 +386,7 @@ export const authRefresh = async (
     );
 
     const result: ApiResponse<AuthRefreshData> =
-        await response.json();
+        await parseAuthResponse<AuthRefreshData>(response);
 
     if (!response.ok) {
         throw new Error(
@@ -411,7 +426,7 @@ export const logoutService = async (
     );
 
     const result: ApiResponse<LogoutData> =
-        await response.json();
+        await parseAuthResponse<LogoutData>(response);
 
     if (!response.ok) {
         throw new Error(
@@ -452,7 +467,7 @@ export const nicknameRegistService = async (
     );
 
     const result: ApiResponse<NicknameRegistData> =
-        await response.json();
+        await parseAuthResponse<NicknameRegistData>(response);
 
     if (!response.ok) {
         throw new Error(
@@ -495,11 +510,7 @@ export const kakaoLoginService = async (
         }
     );
 
-    const result: ApiResponse<KakaoLoginData> = await response.json();
-
-    if (!response.ok) {
-        throw new Error(result.message || "카카오 로그인에 실패하였습니다.");
-    }
+    const result: ApiResponse<KakaoLoginData> = await parseAuthResponse<KakaoLoginData>(response);
 
     return result;
 };
@@ -538,11 +549,7 @@ export const googleLoginService = async (
         }
     );
 
-    const result: GoogleLoginData = await response.json();
-
-    if (!response.ok) {
-        throw new Error(result.message || "구글 로그인에 실패하였습니다.");
-    }
+    const result: GoogleLoginData = await parseAuthResponse<GoogleLoginTokenData>(response);
 
     return result;
 };
@@ -580,11 +587,7 @@ export const naverLoginService = async (
         }
     );
 
-    const result: NaverLoginData = await response.json();
-
-    if (!response.ok) {
-        throw new Error(result.message || "네이버 로그인에 실패하였습니다.");
-    }
+    const result: NaverLoginData = await parseAuthResponse<NaverLoginTokenData>(response);
 
     return result;
 };
