@@ -11,6 +11,7 @@ import { getStudentFriendListAction } from '@/features/friend/action';
 import { Button } from '../ui/button';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '../ui/hover-card';
 import { UserRole } from '@/features/user/type';
+import { Skeleton } from '../ui/skeleton';
 
 interface BusStationProps {
     mode: 'MY' | "FRIEND";
@@ -210,9 +211,7 @@ export default function BusStation({ mode, currentOwnerId, variant = 'desktop' }
 
                         <div className="min-h-0 flex-1 overflow-y-auto rounded-2xl border border-slate-100 bg-slate-50/80 p-3 scrollbar-hidden">
                             {isLoading ? (
-                                <div className="flex h-36 items-center justify-center text-sm font-bold text-slate-400">
-                                    친구 목록을 불러오는 중입니다.
-                                </div>
+                                <FriendListSkeleton />
                             ) : errorMessage ? (
                                 <div className="flex h-36 items-center justify-center text-sm font-bold text-rose-400">
                                     {errorMessage}
@@ -292,6 +291,25 @@ export default function BusStation({ mode, currentOwnerId, variant = 'desktop' }
                 </div>
             )}
         </>
+    );
+}
+
+function FriendListSkeleton() {
+    return (
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, index) => (
+                <div
+                    key={index}
+                    className="flex h-20 w-full items-center gap-3 rounded-2xl border border-slate-100 bg-white p-3"
+                >
+                    <Skeleton className="size-11 shrink-0 rounded-full" />
+                    <div className="min-w-0 flex-1 space-y-2">
+                        <Skeleton className="h-3.5 w-2/3" />
+                        <Skeleton className="h-3 w-1/2" />
+                    </div>
+                </div>
+            ))}
+        </div>
     );
 }
 

@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import Image from "next/image";
 import logo from '@/app/assets/img/logo.png'
 import { getMyInfo } from "@/features/user/action";
-import HeaderProfileCard from "./HeaderProfileCard";
+import HeaderProfileMenu from "./HeaderProfileMenu";
 import HeaderNotificationZone from "@/features/user/components/notification/HeaderNotificationZone";
 
 
@@ -44,7 +44,7 @@ export default async function AuthHeader({ role }: { role: string }) {
                 <div className="flex justify-end mr-4 items-center">
                     <AuthRefreshArea initialTime={initialTime} />
                     <HeaderNotificationZone accessToken={token} />
-                    <HeaderProfileCard
+                    <HeaderProfileMenu
                         role={role}
                         profileImageUrl={myInfo.data?.profileImageUrl}
                         nickname={myInfo.data?.nickname ?? "모모시민"}

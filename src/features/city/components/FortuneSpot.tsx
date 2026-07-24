@@ -1,13 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 
 import FortuneModal from "@/components/city/FortuneModal";
+import { getMyInfo } from "@/features/user/action";
 import {
     HoverCard,
     HoverCardContent,
     HoverCardTrigger,
 } from "@/components/ui/hover-card";
+
+const FORTUNE_COST = 5;
 
 interface FortuneSpotProps {
     variant?: "desktop" | "mobile";
@@ -16,12 +20,23 @@ interface FortuneSpotProps {
 export default function FortuneSpot({ variant = "desktop" }: FortuneSpotProps) {
     const [isOpen, setIsOpen] = useState(false);
 
+    const handleOpen = async () => {
+        const myInfo = await getMyInfo();
+
+        if ((myInfo.data?.points ?? 0) < FORTUNE_COST) {
+            toast.error("포인트가 부족합니다.");
+            return;
+        }
+
+        setIsOpen(true);
+    };
+
     return (
         <>
             {variant === "mobile" ? (
                 <button
                     type="button"
-                    onClick={() => setIsOpen(true)}
+                    onClick={() => void handleOpen()}
                     className="block w-full cursor-pointer border-0 bg-transparent p-0 text-left"
                 >
                     <div className="rounded-2xl border border-slate-200 bg-white p-4">
@@ -39,7 +54,7 @@ export default function FortuneSpot({ variant = "desktop" }: FortuneSpotProps) {
                         <HoverCardTrigger asChild>
                             <button
                                 type="button"
-                                onClick={() => setIsOpen(true)}
+                                onClick={() => void handleOpen()}
                                 className="block h-full w-full cursor-pointer border-0 p-0 bg-transparent"
                                 aria-label="운세 보기"
                             />

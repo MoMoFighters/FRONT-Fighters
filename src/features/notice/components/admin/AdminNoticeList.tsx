@@ -15,6 +15,10 @@ import { Notice } from "@/features/notice/type";
 interface AdminNoticeListProps {
     notices: Notice[];
 }
+export const formatAdminDateTime = (dateTime: string) => {
+    // 관리자 공통 정책에 맞춰 T를 떼고 분 단위까지만 표시한다.
+    return dateTime.replace("T", " ").slice(0, 16);
+};
 
 export default function AdminNoticeList({ notices: initialNotices }: AdminNoticeListProps) {
     const router = useRouter();
@@ -130,10 +134,7 @@ export default function AdminNoticeList({ notices: initialNotices }: AdminNotice
         return `${notice.title} 고정`;
     };
 
-    const formatAdminDateTime = (dateTime: string) => {
-        // 관리자 공통 정책에 맞춰 T를 떼고 분 단위까지만 표시한다.
-        return dateTime.replace("T", " ").slice(0, 16);
-    };
+
 
     return (
         <section className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">

@@ -4,6 +4,7 @@ import DeleteModal from "@/features/modal/DeleteModal";
 import NotificationItem from "@/components/city/NotificationItem";
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import {
     deleteNoticeAction,
@@ -282,9 +283,7 @@ export default function NotificationList({
 
                 <div className="scrollbar-none min-h-0 flex-1 overflow-y-auto">
                     {isLoading ? (
-                        <div className="flex h-32 items-center justify-center text-sm font-bold text-slate-400">
-                            알림을 불러오는 중입니다.
-                        </div>
+                        <NotificationListSkeleton />
                     ) : notifications.length > 0 ? (
                         notifications.map((notification) => (
                             <NotificationItem
@@ -327,4 +326,26 @@ export default function NotificationList({
     }
 
     return createPortal(notificationList, document.body);
+}
+
+function NotificationListSkeleton() {
+    return (
+        <>
+            {Array.from({ length: 4 }).map((_, index) => (
+                <div
+                    key={index}
+                    className="flex w-full flex-row items-center border-b border-slate-100 bg-white px-4 py-2"
+                >
+                    <Skeleton className="mr-3 h-3.5 w-3.5 shrink-0 rounded-sm" />
+
+                    <div className="flex min-w-0 w-full flex-col gap-1.5">
+                        <Skeleton className="h-3.5 w-24" />
+                        <Skeleton className="h-3 w-40" />
+                    </div>
+
+                    <Skeleton className="h-6 w-6 shrink-0 rounded-full" />
+                </div>
+            ))}
+        </>
+    );
 }

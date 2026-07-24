@@ -132,12 +132,12 @@ export const teacherSignupService = async (
 
 // ==========================================
 // 1-2-2. 강사 포기하기
-// POST /api/v1/application-giveup
+// PATCH /api/v1/application-giveup
 // ==========================================
 
 export const teacherGiveupService = async (): Promise<ApiResponse<null>> => {
     const response = await fetchWithAuth("/api/v1/application-giveup", {
-        method: 'POST'
+        method: 'PATCH'
     });
     if (!response.ok) {
         const errorData = await parseAuthResponse<null>(response)
@@ -458,7 +458,7 @@ export const nicknameRegistService = async (
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${accessToken}`,
+                "Authorization": `Bearer ${accessToken}`,
             },
             body: JSON.stringify({
                 nickname,
