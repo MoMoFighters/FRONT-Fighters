@@ -57,7 +57,7 @@ export default function LoginResultModal({
     const isActionRequired = isPendingTeacher || isRejectedTeacherApplication;
 
     const title = isActiveUser
-        ? "로그인 성공"
+        ? "로그인 성공!"
         : isRejectedTeacherApplication
             ? "강사 승인 거절"
             : "로그인 실패";
@@ -131,7 +131,7 @@ export default function LoginResultModal({
                         <div className="mt-1 grid w-full grid-cols-2 gap-2">
                             <Button
                                 type="button"
-                                className="h-9 cursor-pointer rounded-lg border border-slate-200 bg-white text-sm font-bold text-slate-700 hover:bg-slate-100"
+                                className="h-9 cursor-pointer rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-700 hover:bg-slate-100"
                                 onClick={handleTeacherGiveup}
                                 disabled={isGiveupPending}
                             >
@@ -139,7 +139,7 @@ export default function LoginResultModal({
                             </Button>
                             <Button
                                 type="button"
-                                className="h-9 cursor-pointer rounded-lg bg-indigo-500 text-sm font-bold text-white hover:bg-indigo-600"
+                                className="h-9 cursor-pointer rounded-lg bg-indigo-500 text-xs font-bold text-white hover:bg-indigo-600"
                                 onClick={() => setIsApplyModal(true)}
                             >
                                 강사 다시 신청
@@ -149,7 +149,7 @@ export default function LoginResultModal({
                         <Button
                             type="button"
                             onClick={isActiveUser ? handleSuccessConfirm : handleCloseFailModal}
-                            className="mt-1 h-9 w-full cursor-pointer rounded-lg bg-indigo-500 text-sm font-bold text-white hover:bg-indigo-600"
+                            className="mt-1 h-9 w-1/3 min-w-20 cursor-pointer rounded-lg bg-indigo-500 text-xs font-bold text-white hover:bg-indigo-600"
                         >
                             확인
                         </Button>

@@ -84,7 +84,7 @@ export default function HeaderNotificationZone({
                 <HoverCardTrigger asChild>
                     <button
                         type="button"
-                        className="relative mr-2 mb-1 h-3.5 w-3.5 cursor-pointer text-slate-500 hover:text-slate-700 sm:mr-5 sm:h-4 sm:w-4"
+                        className="relative mr-2 h-3.5 w-3.5 cursor-pointer text-slate-500 hover:text-slate-700 sm:mr-5 sm:h-4 sm:w-4"
                         onClick={() => {
                             setHoverOpen(false);
                             setIsOpen((prev) => !prev);

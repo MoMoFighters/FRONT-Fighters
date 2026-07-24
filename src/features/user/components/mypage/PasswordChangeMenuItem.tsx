@@ -100,7 +100,7 @@ export default function PasswordChangeMenuItem() {
                 </li>
             </DialogTrigger>
 
-            <DialogContent className="sm:max-w-sm">
+            <DialogContent className="sm:max-w-[345px]">
                 <form onSubmit={handleSubmit}>
                     <DialogHeader>
                         <DialogTitle className="mb-6">비밀번호 변경</DialogTitle>
@@ -173,10 +173,10 @@ export default function PasswordChangeMenuItem() {
                         </div>
                     </div>
 
-                    <DialogFooter>
+                    <DialogFooter className="items-center justify-center sm:justify-center">
                         <Button
                             type="submit" disabled={buttonDisabled}
-                            className="cursor-pointer disabled:bg-indigo-400 bg-indigo-500 hover:bg-indigo-600"
+                            className="w-1/3 min-w-28 cursor-pointer disabled:bg-indigo-400 bg-indigo-500 hover:bg-indigo-600"
                         >
                             {isSubmitting ? "변경 중..." : "비밀번호 변경"}
                         </Button>

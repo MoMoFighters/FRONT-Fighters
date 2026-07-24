@@ -60,10 +60,10 @@ export default function OneButtonModal({
                         {description}
                     </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogFooter className="group-data-[size=sm]/alert-dialog-content:grid-cols-1">
+                <AlertDialogFooter className="group-data-[size=sm]/alert-dialog-content:flex group-data-[size=sm]/alert-dialog-content:justify-center sm:justify-center">
                     <AlertDialogAction
                         variant="ghost"
-                        className="w-full cursor-pointer bg-indigo-500 text-white hover:bg-indigo-600! hover:text-white!"
+                        className="min-w-28 cursor-pointer bg-indigo-500 text-white hover:bg-indigo-600! hover:text-white!"
                         onClick={onConfirm}
                     >
                         {confirmLabel}
