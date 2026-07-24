@@ -18,7 +18,7 @@ export default function AdminPaymentList({ payments }: AdminPaymentListProps) {
                 </div>
             </div>
 
-            <div className="divide-y divide-slate-100">
+            <div className="min-h-[640px] divide-y divide-slate-100">
                 {payments.length === 0 ? (
                     <div className="px-6 py-16 text-center text-sm font-bold text-slate-400">
                         결제 내역이 없습니다.

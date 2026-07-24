@@ -113,12 +113,14 @@ export default function EmailInputModal() {
                                 />
                             </div>
 
-                            <Button
-                                disabled={pending}
-                                className="h-12 w-full rounded-lg bg-indigo-500 text-base font-bold text-white shadow-sm transition-colors hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-60"
-                            >
-                                {pending ? "발송 중..." : "임시 비밀번호 발송"}
-                            </Button>
+                            <div className="flex justify-center">
+                                <Button
+                                    disabled={pending}
+                                    className="h-12 w-1/3 min-w-40 rounded-lg bg-indigo-500 text-base font-bold text-white shadow-sm transition-colors hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-60"
+                                >
+                                    {pending ? "발송 중..." : "임시 비밀번호 발송"}
+                                </Button>
+                            </div>
                         </form>
                     ) : (
                         <div className="space-y-6">
@@ -131,12 +133,14 @@ export default function EmailInputModal() {
                                 </p>
                             </div>
 
-                            <Button
-                                onClick={() => setIsModal(false)}
-                                className="h-12 w-full rounded-lg bg-indigo-500 text-base font-bold text-white transition-colors hover:bg-indigo-600"
-                            >
-                                닫기
-                            </Button>
+                            <div className="flex justify-center">
+                                <Button
+                                    onClick={() => setIsModal(false)}
+                                    className="h-12 w-1/3 min-w-32 rounded-lg bg-indigo-500 text-base font-bold text-white transition-colors hover:bg-indigo-600"
+                                >
+                                    닫기
+                                </Button>
+                            </div>
                         </div>
                     )}
                 </div>

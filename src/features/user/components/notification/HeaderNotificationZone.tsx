@@ -84,7 +84,7 @@ export default function HeaderNotificationZone({
                 <HoverCardTrigger asChild>
                     <button
                         type="button"
-                        className="relative mr-2 mb-1 h-3.5 w-3.5 cursor-pointer text-slate-500 hover:text-slate-700 sm:mr-5 sm:h-4 sm:w-4"
+                        className="relative mr-2 h-3.5 w-3.5 cursor-pointer text-slate-500 hover:text-slate-700 sm:mr-5 sm:h-4 sm:w-4"
                         onClick={() => {
                             setHoverOpen(false);
                             setIsOpen((prev) => !prev);
@@ -92,7 +92,7 @@ export default function HeaderNotificationZone({
                     >
                         <Bell className="h-full w-full" />
                         {notification > 0 && (
-                            <p className="absolute -top-1 -right-1 flex h-3 min-w-3 items-center justify-center rounded-full bg-red-500 px-0.5 text-[9px] text-slate-200 sm:-top-1.5 sm:-right-1.5 sm:h-4 sm:min-w-4 sm:px-1 sm:text-xs">
+                            <p className="absolute -top-0.5 -right-0.5 flex h-2.5 min-w-2.5 items-center justify-center rounded-full bg-red-500 px-0.5 text-[8px] text-slate-200 sm:-top-1 sm:-right-1 sm:h-3 sm:min-w-3 sm:px-1 sm:text-[10px]">
                                 {notification > 99 ? "99+" : notification}
                             </p>
                         )}

@@ -1,6 +1,6 @@
 'use client';
 
-import { Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
+import { Eye, EyeOff, LockKeyhole, Mail, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import kakao from "@/app/assets/img/kakao.svg";
@@ -36,6 +36,9 @@ export default function LoginForm({
     const [isPending, setIsPending] = useState(false);
     const [isModal, setIsModal] = useState(false);
     const [inlineError, setInlineError] = useState("");
+    const [email, setEmail] = useState("");
+    // [email 용도] 폼 제출은 formData.get("email")로 그대로 처리 — 이 state는
+    // X(지우기) 버튼을 값이 있을 때만 보여주고 클릭 시 비우는 용도로만 씀
     const [loginResult, setLoginResult] = useState<ApiResponse<LoginData>>({
         timestamp: "",
         status: 0,
@@ -102,10 +105,24 @@ export default function LoginForm({
                         <input
                             type="email"
                             name="email"
+                            value={email}
                             placeholder="이메일을 입력해 주세요"
-                            onChange={() => setInlineError("")}
-                            className="h-[50px] w-full rounded-md border border-slate-200 bg-white pl-11 pr-4 text-sm font-medium text-slate-700 outline-none transition-colors placeholder:text-slate-400 focus:border-indigo-300 focus:ring-3 focus:ring-indigo-50"
+                            onChange={(e) => {
+                                setEmail(e.target.value);
+                                setInlineError("");
+                            }}
+                            className="h-[50px] w-full rounded-md border border-slate-200 bg-white pl-11 pr-10 text-sm font-medium text-slate-700 outline-none transition-colors placeholder:text-slate-400 focus:border-indigo-300 focus:ring-3 focus:ring-indigo-50"
                         />
+                        {email && (
+                            <button
+                                type="button"
+                                onClick={() => setEmail("")}
+                                className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-slate-400 transition-colors hover:text-slate-600"
+                                aria-label="이메일 지우기"
+                            >
+                                <X size={18} />
+                            </button>
+                        )}
                     </div>
 
                     <div className="relative">

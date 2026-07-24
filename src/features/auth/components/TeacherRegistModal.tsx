@@ -32,6 +32,27 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
     const [previewFile, setPreviewFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [frozenSize, setFrozenSize] = useState<{ width: number; height: number } | null>(null);
+
+    // 카테고리 Select가 열리면 Radix가 body 스크롤을 잠그면서 스크롤바가 사라지고,
+    // 그만큼 vw/vh 계산 기준(뷰포트 폭)이 넓어져 모달이 커지는 것처럼 보이는 문제가 있었음.
+    // 모달이 열리는 시점(=아직 Select를 안 건드린 시점)의 실제 창 크기를 픽셀로 고정해두고
+    // 그 값 기준으로 크기를 계산하면, 이후 스크롤바가 사라져도 모달 크기가 안 흔들림.
+    // (isModal은 부모가 넘겨주는 prop이라 "여는 클릭 한 지점"에서 캡처할 수 없어 effect로 동기화함)
+    useEffect(() => {
+        if (isModal) {
+            document.body.style.overflow = "hidden";
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setFrozenSize({ width: window.innerWidth, height: window.innerHeight });
+        } else {
+            document.body.style.overflow = "";
+            setFrozenSize(null);
+        }
+
+        return () => {
+            document.body.style.overflow = "";
+        };
+    }, [isModal]);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -149,7 +170,11 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
                     }}
                 >
                     <div
-                        className="flex flex-col w-[95vw] h-[90vh] sm:w-[80vw] sm:h-[85vh] lg:w-[60vw] rounded-2xl border border-slate-200 bg-white px-6 pt-7 shadow-2xl"
+                        className="flex flex-col w-[calc(var(--fw,100vw)*0.95)] h-[calc(var(--fh,100vh)*0.90)] sm:w-[calc(var(--fw,100vw)*0.80)] sm:h-[calc(var(--fh,100vh)*0.85)] lg:w-[calc(var(--fw,100vw)*0.60)] rounded-2xl border border-slate-200 bg-white px-6 pt-7 shadow-2xl"
+                        style={frozenSize ? {
+                            "--fw": `${frozenSize.width}px`,
+                            "--fh": `${frozenSize.height}px`,
+                        } as React.CSSProperties : undefined}
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="flex flex-row items-center">

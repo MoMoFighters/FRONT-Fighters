@@ -30,7 +30,7 @@ export default function AdminUsersList({ users, view }: AdminUsersListProps) {
                     <p className="text-base font-bold">조회된 회원이 없습니다.</p>
                 </div>
             ) : (
-                <div className="divide-y divide-slate-100">
+                <div className="min-h-[480px] divide-y divide-slate-100">
                     {users.map((user) => (
                         <AdminUserItem
                             key={user.userId}
