@@ -28,7 +28,9 @@ export type StudyRoomMemberStatus =
     | 'REJECTED'
     | 'CANCELED';
 // 멤버 타이머 상태
-export type StudyRoomMemberTimerStatus = 'STUDYING' | 'RESTING' | null;
+// 'NONE'은 완전 종료 상태. STOMP 이벤트는 이 값을 문자열로 내려주고(과거엔 null이었음),
+// REST 상세 조회 응답은 지금도 null을 내려줄 수 있어 둘 다 허용한다.
+export type StudyRoomMemberTimerStatus = 'STUDYING' | 'RESTING' | 'NONE' | null;
 
 // 초대 상태
 export type StudyInvitationStatus = 'INVITED' | 'CANCELED' | 'JOINED' | 'REJECTED';
@@ -64,6 +66,7 @@ export interface GroupStudyTitleUpdateResult {
 export interface GroupStudyRoomMember {
     userId: number;
     nickname: string;
+    profileImageUrl: string | null;
     status: StudyRoomMemberStatus;
     timerStatus: StudyRoomMemberTimerStatus;
     totalSeconds: number;
@@ -166,6 +169,7 @@ export interface SentStudyInvitationItem {
     title: string;
     inviteeId: number;
     inviteeNickname: string;
+    inviteeProfileImageUrl: string | null;
     invitedAt: string;
 }
 
@@ -244,6 +248,7 @@ export interface StudyRankingEntry {
     rank: number;
     userId: number;
     nickname: string;
+    profileImageUrl: string | null;
     totalSeconds: number;
 }
 
@@ -389,6 +394,17 @@ export interface StudyRoomTimerStatusChangedData {
     userId: number;
     // 백엔드가 null 대신 문자열 "NONE"으로 내려준다 (Map.of가 null value를 허용 안 해서).
     timerStatus: 'STUDYING' | 'RESTING' | 'NONE';
+    // 진행 중인 랩의 시작 시각. STUDYING일 때만 값이 있고 RESTING/NONE이면 항상 null.
+    startedAt: string | null;
+    // 이 값을 기준으로 카운트업 계산 (startedAt이 있으면 거기서부터 경과분을 더함).
+    accumulatedSeconds: number;
+}
+
+// 화면에서 멤버별 카운트업을 계산하기 위한 타이머 상태 (REST 응답과 STOMP 이벤트를 같은 모양으로 맞춘 파생 타입)
+export interface StudyMemberTimerMeta {
+    timerStatus: StudyRoomMemberTimerStatus;
+    startedAt: string | null;
+    accumulatedSeconds: number;
 }
 
 export interface StudyRoomSocketEvent {

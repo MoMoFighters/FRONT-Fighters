@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import { formatStudyTime } from "@/features/study/utils";
 import type { StudyRankingEntry } from "@/features/study/type";
 
@@ -20,8 +22,18 @@ export default function StudyRankUserItem({ entry, variant }: StudyRankUserItemP
                     {entry.rank}
                 </span>
 
-                <div className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-slate-100 text-xs font-black text-slate-500">
-                    {entry.nickname.slice(0, 1)}
+                <div className="relative flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-slate-100 text-xs font-black text-slate-500">
+                    {entry.profileImageUrl ? (
+                        <Image
+                            src={entry.profileImageUrl}
+                            alt={`${entry.nickname} 프로필`}
+                            fill
+                            sizes="32px"
+                            className="object-cover"
+                        />
+                    ) : (
+                        entry.nickname.slice(0, 1)
+                    )}
                 </div>
 
                 <p className="min-w-0 flex-1 truncate text-sm font-bold text-slate-700">
@@ -40,9 +52,19 @@ export default function StudyRankUserItem({ entry, variant }: StudyRankUserItemP
     return (
         <div className="flex flex-col items-center">
             <div
-                className={`mb-1 flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-slate-100 text-sm font-black text-slate-500 ring-2 ${podiumStyle.avatarRing}`}
+                className={`relative mb-1 flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-slate-100 text-sm font-black text-slate-500 ring-2 ${podiumStyle.avatarRing}`}
             >
-                {entry.nickname.slice(0, 1)}
+                {entry.profileImageUrl ? (
+                    <Image
+                        src={entry.profileImageUrl}
+                        alt={`${entry.nickname} 프로필`}
+                        fill
+                        sizes="48px"
+                        className="object-cover"
+                    />
+                ) : (
+                    entry.nickname.slice(0, 1)
+                )}
             </div>
 
             <p className="max-w-16 truncate text-xs font-black text-slate-800">
