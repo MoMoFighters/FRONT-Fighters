@@ -38,11 +38,13 @@ function CommentRepliesBlock({
     postId,
     parentComment,
     onCreateReply,
+    onDeleteReply,
     role,
 }: {
     postId: number;
     parentComment: CommunityComment;
     onCreateReply: PostCommentsPanelProps["onCreateReply"];
+    onDeleteReply: PostCommentsPanelProps["onDeleteReply"];
     role?: PostCommentsPanelProps["role"];
 }) {
     const [isOpen, setIsOpen] = useState(false);
@@ -143,6 +145,7 @@ function CommentRepliesBlock({
                             createdAt={reply.createdAt}
                             parentId={reply.parentId}
                             onSubmitReply={onCreateReply}
+                            onDeleteReply={onDeleteReply}
                             role={role}
                         />
                     ))}
@@ -182,6 +185,8 @@ export default function PostCommentsPanel({
     onLoadMoreComments,
     onCreateComment,
     onCreateReply,
+    onDeleteComment,
+    onDeleteReply,
     role,
 }: PostCommentsPanelProps) {
     return (
@@ -218,6 +223,7 @@ export default function PostCommentsPanel({
                             createdAt={parentComment.createdAt}
                             parentId={parentComment.parentId}
                             onSubmitReply={onCreateReply}
+                            onDeleteComment={onDeleteComment}
                             role={role}
                         />
 
@@ -225,6 +231,7 @@ export default function PostCommentsPanel({
                             postId={postId}
                             parentComment={parentComment}
                             onCreateReply={onCreateReply}
+                            onDeleteReply={onDeleteReply}
                             role={role}
                         />
                     </div>

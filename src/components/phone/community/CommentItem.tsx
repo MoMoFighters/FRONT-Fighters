@@ -2,9 +2,11 @@
 
 import Image from "next/image";
 import { memo, useCallback, useMemo, useState } from "react";
-import { MessageCircle, MoreVertical, Reply, Trash2 } from "lucide-react";
+import { MessageCircle, Reply, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 import CreateReportBtn from "@/features/report/components/buttons/CreateReportBtn";
+import TwoButtonModal from "@/features/modal/TwoButtonModal";
 import CommentInputBox from "./CommentInputBox";
 import type { CommentItemProps } from "./PostDetailSide";
 
@@ -33,13 +35,52 @@ function CommentItem({
     parentId,
     role = "STUDENT",
     onSubmitReply,
+    onDeleteComment,
+    onDeleteReply,
 }: CommentItemProps) {
     const [replyOpen, setReplyOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
     const isReply = parentId !== null;
     const createdAtText = useMemo(() => formatCommentDate(createdAt), [createdAt]);
     const toggleReplyOpen = useCallback(() => {
         setReplyOpen((prev) => !prev);
     }, []);
+
+    const runDelete = useCallback(async () => {
+        if (isDeleting) {
+            return;
+        }
+
+        setIsDeleting(true);
+
+        try {
+            const success = isReply && parentId !== null
+                ? await onDeleteReply?.(parentId, commentId)
+                : await onDeleteComment?.(commentId);
+
+            if (success === false) {
+                toast.error(
+                    isReply ? "답글 삭제에 실패했습니다." : "댓글 삭제에 실패했습니다."
+                );
+                return;
+            }
+
+            setIsDeleteModalOpen(false);
+        } finally {
+            setIsDeleting(false);
+        }
+    }, [commentId, isDeleting, isReply, onDeleteComment, onDeleteReply, parentId]);
+
+    // 댓글(원댓글) 삭제는 확인 모달을 거치고, 답글 삭제는 바로 처리한다.
+    const handleDeleteClick = useCallback(() => {
+        if (isReply) {
+            void runDelete();
+            return;
+        }
+
+        setIsDeleteModalOpen(true);
+    }, [isReply, runDelete]);
 
     return (
         <div className="space-y-2">
@@ -100,9 +141,11 @@ function CommentItem({
                                 {role === "ADMIN" ? (
                                     <button
                                         type="button"
-                                        className="flex h-7 w-8 items-center justify-center text-rose-400 transition hover:bg-rose-50 hover:text-rose-500"
-                                        aria-label="댓글 삭제"
-                                        title="댓글 삭제"
+                                        onClick={handleDeleteClick}
+                                        disabled={isDeleting}
+                                        className="flex h-7 w-8 items-center justify-center text-rose-400 transition hover:bg-rose-50 hover:text-rose-500 disabled:cursor-wait disabled:opacity-60"
+                                        aria-label={isReply ? "답글 삭제" : "댓글 삭제"}
+                                        title={isReply ? "답글 삭제" : "댓글 삭제"}
                                     >
                                         <Trash2 className="h-3.5 w-3.5" />
                                     </button>
@@ -128,10 +171,13 @@ function CommentItem({
                                 ) : (
                                     <button
                                         type="button"
-                                        className="flex h-7 w-8 items-center justify-center text-slate-300"
-                                        aria-label="내 댓글"
+                                        onClick={handleDeleteClick}
+                                        disabled={isDeleting}
+                                        className="flex h-7 w-8 items-center justify-center text-slate-300 transition hover:bg-rose-50 hover:text-rose-400 disabled:cursor-wait disabled:opacity-60"
+                                        aria-label={isReply ? "답글 삭제" : "댓글 삭제"}
+                                        title={isReply ? "답글 삭제" : "댓글 삭제"}
                                     >
-                                        <MoreVertical className="h-3.5 w-3.5" />
+                                        <Trash2 className="h-3.5 w-3.5" />
                                     </button>
                                 )}
                             </div>
@@ -177,6 +223,16 @@ function CommentItem({
                 name="authorId"
                 value={authorId}
             />
+
+            {!isReply && (
+                <TwoButtonModal
+                    open={isDeleteModalOpen}
+                    onOpenChange={setIsDeleteModalOpen}
+                    title="댓글을 삭제할까요?"
+                    description="삭제한 댓글은 다시 볼 수 없습니다."
+                    onConfirm={() => void runDelete()}
+                />
+            )}
         </div>
     );
 }

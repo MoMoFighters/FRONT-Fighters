@@ -260,6 +260,46 @@ export const createCommunityPostReplyService = async ({
     return parseApiResponse(response, "create post reply");
 };
 
+// 댓글 삭제
+export const deleteCommunityPostCommentService = async ({
+    postId,
+    commentId,
+}: {
+    postId: number;
+    commentId: number;
+}): Promise<ApiResponse<null>> => {
+    const response = await fetchWithAuth(
+        `/api/v2/posts/${postId}/comments/${commentId}`,
+        {
+            method: "DELETE",
+            cache: "no-store",
+        }
+    );
+
+    return parseApiResponse(response, "delete post comment");
+};
+
+// 답글 삭제
+export const deleteCommunityPostReplyService = async ({
+    postId,
+    commentId,
+    replyId,
+}: {
+    postId: number;
+    commentId: number;
+    replyId: number;
+}): Promise<ApiResponse<null>> => {
+    const response = await fetchWithAuth(
+        `/api/v2/posts/${postId}/comments/${commentId}/replies/${replyId}`,
+        {
+            method: "DELETE",
+            cache: "no-store",
+        }
+    );
+
+    return parseApiResponse(response, "delete post reply");
+};
+
 
 
 
