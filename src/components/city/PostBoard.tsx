@@ -19,6 +19,7 @@ import {
 } from "@/features/guestbook/type";
 import { toast } from "sonner";
 import { Skeleton } from "../ui/skeleton";
+import { formatAdminDateTime } from "@/features/notice/components/admin/AdminNoticeList";
 
 interface PostBoardProps {
     mode: "MY" | "FRIEND";
@@ -560,8 +561,7 @@ function GuestbookDetailView({
                         {guestbook.writerName}
                     </p>
                     <time className="text-xs font-bold text-slate-400">
-                        {guestbook.createdAt.split('T')[0]}
-                        <span className="ml-1">{guestbook.createdAt.split('T')[1]}</span>
+                        {formatAdminDateTime(guestbook.createdAt)}
                     </time>
                 </div>
             </div>
@@ -629,7 +629,7 @@ function NoticeDetailView({
                 </h3>
 
                 <div className="mt-2 flex items-center gap-3 text-xs font-bold text-slate-400">
-                    {notice?.createdAt ? <time>{notice.createdAt}</time> : null}
+                    {notice?.createdAt ? formatAdminDateTime(notice.createdAt) : null}
                 </div>
             </div>
 
