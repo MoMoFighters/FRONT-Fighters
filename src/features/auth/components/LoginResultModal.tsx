@@ -54,7 +54,9 @@ export default function LoginResultModal({
         userInfo?.role === "TEACHER" &&
         userInfo.status === "PENDING";
     const isRejectedTeacherApplication =
-        isHttpSuccess && userInfo?.status === "REJECTED";
+        isHttpSuccess &&
+        userInfo?.role === "TEACHER" &&
+        userInfo.status === "REJECTED";
     const isActionRequired = isPendingTeacher || isRejectedTeacherApplication;
 
     const title = isActiveUser
@@ -110,9 +112,11 @@ export default function LoginResultModal({
             setIsGiveupPending(false);
         }
     };
+    // 배경 클릭으로 모달을 닫을 때도, 로그인 성공이 아니면 어딘가로는 보내야 한다.
+    // (버튼을 안 누르고 그냥 닫아버리면 콜백 페이지의 "로그인 처리 중입니다..." 화면에 갇히게 됨)
     const closeResultModal = () => {
         if (isActiveUser) return;
-        setIsModal(false)
+        handleCloseFailModal();
     }
 
     const displayMessage = isRejectedTeacherApplication

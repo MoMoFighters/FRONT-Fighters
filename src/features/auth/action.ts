@@ -23,6 +23,11 @@ import { UserRole, UserStatus } from "../user/type";
 import { redirect } from "next/navigation";
 import { revalidatePath, revalidateTag } from "next/cache";
 
+// 세션 쿠키를 심어도 되는 상태만 허용한다.
+// PENDING/REJECTED는 마이페이지에서 강사 포기/재신청을 하려면 로그인 세션이 있어야 해서 포함하고,
+// BANNED/BLACK/DELETED는 백엔드가 토큰을 내려주더라도 프론트에서 세션을 만들면 안 된다.
+const SESSION_ELIGIBLE_STATUSES: UserStatus[] = ["ACTIVE", "PENDING", "REJECTED"];
+
 
 const createErrorResponse = <T>(
     error: unknown,
@@ -215,7 +220,7 @@ export const loginAction = async (
             password,
         }, forwardedFor);
 
-        if (!result.data) {
+        if (!result.data || !SESSION_ELIGIBLE_STATUSES.includes(result.data.status)) {
             return result;
         }
 
@@ -505,7 +510,7 @@ export const handleKakaoLoginCallback = async (
         const forwardedFor = await getForwardedForHeader();
         const result = await kakaoLoginService(code, forwardedFor);
 
-        if (result.data) {
+        if (result.data && SESSION_ELIGIBLE_STATUSES.includes(result.data.status)) {
             await setOAuthCookies(result.data);
         }
 
@@ -529,7 +534,7 @@ export const googleLoginAction = async (
         const forwardedFor = await getForwardedForHeader();
         const result = await googleLoginService(code, forwardedFor);
 
-        if (result.data) {
+        if (result.data && SESSION_ELIGIBLE_STATUSES.includes(result.data.status)) {
             await setOAuthCookies(result.data);
         }
 
@@ -553,7 +558,7 @@ export const naverLoginAction = async (
         const forwardedFor = await getForwardedForHeader();
         const result = await naverLoginService(code, forwardedFor);
 
-        if (result.data) {
+        if (result.data && SESSION_ELIGIBLE_STATUSES.includes(result.data.status)) {
             await setOAuthCookies(result.data);
         }
 
