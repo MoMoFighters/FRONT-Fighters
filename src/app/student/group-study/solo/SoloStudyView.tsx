@@ -75,6 +75,7 @@ export default function SoloStudyView({
     const [isLapsLoading, setIsLapsLoading] = useState(false);
     const [isLapModalOpen, setIsLapModalOpen] = useState(false);
     const [canStartTimer, setCanStartTimer] = useState(true);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     // 아래 핸들러들은 StudyWebcamPreview/StudyTimer(모두 memo)에 그대로 내려가므로,
     // useCallback으로 묶어야 타이머 tick(초당 리렌더)마다 무거운 웹캠 컴포넌트까지 같이 리렌더되는 걸 막는다.
@@ -147,46 +148,66 @@ export default function SoloStudyView({
     }, []);
 
     const handleTogglePause = useCallback(async () => {
-        if (isRunning) {
-            const response = await pauseSoloStudyTimer();
+        if (isSubmitting) {
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        try {
+            if (isRunning) {
+                const response = await pauseSoloStudyTimer();
+
+                if (response.status >= 400) {
+                    toast.error(response.message || "솔로 타이머 일시정지에 실패했습니다.");
+                    return;
+                }
+
+                setSeconds(response.data.accumulatedSeconds);
+                setIsRunning(false);
+                void refreshLaps();
+                void refreshTimerAvailability();
+                return;
+            }
+
+            const response = await startSoloStudyTimer();
 
             if (response.status >= 400) {
-                toast.error(response.message || "솔로 타이머 일시정지에 실패했습니다.");
+                toast.error(response.message || "솔로 타이머 시작에 실패했습니다.");
                 return;
             }
 
             setSeconds(response.data.accumulatedSeconds);
+            setIsRunning(true);
+            void refreshLaps();
+        } finally {
+            setIsSubmitting(false);
+        }
+    }, [isRunning, isSubmitting, refreshLaps, refreshTimerAvailability]);
+
+    const handleEnd = useCallback(async () => {
+        if (isSubmitting) {
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        try {
+            const response = await stopSoloStudyTimer();
+
+            if (response.status >= 400) {
+                toast.error(response.message || "솔로 타이머 종료에 실패했습니다.");
+                return;
+            }
+
+            setSeconds(0);
             setIsRunning(false);
             void refreshLaps();
             void refreshTimerAvailability();
-            return;
+        } finally {
+            setIsSubmitting(false);
         }
-
-        const response = await startSoloStudyTimer();
-
-        if (response.status >= 400) {
-            toast.error(response.message || "솔로 타이머 시작에 실패했습니다.");
-            return;
-        }
-
-        setSeconds(response.data.accumulatedSeconds);
-        setIsRunning(true);
-        void refreshLaps();
-    }, [isRunning, refreshLaps, refreshTimerAvailability]);
-
-    const handleEnd = useCallback(async () => {
-        const response = await stopSoloStudyTimer();
-
-        if (response.status >= 400) {
-            toast.error(response.message || "솔로 타이머 종료에 실패했습니다.");
-            return;
-        }
-
-        setSeconds(0);
-        setIsRunning(false);
-        void refreshLaps();
-        void refreshTimerAvailability();
-    }, [refreshLaps, refreshTimerAvailability]);
+    }, [isSubmitting, refreshLaps, refreshTimerAvailability]);
 
     return (
         <>
@@ -225,6 +246,7 @@ export default function SoloStudyView({
                         title={"집중\n타이머"}
                         seconds={seconds}
                         isRunning={isRunning}
+                        isSubmitting={isSubmitting}
                         endLabel="랩 종료"
                         canStart={canStartTimer}
                         onTogglePause={handleTogglePause}

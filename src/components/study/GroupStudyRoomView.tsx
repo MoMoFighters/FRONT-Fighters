@@ -55,7 +55,7 @@ export default function GroupStudyRoomView({
         () => initialDetail.members.find((member) => member.nickname === myNickname)?.totalSeconds ?? 0
     );
     const [isRunning, setIsRunning] = useState(false);
-    const [isEnded, setIsEnded] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [canStartTimer, setCanStartTimer] = useState(true);
     const [pendingInvites, setPendingInvites] = useState(initialSentInvites);
     const myUserIdRef = useRef<number | null>(null);
@@ -229,44 +229,63 @@ export default function GroupStudyRoomView({
     }, [roomId, accessToken, handleRoomEvent]);
 
     const handleTogglePause = useCallback(async () => {
-        if (isRunning) {
-            const response = await pauseGroupStudyTimer(roomId);
+        if (isSubmitting) {
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        try {
+            if (isRunning) {
+                const response = await pauseGroupStudyTimer(roomId);
+
+                if (response.status >= 400) {
+                    toast.error(response.message || "타이머 일시정지에 실패했습니다.");
+                    return;
+                }
+
+                setSeconds(response.data.accumulatedSeconds);
+                setIsRunning(false);
+                void refreshTimerAvailability();
+                return;
+            }
+
+            const response = await startGroupStudyTimer(roomId);
 
             if (response.status >= 400) {
-                toast.error(response.message || "타이머 일시정지에 실패했습니다.");
+                toast.error(response.message || "타이머 시작에 실패했습니다.");
                 return;
             }
 
             setSeconds(response.data.accumulatedSeconds);
-            setIsRunning(false);
-            void refreshTimerAvailability();
-            return;
+            setIsRunning(true);
+        } finally {
+            setIsSubmitting(false);
         }
-
-        const response = await startGroupStudyTimer(roomId);
-
-        if (response.status >= 400) {
-            toast.error(response.message || "타이머 시작에 실패했습니다.");
-            return;
-        }
-
-        setSeconds(response.data.accumulatedSeconds);
-        setIsRunning(true);
-    }, [isRunning, roomId, refreshTimerAvailability]);
+    }, [isRunning, isSubmitting, roomId, refreshTimerAvailability]);
 
     const handleEnd = useCallback(async () => {
-        const response = await stopGroupStudyTimer(roomId);
-
-        if (response.status >= 400) {
-            toast.error(response.message || "타이머 종료에 실패했습니다.");
+        if (isSubmitting) {
             return;
         }
 
-        setSeconds(response.data.totalSeconds);
-        setIsRunning(false);
-        setIsEnded(true);
-        void refreshTimerAvailability();
-    }, [roomId, refreshTimerAvailability]);
+        setIsSubmitting(true);
+
+        try {
+            const response = await stopGroupStudyTimer(roomId);
+
+            if (response.status >= 400) {
+                toast.error(response.message || "타이머 종료에 실패했습니다.");
+                return;
+            }
+
+            setSeconds(response.data.totalSeconds);
+            setIsRunning(false);
+            void refreshTimerAvailability();
+        } finally {
+            setIsSubmitting(false);
+        }
+    }, [isSubmitting, roomId, refreshTimerAvailability]);
 
     const handleLeaveRoom = async () => {
         const response = await leaveGroupStudy(roomId);
@@ -381,7 +400,7 @@ export default function GroupStudyRoomView({
                     title={"집중\n타이머"}
                     seconds={seconds}
                     isRunning={isRunning}
-                    isEnded={isEnded}
+                    isSubmitting={isSubmitting}
                     canStart={canStartTimer}
                     onTogglePause={handleTogglePause}
                     onEnd={handleEnd}

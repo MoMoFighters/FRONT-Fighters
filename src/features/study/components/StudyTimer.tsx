@@ -1,7 +1,7 @@
 "use client";
 
 import { memo } from "react";
-import { Pause, Play, Square } from "lucide-react";
+import { Loader2, Pause, Play, Square } from "lucide-react";
 
 import {
     HoverCard,
@@ -15,6 +15,7 @@ interface StudyTimerProps {
     seconds: number;
     isRunning: boolean;
     isEnded?: boolean;
+    isSubmitting?: boolean;
     endLabel?: string;
     canStart?: boolean;
     startDisabledMessage?: string;
@@ -27,6 +28,7 @@ function StudyTimer({
     seconds,
     isRunning,
     isEnded = false,
+    isSubmitting = false,
     endLabel = "종료",
     canStart = true,
     startDisabledMessage = "이미 다른 곳에서 진행 중인 타이머가 있습니다.",
@@ -41,6 +43,8 @@ function StudyTimer({
 
     // 시작(재생) 버튼만 이 조건으로 막는다 - 이미 실행 중인 걸 멈추는 동작(일시정지)은 항상 허용
     const isStartBlocked = !isEnded && !isRunning && !canStart;
+    const isPlayDisabled = isSubmitting || isEnded || isStartBlocked;
+    const isEndDisabled = isSubmitting || isEnded;
 
     // 1시간(3600초)을 한 바퀴(360도) 기준으로 삼아 링이 차오르는 방식
     const RING_RADIUS = 46;
@@ -52,20 +56,23 @@ function StudyTimer({
         <button
             type="button"
             onClick={() => {
-                if (isEnded || isStartBlocked) {
+                if (isPlayDisabled) {
                     return;
                 }
 
                 onTogglePause();
             }}
-            aria-disabled={isEnded || isStartBlocked}
+            disabled={isPlayDisabled}
+            aria-disabled={isPlayDisabled}
             aria-label={isRunning ? "일시정지" : "시작"}
-            className={`flex h-12 w-12 items-center justify-center rounded-full text-white shadow-md transition ${isEnded || isStartBlocked
+            className={`flex h-12 w-12 items-center justify-center rounded-full text-white shadow-md transition ${isPlayDisabled
                 ? "cursor-not-allowed bg-slate-300 shadow-none"
                 : "cursor-pointer bg-indigo-500 shadow-indigo-200 hover:bg-indigo-600"
                 }`}
         >
-            {isRunning ? (
+            {isSubmitting ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+            ) : isRunning ? (
                 <Pause className="h-5 w-5" fill="currentColor" />
             ) : (
                 <Play className="ml-0.5 h-5 w-5" fill="currentColor" />
@@ -145,11 +152,15 @@ function StudyTimer({
                 <button
                     type="button"
                     onClick={onEnd}
-                    disabled={isEnded}
+                    disabled={isEndDisabled}
                     className="flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-gradient-to-br from-rose-300 to-rose-400 text-white shadow-md transition-all duration-200 hover:scale-105 hover:shadow-lg active:scale-95 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none"
                     aria-label={endLabel}
                 >
-                    <Square className="h-5 w-5" fill="currentColor" />
+                    {isSubmitting ? (
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                        <Square className="h-5 w-5" fill="currentColor" />
+                    )}
                 </button>
             </div>
         </div>
