@@ -1,4 +1,4 @@
-import type { GroupStudyDetail, StudyRoomSeatUser, DailyStudyTimeResult } from "./type";
+import type { GroupStudyDetail, StudyMemberTimerMeta, StudyRoomSeatUser, DailyStudyTimeResult } from "./type";
 import type { GrassLevel } from "@/components/mypage/GrassHeatmap";
 
 export const formatStudyTime = (totalSeconds: number) => {
@@ -33,6 +33,25 @@ export const buildRoomSeats = (
     }
 
     return seats.slice(0, detail.maxMember);
+};
+
+// 방 상세 조회(GET /rooms/{roomId}) 응답으로 멤버별 카운트업 초기값을 세팅한다.
+// REST 응답엔 startedAt이 없으므로, STUDYING 중인 멤버는 화면 진입 시점(now)을 기준으로 로컬 카운트업을 시작한다.
+export const buildInitialMemberTimers = (
+    detail: GroupStudyDetail
+): Record<number, StudyMemberTimerMeta> => {
+    const now = new Date().toISOString();
+
+    return Object.fromEntries(
+        detail.members.map((member) => [
+            member.userId,
+            {
+                timerStatus: member.timerStatus,
+                startedAt: member.timerStatus === "STUDYING" ? now : null,
+                accumulatedSeconds: member.totalSeconds,
+            },
+        ])
+    );
 };
 
 // 오늘 날짜를 YYYY-MM-DD 형식으로 반환 (일별 통계 조회용)
