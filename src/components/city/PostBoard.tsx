@@ -18,6 +18,7 @@ import {
     GuestbookListItem,
 } from "@/features/guestbook/type";
 import { toast } from "sonner";
+import { Skeleton } from "../ui/skeleton";
 
 interface PostBoardProps {
     mode: "MY" | "FRIEND";
@@ -121,7 +122,9 @@ export default function PostBoard({ mode, ownerId, initialGuestbooks = [], varia
         setIsGuestbookLoading(true);
 
         try {
-            const response = await getGuestbooksAction();
+            const response = await getGuestbooksAction(
+                mode === "FRIEND" ? ownerId : undefined
+            );
 
             if (response.status >= 400) {
                 toast.error(response.message);
@@ -214,9 +217,7 @@ export default function PostBoard({ mode, ownerId, initialGuestbooks = [], varia
         setPanelView("guestbook-detail");
         setCurrentPage(1);
 
-        if (mode === "MY") {
-            void loadGuestbooks();
-        }
+        void loadGuestbooks();
     };
 
     return (
@@ -386,7 +387,7 @@ export default function PostBoard({ mode, ownerId, initialGuestbooks = [], varia
                                         }`}
                                     >
                                         {isGuestbookLoading ? (
-                                            <EmptyBoardMessage message="방명록을 불러오는 중입니다." />
+                                            <GuestbookGridSkeleton />
                                         ) : visibleGuestbooks.length === 0 ? (
                                             <EmptyBoardMessage message="남겨진 방명록 내역이 없어요." />
                                         ) : visibleGuestbooks.map((guestbook) => (
@@ -408,7 +409,7 @@ export default function PostBoard({ mode, ownerId, initialGuestbooks = [], varia
                                 >
                                     <div className="grid grid-cols-1 gap-2 px-1 pt-1 pb-3">
                                         {isNoticeLoading ? (
-                                            <EmptyBoardMessage message="공지사항을 불러오는 중입니다." />
+                                            <NoticeListSkeleton />
                                         ) : notices.length === 0 ? (
                                             <EmptyBoardMessage message="등록된 공지사항이 없습니다." />
                                         ) : notices.map((notice) => (
@@ -425,6 +426,41 @@ export default function PostBoard({ mode, ownerId, initialGuestbooks = [], varia
                     </div>
                 </div>
             )}
+        </>
+    );
+}
+
+function GuestbookGridSkeleton() {
+    return (
+        <>
+            {Array.from({ length: 6 }).map((_, index) => (
+                <div
+                    key={index}
+                    className="flex h-24 w-full flex-col justify-between rounded-2xl border border-indigo-100 bg-white p-3"
+                >
+                    <Skeleton className="h-4 w-4/5" />
+                    <div className="flex items-center justify-between gap-2">
+                        <Skeleton className="h-3 w-16" />
+                        <Skeleton className="h-3 w-12" />
+                    </div>
+                </div>
+            ))}
+        </>
+    );
+}
+
+function NoticeListSkeleton() {
+    return (
+        <>
+            {Array.from({ length: 6 }).map((_, index) => (
+                <div
+                    key={index}
+                    className="flex w-full items-center justify-between rounded-2xl border border-slate-100 bg-white p-3"
+                >
+                    <Skeleton className="h-4 w-2/5" />
+                    <Skeleton className="h-3 w-16" />
+                </div>
+            ))}
         </>
     );
 }

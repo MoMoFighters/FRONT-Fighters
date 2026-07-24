@@ -19,10 +19,9 @@ import {
     HoverCardContent,
     HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import LogoutBtn from "@/components/common/LogoutBtn";
 import MembershipBadge from "@/components/common/MembershipBadge";
 
-interface HeaderProfileCardProps {
+export interface HeaderProfileCardProps {
     role: string;
     profileImageUrl?: string | null;
     nickname: string;
@@ -37,8 +36,9 @@ export default function HeaderProfileCard({
     nickname,
     membership,
     membershipUntil,
-    mode
-}: HeaderProfileCardProps) {
+    mode,
+    onLogoutClick,
+}: HeaderProfileCardProps & { onLogoutClick: () => void }) {
     const defaultProfile = nickname?.[0] ?? "모";
 
     const profileMenus = mode === 'student' ? [
@@ -184,17 +184,19 @@ export default function HeaderProfileCard({
                 </div>
 
                 <div className="border-t border-slate-100 px-2 py-2">
-                    <div
+                    <button
+                        type="button"
+                        onClick={onLogoutClick}
                         className="
-                            flex items-center gap-3 rounded-lg
+                            flex w-full items-center gap-3 rounded-lg
                             px-3 py-1.5
                             text-sm font-medium text-slate-700
                             hover:bg-slate-50
                         "
                     >
                         <LogOut className="h-4 w-4 text-slate-500" />
-                        <LogoutBtn />
-                    </div>
+                        로그아웃
+                    </button>
                 </div>
             </HoverCardContent>
         </HoverCard>

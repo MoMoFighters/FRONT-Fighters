@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { teacherGiveupAction } from "../action";
 import TeacherRegistModal from "./TeacherRegistModal";
+import { toast } from "sonner";
 
 interface LoginData {
     accessToken: string;
@@ -91,6 +92,15 @@ export default function LoginResultModal({
 
             if (response.status < 200 || response.status >= 300) {
                 setMutationMessage(response.message);
+                toast.error(response.message);
+
+                // 세션이 끊긴 상태(재로그인 필요)라면 모달을 닫고 로그인 페이지로 보낸다.
+                // 그 외 실패는 모달에 그대로 머물러 사용자가 다시 시도할 수 있게 둔다.
+                if (response.status === 401) {
+                    setIsModal(false);
+                    router.push("/auth/login");
+                }
+
                 return;
             }
 
