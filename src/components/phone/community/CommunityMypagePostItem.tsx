@@ -86,7 +86,7 @@ export default function CommunityMypagePostItem({
     commentCount,
     createdAt,
 }: CommunityMypagePostItemProps) {
-    const detailHref = `${detailHrefBase}/${postId}?commentCount=${commentCount}`;
+    const detailHref = `${detailHrefBase}/${postId}`;
 
     if (mode === "grid") {
         return (

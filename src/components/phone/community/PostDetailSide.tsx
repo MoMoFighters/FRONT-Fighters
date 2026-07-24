@@ -11,6 +11,8 @@ import { List, MessageCircle } from "lucide-react";
 import {
     createCommunityPostCommentAction,
     createCommunityPostReplyAction,
+    deleteCommunityPostCommentAction,
+    deleteCommunityPostReplyAction,
     getCommunityPostCommentsAction,
 } from "@/features/community/action";
 import type {
@@ -84,6 +86,11 @@ export interface CommentItemProps {
         commentId: number,
         content: string
     ) => Promise<boolean> | boolean;
+    onDeleteComment?: (commentId: number) => Promise<boolean> | boolean;
+    onDeleteReply?: (
+        parentId: number,
+        replyId: number
+    ) => Promise<boolean> | boolean;
 }
 
 export interface PostCommentsPanelProps {
@@ -97,6 +104,11 @@ export interface PostCommentsPanelProps {
     onCreateReply: (
         commentId: number,
         content: string
+    ) => Promise<boolean>;
+    onDeleteComment: (commentId: number) => Promise<boolean>;
+    onDeleteReply: (
+        parentId: number,
+        replyId: number
     ) => Promise<boolean>;
     role?: CommunityAuthorRole;
 }
@@ -236,6 +248,58 @@ export default function PostDetailSide({
         },
     });
     const { mutateAsync: createReply } = createReplyMutation;
+
+    const deleteCommentMutation = useMutation({
+        mutationFn: (commentId: number) =>
+            deleteCommunityPostCommentAction({
+                postId,
+                commentId,
+            }),
+        onSuccess: async (response) => {
+            if (response.status >= 200 && response.status < 300) {
+                await queryClient.invalidateQueries({
+                    queryKey: ["community", "post", postId, "comments"],
+                });
+            }
+        },
+    });
+    const { mutateAsync: deleteComment } = deleteCommentMutation;
+
+    const deleteReplyMutation = useMutation({
+        mutationFn: ({
+            parentId,
+            replyId,
+        }: {
+            parentId: number;
+            replyId: number;
+        }) =>
+            deleteCommunityPostReplyAction({
+                postId,
+                commentId: parentId,
+                replyId,
+            }),
+        onSuccess: async (response, variables) => {
+            if (response.status >= 200 && response.status < 300) {
+                await Promise.all([
+                    queryClient.invalidateQueries({
+                        queryKey: ["community", "post", postId, "comments"],
+                    }),
+                    queryClient.invalidateQueries({
+                        queryKey: [
+                            "community",
+                            "post",
+                            postId,
+                            "comment",
+                            variables.parentId,
+                            "replies",
+                        ],
+                    }),
+                ]);
+            }
+        },
+    });
+    const { mutateAsync: deleteReply } = deleteReplyMutation;
+
     const { fetchNextPage: fetchNextCommentsPage } = commentsQuery;
 
     const handleCreateComment = useCallback(async (content: string) => {
@@ -255,6 +319,21 @@ export default function PostDetailSide({
 
         return response.status === 201;
     }, [createReply]);
+
+    const handleDeleteComment = useCallback(async (commentId: number) => {
+        const response = await deleteComment(commentId);
+
+        return response.status >= 200 && response.status < 300;
+    }, [deleteComment]);
+
+    const handleDeleteReply = useCallback(async (
+        parentId: number,
+        replyId: number
+    ) => {
+        const response = await deleteReply({ parentId, replyId });
+
+        return response.status >= 200 && response.status < 300;
+    }, [deleteReply]);
 
     const handleLoadMoreComments = useCallback(() => {
         void fetchNextCommentsPage();
@@ -308,6 +387,8 @@ export default function PostDetailSide({
                     onLoadMoreComments={handleLoadMoreComments}
                     onCreateComment={handleCreateComment}
                     onCreateReply={handleCreateReply}
+                    onDeleteComment={handleDeleteComment}
+                    onDeleteReply={handleDeleteReply}
                     role={role}
                 />
             ) : (

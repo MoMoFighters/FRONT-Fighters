@@ -5,6 +5,8 @@ import {
     createCommunityPostCommentService,
     createCommunityPostReplyService,
     createCommunityPostService,
+    deleteCommunityPostCommentService,
+    deleteCommunityPostReplyService,
     deleteCommunityPostService,
     editCommunityPostContentService,
     editCommunityPostTitleService,
@@ -161,6 +163,43 @@ export const createCommunityPostReplyAction = async ({
             postId,
             commentId,
             content,
+        });
+    } catch (error) {
+        return createFailureResponse<null>(error);
+    }
+};
+
+export const deleteCommunityPostCommentAction = async ({
+    postId,
+    commentId,
+}: {
+    postId: number;
+    commentId: number;
+}) => {
+    try {
+        return await deleteCommunityPostCommentService({
+            postId,
+            commentId,
+        });
+    } catch (error) {
+        return createFailureResponse<null>(error);
+    }
+};
+
+export const deleteCommunityPostReplyAction = async ({
+    postId,
+    commentId,
+    replyId,
+}: {
+    postId: number;
+    commentId: number;
+    replyId: number;
+}) => {
+    try {
+        return await deleteCommunityPostReplyService({
+            postId,
+            commentId,
+            replyId,
         });
     } catch (error) {
         return createFailureResponse<null>(error);
