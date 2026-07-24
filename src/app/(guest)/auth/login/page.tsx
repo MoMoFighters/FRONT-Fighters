@@ -2,6 +2,8 @@ import AuthPageShell from "@/features/auth/components/AuthPageShell";
 import LoginForm from "@/features/auth/components/LoginForm";
 import { getOAuthClientConfig } from "@/lib/config/oauth/oauthAPI";
 
+export const dynamic = 'force-dynamic';
+
 export default function Login() {
     const oauthConfig = getOAuthClientConfig();
 
