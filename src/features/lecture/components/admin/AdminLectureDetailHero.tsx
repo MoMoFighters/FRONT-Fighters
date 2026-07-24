@@ -38,16 +38,16 @@ export default function AdminLectureDetailHero({
                 </div>
 
                 <div className="flex min-w-0 flex-col">
-                    <span className="w-fit rounded-full bg-indigo-50 px-[clamp(0.5rem,2cqw,0.75rem)] py-1 text-[clamp(0.75rem,2.5cqw,0.875rem)] font-bold text-indigo-500">
+                    <span className="w-fit rounded-full bg-indigo-50 px-[clamp(0.5rem,2cqw,0.75rem)] py-1 text-[clamp(0.8125rem,2.5cqw,0.875rem)] font-bold text-indigo-500">
                         {categoryMeta.label} 강의
                     </span>
                     <h2 className="mt-4 text-[clamp(1.25rem,5cqw,1.875rem)] font-bold tracking-tight text-slate-950">
                         {lecture.title}
                     </h2>
-                    <p className="mt-3 line-clamp-2 text-[clamp(0.75rem,2.2cqw,0.875rem)] font-medium leading-6 text-slate-500">
+                    <p className="mt-3 line-clamp-2 text-[clamp(0.8125rem,2.2cqw,0.875rem)] font-medium leading-6 text-slate-500">
                         {lecture.description}
                     </p>
-                    <div className="mt-6 flex flex-wrap items-center gap-4 text-[clamp(0.75rem,2.2cqw,0.875rem)] font-bold text-slate-500">
+                    <div className="mt-6 flex flex-wrap items-center gap-4 text-[clamp(0.8125rem,2.2cqw,0.875rem)] font-bold text-slate-500">
                         <span className="flex items-center gap-1.5 text-slate-700">
                             <Star className="size-4 fill-amber-400 text-amber-400" />
                             {lecture.averageRating ?? 0}
@@ -57,7 +57,7 @@ export default function AdminLectureDetailHero({
                         <span>수강평 {reviewCount}개</span>
                     </div>
                     <div className="mt-auto flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-5">
-                        <span className="text-[clamp(0.75rem,2.2cqw,0.875rem)] font-bold text-slate-400">
+                        <span className="text-[clamp(0.8125rem,2.2cqw,0.875rem)] font-bold text-slate-400">
                             등록일 {formatAdminDateTime(lecture.createdAt)}
                         </span>
                         {lecture.lectureStatus === "WAITING" ? (

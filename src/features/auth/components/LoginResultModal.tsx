@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { UserRole, UserStatus } from "@/features/user/type";
 import { ApiResponse } from "@/lib/api";
-import { AlertCircleIcon, CheckCircle2, XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { teacherGiveupAction } from "../action";
@@ -56,7 +55,6 @@ export default function LoginResultModal({
     const isRejectedTeacherApplication =
         isHttpSuccess && userInfo?.status === "REJECTED";
     const isActionRequired = isPendingTeacher || isRejectedTeacherApplication;
-    const isLoginSuccess = isActiveUser || isActionRequired;
 
     const title = isActiveUser
         ? "로그인 성공"
@@ -76,11 +74,6 @@ export default function LoginResultModal({
         }
 
         setIsModal(false);
-
-        if (userInfo.isTempPwd || userInfo.nickname === null) {
-            router.push("/student/mypage");
-            return;
-        }
 
         router.push(getRoleRootHref(userInfo.role));
     };
@@ -119,23 +112,15 @@ export default function LoginResultModal({
                 onClick={closeResultModal}
             >
                 <div
-                    className="flex w-full max-w-[420px] flex-col items-center gap-4 rounded-xl border border-slate-200 bg-white p-8 shadow-2xl"
+                    className="flex w-full max-w-[240px] flex-col items-center gap-2.5 rounded-xl border border-slate-200 bg-white p-6 shadow-2xl"
                     onClick={(event) => event.stopPropagation()}
                 >
-                    {isRejectedTeacherApplication ? (
-                        <AlertCircleIcon className="h-14 w-14 text-red-500" />
-                    ) : isLoginSuccess ? (
-                        <CheckCircle2 className="h-14 w-14 text-green-500" />
-                    ) : (
-                        <XCircle className="h-14 w-14 text-red-500" />
-                    )}
-
-                    <p className="text-2xl font-bold text-slate-900">
+                    <p className="text-lg font-bold text-slate-900">
                         {title}
                     </p>
 
                     <div className="text-center">
-                        <p className="text-slate-600">
+                        <p className="text-sm text-slate-600">
                             {isRejectedTeacherApplication
                                 ? "거절 사유는 이메일을 통해 확인해주세요."
                                 : mutationMessage || safeResult.message}
@@ -143,10 +128,10 @@ export default function LoginResultModal({
                     </div>
 
                     {isActionRequired ? (
-                        <div className="mt-2 grid w-full grid-cols-2 gap-2">
+                        <div className="mt-1 grid w-full grid-cols-2 gap-2">
                             <Button
                                 type="button"
-                                className="h-11 cursor-pointer rounded-lg border border-slate-200 bg-white font-bold text-slate-700 hover:bg-slate-100"
+                                className="h-9 cursor-pointer rounded-lg border border-slate-200 bg-white text-sm font-bold text-slate-700 hover:bg-slate-100"
                                 onClick={handleTeacherGiveup}
                                 disabled={isGiveupPending}
                             >
@@ -154,7 +139,7 @@ export default function LoginResultModal({
                             </Button>
                             <Button
                                 type="button"
-                                className="h-11 cursor-pointer rounded-lg bg-indigo-500 font-bold text-white hover:bg-indigo-600"
+                                className="h-9 cursor-pointer rounded-lg bg-indigo-500 text-sm font-bold text-white hover:bg-indigo-600"
                                 onClick={() => setIsApplyModal(true)}
                             >
                                 강사 다시 신청
@@ -164,7 +149,7 @@ export default function LoginResultModal({
                         <Button
                             type="button"
                             onClick={isActiveUser ? handleSuccessConfirm : handleCloseFailModal}
-                            className="mt-2 h-11 w-full cursor-pointer rounded-lg bg-indigo-500 font-bold text-white hover:bg-indigo-600"
+                            className="mt-1 h-9 w-full cursor-pointer rounded-lg bg-indigo-500 text-sm font-bold text-white hover:bg-indigo-600"
                         >
                             확인
                         </Button>

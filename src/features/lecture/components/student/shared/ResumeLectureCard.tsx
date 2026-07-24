@@ -21,11 +21,11 @@ export default function ResumeLectureCard(props: ResumeLectureCardProps) {
     if ("empty" in props) {
         return (
             <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm [container-type:inline-size]">
-                <h2 className="text-[clamp(0.875rem,4cqw,1rem)] font-bold text-slate-950">
+                <h2 className="text-[clamp(0.9375rem,4cqw,1rem)] font-bold text-slate-950">
                     이어보기
                 </h2>
 
-                <p className="mt-4 text-[clamp(0.7rem,1.8cqw,0.875rem)] font-medium leading-6 text-slate-500">
+                <p className="mt-4 text-[clamp(0.8125rem,1.8cqw,0.875rem)] font-medium leading-6 text-slate-500">
                     이어볼 강의 영상이 존재하지 않습니다. 수강 신청을 한 후 영상을 시청해보세요!
                 </p>
             </section>
@@ -42,12 +42,12 @@ export default function ResumeLectureCard(props: ResumeLectureCardProps) {
 
     return (
         <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm [container-type:inline-size]">
-            <h2 className="text-[clamp(0.875rem,4cqw,1rem)] font-bold text-slate-950">
+            <h2 className="text-[clamp(0.9375rem,4cqw,1rem)] font-bold text-slate-950">
                 이어보기
             </h2>
 
             <div className="mt-4 flex gap-3">
-                <div className="relative flex h-[clamp(3rem,18cqw,4rem)] w-[clamp(3rem,18cqw,4rem)] shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-100 text-[clamp(0.5rem,2cqw,0.625rem)] font-bold text-slate-400">
+                <div className="relative flex h-[clamp(3rem,18cqw,4rem)] w-[clamp(3rem,18cqw,4rem)] shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-100 text-[clamp(0.625rem,2cqw,0.625rem)] font-bold text-slate-400">
                     {thumbnail ? (
                         <Image
                             src={thumbnail}
@@ -62,11 +62,11 @@ export default function ResumeLectureCard(props: ResumeLectureCardProps) {
                 </div>
 
                 <div className="min-w-0 flex-1">
-                    <p className="truncate text-[clamp(0.75rem,3.5cqw,0.875rem)] font-bold text-slate-900">
+                    <p className="truncate text-[clamp(0.8125rem,3.5cqw,0.875rem)] font-bold text-slate-900">
                         {title}
                     </p>
 
-                    <p className="mt-1 truncate text-[clamp(0.625rem,3cqw,0.75rem)] font-medium text-slate-500">
+                    <p className="mt-1 truncate text-[clamp(0.75rem,3cqw,0.75rem)] font-medium text-slate-500">
                         {description}
                     </p>
 
@@ -81,7 +81,7 @@ export default function ResumeLectureCard(props: ResumeLectureCardProps) {
 
             <Link
                 href={href}
-                className="mt-4 flex h-[clamp(2rem,9cqw,2.5rem)] items-center justify-center rounded-xl bg-indigo-500 text-[clamp(0.75rem,3.5cqw,0.875rem)] font-bold text-white transition hover:bg-indigo-600"
+                className="mt-4 flex h-[clamp(2rem,9cqw,2.5rem)] items-center justify-center rounded-xl bg-indigo-500 text-[clamp(0.8125rem,3.5cqw,0.875rem)] font-bold text-white transition hover:bg-indigo-600"
             >
                 이어서 보기
             </Link>

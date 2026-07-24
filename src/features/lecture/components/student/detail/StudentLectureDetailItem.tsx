@@ -74,7 +74,7 @@ export default function StudentLectureDetailItem({
 
                     <Link
                         href={backHref}
-                        className="absolute left-[3cqw] top-[3cqw] inline-flex h-[clamp(1.75rem,6cqw,2.5rem)] items-center gap-[clamp(0.25rem,1cqw,0.375rem)] rounded-full bg-white/90 px-[clamp(0.5rem,2.5cqw,1rem)] text-[clamp(0.625rem,1.6cqw,0.75rem)] font-bold text-slate-700 shadow-sm backdrop-blur transition-colors hover:bg-white"
+                        className="absolute left-[3cqw] top-[3cqw] inline-flex h-[clamp(1.75rem,6cqw,2.5rem)] items-center gap-[clamp(0.25rem,1cqw,0.375rem)] rounded-full bg-white/90 px-[clamp(0.5rem,2.5cqw,1rem)] text-[clamp(0.75rem,1.6cqw,0.75rem)] font-bold text-slate-700 shadow-sm backdrop-blur transition-colors hover:bg-white"
                     >
                         <ChevronLeft className="h-[clamp(0.75rem,2.5cqw,1rem)] w-[clamp(0.75rem,2.5cqw,1rem)]" />
                         강의 목록
@@ -82,19 +82,19 @@ export default function StudentLectureDetailItem({
 
                     <CreateReportBtn
                         triggerLabel="강의 신고"
-                        triggerClassName="absolute right-[3cqw] top-[3cqw] rounded-full bg-white/90 px-[clamp(0.5rem,2.5cqw,1rem)] py-[clamp(0.3rem,1.2cqw,0.375rem)] text-[clamp(0.625rem,1.6cqw,0.75rem)] font-bold text-slate-700 shadow-sm backdrop-blur transition-colors hover:bg-white"
+                        triggerClassName="absolute right-[3cqw] top-[3cqw] rounded-full bg-white/90 px-[clamp(0.5rem,2.5cqw,1rem)] py-[clamp(0.3rem,1.2cqw,0.375rem)] text-[clamp(0.75rem,1.6cqw,0.75rem)] font-bold text-slate-700 shadow-sm backdrop-blur transition-colors hover:bg-white"
                         targetType="LECTURE"
                         targetId={lecture.lectureId}
                     />
 
                     <div className="absolute inset-x-0 bottom-0 p-[4cqw] text-white">
-                        <span className="rounded-full bg-white/15 px-[clamp(0.5rem,2cqw,0.75rem)] py-[clamp(0.2rem,0.8cqw,0.25rem)] text-[clamp(0.625rem,1.4cqw,0.75rem)] font-bold backdrop-blur">
+                        <span className="rounded-full bg-white/15 px-[clamp(0.5rem,2cqw,0.75rem)] py-[clamp(0.2rem,0.8cqw,0.25rem)] text-[clamp(0.75rem,1.4cqw,0.75rem)] font-bold backdrop-blur">
                             {categoryLabel} 강의
                         </span>
                         <h1 className="mt-[1.5cqw] max-w-3xl text-[clamp(1.125rem,4cqw,2.25rem)] font-bold tracking-tight">
                             {lecture.title}
                         </h1>
-                        <p className="mt-[1cqw] line-clamp-2 max-w-2xl text-[clamp(0.7rem,1.6cqw,0.875rem)] font-medium leading-6 text-white/80">
+                        <p className="mt-[1cqw] line-clamp-2 max-w-2xl text-[clamp(0.8125rem,1.6cqw,0.875rem)] font-medium leading-6 text-white/80">
                             {lecture.description}
                         </p>
                     </div>
@@ -102,8 +102,8 @@ export default function StudentLectureDetailItem({
 
                 <div className="grid grid-cols-2 divide-x divide-y divide-slate-100 p-[4cqw] sm:grid-cols-4 sm:divide-y-0">
                     <div className="pb-[1.5cqw] pr-[1.5cqw] sm:pb-0 sm:pr-0">
-                        <p className="hidden text-[clamp(0.625rem,1.4cqw,0.75rem)] font-bold text-slate-400 md:block">평점</p>
-                        <p className="mt-[0.6cqw] flex items-center gap-[0.6cqw] text-[clamp(0.7rem,1.6cqw,0.875rem)] font-bold text-slate-900">
+                        <p className="hidden text-[clamp(0.75rem,1.4cqw,0.75rem)] font-bold text-slate-400 md:block">평점</p>
+                        <p className="mt-[0.6cqw] flex items-center gap-[0.6cqw] text-[clamp(0.8125rem,1.6cqw,0.875rem)] font-bold text-slate-900">
                             <Star className="h-[clamp(0.75rem,2cqw,1rem)] w-[clamp(0.75rem,2cqw,1rem)] fill-amber-400 text-amber-400" />
                             {lecture.averageRating ?? 0}
                             <span className="hidden font-medium text-slate-400 md:inline">/ 5.0</span>
@@ -111,28 +111,28 @@ export default function StudentLectureDetailItem({
                     </div>
 
                     <div className="pb-[1.5cqw] pl-[1.5cqw] sm:px-[2.5cqw] sm:pb-0">
-                        <p className="hidden text-[clamp(0.625rem,1.4cqw,0.75rem)] font-bold text-slate-400 md:block">커리큘럼</p>
-                        <p className="mt-[0.6cqw] text-[clamp(0.7rem,1.6cqw,0.875rem)] font-bold text-slate-900">
+                        <p className="hidden text-[clamp(0.75rem,1.4cqw,0.75rem)] font-bold text-slate-400 md:block">커리큘럼</p>
+                        <p className="mt-[0.6cqw] text-[clamp(0.8125rem,1.6cqw,0.875rem)] font-bold text-slate-900">
                             <span className="md:hidden">{chapterCount}개</span>
                             <span className="hidden md:inline">총 {chapterCount}개 챕터</span>
                         </p>
                     </div>
 
                     <div className="pt-[1.5cqw] pr-[1.5cqw] sm:px-[2.5cqw] sm:pt-0">
-                        <p className="hidden text-[clamp(0.625rem,1.4cqw,0.75rem)] font-bold text-slate-400 md:block">예상 학습 시간</p>
-                        <p className="mt-[0.6cqw] flex items-center gap-[0.6cqw] text-[clamp(0.7rem,1.6cqw,0.875rem)] font-bold text-slate-900">
+                        <p className="hidden text-[clamp(0.75rem,1.4cqw,0.75rem)] font-bold text-slate-400 md:block">예상 학습 시간</p>
+                        <p className="mt-[0.6cqw] flex items-center gap-[0.6cqw] text-[clamp(0.8125rem,1.6cqw,0.875rem)] font-bold text-slate-900">
                             <Clock3 className="h-[clamp(0.75rem,2cqw,1rem)] w-[clamp(0.75rem,2cqw,1rem)] text-indigo-400" />
                             {formatTotalDuration(totalDurationSec)}
                         </p>
                     </div>
 
                     <div className="pt-[1.5cqw] pl-[1.5cqw] sm:px-[2.5cqw] sm:pt-0">
-                        <p className="hidden text-[clamp(0.625rem,1.4cqw,0.75rem)] font-bold text-slate-400 md:block">수강 상태</p>
+                        <p className="hidden text-[clamp(0.75rem,1.4cqw,0.75rem)] font-bold text-slate-400 md:block">수강 상태</p>
 
                         {lecture.isEnrolled ? (
                             <div className="mt-[0.6cqw] flex items-center gap-[0.8cqw]">
                                 <Progress value={progress} className="hidden md:block md:w-16" />
-                                <span className="text-[clamp(0.7rem,1.6cqw,0.875rem)] font-bold text-slate-900">{progress}%</span>
+                                <span className="text-[clamp(0.8125rem,1.6cqw,0.875rem)] font-bold text-slate-900">{progress}%</span>
                             </div>
                         ) : (
                             <div className="mt-[0.6cqw]">
@@ -140,7 +140,7 @@ export default function StudentLectureDetailItem({
                                     lectureId={lecture.lectureId}
                                     membership={membership}
                                     position={position}
-                                    className="h-[clamp(1.5rem,6cqw,2rem)] rounded-lg bg-indigo-500 px-[clamp(0.5rem,2.5cqw,0.75rem)] text-[clamp(0.625rem,1.6cqw,0.75rem)] font-bold text-white transition hover:bg-indigo-600"
+                                    className="h-[clamp(1.5rem,6cqw,2rem)] rounded-lg bg-indigo-500 px-[clamp(0.5rem,2.5cqw,0.75rem)] text-[clamp(0.75rem,1.6cqw,0.75rem)] font-bold text-white transition hover:bg-indigo-600"
                                 />
                             </div>
                         )}

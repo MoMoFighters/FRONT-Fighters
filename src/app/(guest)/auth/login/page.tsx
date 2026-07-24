@@ -9,6 +9,7 @@ export default function Login() {
         <AuthPageShell
             title="모모시티 로그인"
             description="로그인 후 강의를 수강하고 나만의 도시를 성장시켜보세요."
+            compact
         >
             <LoginForm
                 oauthConfig={oauthConfig}

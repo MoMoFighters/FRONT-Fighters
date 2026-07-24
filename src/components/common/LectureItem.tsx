@@ -68,12 +68,12 @@ export default function LectureItem({
                         </div>
 
                         <div className="min-w-0 flex-1">
-                            <h4 className="mb-1 truncate text-[clamp(0.6875rem,3cqw,0.75rem)] font-bold text-slate-900">
+                            <h4 className="mb-1 truncate text-[clamp(0.75rem,3cqw,0.75rem)] font-bold text-slate-900">
                                 {lecture.title}
                             </h4>
 
                             {lectureStatus === "ACTIVE" && (
-                                <div className="flex items-center gap-3 text-[clamp(0.5625rem,2.5cqw,0.625rem)] text-slate-500">
+                                <div className="flex items-center gap-3 text-[clamp(0.625rem,2.5cqw,0.625rem)] text-slate-500">
                                     <span className="flex items-center gap-1">
                                         <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
                                         {averageRating} / 5
@@ -82,13 +82,13 @@ export default function LectureItem({
                             )}
 
                             {lectureStatus === "WAITING" && (
-                                <p className="text-[clamp(0.625rem,2.8cqw,0.75rem)] font-medium text-amber-600">
+                                <p className="text-[clamp(0.75rem,2.8cqw,0.75rem)] font-medium text-amber-600">
                                     관리자 승인 대기중입니다.
                                 </p>
                             )}
 
                             {lectureStatus === "HOLD" && (
-                                <p className="text-[clamp(0.625rem,2.8cqw,0.75rem)] font-medium text-red-600">
+                                <p className="text-[clamp(0.75rem,2.8cqw,0.75rem)] font-medium text-red-600">
                                     승인 거절됨
                                 </p>
                             )}
@@ -141,7 +141,7 @@ export default function LectureItem({
 
                     <div className="space-y-2">
                         <div className="flex items-center">
-                            <span className={`${categoryColor} rounded-full px-3 py-1 text-[clamp(0.7rem,2.2cqw,0.75rem)] font-bold text-slate-600`}>
+                            <span className={`${categoryColor} rounded-full px-3 py-1 text-[clamp(0.75rem,2.2cqw,0.75rem)] font-bold text-slate-600`}>
                                 {categoryLabel}
                             </span>
                         </div>
@@ -150,12 +150,12 @@ export default function LectureItem({
                             {lecture.title}
                         </h1>
 
-                        <p className="mb-25 text-[clamp(0.875rem,2.6cqw,1rem)] leading-relaxed text-slate-500">
+                        <p className="mb-25 text-[clamp(0.9375rem,2.6cqw,1rem)] leading-relaxed text-slate-500">
                             {lecture.description}
                         </p>
 
                         {lectureStatus === "ACTIVE" && (
-                            <div className="flex items-center gap-2 text-[clamp(0.8rem,2.4cqw,0.875rem)] text-slate-600">
+                            <div className="flex items-center gap-2 text-[clamp(0.875rem,2.4cqw,0.875rem)] text-slate-600">
                                 <span className="font-bold">평점 :</span>
                                 <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
                                 <span className="font-bold">{averageRating}</span>
@@ -232,16 +232,16 @@ export default function LectureItem({
 
                         <div className="min-w-0 flex-1">
                             <div className="mb-1 flex min-w-0 items-center gap-3">
-                                <span className={`${categoryColor} shrink-0 rounded-full px-3 py-1 text-[clamp(0.625rem,2.8cqw,0.75rem)] font-bold text-slate-600`}>
+                                <span className={`${categoryColor} shrink-0 rounded-full px-3 py-1 text-[clamp(0.75rem,2.8cqw,0.75rem)] font-bold text-slate-600`}>
                                     {categoryLabel}
                                 </span>
 
-                                <h3 className="max-w-60 truncate text-[clamp(0.95rem,4cqw,1.125rem)] font-bold text-slate-900">
+                                <h3 className="max-w-60 truncate text-[clamp(1rem,4cqw,1.125rem)] font-bold text-slate-900">
                                     {lecture.title}
                                 </h3>
                             </div>
 
-                            <p className="max-w-120 truncate text-[clamp(0.75rem,3.2cqw,0.875rem)] text-slate-500">
+                            <p className="max-w-120 truncate text-[clamp(0.8125rem,3.2cqw,0.875rem)] text-slate-500">
                                 {lecture.description}
                             </p>
                         </div>

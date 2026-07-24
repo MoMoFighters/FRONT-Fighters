@@ -27,17 +27,17 @@ export default function ChapterDetailList({
 
     return (
         <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm [container-type:inline-size]">
-            <h2 className="text-[clamp(0.875rem,4cqw,1rem)] font-bold text-slate-950">
+            <h2 className="text-[clamp(0.9375rem,4cqw,1rem)] font-bold text-slate-950">
                 강의 챕터
             </h2>
 
             <div className="mt-5 border-t border-slate-100 pt-5">
                 <div className="mb-3 flex items-center justify-between">
-                    <span className="text-[clamp(0.75rem,3.2cqw,0.875rem)] font-bold text-slate-500">
+                    <span className="text-[clamp(0.8125rem,3.2cqw,0.875rem)] font-bold text-slate-500">
                         전체 {totalChapterCount}개 챕터
                     </span>
 
-                    <span className="text-[clamp(0.75rem,3.2cqw,0.875rem)] font-bold text-slate-500">
+                    <span className="text-[clamp(0.8125rem,3.2cqw,0.875rem)] font-bold text-slate-500">
                         {completedCount} / {totalChapterCount} 완료
                     </span>
                 </div>

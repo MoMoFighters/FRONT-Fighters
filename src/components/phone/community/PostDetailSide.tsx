@@ -275,7 +275,7 @@ export default function PostDetailSide({
                     <button
                         type="button"
                         onClick={handlePostsMode}
-                        className={`flex h-[clamp(2rem,9cqw,2.25rem)] items-center justify-center gap-1.5 rounded-xl text-[clamp(0.7rem,3cqw,0.75rem)] font-black transition ${mode === "posts"
+                        className={`flex h-[clamp(2rem,9cqw,2.25rem)] items-center justify-center gap-1.5 rounded-xl text-[clamp(0.75rem,3cqw,0.75rem)] font-black transition ${mode === "posts"
                             ? "bg-white text-indigo-500 shadow-sm"
                             : "text-slate-400 hover:bg-white/70 hover:text-slate-700"
                             }`}
@@ -287,7 +287,7 @@ export default function PostDetailSide({
                     <button
                         type="button"
                         onClick={handleCommentMode}
-                        className={`flex h-[clamp(2rem,9cqw,2.25rem)] items-center justify-center gap-1.5 rounded-xl text-[clamp(0.7rem,3cqw,0.75rem)] font-black transition ${mode === "comment"
+                        className={`flex h-[clamp(2rem,9cqw,2.25rem)] items-center justify-center gap-1.5 rounded-xl text-[clamp(0.75rem,3cqw,0.75rem)] font-black transition ${mode === "comment"
                             ? "bg-white text-indigo-500 shadow-sm"
                             : "text-slate-400 hover:bg-white/70 hover:text-slate-700"
                             }`}
