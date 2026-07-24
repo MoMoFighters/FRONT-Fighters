@@ -13,6 +13,7 @@ import { getGuestbooksAction } from "@/features/guestbook/action";
 import { buildActivityGrassMap } from "@/features/city/utils";
 import type { Building } from "@/features/city/type";
 import type { GrassLevel } from "@/components/mypage/GrassHeatmap";
+import { getMyInfo } from "@/features/user/action";
 
 const MOBILE_GRASS_COLOR_SCALE: Record<GrassLevel, string> = {
     0: "bg-slate-100",
@@ -57,7 +58,7 @@ const commonBuildingSlots = {
     mypage: { top: "60%", left: "62.22%", width: "13.89%", aspectRatio: "5 / 4" },
 } as const;
 
-export default async function StudentMainPage({ params }: {
+export default async function FriendCityPage({ params }: {
     params: Promise<{
         userId: string;
     }>
@@ -66,8 +67,11 @@ export default async function StudentMainPage({ params }: {
     const cookieStore = await cookies();
     const accessToken = cookieStore.get("accessToken")?.value;
 
-    // PostBoard가 FRIEND 모드에서는 모달 오픈 시 자체 재조회를 하지 않으므로 그대로 blocking 유지
-    const guestbookResponse = await getGuestbooksAction(Number(userId));
+    const [guestbookResponse, myInfo] = await Promise.all([
+        getGuestbooksAction(Number(userId)),
+        getMyInfo()
+    ])
+    const initialDnd = myInfo.data?.doNotDisturb
     const guestbooks = guestbookResponse.data ?? [];
 
     return (
@@ -81,7 +85,7 @@ export default async function StudentMainPage({ params }: {
                         ownerId={Number(userId)}
                         initialGuestbooks={guestbooks}
                     />
-                    <Phone accessToken={accessToken} />
+                    <Phone accessToken={accessToken} initialNotification={initialDnd} />
 
                     <Suspense fallback={null}>
                         <StreakSection userId={userId} />
