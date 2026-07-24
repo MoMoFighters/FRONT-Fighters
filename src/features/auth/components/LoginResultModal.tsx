@@ -105,6 +105,11 @@ export default function LoginResultModal({
         setIsModal(false)
     }
 
+    const displayMessage = isRejectedTeacherApplication
+        ? "거절 사유는 이메일을 통해 확인해주세요."
+        : mutationMessage || safeResult.message;
+    const isLongMessage = displayMessage.length > 30;
+
     return (
         <>
             <div
@@ -112,7 +117,7 @@ export default function LoginResultModal({
                 onClick={closeResultModal}
             >
                 <div
-                    className="flex w-full max-w-[240px] flex-col items-center gap-2.5 rounded-xl border border-slate-200 bg-white p-6 shadow-2xl"
+                    className={`flex w-full flex-col items-center gap-2.5 rounded-xl border border-slate-200 bg-white p-6 shadow-2xl ${isLongMessage ? "max-w-[300px]" : "max-w-[240px]"}`}
                     onClick={(event) => event.stopPropagation()}
                 >
                     <p className="text-lg font-bold text-slate-900">
@@ -121,9 +126,7 @@ export default function LoginResultModal({
 
                     <div className="text-center">
                         <p className="text-sm text-slate-600">
-                            {isRejectedTeacherApplication
-                                ? "거절 사유는 이메일을 통해 확인해주세요."
-                                : mutationMessage || safeResult.message}
+                            {displayMessage}
                         </p>
                     </div>
 
