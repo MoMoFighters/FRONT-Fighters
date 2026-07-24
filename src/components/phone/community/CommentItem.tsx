@@ -72,15 +72,9 @@ function CommentItem({
         }
     }, [commentId, isDeleting, isReply, onDeleteComment, onDeleteReply, parentId]);
 
-    // 댓글(원댓글) 삭제는 확인 모달을 거치고, 답글 삭제는 바로 처리한다.
     const handleDeleteClick = useCallback(() => {
-        if (isReply) {
-            void runDelete();
-            return;
-        }
-
         setIsDeleteModalOpen(true);
-    }, [isReply, runDelete]);
+    }, []);
 
     return (
         <div className="space-y-2">
@@ -224,15 +218,17 @@ function CommentItem({
                 value={authorId}
             />
 
-            {!isReply && (
-                <TwoButtonModal
-                    open={isDeleteModalOpen}
-                    onOpenChange={setIsDeleteModalOpen}
-                    title="댓글을 삭제할까요?"
-                    description="삭제한 댓글은 다시 볼 수 없습니다."
-                    onConfirm={() => void runDelete()}
-                />
-            )}
+            <TwoButtonModal
+                open={isDeleteModalOpen}
+                onOpenChange={setIsDeleteModalOpen}
+                title={isReply ? "답글을 삭제할까요?" : "댓글을 삭제할까요?"}
+                description={
+                    isReply
+                        ? "삭제한 답글은 다시 볼 수 없습니다."
+                        : "삭제한 댓글은 다시 볼 수 없습니다."
+                }
+                onConfirm={() => void runDelete()}
+            />
         </div>
     );
 }
