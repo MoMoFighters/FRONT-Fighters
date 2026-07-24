@@ -133,12 +133,12 @@ export default async function LectureByCategoryDetail({
                                     reviewCount={lecture.reviewCount}
                                 />
 
-                                {lecture.isEnrolled && lecture.isCompleted && (
-                                    <CreateReviewBtn lectureId={lecture.lectureId} />
+                                {lecture.isEnrolled && (
+                                    <CreateReviewBtn lectureId={lecture.lectureId} disabled={!lecture.isCompleted} />
                                 )}
                             </div>
 
-                            <StudentReviewList reviews={reviewResponseData.content} />
+                            <StudentReviewList reviews={reviewResponseData.content} myNickname={myInfo.data?.nickname} />
 
                             <div className="border-t border-slate-100 px-5 pb-5">
                                 <ListPagination

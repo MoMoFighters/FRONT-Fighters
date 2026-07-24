@@ -24,6 +24,7 @@ interface AdminActionConfirmDialogProps {
     tone?: "indigo" | "rose";
     confirmDisabled?: boolean;
     children?: ReactNode;
+    contentClassName?: string;
     onConfirm: () => void;
 }
 
@@ -36,13 +37,14 @@ export default function AdminActionConfirmDialog({
     tone = "indigo",
     confirmDisabled = false,
     children,
+    contentClassName,
     onConfirm,
 }: AdminActionConfirmDialogProps) {
     const isRose = tone === "rose";
 
     return (
         <AlertDialog open={open} onOpenChange={onOpenChange}>
-            <AlertDialogContent size="sm">
+            <AlertDialogContent size="sm" className={contentClassName}>
                 <AlertDialogHeader>
                     <AlertDialogMedia className={isRose ? "bg-rose-100 text-rose-600" : "bg-indigo-100 text-indigo-600"}>
                         <AlertTriangle />

@@ -100,7 +100,7 @@ export default function StudentLectureDetailItem({
                     </div>
                 </div>
 
-                <div className="grid grid-cols-2 divide-x divide-y divide-slate-100 p-[4cqw] sm:grid-cols-4 sm:divide-y-0">
+                <div className="grid grid-cols-2 divide-x divide-y divide-slate-100 p-[4cqw] sm:flex sm:items-start sm:justify-between sm:divide-x-0 sm:divide-y-0">
                     <div className="pb-[1.5cqw] pr-[1.5cqw] sm:pb-0 sm:pr-0">
                         <p className="hidden text-[clamp(0.75rem,1.4cqw,0.75rem)] font-bold text-slate-400 md:block">평점</p>
                         <p className="mt-[0.6cqw] flex items-center gap-[0.6cqw] text-[clamp(0.8125rem,1.6cqw,0.875rem)] font-bold text-slate-900">
@@ -110,7 +110,7 @@ export default function StudentLectureDetailItem({
                         </p>
                     </div>
 
-                    <div className="pb-[1.5cqw] pl-[1.5cqw] sm:px-[2.5cqw] sm:pb-0">
+                    <div className="pb-[1.5cqw] pl-[1.5cqw] sm:pb-0 sm:pl-0">
                         <p className="hidden text-[clamp(0.75rem,1.4cqw,0.75rem)] font-bold text-slate-400 md:block">커리큘럼</p>
                         <p className="mt-[0.6cqw] text-[clamp(0.8125rem,1.6cqw,0.875rem)] font-bold text-slate-900">
                             <span className="md:hidden">{chapterCount}개</span>
@@ -118,7 +118,7 @@ export default function StudentLectureDetailItem({
                         </p>
                     </div>
 
-                    <div className="pt-[1.5cqw] pr-[1.5cqw] sm:px-[2.5cqw] sm:pt-0">
+                    <div className="pt-[1.5cqw] pr-[1.5cqw] sm:pt-0 sm:pr-0">
                         <p className="hidden text-[clamp(0.75rem,1.4cqw,0.75rem)] font-bold text-slate-400 md:block">예상 학습 시간</p>
                         <p className="mt-[0.6cqw] flex items-center gap-[0.6cqw] text-[clamp(0.8125rem,1.6cqw,0.875rem)] font-bold text-slate-900">
                             <Clock3 className="h-[clamp(0.75rem,2cqw,1rem)] w-[clamp(0.75rem,2cqw,1rem)] text-indigo-400" />
@@ -126,7 +126,7 @@ export default function StudentLectureDetailItem({
                         </p>
                     </div>
 
-                    <div className="pt-[1.5cqw] pl-[1.5cqw] sm:px-[2.5cqw] sm:pt-0">
+                    <div className="pt-[1.5cqw] pl-[1.5cqw] sm:pt-0 sm:pl-0">
                         <p className="hidden text-[clamp(0.75rem,1.4cqw,0.75rem)] font-bold text-slate-400 md:block">수강 상태</p>
 
                         {lecture.isEnrolled ? (

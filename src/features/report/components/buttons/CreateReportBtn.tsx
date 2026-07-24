@@ -184,7 +184,7 @@ export default function CreateReportBtn({
                     </Button>
                 )}
 
-                <DialogContent className="sm:max-w-lg">
+                <DialogContent className="sm:max-w-[360px]">
 
                     <div>
 
@@ -208,7 +208,7 @@ export default function CreateReportBtn({
 
                         <FieldGroup className="mt-4">
 
-                            <div className="flex flex-col gap-4 sm:flex-row">
+                            <div className="flex flex-col gap-4">
 
                                 <Field>
 
@@ -274,7 +274,7 @@ export default function CreateReportBtn({
 
                         </FieldGroup>
 
-                        <DialogFooter className="mt-6">
+                        <DialogFooter className="mt-6 grid grid-cols-2">
 
                             <DialogClose asChild>
                                 <Button

@@ -32,7 +32,7 @@ export default function AdminChapterVideo({
                 </video>
             </div>
             <div className="flex items-center justify-between gap-6 p-5">
-                <div className="grid grid-cols-2 gap-x-10 gap-y-3 text-sm">
+                <div className="grid grid-cols-3 gap-x-10 gap-y-3 text-sm">
                     <div>
                         <p className="text-xs font-bold text-slate-400">강의명</p>
                         <p className="mt-1 font-bold text-slate-950">{lectureTitle}</p>

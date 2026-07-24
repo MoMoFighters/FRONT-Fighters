@@ -159,6 +159,7 @@ export default function PendingTeacherTable({ users }: PendingTeacherTableProps)
                 confirmLabel={pendingAction?.type === "single" && pendingAction.action === "REJECT" ? "거절하기" : "승인하기"}
                 tone={pendingAction?.type === "single" && pendingAction.action === "REJECT" ? "rose" : "indigo"}
                 confirmDisabled={pendingAction?.type === "single" && pendingAction.action === "REJECT" && !rejectReason.trim()}
+                contentClassName="data-[size=sm]:max-w-[360px]"
                 onConfirm={submitPendingAction}
             >
                 {pendingAction?.type === "single" && pendingAction.action === "REJECT" && (
@@ -166,7 +167,7 @@ export default function PendingTeacherTable({ users }: PendingTeacherTableProps)
                         value={rejectReason}
                         onChange={(event) => setRejectReason(event.target.value)}
                         placeholder="강사에게 전달할 거절 사유를 작성해주세요."
-                        className="min-h-24 w-full resize-none rounded-md border border-slate-200 bg-slate-50 p-3 text-sm text-slate-800 outline-none placeholder:text-slate-400 focus:border-indigo-300 focus:bg-white focus:ring-3 focus:ring-indigo-50"
+                        className="min-h-16 w-full resize-none rounded-md border border-slate-200 bg-slate-50 p-3 text-sm text-slate-800 outline-none placeholder:text-slate-400 focus:border-indigo-300 focus:bg-white focus:ring-3 focus:ring-indigo-50"
                     />
                 )}
             </AdminActionConfirmDialog>

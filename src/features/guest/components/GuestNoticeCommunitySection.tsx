@@ -9,7 +9,7 @@ import community from '@/app/assets/img/community.png'
 import robot from '@/app/assets/img/robot.png'
 import GuestInquiryCard from "./GuestInquiryCard";
 
-const COMMUNITY_HREF = "/auth/login";
+const COMMUNITY_HREF = "/community";
 
 const notices: Notice[] = [
   {
