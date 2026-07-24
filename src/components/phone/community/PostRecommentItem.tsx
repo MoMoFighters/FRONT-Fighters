@@ -22,12 +22,12 @@ export default function PostRecommentItem({
         <Link
             href={
                 role === "TEACHER"
-                    ? `/teacher/community/${postId}?commentCount=${commentCount}`
+                    ? `/teacher/community/${postId}`
                     : role === "ADMIN"
-                        ? `/admin/community/${postId}?commentCount=${commentCount}`
+                        ? `/admin/community/${postId}`
                         : role === "GUEST"
-                            ? `/community/${postId}?commentCount=${commentCount}`
-                            : `/student/community/${postId}?commentCount=${commentCount}`
+                            ? `/community/${postId}`
+                            : `/student/community/${postId}`
             }
             className={`grid grid-cols-[72px_1fr] gap-3 rounded-2xl border p-2.5 transition hover:border-indigo-100 hover:bg-indigo-50/50 ${isActive
                 ? "border-indigo-200 bg-indigo-50"

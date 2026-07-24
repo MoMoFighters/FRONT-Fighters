@@ -1,3 +1,4 @@
+import { formatAdminDateTime } from "@/features/notice/components/admin/AdminNoticeList";
 import { Notice } from "@/features/notice/type";
 import { Pin } from "lucide-react";
 
@@ -23,10 +24,7 @@ export default function StudentNoticeItem({
             <p className="items-center justify-end gap-2 text-xs font-bold text-slate-400 flex flex-row">
                 {notice.isPinned ? <Pin
                     className="size-4 fill-indigo-500 text-indigo-500" /> : ""}
-                {notice.createdAt.split('T')[0]}
-                <span>
-                    {notice.createdAt.split('T')[1]}
-                </span>
+                {formatAdminDateTime(notice.createdAt)}
             </p>
         </button>
     );

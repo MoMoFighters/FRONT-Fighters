@@ -131,10 +131,12 @@ export const createCommunityPostContentsService = async (
 
 
 // 게시글 상세조회
+// isLiked는 요청자가 누구인지에 따라 달라지는 값이라 로그인 사용자는 토큰을 실어 보내야 한다.
+// 비로그인(게스트)은 accessToken 쿠키가 없으므로 fetchWithAuth가 자동으로 인증 없는 요청으로 폴백한다.
 export const getCommunityPostDetailService = async (
     postId: number
 ): Promise<GetCommunityPostDetailResponse> => {
-    const response = await fetchWithoutAuth(`/api/v2/posts/${postId}`, {
+    const response = await fetchWithAuth(`/api/v2/posts/${postId}`, {
         method: "GET",
         cache: "no-store",
     });
@@ -256,6 +258,46 @@ export const createCommunityPostReplyService = async ({
     );
 
     return parseApiResponse(response, "create post reply");
+};
+
+// 댓글 삭제
+export const deleteCommunityPostCommentService = async ({
+    postId,
+    commentId,
+}: {
+    postId: number;
+    commentId: number;
+}): Promise<ApiResponse<null>> => {
+    const response = await fetchWithAuth(
+        `/api/v2/posts/${postId}/comments/${commentId}`,
+        {
+            method: "DELETE",
+            cache: "no-store",
+        }
+    );
+
+    return parseApiResponse(response, "delete post comment");
+};
+
+// 답글 삭제
+export const deleteCommunityPostReplyService = async ({
+    postId,
+    commentId,
+    replyId,
+}: {
+    postId: number;
+    commentId: number;
+    replyId: number;
+}): Promise<ApiResponse<null>> => {
+    const response = await fetchWithAuth(
+        `/api/v2/posts/${postId}/comments/${commentId}/replies/${replyId}`,
+        {
+            method: "DELETE",
+            cache: "no-store",
+        }
+    );
+
+    return parseApiResponse(response, "delete post reply");
 };
 
 

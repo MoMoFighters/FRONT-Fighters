@@ -1,3 +1,5 @@
+import { formatAdminDateTime } from "@/features/notice/components/admin/AdminNoticeList";
+
 export interface GuestBookListItem {
     guestbookId: number;
     writerName: string;
@@ -29,7 +31,7 @@ export default function GuestBookItem({
                     {guestbook.writerName}
                 </span>
                 <time className="shrink-0">
-                    {guestbook.createdAt.split('T')[0]}
+                    {formatAdminDateTime(guestbook.createdAt)}
                 </time>
             </div>
         </button>

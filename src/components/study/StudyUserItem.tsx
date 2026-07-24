@@ -1,6 +1,7 @@
 "use client";
 
 import { memo, useState } from "react";
+import Image from "next/image";
 import { BookOpen, Coffee, Crown, History, Plus, UserX, X } from "lucide-react";
 import { toast } from "sonner";
 
@@ -16,20 +17,29 @@ import {
     getGroupStudyLabList,
     kickGroupStudyMember,
 } from "@/features/study/actions";
-import type { StudyRoomSeatUser, StudyTimerLap } from "@/features/study/type";
-import { formatLapSeconds } from "@/features/study/utils";
+import type { StudyMemberTimerMeta, StudyRoomSeatUser, StudyTimerLap } from "@/features/study/type";
+import { formatLapSeconds, formatStudyTime } from "@/features/study/utils";
+import { useStudyCountUp } from "@/features/study/hooks/useStudyCountUp";
 import TwoButtonModal from "@/features/modal/TwoButtonModal";
 import StudyUserInviteModal from "./StudyUserInviteModal";
+
+const IDLE_TIMER_META: StudyMemberTimerMeta = {
+    timerStatus: null,
+    startedAt: null,
+    accumulatedSeconds: 0,
+};
 
 interface PendingInviteInfo {
     invitationId: number;
     inviteeId: number;
     inviteeNickname: string;
+    inviteeProfileImageUrl?: string | null;
 }
 
 interface StudyUserItemProps {
     roomId: number;
     user?: StudyRoomSeatUser;
+    timerMeta?: StudyMemberTimerMeta;
     canKick?: boolean;
     onKick?: (user: StudyRoomSeatUser) => void;
     showLapButton?: boolean;
@@ -42,6 +52,7 @@ interface StudyUserItemProps {
 function StudyUserItem({
     roomId,
     user,
+    timerMeta,
     canKick = false,
     onKick,
     showLapButton = true,
@@ -50,6 +61,8 @@ function StudyUserItem({
     onInvited,
     onInviteCanceled,
 }: StudyUserItemProps) {
+    // 훅은 항상 최상단에서 호출해야 하므로, 좌석이 비어있을 때는 대기 상태 기본값을 넘긴다.
+    const seconds = useStudyCountUp(timerMeta ?? IDLE_TIMER_META);
     const [isInviteOpen, setIsInviteOpen] = useState(false);
     const [isKickModalOpen, setIsKickModalOpen] = useState(false);
     const [isLapModalOpen, setIsLapModalOpen] = useState(false);
@@ -118,6 +131,20 @@ function StudyUserItem({
         if (pendingInvite) {
             return (
                 <div className="relative pt-7">
+                    <div className="absolute left-1/2 top-1 z-3 flex h-12 w-12 -translate-x-1/2 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-indigo-100 text-sm font-black text-indigo-400 shadow-sm sm:h-14 sm:w-14">
+                        {pendingInvite.inviteeProfileImageUrl ? (
+                            <Image
+                                src={pendingInvite.inviteeProfileImageUrl}
+                                alt={`${pendingInvite.inviteeNickname} 프로필`}
+                                fill
+                                sizes="56px"
+                                className="object-cover"
+                            />
+                        ) : (
+                            pendingInvite.inviteeNickname.slice(0, 1)
+                        )}
+                    </div>
+
                     <div className="flex h-24 w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-indigo-200 bg-indigo-50/60 text-indigo-400 sm:h-28">
                         <span className="text-xs font-bold">
                             {pendingInvite.inviteeNickname}님에게 초대를 보냈어요
@@ -164,6 +191,7 @@ function StudyUserItem({
                             invitationId,
                             inviteeId: friend.userId,
                             inviteeNickname: friend.nickname,
+                            inviteeProfileImageUrl: friend.profileImageUrl,
                         });
                         setIsInviteOpen(false);
                     }}
@@ -182,7 +210,17 @@ function StudyUserItem({
             )}
 
             <div className="absolute left-1/2 top-1 z-3 flex h-12 w-12 -translate-x-1/2 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-slate-100 text-sm font-black text-slate-400 shadow-sm sm:h-14 sm:w-14">
-                {user.nickname.slice(0, 1)}
+                {user.profileImageUrl ? (
+                    <Image
+                        src={user.profileImageUrl}
+                        alt={`${user.nickname} 프로필`}
+                        fill
+                        sizes="56px"
+                        className="object-cover"
+                    />
+                ) : (
+                    user.nickname.slice(0, 1)
+                )}
             </div>
 
             <div
@@ -223,6 +261,12 @@ function StudyUserItem({
                     </>
                 ) : (
                     <span className="text-[11px] font-bold text-slate-300">대기 중</span>
+                )}
+
+                {timerMeta && (
+                    <span className="font-mono text-[10px] font-bold text-slate-400">
+                        {formatStudyTime(seconds)}
+                    </span>
                 )}
             </div>
 

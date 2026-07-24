@@ -19,9 +19,6 @@ interface CommunityPostDetailPageProps {
     params: Promise<{
         id: string;
     }>;
-    searchParams?: Promise<{
-        commentCount?: string;
-    }>;
 }
 
 const getRoleLabel = (role: CommunityAuthorRole) => {
@@ -38,12 +35,8 @@ const getRoleLabel = (role: CommunityAuthorRole) => {
 
 export default async function CommunityPostDetailPage({
     params,
-    searchParams,
 }: CommunityPostDetailPageProps) {
-    const [{ id }, resolvedSearchParams] = await Promise.all([
-        params,
-        searchParams,
-    ]);
+    const { id } = await params;
     const postId = Number(id);
 
     if (!Number.isFinite(postId)) {
@@ -63,13 +56,7 @@ export default async function CommunityPostDetailPage({
         : `/admin/community/user/${post.authorId}`;
     const authorProfileImageUrl =
         post.authorProfileImageUrl || DEFAULT_PROFILE_IMAGE_URL;
-    const initialCommentCount = Number(
-        resolvedSearchParams?.commentCount ?? post.commentCount ?? 0
-    );
-    const commentTotalCount =
-        Number.isFinite(initialCommentCount) && initialCommentCount >= 0
-            ? initialCommentCount
-            : 0;
+    const commentTotalCount = post.commentCount ?? 0;
 
     return (
         <div className="min-h-[calc(100vh-137px)] bg-white">

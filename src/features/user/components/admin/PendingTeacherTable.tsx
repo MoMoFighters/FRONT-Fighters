@@ -98,7 +98,7 @@ export default function PendingTeacherTable({ users }: PendingTeacherTableProps)
                     승인 대기 중인 강사가 없습니다.
                 </div>
             ) : (
-                <div className="divide-y divide-slate-100">
+                <div className="min-h-[480px] divide-y divide-slate-100">
                     {users.map((user) => (
                         <div key={user.userId} className="grid grid-cols-1 gap-2 px-5 py-4 text-sm text-slate-600 hover:bg-slate-50 md:grid-cols-[48px_1fr_1.6fr_.9fr_220px] md:items-center md:gap-0 md:min-w-[820px]">
                             <input

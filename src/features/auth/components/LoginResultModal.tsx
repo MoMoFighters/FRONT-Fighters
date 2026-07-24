@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { teacherGiveupAction } from "../action";
 import TeacherRegistModal from "./TeacherRegistModal";
+import { toast } from "sonner";
 
 interface LoginData {
     accessToken: string;
@@ -53,11 +54,13 @@ export default function LoginResultModal({
         userInfo?.role === "TEACHER" &&
         userInfo.status === "PENDING";
     const isRejectedTeacherApplication =
-        isHttpSuccess && userInfo?.status === "REJECTED";
+        isHttpSuccess &&
+        userInfo?.role === "TEACHER" &&
+        userInfo.status === "REJECTED";
     const isActionRequired = isPendingTeacher || isRejectedTeacherApplication;
 
     const title = isActiveUser
-        ? "로그인 성공"
+        ? "로그인 성공!"
         : isRejectedTeacherApplication
             ? "강사 승인 거절"
             : "로그인 실패";
@@ -91,6 +94,15 @@ export default function LoginResultModal({
 
             if (response.status < 200 || response.status >= 300) {
                 setMutationMessage(response.message);
+                toast.error(response.message);
+
+                // 세션이 끊긴 상태(재로그인 필요)라면 모달을 닫고 로그인 페이지로 보낸다.
+                // 그 외 실패는 모달에 그대로 머물러 사용자가 다시 시도할 수 있게 둔다.
+                if (response.status === 401) {
+                    setIsModal(false);
+                    router.push("/auth/login");
+                }
+
                 return;
             }
 
@@ -100,10 +112,17 @@ export default function LoginResultModal({
             setIsGiveupPending(false);
         }
     };
+    // 배경 클릭으로 모달을 닫을 때도, 로그인 성공이 아니면 어딘가로는 보내야 한다.
+    // (버튼을 안 누르고 그냥 닫아버리면 콜백 페이지의 "로그인 처리 중입니다..." 화면에 갇히게 됨)
     const closeResultModal = () => {
         if (isActiveUser) return;
-        setIsModal(false)
+        handleCloseFailModal();
     }
+
+    const displayMessage = isRejectedTeacherApplication
+        ? "거절 사유는 이메일을 통해 확인해주세요."
+        : mutationMessage || safeResult.message;
+    const isLongMessage = displayMessage.length > 30;
 
     return (
         <>
@@ -112,7 +131,7 @@ export default function LoginResultModal({
                 onClick={closeResultModal}
             >
                 <div
-                    className="flex w-full max-w-[240px] flex-col items-center gap-2.5 rounded-xl border border-slate-200 bg-white p-6 shadow-2xl"
+                    className={`flex w-full flex-col items-center gap-2.5 rounded-xl border border-slate-200 bg-white p-6 shadow-2xl ${isLongMessage ? "max-w-[300px]" : "max-w-[240px]"}`}
                     onClick={(event) => event.stopPropagation()}
                 >
                     <p className="text-lg font-bold text-slate-900">
@@ -121,9 +140,7 @@ export default function LoginResultModal({
 
                     <div className="text-center">
                         <p className="text-sm text-slate-600">
-                            {isRejectedTeacherApplication
-                                ? "거절 사유는 이메일을 통해 확인해주세요."
-                                : mutationMessage || safeResult.message}
+                            {displayMessage}
                         </p>
                     </div>
 
@@ -131,7 +148,7 @@ export default function LoginResultModal({
                         <div className="mt-1 grid w-full grid-cols-2 gap-2">
                             <Button
                                 type="button"
-                                className="h-9 cursor-pointer rounded-lg border border-slate-200 bg-white text-sm font-bold text-slate-700 hover:bg-slate-100"
+                                className="h-9 cursor-pointer rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-700 hover:bg-slate-100"
                                 onClick={handleTeacherGiveup}
                                 disabled={isGiveupPending}
                             >
@@ -139,7 +156,7 @@ export default function LoginResultModal({
                             </Button>
                             <Button
                                 type="button"
-                                className="h-9 cursor-pointer rounded-lg bg-indigo-500 text-sm font-bold text-white hover:bg-indigo-600"
+                                className="h-9 cursor-pointer rounded-lg bg-indigo-500 text-xs font-bold text-white hover:bg-indigo-600"
                                 onClick={() => setIsApplyModal(true)}
                             >
                                 강사 다시 신청
@@ -149,7 +166,7 @@ export default function LoginResultModal({
                         <Button
                             type="button"
                             onClick={isActiveUser ? handleSuccessConfirm : handleCloseFailModal}
-                            className="mt-1 h-9 w-full cursor-pointer rounded-lg bg-indigo-500 text-sm font-bold text-white hover:bg-indigo-600"
+                            className="mt-1 h-9 w-1/3 min-w-20 cursor-pointer rounded-lg bg-indigo-500 text-xs font-bold text-white hover:bg-indigo-600"
                         >
                             확인
                         </Button>

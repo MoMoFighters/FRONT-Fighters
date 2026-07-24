@@ -16,16 +16,25 @@ import {
     startGroupStudyTimer,
     stopGroupStudyTimer,
 } from "@/features/study/actions";
-import { buildRoomSeats, formatStudyTime } from "@/features/study/utils";
+import { buildInitialMemberTimers, buildRoomSeats, formatStudyTime } from "@/features/study/utils";
+import { useStudyCountUp } from "@/features/study/hooks/useStudyCountUp";
 import type {
     GroupStudyDetail,
     SentStudyInvitationItem,
+    StudyMemberTimerMeta,
     StudyRoomMemberKickedData,
     StudyRoomSeatUser,
     StudyRoomSocketEvent,
+    StudyRoomTimerStatusChangedData,
 } from "@/features/study/type";
 import { getStudyRoomSubscribeDestination } from "@/app/services/study/service";
 import { connectNoticeStomp } from "@/lib/stomp/stomp";
+
+const IDLE_TIMER_META: StudyMemberTimerMeta = {
+    timerStatus: null,
+    startedAt: null,
+    accumulatedSeconds: 0,
+};
 
 type RoomSeatSlot =
     | { kind: "member"; seat: StudyRoomSeatUser }
@@ -51,10 +60,11 @@ export default function GroupStudyRoomView({
 }: GroupStudyRoomViewProps) {
     const router = useRouter();
     const [detail, setDetail] = useState(initialDetail);
-    const [seconds, setSeconds] = useState(
-        () => initialDetail.members.find((member) => member.nickname === myNickname)?.totalSeconds ?? 0
+    // 멤버별 카운트업 상태 (userId -> timerStatus/startedAt/accumulatedSeconds).
+    // 방 입장/새로고침 시엔 방 상세 응답으로 시딩하고, 이후엔 TIMER_STATUS_CHANGED 이벤트로만 갱신한다.
+    const [memberTimers, setMemberTimers] = useState<Record<number, StudyMemberTimerMeta>>(
+        () => buildInitialMemberTimers(initialDetail)
     );
-    const [isRunning, setIsRunning] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [canStartTimer, setCanStartTimer] = useState(true);
     const [pendingInvites, setPendingInvites] = useState(initialSentInvites);
@@ -65,6 +75,14 @@ export default function GroupStudyRoomView({
         () => buildRoomSeats(detail, myNickname),
         [detail, myNickname]
     );
+
+    const myMember = useMemo(
+        () => detail.members.find((member) => member.nickname === myNickname) ?? null,
+        [detail.members, myNickname]
+    );
+    const myTimerMeta = (myMember && memberTimers[myMember.userId]) ?? IDLE_TIMER_META;
+    const seconds = useStudyCountUp(myTimerMeta);
+    const isRunning = myTimerMeta.timerStatus === "STUDYING";
 
     const invitedUserIds = useMemo(
         () => pendingInvites.map((invite) => invite.inviteeId),
@@ -97,30 +115,8 @@ export default function GroupStudyRoomView({
     }, [seats, pendingInvites]);
 
     useEffect(() => {
-        myUserIdRef.current =
-            detail.members.find((member) => member.nickname === myNickname)?.userId ?? null;
-    }, [detail.members, myNickname]);
-
-    useEffect(() => {
-        const me = detail.members.find((member) => member.nickname === myNickname);
-        setIsRunning(me?.timerStatus === "STUDYING");
-        // 최초 진입 시 내 타이머 상태만 반영 (그 이후는 버튼 조작으로만 갱신)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    useEffect(() => {
-        if (!isRunning) {
-            return;
-        }
-
-        const intervalId = window.setInterval(() => {
-            setSeconds((prev) => prev + 1);
-        }, 1000);
-
-        return () => {
-            window.clearInterval(intervalId);
-        };
-    }, [isRunning]);
+        myUserIdRef.current = myMember?.userId ?? null;
+    }, [myMember]);
 
     const refreshTimerAvailability = useCallback(async () => {
         const response = await getTimerAvailability();
@@ -141,6 +137,7 @@ export default function GroupStudyRoomView({
         invitationId: number;
         inviteeId: number;
         inviteeNickname: string;
+        inviteeProfileImageUrl?: string | null;
     }) => {
         setPendingInvites((prev) => [
             ...prev,
@@ -150,6 +147,7 @@ export default function GroupStudyRoomView({
                 title: detail.title,
                 inviteeId: invite.inviteeId,
                 inviteeNickname: invite.inviteeNickname,
+                inviteeProfileImageUrl: invite.inviteeProfileImageUrl ?? null,
                 invitedAt: new Date().toISOString(),
             },
         ]);
@@ -165,18 +163,65 @@ export default function GroupStudyRoomView({
     const refetchDetail = useCallback(async () => {
         const response = await getGroupStudyDetail(roomId);
 
-        if (response.status === 200 && response.data) {
-            setDetail(response.data);
+        if (response.status !== 200 || !response.data) {
+            return;
         }
+
+        const freshDetail = response.data;
+        setDetail(freshDetail);
+
+        // 이미 알고 있는 멤버는 기존 타이머 상태(STOMP로 받은 최신값)를 유지하고,
+        // 새로 등장한 멤버만 방 상세 응답으로 시딩한다. 그렇지 않으면 멤버 입장/퇴장 이벤트가 올 때마다
+        // 이미 진행 중이던 다른 멤버의 카운트업 기준시각이 "지금"으로 리셋되어 화면이 튄다.
+        setMemberTimers((prev) => {
+            const seeded = buildInitialMemberTimers(freshDetail);
+            const merged: Record<number, StudyMemberTimerMeta> = { ...seeded };
+
+            for (const member of freshDetail.members) {
+                const existing = prev[member.userId];
+
+                if (existing) {
+                    merged[member.userId] = existing;
+                }
+            }
+
+            return merged;
+        });
     }, [roomId]);
+
+    // TIMER_STATUS_CHANGED는 payload에 timerStatus/startedAt/accumulatedSeconds가 모두 들어있어서
+    // 방 상세를 다시 조회하지 않고 바로 해당 멤버 상태만 갱신한다.
+    const applyTimerStatusChanged = useCallback((data: StudyRoomTimerStatusChangedData) => {
+        setDetail((prev) => ({
+            ...prev,
+            members: prev.members.map((member) =>
+                member.userId === data.userId
+                    ? { ...member, timerStatus: data.timerStatus }
+                    : member
+            ),
+        }));
+
+        setMemberTimers((prev) => ({
+            ...prev,
+            [data.userId]: {
+                timerStatus: data.timerStatus,
+                startedAt: data.startedAt,
+                accumulatedSeconds: data.accumulatedSeconds,
+            },
+        }));
+    }, []);
 
     const handleRoomEvent = useCallback((event: StudyRoomSocketEvent) => {
         switch (event.type) {
             case "MEMBER_JOINED":
             case "MEMBER_LEFT":
-            case "HOST_CHANGED":
-            case "TIMER_STATUS_CHANGED": {
+            case "HOST_CHANGED": {
                 void refetchDetail();
+                break;
+            }
+
+            case "TIMER_STATUS_CHANGED": {
+                applyTimerStatusChanged(event.data as StudyRoomTimerStatusChangedData);
                 break;
             }
 
@@ -202,7 +247,7 @@ export default function GroupStudyRoomView({
                 break;
             }
         }
-    }, [refetchDetail, router]);
+    }, [refetchDetail, applyTimerStatusChanged, router]);
 
     useEffect(() => {
         let subscription:
@@ -233,6 +278,8 @@ export default function GroupStudyRoomView({
             return;
         }
 
+        const myUserId = myMember?.userId;
+
         setIsSubmitting(true);
 
         try {
@@ -244,8 +291,15 @@ export default function GroupStudyRoomView({
                     return;
                 }
 
-                setSeconds(response.data.accumulatedSeconds);
-                setIsRunning(false);
+                if (myUserId !== undefined) {
+                    applyTimerStatusChanged({
+                        userId: myUserId,
+                        timerStatus: response.data.timerStatus === "STUDYING" ? "STUDYING" : "RESTING",
+                        startedAt: null,
+                        accumulatedSeconds: response.data.accumulatedSeconds,
+                    });
+                }
+
                 void refreshTimerAvailability();
                 return;
             }
@@ -257,17 +311,25 @@ export default function GroupStudyRoomView({
                 return;
             }
 
-            setSeconds(response.data.accumulatedSeconds);
-            setIsRunning(true);
+            if (myUserId !== undefined) {
+                applyTimerStatusChanged({
+                    userId: myUserId,
+                    timerStatus: "STUDYING",
+                    startedAt: response.data.startedAt,
+                    accumulatedSeconds: response.data.accumulatedSeconds,
+                });
+            }
         } finally {
             setIsSubmitting(false);
         }
-    }, [isRunning, isSubmitting, roomId, refreshTimerAvailability]);
+    }, [isRunning, isSubmitting, roomId, refreshTimerAvailability, myMember, applyTimerStatusChanged]);
 
     const handleEnd = useCallback(async () => {
         if (isSubmitting) {
             return;
         }
+
+        const myUserId = myMember?.userId;
 
         setIsSubmitting(true);
 
@@ -279,13 +341,20 @@ export default function GroupStudyRoomView({
                 return;
             }
 
-            setSeconds(response.data.totalSeconds);
-            setIsRunning(false);
+            if (myUserId !== undefined) {
+                applyTimerStatusChanged({
+                    userId: myUserId,
+                    timerStatus: "NONE",
+                    startedAt: null,
+                    accumulatedSeconds: response.data.totalSeconds,
+                });
+            }
+
             void refreshTimerAvailability();
         } finally {
             setIsSubmitting(false);
         }
-    }, [isSubmitting, roomId, refreshTimerAvailability]);
+    }, [isSubmitting, roomId, refreshTimerAvailability, myMember, applyTimerStatusChanged]);
 
     const handleLeaveRoom = async () => {
         const response = await leaveGroupStudy(roomId);
@@ -362,6 +431,11 @@ export default function GroupStudyRoomView({
                                         key={slot.seat.userId}
                                         roomId={roomId}
                                         user={slot.seat}
+                                        timerMeta={memberTimers[slot.seat.userId] ?? {
+                                            timerStatus: slot.seat.timerStatus,
+                                            startedAt: null,
+                                            accumulatedSeconds: slot.seat.totalSeconds,
+                                        }}
                                         canKick={viewerIsHost}
                                         onKick={handleKickMember}
                                     />
@@ -377,6 +451,7 @@ export default function GroupStudyRoomView({
                                             invitationId: slot.invite.invitationId,
                                             inviteeId: slot.invite.inviteeId,
                                             inviteeNickname: slot.invite.inviteeNickname,
+                                            inviteeProfileImageUrl: slot.invite.inviteeProfileImageUrl,
                                         }}
                                         invitedUserIds={invitedUserIds}
                                         onInviteCanceled={handleInviteCanceled}
