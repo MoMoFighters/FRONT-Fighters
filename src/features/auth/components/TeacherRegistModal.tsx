@@ -16,7 +16,6 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
-import { redirect } from "next/navigation";
 
 interface TeacherRegistModalProps {
     isModal: boolean;
@@ -101,13 +100,12 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
 
             toast.success(response.message, { duration: 1000 });
             setIsModal(false);
-            await logoutAction();
+            closeResultModal?.(false);
             clearLectureUploadTasksStorage();
             clearChatBotMessagesStorage();
-            if (closeResultModal ?
-                closeResultModal(false) : ""
-            )
-                redirect("/auth/login");
+            // logoutAction의 redirectTo 인자로 이동해야 한다 - 서버 액션 안에서 던지는 redirect()라야
+            // Next가 제대로 이동시켜준다 (클라이언트 이벤트 핸들러에서 직접 redirect()를 부르면 안 잡힘).
+            await logoutAction("/auth/login");
         } finally {
             setIsSubmitting(false);
         }
