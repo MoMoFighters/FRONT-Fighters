@@ -41,11 +41,17 @@ export default function TeacherRegistModal({ isModal, setIsModal, nickName, isRe
     // (isModal은 부모가 넘겨주는 prop이라 "여는 클릭 한 지점"에서 캡처할 수 없어 effect로 동기화함)
     useEffect(() => {
         if (isModal) {
+            document.body.style.overflow = "hidden";
             // eslint-disable-next-line react-hooks/set-state-in-effect
             setFrozenSize({ width: window.innerWidth, height: window.innerHeight });
         } else {
+            document.body.style.overflow = "";
             setFrozenSize(null);
         }
+
+        return () => {
+            document.body.style.overflow = "";
+        };
     }, [isModal]);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
