@@ -18,6 +18,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface CreateReviewBtnProps {
     lectureId: number;
@@ -111,14 +112,31 @@ export default function CreateReviewBtn({
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-                <Button
-                    disabled={disabled}
-                    className="h-9 cursor-pointer rounded-xl bg-indigo-500 px-4 text-sm font-bold text-white hover:bg-indigo-600 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400 disabled:hover:bg-slate-200"
-                >
-                    수강평 등록
-                </Button>
-            </DialogTrigger>
+            {disabled ? (
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <span className="inline-block">
+                            <Button
+                                disabled
+                                className="h-9 cursor-not-allowed rounded-xl bg-slate-200 px-4 text-sm font-bold text-slate-400"
+                            >
+                                수강평 등록
+                            </Button>
+                        </span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p className="whitespace-pre-line text-center">
+                            {"먼저 강의를 모두 수강해야\n수강평을 등록할 수 있습니다."}
+                        </p>
+                    </TooltipContent>
+                </Tooltip>
+            ) : (
+                <DialogTrigger asChild>
+                    <Button className="h-9 cursor-pointer rounded-xl bg-indigo-500 px-4 text-sm font-bold text-white hover:bg-indigo-600">
+                        수강평 등록
+                    </Button>
+                </DialogTrigger>
+            )}
 
             <DialogContent className="sm:max-w-md">
                 <div className="flex items-center gap-2 pr-8">
