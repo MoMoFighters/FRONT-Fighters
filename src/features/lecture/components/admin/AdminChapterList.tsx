@@ -53,14 +53,14 @@ export default function AdminChapterList({
                                 )}
                             </div>
                             <div className="min-w-0 flex-1">
-                                <p className={`text-[clamp(0.75rem,3.2cqw,0.875rem)] font-bold ${isCurrent ? "text-indigo-600" : "text-slate-950"}`}>
+                                <p className={`text-[clamp(0.8125rem,3.2cqw,0.875rem)] font-bold ${isCurrent ? "text-indigo-600" : "text-slate-950"}`}>
                                     Chapter {chapter.orderNo}.
                                 </p>
-                                <p className="mt-1 truncate text-[clamp(0.75rem,3.2cqw,0.875rem)] font-medium text-slate-500">
+                                <p className="mt-1 truncate text-[clamp(0.8125rem,3.2cqw,0.875rem)] font-medium text-slate-500">
                                     {chapter.title}
                                 </p>
                             </div>
-                            <span className="shrink-0 text-[clamp(0.75rem,3.2cqw,0.875rem)] font-bold text-slate-400">
+                            <span className="shrink-0 text-[clamp(0.8125rem,3.2cqw,0.875rem)] font-bold text-slate-400">
                                 {formatDuration(chapter.durationSec)}
                             </span>
                         </Link>

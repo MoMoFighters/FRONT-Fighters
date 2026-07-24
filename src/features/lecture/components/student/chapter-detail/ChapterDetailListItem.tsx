@@ -30,7 +30,7 @@ export default function ChapterDetailListItem({
 
     const content = (
         <>
-            <div className="relative flex h-[clamp(2.5rem,11cqw,3rem)] w-[clamp(3.25rem,15cqw,4rem)] shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-100 text-[clamp(0.5625rem,2.5cqw,0.625rem)] font-bold text-slate-400">
+            <div className="relative flex h-[clamp(2.5rem,11cqw,3rem)] w-[clamp(3.25rem,15cqw,4rem)] shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-100 text-[clamp(0.625rem,2.5cqw,0.625rem)] font-bold text-slate-400">
                 {chapter.chapterThumbnailUrl ? (
                     <Image
                         src={chapter.chapterThumbnailUrl}
@@ -47,23 +47,23 @@ export default function ChapterDetailListItem({
             <div className="min-w-0 flex-1">
                 <p
                     className={`
-                        text-[clamp(0.75rem,3.2cqw,0.875rem)] font-bold
+                        text-[clamp(0.8125rem,3.2cqw,0.875rem)] font-bold
                         ${isActive ? "text-indigo-500" : "text-slate-950"}
                     `}
                 >
                     Chapter {chapter.orderNo}.
                 </p>
 
-                <p className="mt-1 truncate text-[clamp(0.75rem,3.2cqw,0.875rem)] font-medium text-slate-500">
+                <p className="mt-1 truncate text-[clamp(0.8125rem,3.2cqw,0.875rem)] font-medium text-slate-500">
                     {chapter.title}
                 </p>
 
-                <p className="mt-1 text-[clamp(0.625rem,2.8cqw,0.75rem)] font-bold text-slate-400">
+                <p className="mt-1 text-[clamp(0.75rem,2.8cqw,0.75rem)] font-bold text-slate-400">
                     {formatDuration(chapter.durationSec)}
                 </p>
             </div>
 
-            <span className="shrink-0 text-[clamp(0.625rem,2.8cqw,0.75rem)] font-bold text-slate-400">
+            <span className="shrink-0 text-[clamp(0.75rem,2.8cqw,0.75rem)] font-bold text-slate-400">
                 {isLocked
                     ? "잠금"
                     : chapter.isCompleted

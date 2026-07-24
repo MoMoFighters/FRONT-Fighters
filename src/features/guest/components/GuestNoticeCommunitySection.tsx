@@ -111,14 +111,14 @@ export default function GuestNoticeCommunitySection() {
         <aside className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:block lg:space-y-5">
           <div className="flex items-center justify-between gap-5 rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 [container-type:inline-size]">
             <div className="min-w-0 flex-1">
-              <h3 className="text-[clamp(0.875rem,4cqw,1rem)] font-bold text-slate-950">
+              <h3 className="text-[clamp(0.9375rem,4cqw,1rem)] font-bold text-slate-950">
                 커뮤니티
               </h3>
-              <p className="mt-2 text-[clamp(0.7rem,3cqw,0.75rem)] leading-5 text-slate-600">
+              <p className="mt-2 text-[clamp(0.75rem,3cqw,0.75rem)] leading-5 text-slate-600">
                 다양한 사용자들과 학습 경험을 공유하세요.
               </p>
               <Link href={COMMUNITY_HREF}>
-                <button className="mt-2 flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-indigo-400 bg-white px-3.5 py-2 text-[clamp(0.7rem,3cqw,0.75rem)] font-bold text-indigo-600 transition-colors hover:bg-indigo-50">
+                <button className="mt-2 flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-indigo-400 bg-white px-3.5 py-2 text-[clamp(0.75rem,3cqw,0.75rem)] font-bold text-indigo-600 transition-colors hover:bg-indigo-50">
                   커뮤니티 보러가기
                 </button>
               </Link>
@@ -135,10 +135,10 @@ export default function GuestNoticeCommunitySection() {
 
           <div className="flex items-center justify-between gap-5 rounded-xl border border-slate-200 bg-white p-5 shadow-sm [container-type:inline-size]">
             <div className="min-w-0 flex-1">
-              <h3 className="text-[clamp(0.7rem,3cqw,0.75rem)] font-bold text-slate-950">
+              <h3 className="text-[clamp(0.75rem,3cqw,0.75rem)] font-bold text-slate-950">
                 AI 학습 도우미
               </h3>
-              <p className="mt-2 text-[clamp(0.7rem,3cqw,0.75rem)] text-slate-500">
+              <p className="mt-2 text-[clamp(0.75rem,3cqw,0.75rem)] text-slate-500">
                 언제 어디서나 학습에 도움을 주기 위해 등장해요!
               </p>
             </div>

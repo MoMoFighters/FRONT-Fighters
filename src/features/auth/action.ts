@@ -21,6 +21,7 @@ import {
 } from "@/app/services/auth/service";
 import { UserRole, UserStatus } from "../user/type";
 import { redirect } from "next/navigation";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 
 const createErrorResponse = <T>(
@@ -439,11 +440,15 @@ export const nicknameRegistAction = async (
                 message: "다시 로그인해주세요.",
             };
         }
-
-        return await nicknameRegistService(
+        const result = await nicknameRegistService(
             nickname,
             accessToken
         );
+
+        revalidateTag("my-info", { expire: 0 });
+        revalidatePath('/student');
+
+        return result;
     } catch (error) {
         return {
             timestamp: new Date().toISOString(),

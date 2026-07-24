@@ -9,9 +9,12 @@ import {
     verifyEmailAction,
 } from "../action";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
+import SignupSuccessModal from "./SignupSuccessModal";
 
 export default function SignupForm() {
+    const router = useRouter();
+    const [isSuccessModal, setIsSuccessModal] = useState(false);
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -151,22 +154,25 @@ export default function SignupForm() {
 
                 if (result && (result.status < 200 || result.status >= 300)) {
                     setErrorActionState(result.message);
+                    return;
                 }
-                redirect("/auth/login");
+
+                setIsSuccessModal(true);
             })();
         });
     };
 
     const labelClassName = "text-[13px] font-bold text-slate-950";
     const inputClassName =
-        "h-[50px] w-full rounded-md border border-slate-200 bg-white py-2 text-sm font-medium text-slate-700 placeholder:text-slate-400 transition-colors focus:border-indigo-300 focus:outline-none focus:ring-3 focus:ring-indigo-50";
+        "h-10 w-full rounded-md border border-slate-200 bg-white py-2 text-sm font-medium text-slate-700 placeholder:text-slate-400 transition-colors focus:border-indigo-300 focus:outline-none focus:ring-3 focus:ring-indigo-50";
 
     return (
+        <>
         <form
             onSubmit={handleSubmit}
-            className="mx-auto flex w-full flex-col gap-3.5"
+            className="mx-auto flex w-full flex-col gap-2"
         >
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1.5">
                 <label className={labelClassName} htmlFor="name">
                     이름
                 </label>
@@ -185,7 +191,7 @@ export default function SignupForm() {
                 </div>
             </div>
 
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1.5">
                 <label className={labelClassName} htmlFor="email">
                     이메일
                 </label>
@@ -214,68 +220,74 @@ export default function SignupForm() {
                     <Button
                         type="button"
                         disabled={emailValidated || isEmailPending}
-                        className="h-[50px] shrink-0 cursor-pointer rounded-md border border-indigo-200 bg-white px-4 text-[13px] font-bold text-indigo-500 hover:bg-indigo-50 disabled:opacity-50"
+                        className="h-10 shrink-0 cursor-pointer rounded-md border border-indigo-200 bg-white px-4 text-[13px] font-bold text-indigo-500 hover:bg-indigo-50 disabled:opacity-50"
                         onClick={handleRequestCode}
                     >
                         {emailValidationClicked ? "재전송" : "인증 요청"}
                     </Button>
                 </div>
 
-                {emailError && (
-                    <p
-                        className={`mt-0.5 pl-1 text-xs font-medium ${emailValidationClicked &&
-                            !emailError.includes("실패") &&
-                            !emailError.includes("형식")
-                            ? "text-green-600"
-                            : "text-red-500"
-                            }`}
-                    >
-                        {emailError}
-                    </p>
-                )}
+                <p
+                    className={`min-h-4 mt-0.5 pl-1 text-xs font-medium ${emailValidationClicked &&
+                        emailError &&
+                        !emailError.includes("실패") &&
+                        !emailError.includes("형식")
+                        ? "text-green-600"
+                        : "text-red-500"
+                        }`}
+                >
+                    {emailError}
+                </p>
             </div>
 
-            {emailValidationClicked && (
-                <div className="flex flex-col gap-2">
-                    <label className={labelClassName} htmlFor="validationCode">
-                        인증번호
-                    </label>
-                    <div className="flex min-w-0 gap-2">
-                        <div className="relative min-w-0 flex-1">
-                            <BadgeCheck className="absolute left-4 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-300" />
-                            <input
-                                type="number"
-                                name="validationCode"
-                                id="validationCode"
-                                required={!emailValidated}
-                                disabled={emailValidated || timeLeft === 0}
-                                value={validationCode}
-                                onChange={(e) => setValidationCode(e.target.value)}
-                                className={`${inputClassName} pl-11 pr-4 ${emailValidated ? "bg-slate-200 text-slate-400" : "text-slate-700"} [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none`}
-                                placeholder="인증번호"
-                            />
-                        </div>
-                        <Button
-                            type="button"
-                            disabled={emailValidated || isEmailPending || timeLeft === 0}
-                            className="h-[50px] shrink-0 cursor-pointer rounded-md border border-indigo-200 bg-white px-4 text-[13px] font-bold text-indigo-500 hover:bg-indigo-50 disabled:opacity-50"
-                            onClick={handleVerifyCode}
-                        >
-                            인증하기
-                        </Button>
+            <div className="flex flex-col gap-1.5">
+                <label className={labelClassName} htmlFor="validationCode">
+                    인증번호
+                </label>
+                <div className="flex min-w-0 gap-2">
+                    <div className="relative min-w-0 flex-1">
+                        <BadgeCheck className="absolute left-4 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-300" />
+                        <input
+                            type="number"
+                            name="validationCode"
+                            id="validationCode"
+                            required={!emailValidated}
+                            disabled={!emailValidationClicked || emailValidated || timeLeft === 0}
+                            value={validationCode}
+                            onChange={(e) => setValidationCode(e.target.value)}
+                            className={`${inputClassName} pl-11 pr-4 ${!emailValidationClicked || emailValidated ? "bg-slate-100 text-slate-400" : "text-slate-700"} [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none`}
+                            placeholder="인증번호"
+                        />
                     </div>
+                    <Button
+                        type="button"
+                        disabled={!emailValidationClicked || emailValidated || isEmailPending || timeLeft === 0}
+                        className="h-10 shrink-0 cursor-pointer rounded-md border border-indigo-200 bg-white px-4 text-[13px] font-bold text-indigo-500 hover:bg-indigo-50 disabled:opacity-50"
+                        onClick={handleVerifyCode}
+                    >
+                        인증하기
+                    </Button>
+                </div>
 
-                    <p className={`pr-2 text-right text-xs ${emailValidated ? "text-green-600" : "text-red-500"}`}>
-                        {emailValidated
-                            ? "이메일 인증이 완료되었습니다."
+                <p
+                    className={`min-h-4 pr-2 text-right text-xs ${emailValidated
+                        ? "text-green-600"
+                        : !emailValidationClicked
+                            ? "text-slate-400"
+                            : "text-red-500"
+                        }`}
+                >
+                    {emailValidated
+                        ? "이메일 인증이 완료되었습니다."
+                        : !emailValidationClicked
+                            ? "이메일 인증을 먼저 요청해 주세요."
                             : timeLeft > 0
                                 ? `남은 시간 : ${formatTime(timeLeft)}`
                                 : "인증 시간이 만료되었습니다."}
-                    </p>
-                </div>
-            )}
+                </p>
+            </div>
 
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1.5">
                 <label className={labelClassName} htmlFor="password">
                     비밀번호
                 </label>
@@ -302,7 +314,7 @@ export default function SignupForm() {
                 </div>
             </div>
 
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1.5">
                 <label className={labelClassName} htmlFor="passwordCheck">
                     비밀번호 확인
                 </label>
@@ -329,11 +341,9 @@ export default function SignupForm() {
                 </div>
             </div>
 
-            {errorActionState && (
-                <div className="mt-1 text-center text-sm font-bold text-red-500">
-                    {errorActionState}
-                </div>
-            )}
+            <div className="min-h-5 mt-1 text-center text-sm font-bold text-red-500">
+                {errorActionState}
+            </div>
 
             <Button
                 type="submit"
@@ -359,5 +369,10 @@ export default function SignupForm() {
                 </Link>
             </div>
         </form>
+
+        {isSuccessModal && (
+            <SignupSuccessModal onConfirm={() => router.push("/auth/login")} />
+        )}
+        </>
     );
 }
