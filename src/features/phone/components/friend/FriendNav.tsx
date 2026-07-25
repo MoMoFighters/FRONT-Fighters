@@ -52,7 +52,7 @@ export default function FriendNav({
     ] as const;
 
     return (
-        <div className="flex h-full shrink-0 flex-col border-r border-slate-200 bg-white pr-3 py-3">
+        <div className="flex h-full shrink-0 flex-col bg-white px-3 py-3">
             <div className="flex flex-col gap-1 rounded-2xl bg-slate-100 p-1">
                 {tabs.map(tab => (
                     <HoverCard key={tab.key} openDelay={150} closeDelay={0}>

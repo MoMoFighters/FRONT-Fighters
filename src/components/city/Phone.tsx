@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { Bell, BellOff } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
     HoverCard,
     HoverCardContent,
@@ -12,11 +12,23 @@ import {
 import logo from "@/app/assets/img/logo.png";
 import {
     getNoticeAppCountsAction,
+    getNoticeNotificationListAction,
     toggleNotificationAction,
 } from "@/features/user/components/notification/action";
+import { isFriendAcceptedNotification } from "@/features/user/components/notification/utils";
 import { connectNoticeStomp } from "@/lib/stomp/stomp";
-import { NoticeAppCountsData } from "@/features/user/components/notification/type";
+import type {
+    NoticeAppCountsData,
+    NoticeNotification,
+} from "@/features/user/components/notification/type";
 import { toast } from "sonner";
+
+// "친구가 되었습니다" 알림은 안 읽었어도 진동/배지 대상에서 빼야 해서,
+// 원본 알림 목록에서 그만큼을 세어뒀다가 totalMsgFriendCount에서 차감한다.
+const countExcludedFriendAccepted = (list: NoticeNotification[]) =>
+    list.filter(
+        (item) => !item.isRead && isFriendAcceptedNotification(item)
+    ).length;
 
 interface PhoneProps {
     accessToken?: string;
@@ -57,13 +69,22 @@ export default function Phone({
     const [vibrationOffset, setVibrationOffset] = useState({ x: 0, y: 0 });
     const [notification, setNotification] =
         useState<NoticeAppCountsData>(EMPTY_COUNTS);
+    const [excludedFriendAcceptedCount, setExcludedFriendAcceptedCount] = useState(0);
     const [shouldRenderAppGrid, setShouldRenderAppGrid] = useState(false);
     const hoverReleaseTimerRef = useRef<number | null>(null);
     const interactionLockTimerRef = useRef<number | null>(null);
     const appGridAreaRef = useRef<HTMLDivElement | null>(null);
 
+    const adjustedNotification = useMemo<NoticeAppCountsData>(() => ({
+        ...notification,
+        totalMsgFriendCount: Math.max(
+            notification.totalMsgFriendCount - excludedFriendAcceptedCount,
+            0
+        ),
+    }), [notification, excludedFriendAcceptedCount]);
+
     const hasNotificationValue =
-        Object.values(notification).some((count) => count > 0);
+        Object.values(adjustedNotification).some((count) => count > 0);
     const notificationActive =
         notificationEnabled && (hasNotificationValue);
     const shouldVibrate =
@@ -169,6 +190,61 @@ export default function Phone({
                                 communityCount: data.communityCount ?? 0,
                                 studyCount: data.studyCount ?? 0,
                             });
+                        }
+                    );
+            },
+        });
+
+        return () => {
+            subscription?.unsubscribe();
+            client.disconnect();
+        };
+    }, [accessToken]);
+
+    // totalMsgFriendCount는 백엔드가 이미 합산해서 내려주는 숫자라 "친구가 되었습니다"만 골라
+    // 뺄 수가 없다. 그래서 원본 알림 목록을 따로 받아와 그 안에서 제외 대상 개수만 세어둔다.
+    useEffect(() => {
+        let isMounted = true;
+
+        const loadNotificationList = async () => {
+            const response = await getNoticeNotificationListAction();
+
+            if (!isMounted) {
+                return;
+            }
+
+            setExcludedFriendAcceptedCount(
+                countExcludedFriendAccepted(response.data ?? [])
+            );
+        };
+
+        void loadNotificationList();
+
+        return () => {
+            isMounted = false;
+        };
+    }, []);
+
+    useEffect(() => {
+        if (!accessToken) {
+            return;
+        }
+
+        let subscription:
+            | ReturnType<ReturnType<typeof connectNoticeStomp>["subscribe"]>
+            | undefined;
+        const client = connectNoticeStomp({
+            accessToken,
+            onConnect: (stompClient) => {
+                subscription =
+                    stompClient.subscribe(
+                        "/user/sub/notice/list",
+                        (body) => {
+                            const list = JSON.parse(body) as NoticeNotification[];
+
+                            setExcludedFriendAcceptedCount(
+                                countExcludedFriendAccepted(list)
+                            );
                         }
                     );
             },
@@ -303,7 +379,7 @@ export default function Phone({
 
                         <div ref={appGridAreaRef} className="min-h-[136px]">
                             {shouldRenderAppGrid ? (
-                                <PhoneAppGrid notification={notification} />
+                                <PhoneAppGrid notification={adjustedNotification} />
                             ) : (
                                 <PhoneAppGridSkeleton />
                             )}

@@ -27,14 +27,20 @@ export default async function CalendarPage({
     }
 
     return (
-        <div className="flex h-[calc(100vh-55px)] max-h-[calc(100vh-55px)] min-h-0 w-full flex-col overflow-hidden md:flex-row">
-            <CalendarLoader
-                selectedDate={date}
-            />
+        <div className="flex h-[calc(100vh-55px)] max-h-[calc(100vh-55px)] min-h-0 w-full flex-col overflow-hidden p-4 md:p-8">
+            <div className="flex h-full min-h-0 w-full flex-col gap-4 overflow-hidden md:flex-row">
+                <div className="min-h-0 min-w-0 flex-1 overflow-hidden rounded-md border border-slate-200 bg-white">
+                    <CalendarLoader
+                        selectedDate={date}
+                    />
+                </div>
 
-            <CalendarSide
-                selectedDate={date}
-            />
+                <div className="min-h-0 overflow-hidden rounded-md border border-slate-200 bg-white">
+                    <CalendarSide
+                        selectedDate={date}
+                    />
+                </div>
+            </div>
         </div>
     );
 }
