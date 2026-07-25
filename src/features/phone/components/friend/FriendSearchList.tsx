@@ -59,7 +59,7 @@ export default function FriendSearchList() {
                 </p>
             </div>
 
-            <div className="flex min-h-0 flex-1 flex-col p-5">
+            <div className="flex flex-col p-5 lg:min-h-0 lg:flex-1">
                 <form
                     onSubmit={handleSearch}
                     className="flex gap-2"
@@ -81,7 +81,7 @@ export default function FriendSearchList() {
                     </Button>
                 </form>
 
-                <div className="mt-4 flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto scrollbar-none">
+                <div className="mt-4 flex flex-col gap-2 scrollbar-none lg:min-h-0 lg:flex-1 lg:overflow-y-auto">
                     {users.length > 0 ? (
                         users
                             .filter(user => user.status === "none")
@@ -97,7 +97,7 @@ export default function FriendSearchList() {
                                 />
                             ))
                     ) : (
-                        <div className="flex h-full items-center justify-center">
+                        <div className="flex items-center justify-center py-10 lg:h-full lg:py-0">
                             <p className="text-center font-medium text-slate-500">
                                 {message}
                             </p>

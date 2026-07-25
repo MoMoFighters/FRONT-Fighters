@@ -54,7 +54,7 @@ export default function BlockUserListModal({
                 onClick={() => setOpen(false)}
             >
                 <div
-                    className="w-[40vw] h-[40vw] rounded-xl border border-slate-200 bg-white px-7 pb-8 pt-3 shadow-2xl flex flex-col align-middle"
+                    className="w-[92vw] max-w-sm h-[80vh] sm:w-[70vw] sm:max-w-md sm:h-[70vh] lg:w-[420px] lg:h-[560px] rounded-xl border border-slate-200 bg-white px-7 pb-8 pt-3 shadow-2xl flex flex-col align-middle"
                     onClick={(e) => e.stopPropagation()}
                 >
                     <div className="flex flex-row mt-2">
@@ -76,7 +76,7 @@ export default function BlockUserListModal({
                         </p>
                     </div>
 
-                    <div className="overflow-y-scroll h-full scrollbar-none mt-2 gap-1">
+                    <div className="min-h-0 flex-1 overflow-y-scroll scrollbar-none mt-2 gap-1">
                         {friendList.length !== 0 ? (
                             friendList
                                 .filter(friend => friend.status === 'BLOCK')

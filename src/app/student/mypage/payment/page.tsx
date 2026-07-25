@@ -39,7 +39,7 @@ const STATUS_LABEL: Record<UserPaymentStatus, string> = {
     SUCCESS: "결제 완료",
     REFUND: "환불 완료",
     PENDING: "결제 대기",
-    FAILED: "결제 실패",
+    FAILED: "결제 취소/실패",
 };
 
 const STATUS_STYLE: Record<UserPaymentStatus, string> = {

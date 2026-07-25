@@ -15,8 +15,8 @@ const Calendar = dynamic(
                 flex-1
                 min-h-0
                 min-w-0
+                h-full
                 p-4
-                border-r
                 overflow-hidden
                 scrollbar-none
             ">

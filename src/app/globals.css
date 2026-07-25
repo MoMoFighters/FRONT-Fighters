@@ -133,6 +133,21 @@
 }
 
 /*
+  카카오페이 결제창(PortOne이 body에 직접 붙이는 IFRAME 오버레이)이 뜨고 닫힐 때
+  문서 높이가 늘어나거나 줄면서 세로 스크롤바가 생겼다 사라졌다 하고, 그때마다
+  스크롤바 폭만큼 본문 너비가 바뀌면서 화면이 덜컥거렸다 (scrollbar-gutter로도 해결 안 됨).
+  결제 페이지에 머무는 동안만 스크롤바 자체를 숨겨서(스크롤 기능은 유지) 이 흔들림을 없앤다.
+*/
+.no-page-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.no-page-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/*
   IBM Plex Sans KR엔 900(Black) 굵기 자체가 없어서(최대 700=Bold),
   font-black(font-weight:900)이 쓰인 곳 전부가 브라우저의 가짜 볼드(synthetic bold)로
   렌더링되고 있었음 — 이게 한글이 찌글찌글/뭉개져 보이던 원인. 실제 로드된 최고 굵기(700)로 고정.
