@@ -85,6 +85,10 @@ const revalidateLectureProgressPaths = (
 ) => {
     revalidatePath('/student');
 
+    // 강의 완료 보상 포인트가 반영되도록 마이페이지 루트/포인트 내역도 함께 무효화한다.
+    revalidatePath('/student/mypage');
+    revalidatePath('/student/mypage/point');
+
     revalidatePath(`/student/lectures/${lectureId}`);
     revalidatePath(`/student/mypage/lectures`);
     revalidatePath(`/student/mypage/lectures/${lectureId}`);
@@ -131,6 +135,11 @@ export const createReviewAction = async (
     payload: CreateReviewRequest
 ) => {
     await createReviewByLectureId(lectureId, payload);
+
+    // 리뷰 작성 보상 포인트가 반영되도록 마이페이지 루트/포인트 내역도 함께 무효화한다.
+    revalidatePath('/student/mypage');
+    revalidatePath('/student/mypage/point');
+
     revalidatePath(`/student/lectures/${lectureId}`);
     revalidatePath(`/student/study/lectures/${lectureId}`);
     revalidatePath(`/student/fitness/lectures/${lectureId}`);
