@@ -4,10 +4,12 @@ import { SearchX, Star } from "lucide-react";
 
 interface StudentReviewListProps {
     reviews: Review[];
+    myNickname?: string | null;
 }
 
 export default function StudentReviewList({
     reviews,
+    myNickname,
 }: StudentReviewListProps) {
     if (reviews.length === 0) {
         return (
@@ -23,16 +25,21 @@ export default function StudentReviewList({
 
     return (
         <div className="divide-y divide-slate-100">
-            {reviews.map((review) => (
-                <article key={review.reviewId} className="relative p-4 pr-16 sm:p-5 sm:pr-24">
+            {reviews.map((review) => {
+                const isMine = !!myNickname && review.nickname === myNickname;
+
+                return (
+                <article key={review.reviewId} className={`relative p-4 pr-16 sm:p-5 sm:pr-24 ${isMine ? "bg-amber-50" : ""}`}>
                     <div className="absolute right-5 top-5 flex flex-col items-end gap-3">
-                        <CreateReportBtn
-                            triggerLabel="신고"
-                            triggerClassName="cursor-pointer rounded-md px-2 py-1 text-xs font-bold text-slate-400 transition hover:bg-rose-50 hover:text-rose-500"
-                            targetType="REVIEW"
-                            targetId={review.reviewId}
-                            reportedUserId={review.userId}
-                        />
+                        {!isMine && (
+                            <CreateReportBtn
+                                triggerLabel="신고"
+                                triggerClassName="cursor-pointer rounded-md px-2 py-1 text-xs font-bold text-slate-400 transition hover:bg-rose-50 hover:text-rose-500"
+                                targetType="REVIEW"
+                                targetId={review.reviewId}
+                                reportedUserId={review.userId}
+                            />
+                        )}
                         <span className="px-2 text-xs font-medium text-slate-400">
                             {review.createdAt.slice(0, 10)}
                         </span>
@@ -46,6 +53,7 @@ export default function StudentReviewList({
                         <div className="min-w-0 flex-1">
                             <p className="text-sm font-bold text-slate-950">
                                 {review.nickname}
+                                {isMine && <span className="ml-1 text-xs font-medium text-slate-400">(나)</span>}
                             </p>
 
                             <div className="mt-2 flex items-center gap-1">
@@ -69,7 +77,8 @@ export default function StudentReviewList({
                         </div>
                     </div>
                 </article>
-            ))}
+                );
+            })}
         </div>
     );
 }

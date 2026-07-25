@@ -106,7 +106,7 @@ export default function BusStation({ mode, currentOwnerId, variant = 'desktop' }
                     </div>
                 </button>
             ) : (
-                <div className="absolute left-[22.5%] top-[18.5%] z-10 aspect-square w-[9.375%]">
+                <div className="group absolute left-[22.5%] top-[18.5%] z-10 aspect-square w-[9.375%]">
                     <HoverCard
                         openDelay={50}
                         closeDelay={50}
@@ -142,7 +142,7 @@ export default function BusStation({ mode, currentOwnerId, variant = 'desktop' }
                         </HoverCardContent>
                     </HoverCard>
 
-                    <span className="pointer-events-none absolute bottom-[15%] left-1/2 z-10 -translate-x-1/2 translate-y-1/2 whitespace-nowrap rounded-[0.3cqw] bg-white px-[0.4cqw] py-[0.08cqw] text-[0.75cqw] font-bold text-slate-700 shadow-sm">
+                    <span className="pointer-events-none absolute bottom-[15%] left-1/2 z-10 -translate-x-1/2 translate-y-1/2 whitespace-nowrap rounded-[0.3cqw] bg-white px-[0.4cqw] py-[0.08cqw] text-[0.75cqw] font-bold text-slate-700 shadow-sm transition-transform duration-200 group-hover:scale-110">
                         버스정류장
                     </span>
                 </div>
