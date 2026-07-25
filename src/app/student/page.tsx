@@ -13,6 +13,7 @@ import { cookies } from "next/headers";
 import { getMyBuildings, getMyStreak } from "../services/city/service";
 import { getMyInfo } from "@/features/user/action";
 import NicknameInputModal from "@/features/auth/components/NicknameInputModal";
+import BusFareErrorToast from "@/components/city/BusFareErrorToast";
 import { buildActivityGrassMap } from "@/features/city/utils";
 import type { GrassLevel } from "@/components/mypage/GrassHeatmap";
 
@@ -26,12 +27,18 @@ const MOBILE_GRASS_COLOR_SCALE: Record<GrassLevel, string> = {
 
 const BUILDING_POSITIONS = [1, 2, 3, 4, 5] as const;
 
-export default async function StudentMainPage() {
+export default async function StudentMainPage({
+    searchParams,
+}: {
+    searchParams: Promise<{ busFareError?: string }>;
+}) {
     const cookieStore = await cookies();
     const accessToken = cookieStore.get("accessToken")?.value;
+    const { busFareError } = await searchParams;
 
     const myInfo = await getMyInfo();
     const dnd = myInfo.data?.doNotDisturb;
+    const myPoints = myInfo.data?.points ?? 0;
 
     return (
         <>
@@ -39,10 +46,14 @@ export default async function StudentMainPage() {
                 <NicknameInputModal />
             }
 
+            {busFareError && (
+                <BusFareErrorToast message={busFareError} />
+            )}
+
             {/* 태블릿+데스크탑(md 이상): 기존 도시 배경 그대로 */}
             <div className="hidden h-full md:block">
                 <CityCanvas>
-                    <BusStation mode="MY" />
+                    <BusStation mode="MY" myPoints={myPoints} />
                     <PostBoard mode="MY" />
                     <Phone accessToken={accessToken} initialNotification={dnd} />
                     <Suspense fallback={null}>
@@ -82,7 +93,7 @@ export default async function StudentMainPage() {
                             description="포인트 상점으로 이동합니다."
                             href="/student/point-store"
                         />
-                        <BusStation mode="MY" variant="mobile" />
+                        <BusStation mode="MY" myPoints={myPoints} variant="mobile" />
                         <FortuneSpot variant="mobile" />
                         <PostBoard mode="MY" variant="mobile" />
                     </div>

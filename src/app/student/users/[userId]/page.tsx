@@ -8,6 +8,7 @@ import BuildingItem from "@/components/city/BuildingItem";
 import MobileBuildingItem from "@/components/city/MobileBuildingItem";
 import FloatingGrassButton from "@/components/city/FloatingGrassButton";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { getFriendBuildings, getFriendStreak } from "@/app/services/city/service";
 import { getGuestbooksAction } from "@/features/guestbook/action";
 import { buildActivityGrassMap } from "@/features/city/utils";
@@ -58,6 +59,27 @@ const commonBuildingSlots = {
     mypage: { top: "60%", left: "62.22%", width: "13.89%", aspectRatio: "5 / 4" },
 } as const;
 
+// getFriendBuildings는 "버스비" 명목으로 포인트 1점을 소모하는 호출이라 실패 시 그냥 던지면
+// error.tsx로 떨어져버린다. 포인트 부족(400)인 경우엔 내 도시로 돌려보내고 토스트로 안내한다.
+const loadFriendBuildings = async (userId: string) => {
+    try {
+        return await getFriendBuildings(userId);
+    } catch (error) {
+        const [statusPart, messagePart] =
+            error instanceof Error ? error.message.split("|") : [];
+
+        if (statusPart === "400") {
+            redirect(
+                `/student?busFareError=${encodeURIComponent(
+                    messagePart || "친구 도시 방문에 필요한 포인트가 부족합니다."
+                )}`
+            );
+        }
+
+        throw error;
+    }
+};
+
 export default async function FriendCityPage({ params }: {
     params: Promise<{
         userId: string;
@@ -72,6 +94,7 @@ export default async function FriendCityPage({ params }: {
         getMyInfo()
     ])
     const initialDnd = myInfo.data?.doNotDisturb
+    const myPoints = myInfo.data?.points ?? 0
     const guestbooks = guestbookResponse.data ?? [];
 
     return (
@@ -79,7 +102,7 @@ export default async function FriendCityPage({ params }: {
             {/* 태블릿+데스크탑(md 이상): 기존 도시 배경 그대로 */}
             <div className="hidden h-full md:block">
                 <CityCanvas>
-                    <BusStation mode='FRIEND' currentOwnerId={Number(userId)} />
+                    <BusStation mode='FRIEND' currentOwnerId={Number(userId)} myPoints={myPoints} />
                     <PostBoard
                         mode="FRIEND"
                         ownerId={Number(userId)}
@@ -117,7 +140,7 @@ export default async function FriendCityPage({ params }: {
                     </Suspense>
 
                     <div className="mt-4 space-y-3">
-                        <BusStation mode="FRIEND" currentOwnerId={Number(userId)} variant="mobile" />
+                        <BusStation mode="FRIEND" currentOwnerId={Number(userId)} myPoints={myPoints} variant="mobile" />
                         <PostBoard
                             mode="FRIEND"
                             ownerId={Number(userId)}
@@ -147,7 +170,7 @@ async function StreakSection({ userId }: { userId: string }) {
 }
 
 async function BuildingsSection({ userId }: { userId: string }) {
-    const { nickname, buildings } = await getFriendBuildings(userId);
+    const { nickname, buildings } = await loadFriendBuildings(userId);
 
     return (
         <>
@@ -192,7 +215,7 @@ async function BuildingsSection({ userId }: { userId: string }) {
 }
 
 async function MobileFriendTitleSection({ userId }: { userId: string }) {
-    const { nickname } = await getFriendBuildings(userId);
+    const { nickname } = await loadFriendBuildings(userId);
 
     return (
         <p className="mb-4 text-sm font-black text-slate-700">
@@ -202,7 +225,7 @@ async function MobileFriendTitleSection({ userId }: { userId: string }) {
 }
 
 async function MobileBuildingsSection({ userId }: { userId: string }) {
-    const { buildings } = await getFriendBuildings(userId);
+    const { buildings } = await loadFriendBuildings(userId);
 
     const ownedBuildings = BUILDING_POSITIONS
         .map((position) => buildings.find((building) => building.position === position))
