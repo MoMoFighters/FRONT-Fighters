@@ -33,7 +33,7 @@ export default function AboutFaqSection({ tab }: AboutFaqSectionProps) {
         .filter((group) => group.items.length > 0);
 
     return (
-        <section className="bg-white py-10 sm:py-12">
+        <section className="min-h-[60vh] bg-white py-10 sm:py-12">
             <div className="mx-auto max-w-3xl px-5 sm:px-8 lg:px-0">
                 <div className="space-y-10">
                     {groups.map((group) => (

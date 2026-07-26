@@ -7,7 +7,7 @@ import type { Review } from "@/features/lecture/type";
 const CACHE_KEY_PREFIX = "momocity-review-summary-";
 
 export interface ReviewSummaryResult {
-    representativeReview: Review;
+    representativeReviews: Review[];
     averageRating: number;
 }
 
@@ -112,23 +112,17 @@ export function useReviewSummaryModel() {
                 }
             }
 
-            // 5. 중심과 가장 유사한(코사인 유사도가 가장 높은) 실제 수강평 찾기
-            let bestIndex = 0;
-            let bestScore = -Infinity;
-
-            embeddings.forEach((vector, index) => {
-                const score = cosineSimilarity(vector, centroid);
-                if (score > bestScore) {
-                    bestScore = score;
-                    bestIndex = index;
-                }
-            });
+            // 5. 중심과 유사도가 높은 순으로 정렬해 상위 3개(또는 그 이하) 실제 수강평 선정
+            const ranked = embeddings
+                .map((vector, index) => ({ index, score: cosineSimilarity(vector, centroid) }))
+                .sort((a, b) => b.score - a.score)
+                .slice(0, 3);
 
             const averageRating =
                 reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length;
 
             const summary: ReviewSummaryResult = {
-                representativeReview: reviews[bestIndex],
+                representativeReviews: ranked.map(({ index }) => reviews[index]),
                 averageRating,
             };
 

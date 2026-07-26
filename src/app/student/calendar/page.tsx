@@ -27,14 +27,16 @@ export default async function CalendarPage({
     }
 
     return (
-        <div className="flex h-[calc(100vh-55px)] max-h-[calc(100vh-55px)] min-h-0 w-full flex-col overflow-hidden md:flex-row">
-            <CalendarLoader
-                selectedDate={date}
-            />
+        <main className="mx-auto w-full max-w-360 px-4 py-8 md:px-12 md:py-12">
+            <section className="flex h-[85vh] min-h-[620px] max-h-[85vh] w-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm md:flex-row">
+                <CalendarLoader
+                    selectedDate={date}
+                />
 
-            <CalendarSide
-                selectedDate={date}
-            />
-        </div>
+                <CalendarSide
+                    selectedDate={date}
+                />
+            </section>
+        </main>
     );
 }

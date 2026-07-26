@@ -53,38 +53,40 @@ export default async function StudentChatPage({
     );
 
     return (
-        <div className="mx-3 flex h-[calc(100vh-134px)] max-h-[calc(100vh-134px)] min-h-0 flex-row overflow-hidden   bg-white">
-            <FriendNav
-                status={currentStatus}
-                hasUnreadRequest={hasUnreadFriendRequest}
-                hasUnreadChat={hasUnreadChatMessage}
-            />
+        <main className="mx-auto w-full max-w-360 px-4 py-8 md:px-12 md:py-12">
+            <section className="flex h-[85vh] min-h-[620px] max-h-[85vh] flex-row overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                <FriendNav
+                    status={currentStatus}
+                    hasUnreadRequest={hasUnreadFriendRequest}
+                    hasUnreadChat={hasUnreadChatMessage}
+                />
 
-            <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-                {currentStatus === "friend" && (
-                    <Suspense fallback={<FriendTabSkeleton />}>
-                        <FriendTabSection
-                            accessToken={accessToken}
-                            currentFriendId={currentFriendId}
-                        />
-                    </Suspense>
-                )}
+                <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+                    {currentStatus === "friend" && (
+                        <Suspense fallback={<FriendTabSkeleton />}>
+                            <FriendTabSection
+                                accessToken={accessToken}
+                                currentFriendId={currentFriendId}
+                            />
+                        </Suspense>
+                    )}
 
-                {currentStatus === "request" && (
-                    <Suspense fallback={<RequestTabSkeleton />}>
-                        <RequestTabSection accessToken={accessToken} />
-                    </Suspense>
-                )}
+                    {currentStatus === "request" && (
+                        <Suspense fallback={<RequestTabSkeleton />}>
+                            <RequestTabSection accessToken={accessToken} />
+                        </Suspense>
+                    )}
 
-                {currentStatus === "chat" && (
-                    <Suspense fallback={<ChatTabSkeleton />}>
-                        <ChatTabSection
-                            accessToken={accessToken}
-                            currentRoomId={currentRoomId}
-                        />
-                    </Suspense>
-                )}
-            </div>
-        </div>
+                    {currentStatus === "chat" && (
+                        <Suspense fallback={<ChatTabSkeleton />}>
+                            <ChatTabSection
+                                accessToken={accessToken}
+                                currentRoomId={currentRoomId}
+                            />
+                        </Suspense>
+                    )}
+                </div>
+            </section>
+        </main>
     );
 }

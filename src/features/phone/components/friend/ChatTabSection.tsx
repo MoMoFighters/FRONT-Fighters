@@ -24,7 +24,7 @@ export default async function ChatTabSection({
 
     return (
         <div className="grid h-full max-h-full min-h-0 flex-1 grid-cols-1 overflow-hidden md:grid-cols-[3fr_7fr]">
-            <div className="flex min-h-0 flex-col overflow-hidden border-r border-slate-200 bg-white">
+            <div className="flex min-h-0 flex-col overflow-hidden bg-white">
                 <div className="hidden">
                     <p className="font-bold text-slate-900">
                         채팅 목록
