@@ -1,6 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { revalidatePath } from "next/cache";
 import type { ApiResponse } from "@/lib/api";
 import {
     createGuestbookService,
@@ -66,11 +67,17 @@ export const createGuestbookAction = async ({
             return createUnauthorizedResponse<CreateGuestbookResponse>();
         }
 
-        return await createGuestbookService({
+        const result = await createGuestbookService({
             ownerId,
             content,
             accessToken,
         });
+
+        // 방명록 작성도 포인트를 지급하는 액션이라, 마이페이지 포인트 내역이 바로 반영되게 무효화한다.
+        revalidatePath("/student/mypage");
+        revalidatePath("/student/mypage/point");
+
+        return result;
     } catch (error) {
         return createErrorResponse<CreateGuestbookResponse>(
             error,

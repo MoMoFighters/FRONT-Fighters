@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import {
     getFriendStreak,
     getMyBuildings,
@@ -112,6 +113,10 @@ export type FortuneActionResult = {
 export const getFortuneAction = async (): Promise<FortuneActionResult> => {
     try {
         const data = await getFortune();
+
+        // 운세 보기도 포인트를 소모하는 액션이라, 마이페이지 포인트 내역이 바로 반영되게 무효화한다.
+        revalidatePath("/student/mypage");
+        revalidatePath("/student/mypage/point");
 
         return {
             success: true,

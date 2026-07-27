@@ -25,7 +25,7 @@ export default function TodoSection({
     )
 
     return (
-        <div className="p-4 flex flex-col gap-3 border-b border-slate-400 h-full">
+        <div className="p-4 flex flex-col gap-3 h-full">
 
             <div>
                 <h2 className="text-xl text-slate-900 text-center font-bold">

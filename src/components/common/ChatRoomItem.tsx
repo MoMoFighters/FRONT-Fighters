@@ -224,11 +224,23 @@ export default function ChatRoomItem({
                             )}
                         </div>
 
-                        {createdAtText && (
-                            <p className="shrink-0 text-[11px] font-medium text-slate-400">
-                                {createdAtText}
-                            </p>
-                        )}
+                        {/* 시간 밑에 안읽음 배지를 세로로 쌓아서, 배지가 있고 없고에 따라
+                            "..." 메뉴 위치가 흔들리지 않고 항상 이 칸 안에서만 높이가 바뀌게 한다. */}
+                        <div className="flex shrink-0 flex-col items-end gap-1">
+                            {createdAtText && (
+                                <p className="text-[11px] font-medium text-slate-400">
+                                    {createdAtText}
+                                </p>
+                            )}
+
+                            {unreadCount > 0 && (
+                                <div className="flex h-5 min-w-5 items-center justify-center rounded-full bg-indigo-500 px-1.5">
+                                    <p className="text-[11px] font-bold text-white">
+                                        {unreadCount > 99 ? "99+" : unreadCount}
+                                    </p>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     <p className="mt-0.5 truncate text-sm text-slate-500">
@@ -236,14 +248,6 @@ export default function ChatRoomItem({
                     </p>
                 </div>
             </Link>
-
-            {unreadCount > 0 && (
-                <div className="flex h-5 min-w-5 items-center justify-center rounded-full bg-indigo-500 px-1.5">
-                    <p className="text-[11px] font-bold text-white">
-                        {unreadCount > 99 ? "99+" : unreadCount}
-                    </p>
-                </div>
-            )}
 
             {isMyRoom ? (
                 <div className="h-8 w-8 shrink-0" aria-hidden="true" />
