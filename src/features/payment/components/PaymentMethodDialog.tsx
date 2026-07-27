@@ -44,7 +44,7 @@ const PAYMENT_METHODS: {
     logoClassName: string;
     buttonClassName: string;
     textClassName: string;
-    // PG사마다 PC에서 지원하는 결제창 유형이 달라서 (토스페이는 IFRAME 미지원) 개별 지정한다.
+    // PG사마다 PC에서 지원하는 결제창 유형이 달라서 (카카오페이는 POPUP 미지원, 토스페이는 IFRAME 미지원) 개별 지정한다.
     pcWindowType: "IFRAME" | "POPUP" | "REDIRECTION";
 }[] = [
         {

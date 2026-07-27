@@ -11,6 +11,7 @@ import {
 } from "@/features/phone/components/friend/FriendTabSkeletons";
 
 import { getNoticeNotificationListAction } from "@/features/user/components/notification/action";
+import { isFriendAcceptedNotification } from "@/features/user/components/notification/utils";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -46,7 +47,10 @@ export default async function StudentChatPage({
     const notificationListResponse = await getNoticeNotificationListAction();
     const notifications = notificationListResponse.data ?? [];
     const hasUnreadFriendRequest = notifications.some(
-        (notification) => notification.type === "FRIEND_REQUEST" && !notification.isRead
+        (notification) =>
+            notification.type === "FRIEND_REQUEST" &&
+            !notification.isRead &&
+            !isFriendAcceptedNotification(notification)
     );
     const hasUnreadChatMessage = notifications.some(
         (notification) => notification.type === "MESSAGE" && !notification.isRead

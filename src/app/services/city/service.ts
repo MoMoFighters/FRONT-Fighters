@@ -56,6 +56,7 @@ export const getMyBuildings = async () => {
  */
 export const getFriendBuildings = async (id: string): Promise<FriendBuildingsResponse> => {
     const response = await fetchWithAuth(`/api/v1/user/${id}/buildings`, {
+        method: "POST",
         next: { revalidate: 60 },
     });
     await handleErrorResponse(response);

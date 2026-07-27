@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { MessageCirclePlus } from "lucide-react";
 
 import ChatRoomItem from "@/components/common/ChatRoomItem";
+import CreateGroupChatModal from "@/features/phone/components/friend/CreateGroupChatModal";
 import {
     ChatRoomListData,
     normalizeChatRoomListData,
@@ -21,6 +23,7 @@ export default function ChatRoomListPanel({
 }: ChatRoomListPanelProps) {
     const [liveRooms, setLiveRooms] = useState<ChatRoomListData[] | null>(null);
     const [searchKeyword, setSearchKeyword] = useState("");
+    const [isGroupChatModalOpen, setIsGroupChatModalOpen] = useState(false);
     const rooms = liveRooms ?? initialRooms;
     const myChatRoomId = useMemo(() => {
         if (rooms.length === 0) {
@@ -86,7 +89,23 @@ export default function ChatRoomListPanel({
                     placeholder="채팅방 검색"
                     className="h-8 min-w-0 flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-300 focus:bg-white focus:ring-2 focus:ring-indigo-100"
                 />
+
+                {/* 단체 채팅 개설 진입점 - PC/태블릿(lg 이상)은 빈 채팅 화면 쪽 진입점으로 충분해서 모바일에서만 노출 */}
+                <button
+                    type="button"
+                    onClick={() => setIsGroupChatModalOpen(true)}
+                    aria-label="단체 채팅 개설"
+                    title="단체 채팅 개설"
+                    className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 lg:hidden"
+                >
+                    <MessageCirclePlus className="h-5 w-5" />
+                </button>
             </div>
+
+            <CreateGroupChatModal
+                open={isGroupChatModalOpen}
+                onOpenChange={setIsGroupChatModalOpen}
+            />
 
             <div className="min-h-0 flex-1 overflow-y-auto scrollbar-none">
                 {filteredRooms.length > 0 ? (

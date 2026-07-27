@@ -24,7 +24,7 @@ export default function RequestList({
                 </p>
             </div>
 
-            <div className="min-h-0 flex-1 overflow-y-auto p-5 scrollbar-none">
+            <div className="p-5 scrollbar-none lg:min-h-0 lg:flex-1 lg:overflow-y-auto">
                 <div className="flex flex-col gap-3">
                     <p className="text-sm font-bold text-slate-700">
                         받은 요청

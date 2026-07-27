@@ -60,7 +60,8 @@ export type PointOrderReason =
     | "REVIEW"
     | "PROFILE"
     | "BUS"
-    | "GUESTBOOK";
+    | "GUESTBOOK"
+    | "FORTUNE";
 
 export interface CreatePointOrderRequest {
     reason: PointOrderReason;
@@ -77,7 +78,8 @@ export type PointHistoryReason =
     | "REVIEW"
     | "PROFILE"
     | "BUS"
-    | "GUESTBOOK";
+    | "GUESTBOOK"
+    | "FORTUNE";
 
 export interface PointHistoryItem {
     type: PointHistoryTransactionType;

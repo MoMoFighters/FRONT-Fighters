@@ -5,6 +5,7 @@ import { Search, X } from 'lucide-react'
 import Image from "next/image";
 import Link from 'next/link';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 
 import { getStudentFriendListAction } from '@/features/friend/action';
 
@@ -17,7 +18,10 @@ interface BusStationProps {
     mode: 'MY' | "FRIEND";
     currentOwnerId?: number;
     variant?: 'desktop' | 'mobile';
+    myPoints?: number;
 }
+
+const BUS_FARE_POINTS = 1;
 
 interface CityFriend {
     userId: number;
@@ -26,7 +30,9 @@ interface CityFriend {
     profileImageUrl?: string;
 }
 
-export default function BusStation({ mode, currentOwnerId, variant = 'desktop' }: BusStationProps) {
+export default function BusStation({ mode, currentOwnerId, variant = 'desktop', myPoints }: BusStationProps) {
+
+    const hasEnoughBusFare = (myPoints ?? 0) >= BUS_FARE_POINTS;
 
     const [isModal, setIsModal] = useState(false);
     const [searchedValue, setSearchedValue] = useState("");
@@ -102,6 +108,7 @@ export default function BusStation({ mode, currentOwnerId, variant = 'desktop' }
                             {mode === 'MY'
                                 ? "친구의 도시로 이동해보세요"
                                 : "다른 친구의 도시로 이동하거나 내 도시로 돌아가보세요"}
+                            {" "}(버스비 {BUS_FARE_POINTS}포인트)
                         </p>
                     </div>
                 </button>
@@ -137,6 +144,7 @@ export default function BusStation({ mode, currentOwnerId, variant = 'desktop' }
                                     {mode === 'MY'
                                         ? "친구의 도시로 이동해보세요"
                                         : "다른 친구의 도시로 이동하거나 내 도시로 돌아가보세요"}
+                                    {" "}(버스비 {BUS_FARE_POINTS}포인트)
                                 </p>
                             </div>
                         </HoverCardContent>
@@ -175,6 +183,9 @@ export default function BusStation({ mode, currentOwnerId, variant = 'desktop' }
 
                                 <p className="mt-1 text-sm font-medium text-slate-400">
                                     방문할 친구를 검색하고 도시로 이동해보세요.
+                                </p>
+                                <p className="mt-1 text-xs font-bold text-indigo-500">
+                                    친구 도시로 이동할 때마다 버스비로 {BUS_FARE_POINTS}포인트가 소모돼요.
                                 </p>
                             </div>
 
@@ -252,6 +263,57 @@ export default function BusStation({ mode, currentOwnerId, variant = 'desktop' }
                                                         </p>
                                                     </div>
                                                 </div>
+                                            );
+                                        }
+
+                                        if (!hasEnoughBusFare) {
+                                            return (
+                                                <HoverCard
+                                                    key={friend.userId}
+                                                    openDelay={100}
+                                                    closeDelay={0}
+                                                >
+                                                    <HoverCardTrigger asChild>
+                                                        <button
+                                                            type="button"
+                                                            disabled
+                                                            onClick={() =>
+                                                                toast.error(
+                                                                    "친구 도시 방문에 필요한 포인트가 부족합니다."
+                                                                )
+                                                            }
+                                                            className="flex h-20 w-full cursor-not-allowed items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50 p-3 text-left opacity-60"
+                                                        >
+                                                            <div className="flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-slate-200 text-sm font-black text-slate-400">
+                                                                {friend.profileImageUrl ? (
+                                                                    <img
+                                                                        src={friend.profileImageUrl}
+                                                                        alt={`${friend.nickname} 프로필`}
+                                                                        className="h-full w-full object-cover"
+                                                                    />
+                                                                ) : (
+                                                                    friend.nickname.slice(0, 1)
+                                                                )}
+                                                            </div>
+
+                                                            <div className="min-w-0">
+                                                                <p className="truncate text-sm font-black text-slate-500">
+                                                                    {friend.nickname}
+                                                                </p>
+                                                                <p className="mt-0.5 text-xs font-bold text-slate-400">
+                                                                    친구 도시로 이동하기
+                                                                </p>
+                                                            </div>
+                                                        </button>
+                                                    </HoverCardTrigger>
+                                                    <HoverCardContent
+                                                        side="top"
+                                                        align="center"
+                                                        className="w-auto px-3 py-1.5 text-xs font-bold text-rose-500"
+                                                    >
+                                                        포인트가 부족해 지금은 이동할 수 없어요.
+                                                    </HoverCardContent>
+                                                </HoverCard>
                                             );
                                         }
 

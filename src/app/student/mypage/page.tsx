@@ -43,6 +43,7 @@ const POINT_REASON_LABEL: Record<PointHistoryReason, string> = {
     PROFILE: "프로필 아이템",
     BUS: "버스 이용",
     GUESTBOOK: "방명록",
+    FORTUNE: "운세 보기",
 };
 
 const POINT_TYPE_LABEL: Record<PointHistoryTransactionType, string> = {

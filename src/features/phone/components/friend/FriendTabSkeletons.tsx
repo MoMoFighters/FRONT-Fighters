@@ -2,7 +2,7 @@ const pulseBlock = "animate-pulse rounded-xl bg-slate-100";
 
 export function FriendTabSkeleton() {
     return (
-        <div className="min-h-0 flex-1 grid grid-cols-1 overflow-hidden md:grid-cols-[3fr_7fr]">
+        <div className="min-h-0 flex-1 grid grid-cols-1 overflow-hidden lg:grid-cols-[3fr_7fr]">
             <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-white">
                 <div className="flex items-center gap-3 border-b border-slate-200 bg-white px-4 py-3">
                     <div className={`h-12 w-12 shrink-0 rounded-full ${pulseBlock}`} />
@@ -26,7 +26,7 @@ export function FriendTabSkeleton() {
 
 export function RequestTabSkeleton() {
     return (
-        <div className="grid min-h-0 flex-1 grid-cols-1 overflow-hidden md:grid-cols-2">
+        <div className="grid min-h-0 flex-1 grid-cols-1 overflow-hidden lg:grid-cols-2">
             <div className="flex min-h-0 flex-col gap-4 bg-slate-50 p-5">
                 {Array.from({ length: 4 }).map((_, index) => (
                     <div key={index} className={`h-14 w-full ${pulseBlock}`} />
@@ -43,7 +43,7 @@ export function RequestTabSkeleton() {
 
 export function ChatTabSkeleton() {
     return (
-        <div className="grid h-full max-h-full min-h-0 flex-1 grid-cols-1 overflow-hidden md:grid-cols-[3fr_7fr]">
+        <div className="grid h-full max-h-full min-h-0 flex-1 grid-cols-1 overflow-hidden lg:grid-cols-[3fr_7fr]">
             <div className="flex min-h-0 flex-col gap-3 bg-white p-4">
                 {Array.from({ length: 6 }).map((_, index) => (
                     <div key={index} className={`h-14 w-full ${pulseBlock}`} />

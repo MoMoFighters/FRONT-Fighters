@@ -29,6 +29,17 @@ export default function MembershipPlans({
     const [selectedPlan, setSelectedPlan] = useState<MembershipPlan | null>(null);
     const hasVerifiedRedirectRef = useRef(false);
 
+    // 카카오페이 결제창(IFRAME)이 열리고 닫힐 때 문서 높이가 바뀌면서 스크롤바가
+    // 생겼다 사라졌다 하고, 그 폭만큼 레이아웃이 흔들리는 문제가 있었다.
+    // 이 페이지에 머무는 동안만 스크롤바 자체를 숨겨서(스크롤 기능은 유지) 흔들림을 없앤다.
+    useEffect(() => {
+        document.documentElement.classList.add("no-page-scrollbar");
+
+        return () => {
+            document.documentElement.classList.remove("no-page-scrollbar");
+        };
+    }, []);
+
     // 모바일 결제(REDIRECTION)는 결제 완료 후 이 페이지로 되돌아온다.
     // paymentId가 붙어 있으면 서버에 재검증을 요청한다.
     useEffect(() => {
@@ -47,8 +58,11 @@ export default function MembershipPlans({
         void (async () => {
             const result = await verifyPaymentAction(pendingPaymentId);
 
+            // 결제창(IFRAME/POPUP)이 열려 있는 동안 다른 메뉴로 이동하는 등,
+            // PaymentMethodDialog에서 이미 검증을 마쳤거나 만료된 paymentId로
+            // 이 리다이렉트 재검증이 한 번 더 걸리는 경우가 있어 토스트는 띄우지 않는다.
             if (result.status !== 200 && result.status !== 201) {
-                toast.error(result.message || "결제 검증에 실패했습니다.");
+                console.error("[MembershipPlans] 리다이렉트 결제 재검증 실패", result);
             }
 
             router.replace(pathname);
