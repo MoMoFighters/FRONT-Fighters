@@ -57,17 +57,15 @@ export default async function StudentChatPage({
     );
 
     return (
-        <div className="flex h-[calc(100vh-134px)] max-h-[calc(100vh-134px)] min-h-0 w-full flex-col overflow-hidden p-4 md:p-8">
-            <div className="flex h-full min-h-0 w-full flex-row gap-4 overflow-hidden">
-                <div className="min-h-0 overflow-hidden rounded-md border border-slate-200 bg-white">
-                    <FriendNav
-                        status={currentStatus}
-                        hasUnreadRequest={hasUnreadFriendRequest}
-                        hasUnreadChat={hasUnreadChatMessage}
-                    />
-                </div>
+        <main className="mx-auto w-full max-w-360 px-4 py-8 md:px-12 md:py-12">
+            <section className="flex h-[85vh] min-h-[620px] max-h-[85vh] flex-row overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                <FriendNav
+                    status={currentStatus}
+                    hasUnreadRequest={hasUnreadFriendRequest}
+                    hasUnreadChat={hasUnreadChatMessage}
+                />
 
-                <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-md border border-slate-200 bg-white">
+                <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
                     {currentStatus === "friend" && (
                         <Suspense fallback={<FriendTabSkeleton />}>
                             <FriendTabSection
@@ -92,7 +90,7 @@ export default async function StudentChatPage({
                         </Suspense>
                     )}
                 </div>
-            </div>
-        </div>
+            </section>
+        </main>
     );
 }

@@ -42,7 +42,7 @@ export default async function FriendTabSection({
     return (
         <div className="min-h-0 flex-1 grid grid-cols-1 overflow-hidden lg:grid-cols-[3fr_7fr]">
             <div
-                className={`min-h-0 flex-1 flex-col overflow-hidden border-r border-slate-200 bg-white lg:flex ${showListOnMobile ? "flex" : "hidden"
+                className={`min-h-0 flex-1 flex-col overflow-hidden bg-white lg:flex ${showListOnMobile ? "flex" : "hidden"
                     }`}
             >
                 <div className="flex items-center gap-3 border-b border-slate-200 bg-white px-4 py-3">

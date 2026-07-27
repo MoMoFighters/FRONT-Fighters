@@ -17,7 +17,7 @@ export default function RequestList({
     sent,
 }: RequestListProps) {
     return (
-        <section className="flex min-h-0 flex-col bg-slate-50 lg:border-r lg:border-slate-200">
+        <section className="flex min-h-0 flex-col bg-slate-50">
             <div className="border-b border-slate-200 bg-white px-5 py-3">
                 <p className="font-bold text-slate-900">
                     요청 확인

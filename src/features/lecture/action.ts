@@ -125,6 +125,7 @@ export const enrollLectureAction = async (lectureId: string, position?: string) 
 
     revalidatePath('/student');
 
+    revalidatePath('/student/mypage');
     revalidatePath('/student/mypage/lectures');
     revalidatePath(`/student/mypage/lectures/${lectureId}`);
 }

@@ -241,7 +241,7 @@ export default function PostBoard({ mode, ownerId, initialGuestbooks = [], varia
                     </div>
                 </button>
             ) : (
-                <div className="absolute bottom-[11%] left-[44%] z-10 aspect-square w-[7%]">
+                <div className="group absolute bottom-[11%] left-[44%] z-10 aspect-square w-[7%]">
                     <HoverCard openDelay={50} closeDelay={50}>
                         <HoverCardTrigger asChild>
                             <div
@@ -277,7 +277,7 @@ export default function PostBoard({ mode, ownerId, initialGuestbooks = [], varia
                         </HoverCardContent>
                     </HoverCard>
 
-                    <span className="pointer-events-none absolute bottom-0 left-1/2 z-10 -translate-x-1/2 translate-y-1/2 whitespace-nowrap rounded-[0.3cqw] bg-white px-[0.4cqw] py-[0.08cqw] text-[0.75cqw] font-bold text-slate-700 shadow-sm">
+                    <span className="pointer-events-none absolute bottom-0 left-1/2 z-10 -translate-x-1/2 translate-y-1/2 whitespace-nowrap rounded-[0.3cqw] bg-white px-[0.4cqw] py-[0.08cqw] text-[0.75cqw] font-bold text-slate-700 shadow-sm transition-transform duration-200 group-hover:scale-110">
                         게시판
                     </span>
                 </div>

@@ -25,10 +25,7 @@ export default function ServiceErrorPage({
         parts.length === 2 &&
         /^\d+$/.test(parts[0]);
 
-    const [status, message] = parts;
-
-    const displayStatus = isApiError ? status : "500";
-    const displayMessage = isApiError ? message : "알 수 없는 오류가 발생했습니다.";
+    const displayMessage = isApiError ? parts[1] : "알 수 없는 오류가 발생했습니다.";
 
     return (
         <main className="flex min-h-[calc(100vh-55px)] w-full items-center justify-center bg-white px-6 pt-6 pb-12">
@@ -39,8 +36,8 @@ export default function ServiceErrorPage({
                             MoMoCITY
                         </div>
 
-                        <p className="text-8xl font-bold tracking-tight text-slate-950">
-                            {displayStatus}
+                        <p className="text-6xl font-bold tracking-tight text-slate-950 sm:text-7xl md:text-8xl">
+                            오류!
                         </p>
 
                         <h1 className="mt-6 text-3xl font-bold tracking-tight text-slate-950">

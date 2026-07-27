@@ -99,13 +99,30 @@ export default function ReviewSummaryButton({ lectureId, reviewCount }: ReviewSu
                             <span className="text-sm font-medium text-slate-400">/ 5.0</span>
                         </div>
 
-                        <div className="rounded-2xl border border-slate-200 bg-white p-4">
-                            <p className="mb-2 text-[11px] font-bold text-indigo-500">
-                                전체 수강평의 경향을 가장 잘 담은 후기
-                            </p>
-                            <p className="text-sm leading-relaxed text-slate-700">
-                                "{result.representativeReview.content}"
-                            </p>
+                        <p className="text-[11px] font-bold text-indigo-500">
+                            전체 수강평의 경향을 가장 잘 담은 후기 {result.representativeReviews.length}개
+                        </p>
+
+                        <div className="space-y-2">
+                            {result.representativeReviews.map((review) => (
+                                <div
+                                    key={review.reviewId}
+                                    className="rounded-2xl border border-slate-200 bg-white p-4"
+                                >
+                                    <div className="mb-1.5 flex items-center justify-between gap-2">
+                                        <span className="text-xs font-bold text-slate-700">
+                                            {review.nickname}
+                                        </span>
+                                        <span className="flex items-center gap-0.5 text-xs font-bold text-amber-500">
+                                            <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                                            {review.rating}
+                                        </span>
+                                    </div>
+                                    <p className="text-sm leading-relaxed text-slate-700">
+                                        &ldquo;{review.content}&rdquo;
+                                    </p>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 )}

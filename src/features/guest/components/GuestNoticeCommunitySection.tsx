@@ -4,51 +4,18 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { Notice } from "@/features/notice/type";
+import { getNoticesForGuest } from "@/app/services/notice/service";
 import community from '@/app/assets/img/community.png'
 import robot from '@/app/assets/img/robot.png'
 import GuestInquiryCard from "./GuestInquiryCard";
 
-const COMMUNITY_HREF = "/auth/login";
-
-const notices: Notice[] = [
-  {
-    noticeId: 1,
-    title: "서비스 정식 오픈 안내",
-    content: "모모시티 서비스 정식 오픈 안내입니다.",
-    isPinned: true,
-    createdAt: "2026-07-08T09:00:00",
-    updatedAt: "2026-07-08T09:00:00",
-  },
-  {
-    noticeId: 2,
-    title: "강의 카테고리 업데이트 예정",
-    content: "강의 카테고리 업데이트 예정 안내입니다.",
-    isPinned: false,
-    createdAt: "2026-07-07T09:00:00",
-    updatedAt: "2026-07-07T09:00:00",
-  },
-  {
-    noticeId: 3,
-    title: "커뮤니티 이용 가이드",
-    content: "커뮤니티 이용 가이드 안내입니다.",
-    isPinned: false,
-    createdAt: "2026-07-05T09:00:00",
-    updatedAt: "2026-07-05T09:00:00",
-  },
-  {
-    noticeId: 4,
-    title: "학습 기록 반영 기준 안내",
-    content: "학습 기록 반영 기준 안내입니다.",
-    isPinned: false,
-    createdAt: "2026-07-03T09:00:00",
-    updatedAt: "2026-07-03T09:00:00",
-  },
-];
+const COMMUNITY_HREF = "/community";
 
 const formatNoticeDate = (dateTime: string) => dateTime.slice(0, 10).replaceAll("-", ".");
 
-export default function GuestNoticeCommunitySection() {
+export default async function GuestNoticeCommunitySection() {
+  const { items: notices, page, totalPages } = await getNoticesForGuest(1);
+
   return (
     <section className="bg-white pt-2 pb-10 sm:pt-4 sm:pb-12">
       <div className="grid grid-cols-1 gap-6 px-5 sm:px-8 lg:grid-cols-[minmax(0,3fr)_minmax(240px,1fr)] lg:px-16">
@@ -67,9 +34,9 @@ export default function GuestNoticeCommunitySection() {
               <button className="flex h-8 w-8 items-center justify-center rounded-md border border-slate-200 transition-colors hover:bg-slate-50">
                 <ChevronLeft className="h-4 w-4" />
               </button>
-              <span className="font-medium text-slate-900">1</span>
+              <span className="font-medium text-slate-900">{page}</span>
               <span>/</span>
-              <span>3</span>
+              <span>{Math.max(totalPages, 1)}</span>
               <button className="flex h-8 w-8 items-center justify-center rounded-md border border-slate-200 transition-colors hover:bg-slate-50">
                 <ChevronRight className="h-4 w-4" />
               </button>
@@ -77,10 +44,16 @@ export default function GuestNoticeCommunitySection() {
           </div>
 
           <div className="border-y border-slate-100">
+            {notices.length === 0 && (
+              <p className="px-2 py-6 text-center text-xs font-medium text-slate-400">
+                등록된 공지사항이 없습니다.
+              </p>
+            )}
+
             {notices.map((notice) => (
               <Link
                 key={notice.noticeId}
-                href="#"
+                href={`/notices/${notice.noticeId}`}
                 className={`group flex items-start justify-between gap-3 border-b border-slate-100 px-2 py-3.5 transition-colors last:border-b-0 sm:items-center sm:gap-5 ${notice.isPinned
                   ? "border-l-3 border-l-indigo-500 bg-indigo-50/50 hover:bg-indigo-50"
                   : "hover:bg-slate-50"

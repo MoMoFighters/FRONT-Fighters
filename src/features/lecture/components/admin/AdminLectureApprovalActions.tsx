@@ -118,7 +118,7 @@ export default function AdminLectureApprovalActions({
                 open={pendingAction !== null}
                 onOpenChange={(open) => !open && setPendingAction(null)}
             >
-                <AlertDialogContent size="sm">
+                <AlertDialogContent size="sm" className="data-[size=sm]:max-w-[360px]">
                     <AlertDialogHeader>
                         <AlertDialogMedia className={isApprove ? "bg-indigo-100 text-indigo-600" : "bg-rose-100 text-rose-600"}>
                             {isApprove ? <CircleAlert /> : <AlertTriangle />}
@@ -135,7 +135,7 @@ export default function AdminLectureApprovalActions({
                                     value={rejectionReason}
                                     onChange={(event) => setRejectionReason(event.target.value)}
                                     placeholder="강사에게 전달할 미승인 사유를 입력하세요."
-                                    className="mt-2 min-h-24 w-full resize-y rounded-md border border-slate-200 bg-slate-50 p-3 text-sm leading-6 text-slate-800 outline-none placeholder:text-slate-400 focus:border-indigo-300 focus:bg-white focus:ring-3 focus:ring-indigo-50"
+                                    className="mt-2 min-h-16 w-full resize-y rounded-md border border-slate-200 bg-slate-50 p-3 text-sm leading-6 text-slate-800 outline-none placeholder:text-slate-400 focus:border-indigo-300 focus:bg-white focus:ring-3 focus:ring-indigo-50"
                                 />
                             </div>
                         )}

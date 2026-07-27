@@ -1,7 +1,7 @@
 'use client'
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { MessageCircle, UserPlus, Users } from "lucide-react";
 
 import {
@@ -22,10 +22,13 @@ export default function FriendNav({
     hasUnreadChat = false,
 }: FriendNavProps) {
     const [selected, setSelected] = useState(status);
+    const [prevStatus, setPrevStatus] = useState(status);
 
-    useEffect(() => {
+    // status prop이 바뀌면(effect 없이) 렌더링 중 바로 동기화 — 여분의 리렌더를 만들지 않는 React 권장 패턴
+    if (status !== prevStatus) {
+        setPrevStatus(status);
         setSelected(status);
-    }, [status]);
+    }
 
     const tabs = [
         {
@@ -52,7 +55,7 @@ export default function FriendNav({
     ] as const;
 
     return (
-        <div className="flex h-full shrink-0 flex-col bg-white px-3 py-3">
+        <div className="flex h-full shrink-0 flex-col bg-white pr-3 py-3">
             <div className="flex flex-col gap-1 rounded-2xl bg-slate-100 p-1">
                 {tabs.map(tab => (
                     <HoverCard key={tab.key} openDelay={150} closeDelay={0}>

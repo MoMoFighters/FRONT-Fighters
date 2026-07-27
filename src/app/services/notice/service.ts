@@ -2,6 +2,8 @@ import { CreateNoticeRequest, Notice, NoticeListResponse, UpdateNoticeRequest } 
 import { ApiResponse, fetchWithAuth } from "@/lib/api";
 import { notFound } from "next/navigation";
 
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 /**
  * 에러핸들링을 진행하는 공통 함수
  * @param response
@@ -94,6 +96,42 @@ export const getNotices = async (page: number): Promise<NoticeListResponse> => {
  */
 export const getNoticeById = async (id: string): Promise<Notice> => {
     const response = await fetchWithAuth(`/api/v1/admin-notices/${id}`, {
+        cache: "force-cache",
+        next: { tags: ["notices"] },
+    });
+
+    await handleErrorResponse(response);
+    const result: ApiResponse<Notice> = await response.json();
+    return assertApiData(result);
+};
+
+/**
+ * 공지사항 전체 조회 api (게스트 - 인증 없이 호출)
+ * @param page 페이지네이션
+ * @returns NoticeListResponse
+ */
+export const getNoticesForGuest = async (page: number): Promise<NoticeListResponse> => {
+    const params = new URLSearchParams();
+    params.set("page", String(page));
+
+    const response = await fetch(`${BASE_URL}/api/v1/admin-notices?${params.toString()}`, {
+        headers: { "Content-Type": "application/json" },
+        cache: "force-cache",
+        next: { tags: ["notices"] },
+    });
+    await handleErrorResponse(response);
+    const result: ApiResponse<NoticeListResponse> = await response.json();
+    return assertApiData(result);
+};
+
+/**
+ * 공지사항 상세 조회 api (게스트 - 인증 없이 호출)
+ * @param id 상세 조회할 공지사항 id
+ * @returns Notice
+ */
+export const getNoticeByIdForGuest = async (id: string): Promise<Notice> => {
+    const response = await fetch(`${BASE_URL}/api/v1/admin-notices/${id}`, {
+        headers: { "Content-Type": "application/json" },
         cache: "force-cache",
         next: { tags: ["notices"] },
     });
