@@ -21,6 +21,7 @@ interface OneButtonModalProps {
     description?: string;
     confirmLabel?: string;
     onConfirm?: () => void;
+    contentClassName?: string;
 }
 
 export default function OneButtonModal({
@@ -31,6 +32,7 @@ export default function OneButtonModal({
     description,
     confirmLabel = "확인",
     onConfirm,
+    contentClassName,
 }: OneButtonModalProps) {
 
     const isControlled =
@@ -50,7 +52,7 @@ export default function OneButtonModal({
                     {trigger}
                 </AlertDialogTrigger>
             )}
-            <AlertDialogContent size="sm">
+            <AlertDialogContent size="sm" className={contentClassName}>
                 <AlertDialogHeader>
                     <AlertDialogMedia className="bg-red-100 text-red-500">
                         <CircleAlert />

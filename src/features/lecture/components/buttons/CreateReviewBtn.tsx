@@ -19,6 +19,10 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import OneButtonModal from "@/features/modal/OneButtonModal";
+
+const MODEL_TIMEOUT_DESCRIPTION =
+    "네트워크 상태에 따라 다운로드가 오래 걸리고 있어요.\n다운로드는 백그라운드에서 계속 진행되니,\n잠시 후 다시 시도해주시면 훨씬 빠르게 이용하실 수 있어요!";
 
 interface CreateReviewBtnProps {
     lectureId: number;
@@ -232,6 +236,17 @@ export default function CreateReviewBtn({
                     </Button>
                 </DialogFooter>
             </DialogContent>
+
+            <OneButtonModal
+                open={aiCheck.hasTimedOut}
+                onOpenChange={(next) => {
+                    if (!next) aiCheck.dismissTimeout();
+                }}
+                title="모델 다운로드가 지연되고 있어요"
+                description={MODEL_TIMEOUT_DESCRIPTION}
+                onConfirm={aiCheck.dismissTimeout}
+                contentClassName="data-[size=sm]:max-w-[320px]"
+            />
         </Dialog>
     );
 }

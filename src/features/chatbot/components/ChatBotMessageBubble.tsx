@@ -14,6 +14,11 @@ interface ChatBotMessageBubbleProps {
     message: ChatMessage;
 }
 
+// LLM이 마크다운 특수문자를 불필요하게 백슬래시로 이스케이프해서 내려줄 때가 있어
+// (예: \*\*강의제목\*\*), 그대로 두면 CommonMark가 리터럴 문자로 처리해 볼드/기울임 등이
+// 깨진 채로 노출된다. 렌더링 직전에 이스케이프만 걷어낸다.
+const unescapeMarkdown = (text: string) => text.replace(/\\([*_`~])/g, "$1");
+
 export default function ChatBotMessageBubble({ message }: ChatBotMessageBubbleProps) {
     return (
         <div className="group flex max-w-[86%] min-w-0 items-start gap-2">
@@ -57,7 +62,7 @@ export default function ChatBotMessageBubble({ message }: ChatBotMessageBubblePr
                                 },
                             }}
                         >
-                            {message.content}
+                            {unescapeMarkdown(message.content)}
                         </ReactMarkdown>
                     </div>
                 </div>

@@ -9,12 +9,18 @@ import GuestLectureList from "@/features/lecture/components/guest/GuestLectureLi
 import GuestLectureListSkeleton from "@/features/lecture/components/guest/GuestLectureListSkeleton";
 import GuestLecturePageHeader from "@/features/lecture/components/guest/GuestLecturePageHeader";
 import { Category, LectureListRequest } from "@/features/lecture/type";
+import {
+    getNextLectureSort,
+    isLectureSortOption,
+    sortLectures,
+} from "@/features/lecture/utils/lectureSort";
 
 interface GuestLectureListPageProps {
     searchParams: Promise<{
         category?: string;
         keyword?: string;
         page?: string;
+        sort?: string;
     }>;
 }
 
@@ -48,13 +54,14 @@ export default function GuestLectureListPage({
 async function GuestLectureContent({
     searchParams,
 }: GuestLectureListPageProps) {
-    const { keyword, category, page } = await searchParams;
+    const { keyword, category, page, sort } = await searchParams;
 
     const normalizedCategory = category?.toUpperCase();
     const currentCategory = isCategory(normalizedCategory)
         ? normalizedCategory
         : undefined;
     const currentPage = Number(page) || 1;
+    const currentSort = isLectureSortOption(sort) ? sort : "latest";
 
     const payload: LectureListRequest = {
         category: currentCategory,
@@ -63,7 +70,7 @@ async function GuestLectureContent({
     };
 
     const responseData = await getLectures(payload);
-    const lectures = responseData.content;
+    const lectures = sortLectures(responseData.content, currentSort);
 
     const createPageHref = (pageNumber: number) => {
         const params = new URLSearchParams();
@@ -76,7 +83,31 @@ async function GuestLectureContent({
             params.set("category", category);
         }
 
+        if (currentSort !== "latest") {
+            params.set("sort", currentSort);
+        }
+
         params.set("page", String(pageNumber));
+
+        return `?${params.toString()}`;
+    };
+
+    const createSortHref = (nextSort: typeof currentSort) => {
+        const params = new URLSearchParams();
+
+        if (keyword) {
+            params.set("keyword", keyword);
+        }
+
+        if (category) {
+            params.set("category", category);
+        }
+
+        if (nextSort !== "latest") {
+            params.set("sort", nextSort);
+        }
+
+        params.set("page", "1");
 
         return `?${params.toString()}`;
     };
@@ -87,6 +118,8 @@ async function GuestLectureContent({
                 keyword={keyword}
                 category={category}
                 totalElements={responseData.totalElements}
+                currentSort={currentSort}
+                sortHref={createSortHref(getNextLectureSort(currentSort))}
             />
 
             {lectures.length > 0 ? (

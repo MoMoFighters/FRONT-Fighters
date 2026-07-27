@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { Search, X } from "lucide-react";
 
+import LectureSortButton from "@/features/lecture/components/buttons/LectureSortButton";
+import { LectureSortOption } from "@/features/lecture/utils/lectureSort";
+
 const categories = [
     {
         label: "전체",
@@ -36,12 +39,16 @@ interface GuestLectureControlsProps {
     keyword?: string;
     category?: string;
     totalElements: number;
+    currentSort: LectureSortOption;
+    sortHref: string;
 }
 
 export default function GuestLectureControls({
     keyword,
     category,
     totalElements,
+    currentSort,
+    sortHref,
 }: GuestLectureControlsProps) {
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
@@ -102,6 +109,12 @@ export default function GuestLectureControls({
                         총 <span className="font-bold text-indigo-500">{totalElements}</span>개의 강의를 확인할 수 있습니다.
                     </p>
                 </div>
+
+                <LectureSortButton
+                    currentSort={currentSort}
+                    href={sortHref}
+                    className="text-xs"
+                />
 
                 <form onSubmit={handleSubmit} className="flex w-full max-w-md items-center gap-2">
                     <div className="relative flex-1">
