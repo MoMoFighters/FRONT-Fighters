@@ -11,10 +11,16 @@ import ListPagination from "@/components/common/ListPagination";
 import BuildGuideCard from "@/features/lecture/components/student/shared/BuildGuideCard";
 import CategoryPreviewCard from "@/features/lecture/components/student/shared/CategoryPreviewCard";
 import LectureFilterBtn from "@/features/lecture/components/buttons/LectureFilterBtn";
+import LectureSortButton from "@/features/lecture/components/buttons/LectureSortButton";
 import LectureSearchbar from "@/features/lecture/components/common/LectureSearchbar";
 import StudentLectureList from "@/features/lecture/components/student/list/StudentLectureList";
 import StudentLectureListSkeleton from "@/features/lecture/components/student/list/StudentLectureListSkeleton";
 import StudentPageHeader from "@/features/student/components/StudentPageHeader";
+import {
+    getNextLectureSort,
+    isLectureSortOption,
+    sortLectures,
+} from "@/features/lecture/utils/lectureSort";
 
 interface LectureListPageProps {
     searchParams: Promise<{
@@ -22,6 +28,7 @@ interface LectureListPageProps {
         keyword?: string;
         page?: string;
         position?: string;
+        sort?: string;
     }>;
 }
 
@@ -67,8 +74,11 @@ async function LectureListContent({
         keyword,
         category,
         page,
-        position
+        position,
+        sort,
     } = await searchParams;
+
+    const currentSort = isLectureSortOption(sort) ? sort : "latest";
 
     const payload: LectureListRequest = {
         category: category ? category.toUpperCase() as Category : undefined,
@@ -77,7 +87,7 @@ async function LectureListContent({
     };
 
     const responseData = await getLectures(payload);
-    const lectures = responseData.content;
+    const lectures = sortLectures(responseData.content, currentSort);
 
     const totalPages = responseData.totalPages;
     const currentPage = Number(page) || 1;
@@ -97,7 +107,35 @@ async function LectureListContent({
             params.set("position", position);
         }
 
+        if (currentSort !== "latest") {
+            params.set("sort", currentSort);
+        }
+
         params.set("page", String(pageNumber));
+
+        return `?${params.toString()}`;
+    };
+
+    const createSortHref = (nextSort: typeof currentSort) => {
+        const params = new URLSearchParams();
+
+        if (keyword) {
+            params.set("keyword", keyword);
+        }
+
+        if (category) {
+            params.set("category", category);
+        }
+
+        if (position) {
+            params.set("position", position);
+        }
+
+        if (nextSort !== "latest") {
+            params.set("sort", nextSort);
+        }
+
+        params.set("page", "1");
 
         return `?${params.toString()}`;
     };
@@ -136,6 +174,12 @@ async function LectureListContent({
                     </span>
                     개
                 </p>
+
+                <LectureSortButton
+                    currentSort={currentSort}
+                    href={createSortHref(getNextLectureSort(currentSort))}
+                    className="text-sm"
+                />
             </div>
 
             {responseData.content.length > 0 ? (

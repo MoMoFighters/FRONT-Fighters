@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
 import { useReviewSummaryModel } from "@/features/lecture/hooks/useReviewSummaryModel";
+import OneButtonModal from "@/features/modal/OneButtonModal";
 
 interface ReviewSummaryButtonProps {
     lectureId: string;
@@ -20,8 +21,21 @@ interface ReviewSummaryButtonProps {
 
 const MIN_REVIEW_COUNT = 5;
 
+const MODEL_TIMEOUT_DESCRIPTION =
+    "네트워크 상태에 따라 다운로드가 오래 걸리고 있어요.\n다운로드는 백그라운드에서 계속 진행되니,\n잠시 후 다시 시도해주시면 훨씬 빠르게 이용하실 수 있어요!";
+
 export default function ReviewSummaryButton({ lectureId, reviewCount }: ReviewSummaryButtonProps) {
-    const { phase, modelProgress, analyzeProgress, result, error, summarize } = useReviewSummaryModel();
+    const {
+        phase,
+        modelProgress,
+        isFinalizing,
+        hasTimedOut,
+        dismissTimeout,
+        analyzeProgress,
+        result,
+        error,
+        summarize,
+    } = useReviewSummaryModel();
     const [open, setOpen] = useState(false);
 
     if (reviewCount < MIN_REVIEW_COUNT) {
@@ -68,10 +82,14 @@ export default function ReviewSummaryButton({ lectureId, reviewCount }: ReviewSu
                         <div className="flex justify-between text-xs font-medium text-slate-500">
                             <span>
                                 {phase === "loading-model"
-                                    ? "AI 모델 다운로드 중..."
+                                    ? (isFinalizing
+                                        ? "곧 다운로드가 끝납니다.. 조금만 기다려주세요!"
+                                        : "AI 모델 다운로드 중...")
                                     : `수강평 분석 중... (${analyzeProgress.current}/${analyzeProgress.total})`}
                             </span>
-                            <span>{phase === "loading-model" ? `${modelProgress}%` : `${analyzePercent}%`}</span>
+                            {!(phase === "loading-model" && isFinalizing) && (
+                                <span>{phase === "loading-model" ? `${modelProgress}%` : `${analyzePercent}%`}</span>
+                            )}
                         </div>
 
                         <Progress value={phase === "loading-model" ? modelProgress : analyzePercent} />
@@ -127,6 +145,17 @@ export default function ReviewSummaryButton({ lectureId, reviewCount }: ReviewSu
                     </div>
                 )}
             </DialogContent>
+
+            <OneButtonModal
+                open={hasTimedOut}
+                onOpenChange={(next) => {
+                    if (!next) dismissTimeout();
+                }}
+                title="모델 다운로드가 지연되고 있어요"
+                description={MODEL_TIMEOUT_DESCRIPTION}
+                onConfirm={dismissTimeout}
+                contentClassName="data-[size=sm]:max-w-[320px]"
+            />
         </Dialog>
     );
 }

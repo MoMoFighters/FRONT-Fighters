@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useModelDownloadProgress } from "@/features/lecture/hooks/useModelDownloadProgress";
 
 const TOGGLE_STORAGE_KEY = "momocity-review-ai-check-enabled";
 
@@ -14,7 +15,15 @@ type Classifier = (text: string) => Promise<SentimentResult[]>;
 export function useReviewSentimentModel() {
     const [enabled, setEnabled] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [progress, setProgress] = useState(0);
+    const {
+        progress,
+        isFinalizing,
+        hasTimedOut,
+        dismissTimeout,
+        handleProgressEvent,
+        reset: resetProgress,
+        complete: completeProgress,
+    } = useModelDownloadProgress();
     const classifierRef = useRef<Classifier | null>(null);
     // 진행 중인 로딩 Promise를 저장해서, 로딩 중에 analyze가 호출되면
     // 새로 로드를 시작하지 않고 이 Promise가 끝날 때까지 기다리게 한다
@@ -30,7 +39,7 @@ export function useReviewSentimentModel() {
         }
 
         setIsLoading(true);
-        setProgress(0);
+        resetProgress();
 
         const promise = (async () => {
             try {
@@ -40,15 +49,12 @@ export function useReviewSentimentModel() {
                     "Xenova/bert-base-multilingual-uncased-sentiment",
                     {
                         dtype: "q8",
-                        progress_callback: (data: { status: string; progress?: number }) => {
-                            if (data.status === "progress" && typeof data.progress === "number") {
-                                setProgress(Math.round(data.progress));
-                            }
-                        },
+                        progress_callback: handleProgressEvent,
                     }
                 )) as unknown as Classifier;
 
                 classifierRef.current = classifier;
+                completeProgress();
                 return classifier;
             } catch (error) {
                 // 모델 로드 실패 시 토글을 조용히 끄고 일반 등록으로 폴백한다
@@ -63,7 +69,7 @@ export function useReviewSentimentModel() {
 
         loadPromiseRef.current = promise;
         return promise;
-    }, []);
+    }, [resetProgress, handleProgressEvent, completeProgress]);
 
     // 재방문 시 저장된 토글 상태를 복원하고, ON이었다면 모델을 바로 예열한다
     useEffect(() => {
@@ -100,5 +106,5 @@ export function useReviewSentimentModel() {
         [loadModel]
     );
 
-    return { enabled, toggle, isLoading, progress, analyze };
+    return { enabled, toggle, isLoading, progress, isFinalizing, hasTimedOut, dismissTimeout, analyze };
 }

@@ -21,12 +21,18 @@ import StudentLectureList from "@/features/lecture/components/student/list/Stude
 import StudentLectureListSkeleton from "@/features/lecture/components/student/list/StudentLectureListSkeleton";
 import StudentLectureListToolbar from "@/features/lecture/components/student/list/StudentLectureListToolbar";
 import StudentPageHeader from "@/features/student/components/StudentPageHeader";
+import {
+    getNextLectureSort,
+    isLectureSortOption,
+    sortLectures,
+} from "@/features/lecture/utils/lectureSort";
 
 interface LectureListByCategoryProps {
     searchParams: Promise<{
         keyword?: string;
         filter?: string;
         page?: string;
+        sort?: string;
     }>;
 
     params: Promise<{
@@ -107,9 +113,10 @@ async function CategoryLectureListContent({
     params,
 }: LectureListByCategoryProps) {
     const { category } = await params;
-    const { keyword, filter, page } = await searchParams;
+    const { keyword, filter, page, sort } = await searchParams;
 
     const categoryApiValue = category.toUpperCase() as Category;
+    const currentSort = isLectureSortOption(sort) ? sort : "latest";
 
     const payload: LectureListRequest = {
         category: categoryApiValue,
@@ -121,7 +128,7 @@ async function CategoryLectureListContent({
         ? await getLecturesWithAuth(payload)
         : await getLectures(payload);
 
-    const lectures = responseData.content;
+    const lectures = sortLectures(responseData.content, currentSort);
     const currentPage = Number(page) || 1;
     const totalPages = responseData.totalPages;
 
@@ -136,7 +143,31 @@ async function CategoryLectureListContent({
             params.set("filter", filter);
         }
 
+        if (currentSort !== "latest") {
+            params.set("sort", currentSort);
+        }
+
         params.set("page", String(pageNumber));
+
+        return `?${params.toString()}`;
+    };
+
+    const createSortHref = (nextSort: typeof currentSort) => {
+        const params = new URLSearchParams();
+
+        if (keyword) {
+            params.set("keyword", keyword);
+        }
+
+        if (filter) {
+            params.set("filter", filter);
+        }
+
+        if (nextSort !== "latest") {
+            params.set("sort", nextSort);
+        }
+
+        params.set("page", "1");
 
         return `?${params.toString()}`;
     };
@@ -147,6 +178,8 @@ async function CategoryLectureListContent({
                 keyword={keyword}
                 filter={filter}
                 totalElements={responseData.totalElements}
+                currentSort={currentSort}
+                sortHref={createSortHref(getNextLectureSort(currentSort))}
             />
 
             {lectures.length > 0 ? (

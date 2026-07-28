@@ -2,9 +2,12 @@
 
 import { useCallback, useState } from "react";
 import { getAllReviewsForSummaryAction } from "@/features/lecture/action";
+import { useModelDownloadProgress } from "@/features/lecture/hooks/useModelDownloadProgress";
 import type { Review } from "@/features/lecture/type";
 
-const CACHE_KEY_PREFIX = "momocity-review-summary-";
+// v2: 대표 수강평이 단수(representativeReview)에서 배열(representativeReviews)로 바뀌어
+// 예전 구조로 저장된 캐시를 그대로 신뢰하면 화면에서 깨지므로 캐시 키 자체를 새로 분리한다.
+const CACHE_KEY_PREFIX = "momocity-review-summary-v2-";
 
 export interface ReviewSummaryResult {
     representativeReviews: Review[];
@@ -40,7 +43,15 @@ function cosineSimilarity(a: number[], b: number[]): number {
 
 export function useReviewSummaryModel() {
     const [phase, setPhase] = useState<SummaryPhase>("idle");
-    const [modelProgress, setModelProgress] = useState(0);
+    const {
+        progress: modelProgress,
+        isFinalizing,
+        hasTimedOut,
+        dismissTimeout,
+        handleProgressEvent,
+        reset: resetModelProgress,
+        complete: completeModelProgress,
+    } = useModelDownloadProgress();
     const [analyzeProgress, setAnalyzeProgress] = useState({ current: 0, total: 0 });
     const [result, setResult] = useState<ReviewSummaryResult | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -65,7 +76,7 @@ export function useReviewSummaryModel() {
         }
 
         setPhase("loading-model");
-        setModelProgress(0);
+        resetModelProgress();
 
         try {
             // 1. 전체 수강평을 서버 액션으로 가져온다
@@ -81,14 +92,11 @@ export function useReviewSummaryModel() {
                 "feature-extraction",
                 "Xenova/paraphrase-multilingual-MiniLM-L12-v2",
                 {
-                    progress_callback: (data: { status: string; progress?: number }) => {
-                        if (data.status === "progress" && typeof data.progress === "number") {
-                            setModelProgress(Math.round(data.progress));
-                        }
-                    },
+                    progress_callback: handleProgressEvent,
                 }
             )) as unknown as Embedder;
 
+            completeModelProgress();
             setPhase("analyzing");
             setAnalyzeProgress({ current: 0, total: reviews.length });
 
@@ -138,7 +146,17 @@ export function useReviewSummaryModel() {
             setError("수강평을 요약하는 중 문제가 발생했어요.");
             setPhase("error");
         }
-    }, []);
+    }, [handleProgressEvent, resetModelProgress, completeModelProgress]);
 
-    return { phase, modelProgress, analyzeProgress, result, error, summarize };
+    return {
+        phase,
+        modelProgress,
+        isFinalizing,
+        hasTimedOut,
+        dismissTimeout,
+        analyzeProgress,
+        result,
+        error,
+        summarize,
+    };
 }
